@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>เรียนรู้เทรดหุ้น US — คู่มือเทรดเดอร์ไทย | Bullzeeker</title>
+<meta name="description" content="คู่มือเทรดหุ้น US ภาษาไทยฉบับสมบูรณ์ — เริ่มต้นยังไง, ภาษี, ศัพท์เทรด, กลยุทธ์, ข้อผิดพลาด, จิตวิทยา — สำหรับเทรดเดอร์ไทยทุกระดับ" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>" />
+<style>
+  :root{
+    --bg:#070b14; --bg2:#0e1525; --bg3:#172238; --bg4:#1f2c44;
+    --line:#243044; --line2:#334158;
+    --text:#e6edf7; --muted:#8b97ab; --dim:#5a6478;
+    --accent:#3b82f6; --accent2:#60a5fa; --gold:#fbbf24;
+    --green:#22c55e; --red:#ef4444; --orange:#fb923c; --purple:#a855f7;
+    --emerald:#10b981; --teal:#14b8a6;
+    --thai-red:#ED1C24;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);
+    font-family:'Inter','Noto Sans Thai',-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:14.5px;line-height:1.7;scroll-behavior:smooth}
+  a{color:var(--accent2);text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bg2)}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px}
+
+  header{background:linear-gradient(180deg,#0a0f1c,#070b14);
+    border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
+  .h-row{display:flex;align-items:center;gap:18px;padding:14px 24px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+  .brand-logo{width:42px;height:42px;border-radius:11px;
+    background:linear-gradient(135deg,var(--thai-red),var(--gold),var(--accent));
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+    box-shadow:0 4px 14px rgba(251,191,36,.3)}
+  .brand-txt h1{font-size:18px;font-weight:800;color:#fff}
+  .brand-txt p{font-size:11px;color:var(--muted);margin-top:1px;font-weight:500}
+  nav.main-nav{display:flex;padding:0 24px;border-bottom:1px solid var(--line);overflow-x:auto;background:#080d18}
+  nav.main-nav a{color:var(--muted);padding:13px 18px;font-size:13px;font-weight:600;
+    border-bottom:2px solid transparent;transition:.15s;white-space:nowrap;
+    display:inline-flex;align-items:center;gap:6px}
+  nav.main-nav a:hover{color:var(--text);background:rgba(255,255,255,.02)}
+  nav.main-nav a.active{color:var(--emerald);border-bottom-color:var(--emerald);background:rgba(16,185,129,.04)}
+
+  main{max-width:1300px;margin:0 auto;padding:24px 24px 60px;display:grid;grid-template-columns:240px 1fr;gap:30px}
+  @media(max-width:980px){main{grid-template-columns:1fr}}
+
+  /* ===== TABLE OF CONTENTS ===== */
+  .toc{position:sticky;top:120px;align-self:start;max-height:calc(100vh - 140px);overflow-y:auto;padding-right:8px}
+  @media(max-width:980px){.toc{position:static;max-height:none;margin-bottom:20px}}
+  .toc h3{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:12px;padding:0 12px}
+  .toc-list{list-style:none}
+  .toc-list a{
+    display:block;padding:8px 12px;border-radius:8px;
+    color:var(--muted);font-size:13px;font-weight:500;
+    transition:.15s;border-left:2px solid transparent;
+  }
+  .toc-list a:hover{color:var(--text);background:rgba(255,255,255,.03)}
+  .toc-list a.active{color:var(--emerald);border-left-color:var(--emerald);background:rgba(16,185,129,.06)}
+  .toc-list .ic{margin-right:8px}
+
+  /* ===== CONTENT ===== */
+  article{min-width:0}
+
+  .hero-mini{background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(251,191,36,.06));
+    border:1px solid rgba(16,185,129,.25);border-radius:14px;padding:24px;margin-bottom:24px}
+  .hero-mini h1{font-size:26px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+  .hero-mini p{color:var(--muted);font-size:14px;line-height:1.7}
+  .hero-mini .badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+  .hero-mini .badge{background:var(--bg3);color:var(--emerald);font-size:11px;padding:4px 12px;
+    border-radius:999px;font-weight:600;border:1px solid rgba(16,185,129,.3)}
+
+  section{background:var(--bg2);border:1px solid var(--line);border-radius:14px;
+    padding:28px 30px;margin-bottom:18px;scroll-margin-top:90px}
+  @media(max-width:780px){section{padding:20px 18px}}
+
+  section h2{font-size:24px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  section h2 .ic{font-size:30px}
+  section .lead{color:var(--muted);font-size:14px;margin-bottom:20px;line-height:1.7}
+
+  section h3{font-size:18px;font-weight:700;margin:24px 0 10px;color:#fff;display:flex;align-items:center;gap:8px}
+  section h3::before{content:"▸";color:var(--gold)}
+  section h4{font-size:15px;font-weight:700;margin:18px 0 8px;color:var(--accent2)}
+
+  section p{margin-bottom:12px;color:#cfd6e4}
+  section p b{color:#fff}
+  section ul,section ol{padding-left:22px;margin-bottom:12px}
+  section li{margin-bottom:6px;color:#cfd6e4}
+
+  .step-list{counter-reset:s;padding-left:0;list-style:none}
+  .step-list li{counter-increment:s;padding:14px 14px 14px 56px;background:var(--bg3);
+    border:1px solid var(--line);border-radius:10px;margin-bottom:10px;position:relative;
+    list-style:none}
+  .step-list li::before{
+    content:counter(s);position:absolute;left:14px;top:14px;
+    width:30px;height:30px;background:linear-gradient(135deg,var(--emerald),var(--accent));
+    color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:14px;
+  }
+  .step-list li b{color:#fff;font-size:14px;display:block;margin-bottom:3px}
+  .step-list li span{color:var(--muted);font-size:13px}
+
+  .callout{padding:14px 18px;border-radius:10px;border-left:4px solid;margin:14px 0;font-size:13px;line-height:1.7}
+  .callout.warn{background:rgba(251,146,60,.06);border-left-color:var(--orange);color:#fed7aa}
+  .callout.warn b{color:var(--orange)}
+  .callout.info{background:rgba(96,165,250,.06);border-left-color:var(--accent);color:#bfdbfe}
+  .callout.info b{color:var(--accent2)}
+  .callout.success{background:rgba(16,185,129,.06);border-left-color:var(--emerald);color:#a7f3d0}
+  .callout.success b{color:var(--emerald)}
+  .callout.danger{background:rgba(239,68,68,.06);border-left-color:var(--red);color:#fecaca}
+  .callout.danger b{color:var(--red)}
+
+  /* Glossary */
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:14px}
+  .gloss-card{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .gloss-card .term{font-weight:700;color:var(--gold);font-size:14px;margin-bottom:4px}
+  .gloss-card .term .en{color:var(--muted);font-weight:500;font-size:12px;margin-left:6px}
+  .gloss-card .def{color:#cfd6e4;font-size:13px;line-height:1.6}
+  .gloss-search{
+    background:var(--bg3);border:1px solid var(--line);border-radius:10px;
+    padding:10px 14px;width:100%;color:var(--text);font-family:inherit;font-size:14px;
+    margin-bottom:14px;
+  }
+  .gloss-search:focus{outline:none;border-color:var(--emerald)}
+
+  /* Strategy table */
+  .strat-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:14px}
+  .strat-table th{background:#0e1421;color:var(--muted);font-size:11px;
+    text-transform:uppercase;letter-spacing:.4px;padding:11px;text-align:left;border-bottom:1px solid var(--line)}
+  .strat-table td{padding:14px 11px;border-bottom:1px solid #1a2333;vertical-align:top}
+  .strat-table tr:hover{background:#162132}
+  .strat-table .nm{font-weight:700;color:#fff;font-size:14px}
+  .strat-table .by{color:var(--accent2);font-size:11px;display:block;margin-top:2px}
+
+  /* Mistake cards */
+  .mistakes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:14px}
+  .mistake-card{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:16px;border-left:3px solid var(--red)}
+  .mistake-card .num{display:inline-block;background:var(--red);color:#fff;width:24px;height:24px;
+    border-radius:50%;text-align:center;line-height:24px;font-weight:700;font-size:12px;margin-right:8px}
+  .mistake-card h4{font-weight:700;color:#fff;font-size:14px;margin-bottom:6px;display:flex;align-items:center}
+  .mistake-card p{color:var(--muted);font-size:12.5px;line-height:1.7;margin-bottom:8px}
+  .mistake-card .fix{background:rgba(16,185,129,.08);border-left:2px solid var(--emerald);
+    padding:8px 12px;border-radius:6px;font-size:12px;color:#a7f3d0}
+  .mistake-card .fix b{color:var(--emerald)}
+
+  /* Roadmap */
+  .roadmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:14px}
+  .road-card{background:var(--bg3);border:1px solid var(--line);border-radius:12px;padding:16px;position:relative}
+  .road-card .level{font-size:11px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+  .road-card .timeline{font-size:18px;font-weight:800;color:#fff;margin:4px 0 8px}
+  .road-card .goals{padding-left:18px}
+  .road-card .goals li{font-size:12px;color:#cfd6e4;margin-bottom:4px}
+
+  /* FAQ */
+  .faq-item{background:var(--bg3);border:1px solid var(--line);border-radius:10px;
+    margin-bottom:8px;overflow:hidden}
+  .faq-q{padding:14px 16px;font-weight:700;color:#fff;cursor:pointer;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px}
+  .faq-q:hover{background:#1f2c44}
+  .faq-q::after{content:"+";color:var(--gold);font-size:20px;font-weight:300;transition:.2s}
+  .faq-item.open .faq-q::after{transform:rotate(45deg)}
+  .faq-a{padding:0 16px;max-height:0;overflow:hidden;transition:.3s;color:var(--muted);font-size:13.5px;line-height:1.7}
+  .faq-item.open .faq-a{padding:0 16px 14px;max-height:600px}
+
+  /* Cheat sheet */
+  .cheat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:14px}
+  .cheat-card{background:linear-gradient(135deg,var(--bg3),var(--bg4));border:1px solid var(--line);border-radius:12px;padding:18px}
+  .cheat-card h4{color:var(--gold);font-size:14px;margin-bottom:10px;font-weight:700}
+  .cheat-card ul{padding-left:18px}
+  .cheat-card li{font-size:13px;color:#cfd6e4;margin-bottom:6px}
+  .cheat-card li b{color:#fff}
+
+  footer{border-top:1px solid var(--line);padding:24px;color:var(--muted);font-size:12px;text-align:center;margin-top:40px;line-height:1.6}
+
+  @media(max-width:780px){
+    .h-row{padding:10px 14px}
+    section{padding:18px 16px}
+    section h2{font-size:20px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-row">
+    <a href="index.html" class="brand">
+      <div class="brand-logo">🐂</div>
+      <div class="brand-txt">
+        <h1>Bull<span style="color:var(--gold)">zeeker</span></h1>
+        <p>📚 ศูนย์เรียนรู้สำหรับเทรดเดอร์ไทย</p>
+      </div>
+    </a>
+  </div>
+  <nav class="main-nav">
+    <a href="index.html">🏠 หน้าหลัก</a>
+    <a href="screener.html">🎯 Daily Screener</a>
+    <a href="breakout.html">🚀 Breakout</a>
+    <a href="quality.html">💎 Quality</a>
+    <a href="tools.html">🛠️ เครื่องมือ</a>
+    <a href="macro.html">📊 Macro</a>
+    <a href="learn.html" class="active">📚 เรียนรู้</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ===== TABLE OF CONTENTS ===== -->
+  <aside class="toc">
+    <h3>📑 สารบัญ</h3>
+    <ul class="toc-list">
+      <li><a href="#intro"><span class="ic">👋</span>เริ่มต้นที่นี่</a></li>
+      <li><a href="#open-account"><span class="ic">📝</span>เปิดพอร์ตยังไง</a></li>
+      <li><a href="#first-trade"><span class="ic">🎯</span>เทรดครั้งแรก</a></li>
+      <li><a href="#strategy"><span class="ic">📊</span>กลยุทธ์เทรด</a></li>
+      <li><a href="#tech-analysis"><span class="ic">📈</span>การวิเคราะห์ทางเทคนิค</a></li>
+      <li><a href="#money-mgmt"><span class="ic">💰</span>การบริหารเงิน</a></li>
+      <li><a href="#psychology"><span class="ic">🧠</span>จิตวิทยาเทรด</a></li>
+      <li><a href="#tax"><span class="ic">📋</span>ภาษีหุ้น US</a></li>
+      <li><a href="#mistakes"><span class="ic">⚠️</span>10 ข้อผิดพลาดที่ต้องเลี่ยง</a></li>
+      <li><a href="#glossary"><span class="ic">📖</span>ศัพท์เทรด</a></li>
+      <li><a href="#roadmap"><span class="ic">🗺️</span>Roadmap 1 ปี</a></li>
+      <li><a href="#cheat"><span class="ic">📋</span>Cheat Sheet</a></li>
+      <li><a href="#faq"><span class="ic">❓</span>คำถามพบบ่อย</a></li>
+    </ul>
+  </aside>
+
+  <article>
+
+    <!-- ============= HERO ============= -->
+    <div class="hero-mini">
+      <h1>📚 เรียนรู้เทรดหุ้น US ฉบับคนไทย</h1>
+      <p>
+        คู่มือเทรดหุ้นอเมริกาภาษาไทยที่<b>ครบที่สุด</b> — จากศูนย์ถึงระดับมืออาชีพ —
+        เนื้อหาเรียบเรียงจากประสบการณ์เทรดเดอร์ไทยจริง + ตำราระดับโลก (Minervini, O'Neil, Livermore, ...)
+      </p>
+      <div class="badges">
+        <span class="badge">✓ มือใหม่อ่านได้</span>
+        <span class="badge">✓ คนกลางเรียนรู้ลึก</span>
+        <span class="badge">✓ มืออาชีพใช้อ้างอิง</span>
+        <span class="badge">✓ อัพเดทใหม่ทุกปี</span>
+      </div>
+    </div>
+
+    <!-- ============= INTRO ============= -->
+    <section id="intro">
+      <h2><span class="ic">👋</span>ทำไมคนไทยถึงควรเทรดหุ้น US?</h2>
+      <p class="lead">
+        ตลาดหุ้น US เป็นตลาดที่ใหญ่ที่สุดในโลก มีหุ้นที่เปลี่ยนโลกอย่าง Apple, Microsoft, NVIDIA, Tesla
+        ที่คนไทยรู้จักดี — ที่สำคัญคือ <b>ตอนนี้คนไทยเข้าถึงได้ง่ายมาก</b> ผ่านแอปโบรกเกอร์ไทยที่เปิดให้บริการเต็มที่
+      </p>
+
+      <h3>5 เหตุผลที่คนไทยควรมีพอร์ตหุ้น US</h3>
+      <ol class="step-list">
+        <li>
+          <b>กระจายความเสี่ยงนอก SET</b>
+          <span>SET 100 หุ้น = ขึ้นกับเศรษฐกิจไทย · ถ้าเงินบาทอ่อน เศรษฐกิจหด พอร์ตเสียหายหมด · มี US เป็น hedge ที่ดี</span>
+        </li>
+        <li>
+          <b>เข้าถึงบริษัทระดับโลก</b>
+          <span>คุณใช้ iPhone, Microsoft Office, ดู Netflix, Search Google ทุกวัน — ทำไมไม่เป็น <i>เจ้าของ</i> บริษัทเหล่านี้ด้วย?</span>
+        </li>
+        <li>
+          <b>กำไรพิเศษจาก USD แข็ง</b>
+          <span>10 ปีที่ผ่านมา USD แข็งจาก 30 → 36 บาท คุณได้กำไรพิเศษ ~20% แค่ถือ USD เฉย ๆ</span>
+        </li>
+        <li>
+          <b>ตลาดมี Volatility สูง (เทรดได้ทั้ง 2 ทาง)</b>
+          <span>หุ้น US ขึ้นเป็น 10-20% ในวันได้ ETF inverse ก็มี — เหมาะกับเทรดเดอร์ที่ active</span>
+        </li>
+        <li>
+          <b>ภาษีถูกกว่า SET ในบางกรณี</b>
+          <span>Capital gain US สำหรับ NRA ไม่เสียภาษี US (ถ้าเก็บใน account) · ภาษีไทยก็เสียเฉพาะตอนส่งกลับเท่านั้น</span>
+        </li>
+      </ol>
+
+      <div class="callout warn">
+        <b>⚠️ แต่ต้องเข้าใจก่อนเริ่ม:</b> ตลาด US มี volatility สูงกว่า SET, ข่าวเป็นภาษาอังกฤษ, เวลาเทรดอยู่ตอนกลางคืน,
+        มีเรื่องภาษีต้องจัดการ — คู่มือนี้จะพาคุณผ่านทุกเรื่องทีละ step
+      </div>
+    </section>
+
+    <!-- ============= OPEN ACCOUNT ============= -->
+    <section id="open-account">
+      <h2><span class="ic">📝</span>เปิดพอร์ตหุ้น US ยังไง?</h2>
+      <p class="lead">วิธีเปิดบัญชีสำหรับซื้อหุ้นอเมริกาในประเทศไทย — ง่ายกว่าที่คิด ใช้แค่ <b>บัตรประชาชน + สมุดบัญชี</b> เท่านั้น</p>
+
+      <h3>วิธีที่ 1: เปิดผ่านโบรกเกอร์ไทย (แนะนำสำหรับมือใหม่)</h3>
+      <ol class="step-list">
+        <li>
+          <b>เลือกโบรกเกอร์ที่เปิดให้คนไทยซื้อหุ้น US</b>
+          <span>แนะนำ: <a href="tools.html#broker">Liberator (ฟรีค่าคอม), Pi, InnovestX, FSS</a></span>
+        </li>
+        <li>
+          <b>ดาวน์โหลดแอปและสมัครออนไลน์</b>
+          <span>ใช้บัตรประชาชนถ่ายรูป + selfie · บางที่มีให้กรอกข้อมูล W-8BEN ในแอป</span>
+        </li>
+        <li>
+          <b>ยื่นฟอร์ม W-8BEN</b>
+          <span>สำคัญมาก! ฟอร์มยืนยันว่าเป็นคนไทย → ลดภาษี dividend จาก 30% เหลือ 15% · มีอายุ 3 ปี</span>
+        </li>
+        <li>
+          <b>ฝากเงิน → แลก USD</b>
+          <span>โอนเงินบาท → โบรกเกอร์จะแลกเป็น USD ให้ (มี FX spread ~0.5-1%)</span>
+        </li>
+        <li>
+          <b>เริ่มเทรดได้!</b>
+          <span>ปกติใช้เวลา 1-3 วันทำการในการอนุมัติ · เริ่มต้นได้ตั้งแต่หลักร้อยบาท (ถ้าใช้ Fractional Shares)</span>
+        </li>
+      </ol>
+
+      <h3>วิธีที่ 2: เปิดผ่าน Interactive Brokers (สำหรับ Pro Trader)</h3>
+      <p>ถ้ามีเงินทุนเกิน 1 ล้านบาท หรือต้องการค่าธรรมเนียมต่ำสุด → IBKR เป็น choice ที่ดี</p>
+      <ol class="step-list">
+        <li><b>สมัครออนไลน์ที่ ibkr.com</b><span>เลือก "Individual Account" · ใช้เวลา ~30 นาที</span></li>
+        <li><b>Verify ตัวตนด้วยเอกสาร</b><span>Passport + bill ที่อยู่ (ไฟ/น้ำ) · ใช้เวลา 3-7 วันทำการ</span></li>
+        <li><b>โอนเงินไปบัญชี US</b><span>ใช้ Wise (recommend) หรือ SWIFT จากธนาคารไทย</span></li>
+        <li><b>เริ่มเทรดด้วย IBKR Mobile หรือ TWS</b><span>มี TWS Desktop สำหรับ pro · IBKR Mobile สำหรับ retail</span></li>
+      </ol>
+
+      <div class="callout info">
+        <b>💡 เลือกแบบไหนดี?</b><br/>
+        • <b>มือใหม่ / ทุน < 500K:</b> โบรกเกอร์ไทย (Liberator ดีที่สุด เพราะ commission ฟรี)<br/>
+        • <b>ทุน 500K - 5M:</b> โบรกเกอร์ไทยก็ยังดี · IBKR ถ้าอยาก hedge ใช้ options/futures<br/>
+        • <b>ทุน > 5M หรือ Day Trader:</b> IBKR ดีกว่าเพราะ FX/commission ถูกกว่ามาก (ปีหนึ่งประหยัดเป็นแสน)
+      </div>
+    </section>
+
+    <!-- ============= FIRST TRADE ============= -->
+    <section id="first-trade">
+      <h2><span class="ic">🎯</span>เทรดครั้งแรก: คู่มือ Step-by-Step</h2>
+      <p class="lead">มาเทรดหุ้นตัวแรกของคุณ — เลือก, วิเคราะห์, วาง order, ติดตาม, ออก — ทุกขั้นตอนสำหรับมือใหม่</p>
+
+      <h3>Step 1: เลือกหุ้นที่จะเทรด</h3>
+      <p><b>สำหรับมือใหม่ แนะนำเริ่มจาก ETF ก่อน</b> เพราะ:</p>
+      <ul>
+        <li>กระจายความเสี่ยง (1 ตัว = 100-500 บริษัท)</li>
+        <li>ไม่ต้องตามข่าวรายบริษัท</li>
+        <li>Volatility ต่ำกว่าหุ้นเดี่ยว</li>
+      </ul>
+      <p><b>3 ETFs ที่มือใหม่ควรรู้จัก:</b></p>
+      <ul>
+        <li><b>SPY</b> — S&P 500 (500 บริษัทใหญ่สุดของ US) · ผลตอบแทน historical ~10% ต่อปี</li>
+        <li><b>QQQ</b> — Nasdaq 100 (เน้น tech) · volatility สูงกว่า แต่ผลตอบแทนสูงกว่า</li>
+        <li><b>VOO</b> — เหมือน SPY แต่ค่าธรรมเนียมต่ำกว่า (0.03% vs 0.09%)</li>
+      </ul>
+
+      <h3>Step 2: วิเคราะห์ก่อนซื้อ</h3>
+      <ol class="step-list">
+        <li><b>ดูแนวโน้ม (Trend)</b><span>ราคา > MA50 และ > MA200 = แนวโน้มขาขึ้น · ใช้ <a href="quality.html">Quality Screener</a> ของเราช่วย</span></li>
+        <li><b>ดู Macro</b><span>VIX > 30 = ระวัง (กลัวมาก) · เช็ค <a href="macro.html">Macro Dashboard</a></span></li>
+        <li><b>ดูปฏิทินเศรษฐกิจ</b><span>มี FOMC หรือ CPI สัปดาห์นี้ไหม? — ถ้ามี ระวัง volatility</span></li>
+        <li><b>ตั้งจุดเข้า/ออก ล่วงหน้า</b><span>ใช้ <a href="tools.html#position">Position Size Calculator</a> + <a href="tools.html#atr">ATR Stop Loss</a></span></li>
+      </ol>
+
+      <h3>Step 3: วาง Order</h3>
+      <p>ประเภท Order ที่ต้องรู้:</p>
+      <ul>
+        <li><b>Market Order:</b> ซื้อทันทีที่ราคาตลาด · ไม่แนะนำสำหรับมือใหม่ (อาจซื้อแพง)</li>
+        <li><b>Limit Order:</b> ตั้งราคาที่จะซื้อไว้ · ดีกว่า ปลอดภัยกว่า · <b>แนะนำใช้อันนี้</b></li>
+        <li><b>Stop-Loss Order:</b> ตั้งราคาที่จะตัดขาดทุน · ต้องตั้งทันทีหลังซื้อ!</li>
+        <li><b>Stop-Limit Order:</b> Combination ของ Stop + Limit · ใช้สำหรับขายตอนเบรกแนวต้าน</li>
+      </ul>
+
+      <div class="callout success">
+        <b>💡 เคล็ดลับสำหรับคนไทย:</b> เนื่องจากตลาด US เปิด 21:30 (เวลาไทย DST) คนไทยส่วนใหญ่นอนแล้ว
+        ให้ใช้ <b>Limit Order + Stop Loss</b> วางไว้ก่อนนอน ตื่นมาเช็คผลตอนเช้า — เรียกว่า <i>"Set & Forget"</i>
+      </div>
+
+      <h3>Step 4: ติดตามและจัดการ Position</h3>
+      <ul>
+        <li>เช็คทุกเช้า (08:00 ไทย = ตลาด US เพิ่งปิด) ดูว่าหุ้นเป็นยังไง</li>
+        <li>ถ้าหุ้นวิ่งสวยตามแผน → <b>Trail Stop Loss ขึ้น</b> เพื่อ lock กำไร</li>
+        <li>ถ้าหุ้นไม่ไปไหน 2-3 สัปดาห์ → ขายทิ้ง ย้ายเงินไปหุ้นอื่น (opportunity cost)</li>
+        <li>ถ้าหุ้นแตะ stop loss → <b>ขายทันที ไม่หาเหตุผล</b> · นี่คือ discipline ที่สำคัญที่สุด</li>
+      </ul>
+    </section>
+
+    <!-- ============= STRATEGIES ============= -->
+    <section id="strategy">
+      <h2><span class="ic">📊</span>กลยุทธ์เทรดที่ใช้งานได้จริง</h2>
+      <p class="lead">กลยุทธ์การเทรดยอดนิยมและใช้ได้จริง — เลือกที่เหมาะกับนิสัย+เวลาของคุณ</p>
+
+      <table class="strat-table">
+        <thead>
+          <tr>
+            <th>กลยุทธ์</th>
+            <th>ถือนาน</th>
+            <th>Win Rate</th>
+            <th>เหมาะกับใคร</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="nm">🐢 Buy & Hold Index ETF</div>
+              <small class="by">Bogle / Buffett style</small>
+            </td>
+            <td>10+ ปี</td>
+            <td>~70-80%</td>
+            <td>มือใหม่, คนที่ไม่มีเวลา</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="nm">💎 Dollar Cost Averaging (DCA)</div>
+              <small class="by">ทยอยซื้อทุกเดือน</small>
+            </td>
+            <td>5+ ปี</td>
+            <td>~70%</td>
+            <td>มนุษย์เงินเดือน</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="nm">🚀 Stage 2 Breakout (CAN SLIM)</div>
+              <small class="by">William O'Neil / Mark Minervini</small>
+            </td>
+            <td>2-8 สัปดาห์</td>
+            <td>~40-50%</td>
+            <td>คนที่มีเวลาวิเคราะห์ทุกวัน</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="nm">🎯 VCP (Volatility Contraction)</div>
+              <small class="by">Mark Minervini</small>
+            </td>
+            <td>2-12 สัปดาห์</td>
+            <td>~45-55%</td>
+            <td>คนที่ละเอียดอ่านกราฟได้</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="nm">📈 Trend Following (MA Crossover)</div>
+              <small class="by">Turtle Traders style</small>
+            </td>
+            <td>1-6 เดือน</td>
+            <td>~30-40% (RR สูง)</td>
+            <td>คนใจเย็น ทนนิ่งได้</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="nm">⚡ Day Trading (Scalping)</div>
+              <small class="by">ICT, SMC style</small>
+            </td>
+            <td>วันเดียว</td>
+            <td>50-60% (RR ต่ำ)</td>
+            <td>คนที่ตื่นกลางคืน, ใจเย็น</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="nm">🎰 Options / Wheel Strategy</div>
+              <small class="by">Cash-Secured Put + Covered Call</small>
+            </td>
+            <td>1-4 สัปดาห์/รอบ</td>
+            <td>~70-80% (premium income)</td>
+            <td>มีทุน 1M+ บาท, เข้าใจ options</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="nm">💰 Dividend Growth Investing</div>
+              <small class="by">Reinvestment compounding</small>
+            </td>
+            <td>10+ ปี</td>
+            <td>—</td>
+            <td>คนที่ต้องการ passive income</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>🔥 กลยุทธ์ที่แนะนำสำหรับ "เทรดเดอร์ไทย" โดยเฉพาะ</h3>
+      <div class="callout info">
+        <b>🌟 Hybrid Strategy: "ETF Core + Stock Satellite"</b><br/>
+        • <b>70% ของเงิน</b> ลงใน <b>VOO/QQQ</b> แบบ DCA ทุกเดือน (core, ไม่ต้องดูแล)<br/>
+        • <b>30% ของเงิน</b> ใช้เทรด <b>Breakout/VCP</b> หุ้นเดี่ยว (satellite, active trading)<br/>
+        • ทำให้คุณมีรายได้ passive จาก core + เรียนรู้ทักษะเทรดจาก satellite<br/>
+        • ถ้าเทรดไม่ดี อย่างน้อย 70% ก็ยังโตตาม index
+      </div>
+    </section>
+
+    <!-- ============= TECHNICAL ANALYSIS ============= -->
+    <section id="tech-analysis">
+      <h2><span class="ic">📈</span>การวิเคราะห์ทางเทคนิคที่ใช้จริง</h2>
+      <p class="lead">เครื่องมือเทคนิคที่นักเทรดมืออาชีพใช้ — ไม่ต้องรู้ทุกอัน รู้แค่ที่จำเป็นก็พอ</p>
+
+      <h3>1. Moving Averages (เส้นค่าเฉลี่ย)</h3>
+      <ul>
+        <li><b>MA50 (เส้น 50 วัน):</b> Trend ระยะกลาง · ราคา > MA50 = ขาขึ้น</li>
+        <li><b>MA150 (เส้น 150 วัน / 30 สัปดาห์):</b> Trend ระยะยาว · Minervini ใช้เป็น filter</li>
+        <li><b>MA200 (เส้น 200 วัน):</b> Trend หลัก · ราคา > MA200 = bull market</li>
+        <li><b>Golden Cross:</b> MA50 ตัดขึ้น MA200 = สัญญาณ bullish ระยะยาว</li>
+        <li><b>Death Cross:</b> MA50 ตัดลง MA200 = สัญญาณ bearish</li>
+      </ul>
+
+      <h3>2. Support & Resistance (แนวรับ-แนวต้าน)</h3>
+      <p><b>Support (แนวรับ):</b> ราคาที่มี buyer เข้ามารับซ้ำ ๆ · ใช้เป็น stop loss zone</p>
+      <p><b>Resistance (แนวต้าน):</b> ราคาที่มี seller ขายซ้ำ ๆ · ใช้เป็น take profit zone</p>
+      <p><b>วิธีหา:</b> ดู swing high/low ในกราฟ · เลขกลม ๆ ($100, $150, $200) มักเป็น psychological level</p>
+
+      <h3>3. RSI (Relative Strength Index)</h3>
+      <ul>
+        <li><b>0-30:</b> Oversold (อาจเด้ง) · ระวัง trend ลงแรง ๆ ที่อาจไม่เด้งเลย</li>
+        <li><b>30-50:</b> Weak · มักเป็นจุดเริ่ม downtrend</li>
+        <li><b>50-70:</b> <b style="color:var(--emerald)">Sweet spot สำหรับเทรด long</b> · trend แข็งแรง</li>
+        <li><b>70-100:</b> Overbought · ขายดี แต่อย่ารีบ short เพราะอาจไปต่อ</li>
+        <li><b>Divergence:</b> ราคาขึ้นแต่ RSI ลง = สัญญาณกลับตัว</li>
+      </ul>
+
+      <h3>4. Volume (ปริมาณการซื้อขาย)</h3>
+      <div class="callout success">
+        <b>📊 กฎ Volume ที่สำคัญที่สุด:</b><br/>
+        • <b>Breakout บน volume สูง</b> = ของจริง buy! · บน volume ต่ำ = false breakout<br/>
+        • <b>Volume Surge >1.5x avg</b> = สถาบันเริ่มเข้า<br/>
+        • <b>Volume Dry-up</b> ในช่วง consolidation = "พลังกำลังสะสม" — เตรียม breakout
+      </div>
+
+      <h3>5. Patterns ยอดนิยม</h3>
+      <ul>
+        <li><b>Cup & Handle:</b> รูปถ้วยมีหู · O'Neil's favorite · มักเบรกขึ้น 20-30%</li>
+        <li><b>Flat Base:</b> ราคาแกว่งในกรอบแคบ 5-7 สัปดาห์ · breakout มักแรง</li>
+        <li><b>VCP (Volatility Contraction):</b> หลายๆ pullback ที่หดเล็กลงเรื่อยๆ · Minervini signature</li>
+        <li><b>Bull Flag:</b> วิ่งขึ้นแล้วพักเล็กน้อย · continuation pattern</li>
+        <li><b>Double Bottom:</b> รูป "W" · กลับตัวจาก downtrend</li>
+      </ul>
+    </section>
+
+    <!-- ============= MONEY MANAGEMENT ============= -->
+    <section id="money-mgmt">
+      <h2><span class="ic">💰</span>การบริหารเงิน (สำคัญที่สุด!)</h2>
+      <p class="lead">นี่คือเรื่องที่ <b>สำคัญกว่าการเลือกหุ้น 10 เท่า</b> — มือใหม่ขาดทุนเพราะ money management ไม่ใช่เพราะหุ้นผิด</p>
+
+      <h3>กฎเหล็ก 5 ข้อ</h3>
+      <ol class="step-list">
+        <li>
+          <b>กฎ 1%: เสี่ยงไม่เกิน 1% ของพอร์ตต่อเทรด</b>
+          <span>พอร์ต 500K บาท → เสียได้สูงสุด 5K บาท/เทรด · ใช้ <a href="tools.html#position">Position Size Calculator</a></span>
+        </li>
+        <li>
+          <b>กฎ 6%: รวมขาดทุนต่อเดือนไม่เกิน 6%</b>
+          <span>ถ้าเดือนนี้ขาดทุน 6% แล้ว → <b>หยุดเทรดทันที</b> รอเดือนใหม่ · ป้องกัน revenge trading</span>
+        </li>
+        <li>
+          <b>Risk-Reward อย่างน้อย 1:2</b>
+          <span>เสี่ยง $5 ต้องมีโอกาสได้ $10+ · ถ้า RR ไม่ถึง 1:2 อย่าเทรด · ดูตัวอย่างใน <a href="tools.html#rr">RR Calculator</a></span>
+        </li>
+        <li>
+          <b>กระจายไม่เกิน 5-10 ตัว</b>
+          <span>มากเกินไป = ตามไม่ทัน · น้อยเกินไป = ความเสี่ยง concentration · 5-10 ตัวคือ sweet spot</span>
+        </li>
+        <li>
+          <b>เก็บเงินสดสำรองอย่างน้อย 10-20%</b>
+          <span>ไว้ใช้ในวันที่ตลาดล่ม จะได้ซื้อของถูก · "Cash is a position" — มืออาชีพรู้กฎข้อนี้</span>
+        </li>
+      </ol>
+
+      <h3>สูตรเทรดเดอร์มืออาชีพ: Kelly Criterion (อย่างง่าย)</h3>
+      <div class="callout info">
+        <b>คำนวณว่าควรเสี่ยงเท่าไหร่ต่อเทรด:</b><br/>
+        Position % = (Win Rate × RR − Loss Rate) ÷ RR<br/><br/>
+        <b>ตัวอย่าง:</b> Win Rate 50%, RR 1:2 → (0.5×2 − 0.5) ÷ 2 = <b>25%</b> ของพอร์ต<br/>
+        <b>ในทางปฏิบัติ:</b> ใช้ <b>1/4 ของ Kelly</b> เพื่อ safety = ~6% ต่อเทรด (Half-Kelly = 12.5%)
+      </div>
+    </section>
+
+    <!-- ============= PSYCHOLOGY ============= -->
+    <section id="psychology">
+      <h2><span class="ic">🧠</span>จิตวิทยาเทรด — สมรภูมิที่แท้จริง</h2>
+      <p class="lead">
+        "<i>The market doesn't beat them. They beat themselves.</i>" — Jesse Livermore<br/>
+        เทรดเดอร์เสียเงินส่วนใหญ่ไม่ใช่เพราะวิเคราะห์ผิด — แต่เพราะ<b>ควบคุมตัวเองไม่ได้</b>
+      </p>
+
+      <h3>5 ศัตรูในใจของเทรดเดอร์</h3>
+
+      <h4>1. FOMO (Fear Of Missing Out) — กลัวพลาดโอกาส</h4>
+      <p>เห็นหุ้นวิ่งขึ้น 20% แล้วรีบกระโดดเข้า — สุดท้ายโดน hi ราคา · <b>วิธีแก้:</b> มีรายการหุ้นรอเข้าไว้ก่อน, เข้าเฉพาะที่ราคาในแผน</p>
+
+      <h4>2. Greed (โลภ)</h4>
+      <p>หุ้นวิ่งกำไร 30% แล้ว อยากได้ 50% — สุดท้ายราคาดิ่งกลับ break-even · <b>วิธีแก้:</b> มี take profit ตามแผน, ใช้ trailing stop</p>
+
+      <h4>3. Fear (กลัว)</h4>
+      <p>เห็นหุ้นแดง 5% ตกใจขายเลย ทั้งที่ยังไม่ถึง stop loss · <b>วิธีแก้:</b> ใช้ stop loss order ทุกครั้ง อย่าดูราคา intraday</p>
+
+      <h4>4. Hope (หวัง)</h4>
+      <p>หุ้นลงแล้ว "หวังว่ามันจะกลับขึ้น" — สุดท้ายขาดทุนมากกว่าเดิม · <b>วิธีแก้:</b> <b>Stop loss คือ Stop loss</b> — ตัดทันทีไม่หาเหตุผล</p>
+
+      <h4>5. Revenge Trading (อยากเอาคืน)</h4>
+      <p>เพิ่งขาดทุน รีบเปิด position ใหม่เพื่อ "เอาคืน" — มักขาดทุนซ้ำ · <b>วิธีแก้:</b> หลังเทรดเสีย ให้พัก 24 ชั่วโมงก่อน</p>
+
+      <div class="callout warn">
+        <b>⚠️ Trader's Diary:</b> เทรดเดอร์มืออาชีพทุกคนเขียน journal ทุกวัน บันทึก:<br/>
+        • หุ้นที่เทรด · เหตุผลที่เข้า · เหตุผลที่ออก<br/>
+        • อารมณ์ตอนเทรด (กลัว / กล้า / FOMO?)<br/>
+        • ผิดอะไรบ้าง / ทำอะไรถูก<br/>
+        การเขียน journal ทำให้เห็น <b>pattern ของความผิดพลาด</b>ตัวเอง — สิ่งสำคัญที่สุดในการพัฒนา
+      </div>
+    </section>
+
+    <!-- ============= TAX ============= -->
+    <section id="tax">
+      <h2><span class="ic">📋</span>ภาษีหุ้น US สำหรับคนไทย (ฉบับสมบูรณ์)</h2>
+      <p class="lead">เรื่องภาษีคนไทยมักไม่เข้าใจ — มาดูกันให้ชัดเจน · ใช้ <a href="tools.html#tax">Tax Calculator</a> ของเราช่วยคำนวณได้</p>
+
+      <h3>📌 หลักการพื้นฐาน</h3>
+      <p>คนไทยที่เทรดหุ้น US มีภาษี 2 ส่วน:</p>
+      <ol>
+        <li><b>ภาษี US:</b> หักจาก dividend (15% ถ้ายื่น W-8BEN, ไม่ใช่ 30%)</li>
+        <li><b>ภาษีไทย:</b> ถ้านำเงินกลับเข้าไทยในปีเดียวกัน ต้องรวมคำนวณภาษีเงินได้</li>
+      </ol>
+
+      <h3>💰 ภาษี Dividend (เงินปันผล)</h3>
+      <ul>
+        <li><b>ไม่ยื่น W-8BEN:</b> US หักเต็ม 30%</li>
+        <li><b>ยื่น W-8BEN แล้ว:</b> US หักแค่ 15% (ตาม DTA ไทย-สหรัฐ)</li>
+        <li><b>ส่งกลับไทย:</b> สามารถเครดิตภาษีที่จ่าย US ได้ตาม DTA</li>
+      </ul>
+
+      <h3>📊 ภาษี Capital Gain (กำไรขายหุ้น)</h3>
+      <ul>
+        <li><b>ฝั่ง US:</b> ไม่หักภาษีจาก Non-Resident Alien (NRA) เลย!</li>
+        <li><b>ฝั่งไทย (กฎใหม่ปี 2024+):</b> เงินได้จากต่างประเทศที่ส่งกลับไทย <b>ในปีเดียวกัน</b> ต้องเสียภาษีตามฐานเงินได้</li>
+        <li><b>ทางออก:</b> เก็บเงินในบัญชี US เก็บไว้นาน ค่อยทยอยส่งกลับเมื่อจำเป็น</li>
+      </ul>
+
+      <h3>📑 เอกสารที่ต้องเก็บ</h3>
+      <ul>
+        <li><b>1099-DIV:</b> โบรกเกอร์ออกให้ทุกปี (Dividend summary)</li>
+        <li><b>1099-B:</b> สรุป buy/sell transactions</li>
+        <li><b>เอกสารส่งเงินกลับไทย:</b> ใช้เป็นหลักฐานกับสรรพากร</li>
+      </ul>
+
+      <div class="callout danger">
+        <b>⚠️ คำเตือน:</b> เรื่องภาษีซับซ้อน + กฎเปลี่ยนบ่อย · ข้อมูลในนี้เป็นแนวทางทั่วไป
+        ถ้ามีรายได้สูง (>3M/ปี) หรือเคสซับซ้อน <b>ควรปรึกษานักบัญชี/ทนายภาษีโดยตรง</b>
+      </div>
+    </section>
+
+    <!-- ============= MISTAKES ============= -->
+    <section id="mistakes">
+      <h2><span class="ic">⚠️</span>10 ข้อผิดพลาดที่ต้องเลี่ยง</h2>
+      <p class="lead">รวมข้อผิดพลาดที่<b>เทรดเดอร์ไทยทำซ้ำ ๆ</b> — เรียนรู้จากคนอื่น อย่าให้ตัวเองโดน</p>
+
+      <div class="mistakes-grid">
+        <div class="mistake-card">
+          <h4><span class="num">1</span>ไม่ใช้ Stop Loss</h4>
+          <p>"<i>เดี๋ยวมันก็เด้งกลับ</i>" — คำพูดที่ทำคนไทยขาดทุนหนักที่สุด</p>
+          <div class="fix"><b>วิธีแก้:</b> วาง stop loss order ทันทีหลังซื้อ · ใช้ <a href="tools.html#atr">ATR Calculator</a></div>
+        </div>
+        <div class="mistake-card">
+          <h4><span class="num">2</span>Average Down (ซื้อเฉลี่ยขาลง)</h4>
+          <p>"<i>หุ้นถูกลง ซื้อเพิ่ม</i>" — ทำให้ขาดทุนทวีคูณ</p>
+          <div class="fix"><b>วิธีแก้:</b> ซื้อเฉลี่ย<b>ขาขึ้น</b> เท่านั้น (Pyramid Up) ตามที่ Minervini สอน</div>
+        </div>
+        <div class="mistake-card">
+          <h4><span class="num">3</span>เทรดหุ้นที่ไม่รู้จัก</h4>
+          <p>เห็นในกลุ่ม Line/Facebook → กระโดดซื้อทันที</p>
+          <div class="fix"><b>วิธีแก้:</b> วิเคราะห์ก่อนซื้อ · อ่าน Quality Screener · ดู earnings, sector</div>
+        </div>
+        <div class="mistake-card">
+          <h4><span class="num">4</span>ใช้ Margin มากเกินไป</h4>
+          <p>กู้เงินมาเทรด 2x, 3x · พอตลาดดิ่ง ล้างพอร์ตทันที</p>
+          <div class="fix"><b>วิธีแก้:</b> มือใหม่ <b>อย่าใช้ margin</b> เลย · ถ้าใช้ ห้ามเกิน 1.5x</div>
+        </div>
+        <div class="mistake-card">
+          <h4><span class="num">5</span>ตามข่าวเทรด</h4>
+          <p>ข่าวออก → กระโดดเข้าทันที — สาย late, มี smart money ออกไปก่อนแล้ว</p>
+          <div class="fix"><b>วิธีแก้:</b> ข่าวคือ <i>fuel</i> ไม่ใช่ trigger · ดู price action + volume ยืนยัน</div>
+        </div>
+        <div class="mistake-card">
+          <h4><span class="num">6</span>เทรดทุกวัน ทุกตัว</h4>
+          <p>"<i>ไม่เทรดวันนี้รู้สึกผิด</i>" — overtrading = ขาดทุนแน่นอน</p>
+          <div class="fix"><b>วิธีแก้:</b> เทรดเฉพาะตอน setup ดี · 5-10 trades/เดือนก็พอ</div>
+        </div>
+        <div class="mistake-card">
+          <h4><span class="num">7</span>ไม่ดู Macro</h4>
+          <p>VIX 30+ ตลาด panic — ยังเทรด long ปกติ</p>
+          <div class="fix"><b>วิธีแก้:</b> เช็ค <a href="macro.html">Macro Dashboard</a> ทุกเช้าก่อนเทรด</div>
+        </div>
+        <div class="mistake-card">
+          <h4><span class="num">8</span>เก็บกำไรเร็วเกินไป ขาดทุนช้าเกินไป</h4>
+          <p>กำไร 5% ขาย · ขาดทุน 30% ยังถือ — กลับด้าน RR ที่ควรจะเป็น</p>
+          <div class="fix"><b>วิธีแก้:</b> "Cut your losses short, let your winners run" — กฎเหล็กของ O'Neil</div>
+        </div>
+        <div class="mistake-card">
+          <h4><span class="num">9</span>ไม่ทำ Journal</h4>
+          <p>เทรดเสร็จลืม — ทำผิดซ้ำๆ ไม่รู้ตัว</p>
+          <div class="fix"><b>วิธีแก้:</b> เขียน journal ทุกเทรด: ทำไมเข้า, ทำไมออก, รู้สึกยังไง</div>
+        </div>
+        <div class="mistake-card">
+          <h4><span class="num">10</span>เปรียบเทียบกับคนอื่น</h4>
+          <p>เพื่อนกำไร 100% — กดดันตัวเองเสี่ยงมาก ๆ เพื่อตาม · จริง ๆ เพื่อนอาจ pose จะอวดเฉพาะเทรดที่ดี</p>
+          <div class="fix"><b>วิธีแก้:</b> โฟกัสที่ <i>process</i> ของตัวเอง · เปรียบเทียบกับตัวเอง<b>เมื่อ 1 ปีก่อน</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= GLOSSARY ============= -->
+    <section id="glossary">
+      <h2><span class="ic">📖</span>ศัพท์เทรดที่ต้องรู้ (Glossary)</h2>
+      <p class="lead">รวมศัพท์เทรดภาษาอังกฤษพร้อมความหมายภาษาไทย · พิมพ์ค้นหาได้</p>
+
+      <input type="text" class="gloss-search" id="glossSearch" placeholder="🔍 ค้นหาศัพท์... (เช่น breakout, MA, RSI, ETF, IPO)"/>
+
+      <div class="gloss-grid" id="glossGrid">
+        <!-- filled by JS -->
+      </div>
+    </section>
+
+    <!-- ============= ROADMAP ============= -->
+    <section id="roadmap">
+      <h2><span class="ic">🗺️</span>Roadmap 1 ปี — จากมือใหม่ → มืออาชีพ</h2>
+      <p class="lead">เส้นทางการเรียนรู้แบบเป็นระบบสำหรับคนไทยที่อยากเก่งเทรด US ภายใน 12 เดือน</p>
+
+      <div class="roadmap">
+        <div class="road-card">
+          <div class="level">📚 Foundation</div>
+          <div class="timeline">เดือน 1-2</div>
+          <ul class="goals">
+            <li>เปิดบัญชีโบรกเกอร์</li>
+            <li>เรียน basics: candlestick, MA, RSI</li>
+            <li>เข้าใจเวลาเทรด US/Thai</li>
+            <li>ทำความรู้จัก 10 หุ้น mega-cap</li>
+            <li>เริ่ม DCA เข้า VOO/QQQ</li>
+          </ul>
+        </div>
+        <div class="road-card">
+          <div class="level">🌱 Practice</div>
+          <div class="timeline">เดือน 3-4</div>
+          <ul class="goals">
+            <li>เริ่มเทรดด้วยเงินจริง (1-5% ของพอร์ต)</li>
+            <li>ใช้ stop loss ทุก trade</li>
+            <li>เขียน journal ทุก trade</li>
+            <li>เรียน Breakout / VCP basics</li>
+            <li>เริ่มเข้าใจ Macro (VIX, DXY)</li>
+          </ul>
+        </div>
+        <div class="road-card">
+          <div class="level">📈 Develop</div>
+          <div class="timeline">เดือน 5-7</div>
+          <ul class="goals">
+            <li>พัฒนา strategy ของตัวเอง</li>
+            <li>เพิ่ม position size เป็น 5-10%</li>
+            <li>เริ่มใช้ Quality Screener</li>
+            <li>เข้าใจเรื่องภาษี/W-8BEN</li>
+            <li>เริ่มอ่าน 10-K / earnings reports</li>
+          </ul>
+        </div>
+        <div class="road-card">
+          <div class="level">🎯 Specialize</div>
+          <div class="timeline">เดือน 8-10</div>
+          <ul class="goals">
+            <li>เลือก style ที่ใช่ (Swing/Position)</li>
+            <li>Win rate &gt;45% · RR 1:2+</li>
+            <li>มี watchlist 30-50 ตัว</li>
+            <li>เริ่มมี discipline จริงจัง</li>
+            <li>ลอง options ถ้าทุนพอ (เรียนรู้)</li>
+          </ul>
+        </div>
+        <div class="road-card">
+          <div class="level">🏆 Master</div>
+          <div class="timeline">เดือน 11-12</div>
+          <ul class="goals">
+            <li>ผลตอบแทน &gt;15% ต่อปี (sustainable)</li>
+            <li>Max drawdown &lt;15%</li>
+            <li>มีระบบ scaling in/out ชัดเจน</li>
+            <li>เริ่มสอนคนอื่นได้</li>
+            <li>เก็บภาษีอย่างถูกต้อง</li>
+          </ul>
+        </div>
+        <div class="road-card" style="border-color:var(--gold);background:linear-gradient(135deg,rgba(251,191,36,.08),var(--bg3))">
+          <div class="level" style="color:var(--gold)">💎 Beyond</div>
+          <div class="timeline" style="color:var(--gold)">ปีที่ 2+</div>
+          <ul class="goals">
+            <li>Quit your day job (ถ้าต้องการ)</li>
+            <li>จัดพอร์ต family + friends</li>
+            <li>Diversify เข้า bonds, REITs, crypto</li>
+            <li>เป็น mentor ให้คนรุ่นใหม่</li>
+            <li>Compound พอร์ตเข้าสู่ 8 หลัก</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= CHEAT SHEET ============= -->
+    <section id="cheat">
+      <h2><span class="ic">📋</span>Pro Trader Cheat Sheet</h2>
+      <p class="lead">การ์ดสรุปกฎสำคัญที่นักเทรดมืออาชีพยึดถือ · save เก็บไว้อ่านทุกวัน</p>
+
+      <div class="cheat-grid">
+        <div class="cheat-card">
+          <h4>🎯 กฎ 10 ข้อของ Mark Minervini</h4>
+          <ul>
+            <li><b>Trend Template</b> ครบ 8 ข้อก่อนเทรด</li>
+            <li>ซื้อตอน <b>breakout จาก base</b> เท่านั้น</li>
+            <li>ใช้ <b>volume confirmation</b> &gt;1.5x</li>
+            <li>Stop loss 7-8% สูงสุด</li>
+            <li>Take profit 20-25% (sell on the way up)</li>
+            <li>Position size: ไม่เกิน 20% ต่อตัว</li>
+            <li>Cut losses fast, let winners run</li>
+            <li>หุ้นนำตลาด (Leaders) เท่านั้น</li>
+            <li>เข้าใจ macro · ไม่เทรดในตลาดหมี</li>
+            <li>Journal ทุก trade</li>
+          </ul>
+        </div>
+
+        <div class="cheat-card">
+          <h4>📊 William O'Neil's CAN SLIM</h4>
+          <ul>
+            <li><b>C</b>urrent earnings · EPS &gt;25% YoY</li>
+            <li><b>A</b>nnual earnings · 3-yr CAGR &gt;25%</li>
+            <li><b>N</b>ew · New product/service/management</li>
+            <li><b>S</b>upply & Demand · Volume surge</li>
+            <li><b>L</b>eader (not laggard) · RS rank &gt;80</li>
+            <li><b>I</b>nstitutional sponsorship · ETFs ถือเพิ่ม</li>
+            <li><b>M</b>arket direction · ตลาดต้อง bullish</li>
+          </ul>
+        </div>
+
+        <div class="cheat-card">
+          <h4>💎 Warren Buffett's Rules</h4>
+          <ul>
+            <li><b>Rule 1:</b> Never lose money</li>
+            <li><b>Rule 2:</b> Never forget Rule 1</li>
+            <li>Buy wonderful company at fair price</li>
+            <li>Time in market &gt; timing the market</li>
+            <li>Be fearful when others are greedy</li>
+            <li>Compound interest = 8th wonder of world</li>
+          </ul>
+        </div>
+
+        <div class="cheat-card">
+          <h4>🇹🇭 กฎพิเศษสำหรับคนไทย</h4>
+          <ul>
+            <li>เช็คเวลา DST ก่อนเทรด</li>
+            <li>วาง limit order ก่อนนอน</li>
+            <li>คำนวณเป็นบาททุกครั้ง (gain/loss)</li>
+            <li>เก็บเงินใน USD ไม่ส่งกลับเร็ว = ลดภาษี</li>
+            <li>ระวัง FX risk · ดู DXY ทุกวัน</li>
+            <li>ยื่น W-8BEN ทันที (ทุก 3 ปี)</li>
+          </ul>
+        </div>
+
+        <div class="cheat-card">
+          <h4>⏰ Daily Routine ของ Pro</h4>
+          <ul>
+            <li>17:00 — เช็ค macro + premarket</li>
+            <li>21:00 — Review watchlist · วาง limit</li>
+            <li>21:30 — ตลาดเปิด · ติดตามถ้าตื่น</li>
+            <li>22:30 — Set & Forget · นอน</li>
+            <li>08:00 (ตื่นมา) — ดูผล · journal</li>
+            <li>เสาร์-อาทิตย์ — Scan + plan สัปดาห์</li>
+          </ul>
+        </div>
+
+        <div class="cheat-card">
+          <h4>🛑 Red Flags · เห็นแล้วถอย!</h4>
+          <ul>
+            <li>VIX &gt;30 · ตลาด panic</li>
+            <li>SPY break MA200 · bear market</li>
+            <li>หุ้นมี delisting risk</li>
+            <li>Earnings miss + guidance lower</li>
+            <li>SEC investigation</li>
+            <li>CEO/CFO ลาออกฉับพลัน</li>
+            <li>Insider selling จำนวนมาก</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= FAQ ============= -->
+    <section id="faq">
+      <h2><span class="ic">❓</span>คำถามพบบ่อย (FAQ)</h2>
+      <p class="lead">คำถามที่นักเทรดไทยมือใหม่ถามมากที่สุด</p>
+
+      <div class="faq-item">
+        <div class="faq-q">ต้องมีเงินเท่าไหร่ถึงเริ่มเทรดหุ้น US ได้?</div>
+        <div class="faq-a">เริ่มต้นได้ตั้งแต่ <b>$1 (~36 บาท)</b> ถ้าโบรกเกอร์รองรับ Fractional Shares (เช่น Liberator) · แต่แนะนำมีอย่างน้อย <b>20,000-50,000 บาท</b> เพื่อให้กระจายความเสี่ยงได้ · ถ้าเริ่ม serious แนะนำ 100K+ บาท</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">หุ้น US เปิด-ปิดกี่โมง (เวลาไทย)?</div>
+        <div class="faq-a">ตลาด Regular เปิด <b>21:30-04:00</b> (เวลาไทย DST ฤดูร้อน) หรือ <b>22:30-05:00</b> (มาตรฐาน)<br/>
+          Pre-market: 16:00-21:30 (DST) · After-hours: 04:00-08:00 (DST)<br/>
+          ตลาดปิดทุกเสาร์-อาทิตย์ และวันหยุดประจำชาติ US</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">คนไทยต้องเสียภาษีเท่าไหร่จากหุ้น US?</div>
+        <div class="faq-a">
+          <b>Dividend:</b> หัก ณ ที่จ่าย 15% (ยื่น W-8BEN) หรือ 30% (ไม่ยื่น)<br/>
+          <b>Capital Gain:</b> ฝั่ง US ไม่เก็บภาษี · ฝั่งไทยเก็บเฉพาะตอนส่งเงินกลับในปีเดียวกัน (รวมคำนวณกับเงินได้บุคคลธรรมดา)<br/>
+          ดู <a href="tools.html#tax">Tax Calculator</a> ของเราเพื่อคำนวณเป็นบาทแม่นยำ
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">ควรซื้อหุ้นเดี่ยว หรือ ETF?</div>
+        <div class="faq-a">
+          <b>มือใหม่:</b> ETF เริ่มก่อน (SPY, QQQ, VOO) — กระจายความเสี่ยง · ไม่ต้องตามข่าว · ผลตอบแทน historical ~7-10%/ปี<br/>
+          <b>คนกลาง+:</b> 70% ETF (core) + 30% หุ้นเดี่ยว (satellite) — ตามที่แนะนำในหัวข้อ Strategy<br/>
+          <b>มืออาชีพ:</b> เลือกตามถนัด · บางคนเล่นแต่หุ้นเดี่ยวก็ได้ ถ้ามี edge
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">เทรดได้กำไรเท่าไหร่ถึงเรียกว่าเก่ง?</div>
+        <div class="faq-a">
+          • <b>Avg S&P 500:</b> ~10% ต่อปี (passive)<br/>
+          • <b>Good trader:</b> 15-25% ต่อปี (active, ต้องสมเหตุสมผล)<br/>
+          • <b>Excellent trader:</b> 30-50% ต่อปี (rare!)<br/>
+          • <b>Top 1% trader:</b> 50%+ ต่อปี · Minervini ทำได้ 220%/ปี ในปี 2021<br/>
+          ที่สำคัญคือ <b>sustainable</b> และ <b>drawdown ต่ำ</b> · ถ้ากำไร 100% แต่ปีถัดไปขาดทุน 80% = ไม่นับ
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">ใช้ leverage / margin ดีไหม?</div>
+        <div class="faq-a">
+          <b>มือใหม่:</b> <b>อย่าใช้</b> · ทำให้ขาดทุนเร็วขึ้นเป็นเท่าตัว · ต้องมี discipline ระดับ pro ก่อน<br/>
+          <b>Intermediate:</b> ใช้ได้บ้าง ไม่เกิน 1.5x (50% margin) · มี stop loss แน่นหนา<br/>
+          <b>Pro:</b> ใช้ได้แต่เฉพาะใน setup ที่มั่นใจสูง · Minervini ใช้ margin ในตลาด bull เท่านั้น
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">ทำไมตลาด US ตกตอนกลางคืน (เวลาไทย)?</div>
+        <div class="faq-a">
+          ตลาด US เปิดตามเวลาท้องถิ่น New York (9:30am-4:00pm ET) · ซึ่งช้ากว่าไทย 11-12 ชั่วโมง<br/>
+          ดังนั้นเวลาไทยจะเปิด <b>กลางคืนถึงเช้าตรู่</b> · ทำให้เทรดเดอร์ไทยส่วนใหญ่ใช้ <b>Set & Forget Limit Order</b><br/>
+          ถ้าอยากเทรดแบบ real-time จริง ๆ ต้องตื่น 21:30-23:30 (ช่วงเปิดที่มี volatility สูง)
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">เริ่มต้นด้วยกี่ตัวดี?</div>
+        <div class="faq-a">
+          <b>เดือน 1-3:</b> 1-2 ตัว (SPY/QQQ) — เน้นเรียนรู้กลไก ไม่ใช่ทำกำไร<br/>
+          <b>เดือน 4-6:</b> 3-5 ตัว — เริ่มกระจาย แต่ยังไม่มาก<br/>
+          <b>เดือน 7+:</b> 5-10 ตัว — Sweet spot สำหรับ retail trader<br/>
+          เกิน 10 ตัว = ตามไม่ทัน · เกิน 15 ตัว = เป็น mutual fund แล้ว
+        </div>
+      </div>
+    </section>
+
+  </article>
+</main>
+
+<footer>
+  📚 <b>เนื้อหาในหน้านี้</b>จัดทำเพื่อการศึกษาสำหรับเทรดเดอร์ไทย · ไม่ใช่คำแนะนำการลงทุน<br/>
+  อ้างอิงจาก Mark Minervini, William O'Neil, Warren Buffett, Jesse Livermore และประสบการณ์เทรดเดอร์ไทยจริง<br/>
+  Made with ❤️ for Thai traders · Bullzeeker
+</footer>
+
+<script>
+/* ===== GLOSSARY DATA ===== */
+const GLOSSARY = [
+  {term:'52-Week High/Low', th:'ราคาสูงสุด/ต่ำสุดใน 1 ปี · ใช้วัดว่าหุ้นอยู่จุดไหนของปี'},
+  {term:'After-Hours', th:'ช่วงเทรดหลังตลาดปิด (16:00-20:00 ET / 04:00-08:00 ไทย) · Volume น้อย'},
+  {term:'Ask Price', th:'ราคาที่ผู้ขายเสนอขาย (offer)'},
+  {term:'ATR', en:'Average True Range', th:'ค่าความผันผวนเฉลี่ย · ใช้ตั้ง stop loss ที่เหมาะกับหุ้นแต่ละตัว'},
+  {term:'Bear Market', th:'ตลาดหมี · ดัชนีตกลง >20% จากจุดสูง'},
+  {term:'Beta', th:'วัดความผันผวนเทียบกับตลาด · Beta 1 = ตามตลาด · 2 = ผันผวน 2 เท่า'},
+  {term:'Bid Price', th:'ราคาที่ผู้ซื้อเสนอซื้อ'},
+  {term:'Blue Chip', th:'หุ้นบริษัทใหญ่ มั่นคง เช่น KO, JNJ, PG'},
+  {term:'Breakout', th:'ราคาทะลุแนวต้าน (resistance) · มัก confirm ด้วย volume สูง'},
+  {term:'Bull Market', th:'ตลาดกระทิง · ดัชนีขึ้น >20% จากจุดต่ำ'},
+  {term:'Buy & Hold', th:'ซื้อแล้วถือยาว · กลยุทธ์ของ Buffett'},
+  {term:'Candlestick', th:'แท่งเทียน · กราฟแสดงราคา open/high/low/close ใน 1 timeframe'},
+  {term:'Capital Gain', th:'กำไรจากการขายหุ้นในราคาสูงกว่าซื้อ'},
+  {term:'CAGR', en:'Compound Annual Growth Rate', th:'อัตราการเติบโตเฉลี่ยต่อปีแบบทบต้น'},
+  {term:'CAN SLIM', th:'กลยุทธ์เทรดของ William O\'Neil · 7 เงื่อนไขในการเลือกหุ้น'},
+  {term:'Cash Position', th:'เงินสดในพอร์ต · "Cash is a position" คือมีเงินสดก็เป็นการลงทุน'},
+  {term:'Catalyst', th:'ตัวกระตุ้นให้หุ้นวิ่ง เช่น earnings, FDA approval, product launch'},
+  {term:'Circuit Breaker', th:'ระบบหยุดเทรดอัตโนมัติ · ใช้เมื่อตลาดดิ่งแรง (7%, 13%, 20%)'},
+  {term:'Common Stock', th:'หุ้นสามัญ · มีสิทธิ์โหวต รับ dividend'},
+  {term:'Consolidation', th:'ราคาแกว่งแคบ ๆ · "พักเหนื่อย" ก่อน breakout'},
+  {term:'Cup & Handle', th:'รูปแบบกราฟรูปถ้วยมีหู · เบรกขึ้นมักวิ่ง 20-30%'},
+  {term:'Dark Pool', th:'ตลาดเทรดของสถาบัน · ไม่เห็นใน orderbook สาธารณะ'},
+  {term:'Day Trading', th:'เทรดเข้า-ออกในวันเดียว ไม่ถือข้ามคืน · ในไทยทำยากเพราะเวลา'},
+  {term:'DCA', en:'Dollar Cost Averaging', th:'ทยอยซื้อทีละนิดในแต่ละช่วง · ลดผลกระทบจาก timing'},
+  {term:'Dividend', th:'เงินปันผล · บริษัทจ่ายให้ shareholders เป็นรายไตรมาส (US)'},
+  {term:'Dividend Yield', th:'อัตราเงินปันผล = Dividend ÷ Price · เช่น KO yield ~3%'},
+  {term:'DJIA / Dow', th:'Dow Jones Industrial Average · ดัชนี 30 หุ้นใหญ่ของ US'},
+  {term:'DRIP', en:'Dividend Reinvestment Plan', th:'นำ dividend ที่ได้ มาซื้อหุ้นเพิ่มอัตโนมัติ'},
+  {term:'DTA', en:'Double Tax Agreement', th:'อนุสัญญาภาษีซ้อน · ไทย-สหรัฐ มี DTA → ลด tax dividend จาก 30% เหลือ 15%'},
+  {term:'Earnings', th:'รายงานผลประกอบการ · ออกทุก quarter (3 เดือน)'},
+  {term:'EBITDA', th:'กำไรก่อนหักดอกเบี้ย ภาษี ค่าเสื่อม · วัดผลการดำเนินงาน'},
+  {term:'EMA', en:'Exponential Moving Average', th:'เส้นค่าเฉลี่ยที่ให้น้ำหนักวันล่าสุดมากกว่า · ตอบสนองเร็วกว่า SMA'},
+  {term:'EPS', en:'Earnings Per Share', th:'กำไรต่อหุ้น = Net Income ÷ Shares Outstanding'},
+  {term:'ETF', en:'Exchange-Traded Fund', th:'กองทุนซื้อ-ขายเหมือนหุ้น · เช่น SPY, QQQ'},
+  {term:'Ex-Dividend Date', th:'วันที่ซื้อหุ้นแล้วจะ "ไม่ได้" dividend งวดนั้น'},
+  {term:'Fed / FOMC', th:'Federal Reserve · ธนาคารกลางสหรัฐ · กำหนดดอกเบี้ยนโยบาย'},
+  {term:'Fed Funds Rate', th:'อัตราดอกเบี้ยนโยบายของ Fed · ปัจจุบัน ~4.5-5%'},
+  {term:'Fibonacci', th:'อัตราส่วนทองคำ (38.2%, 50%, 61.8%) · ใช้หา support/resistance'},
+  {term:'Float', th:'จำนวนหุ้นที่ซื้อขายได้ในตลาด · Low float = volatility สูง'},
+  {term:'FOMO', en:'Fear Of Missing Out', th:'อาการกลัวพลาดโอกาส · ทำให้ซื้อ hi'},
+  {term:'Fractional Shares', th:'หุ้นเสี้ยว · ซื้อ AAPL 0.1 หุ้นได้ (โบรกเกอร์รุ่นใหม่รองรับ)'},
+  {term:'Fundamental Analysis', th:'วิเคราะห์พื้นฐาน · ดู financial statements, business model'},
+  {term:'Futures', th:'สัญญาซื้อขายล่วงหน้า · ใช้ hedge หรือ leverage'},
+  {term:'GAAP / Non-GAAP', th:'มาตรฐานบัญชีสหรัฐ · Non-GAAP มักดูดีกว่า GAAP'},
+  {term:'GTC', en:'Good Till Cancelled', th:'Order ที่จะอยู่จนกว่าจะ cancel เอง · ปกติ 90 วัน'},
+  {term:'Hedge', th:'การ "ป้องกัน" ความเสี่ยง · เช่นถือ TSLA + ซื้อ put option'},
+  {term:'Insider Trading', th:'การซื้อขายโดยใช้ข้อมูลภายใน · ผิดกฎหมาย US'},
+  {term:'IPO', en:'Initial Public Offering', th:'หุ้นเข้าตลาดครั้งแรก'},
+  {term:'Limit Order', th:'Order ที่ตั้งราคาไว้ · จะ execute เมื่อราคาถึงเท่านั้น'},
+  {term:'Liquidity', th:'สภาพคล่อง · วัดจาก volume และ bid-ask spread'},
+  {term:'Long Position', th:'Position ซื้อ · กำไรเมื่อหุ้นขึ้น'},
+  {term:'MACD', th:'Moving Average Convergence Divergence · indicator วัด momentum'},
+  {term:'Margin', th:'การกู้เงินจากโบรกเกอร์มาเทรด · เสี่ยงสูง'},
+  {term:'Margin Call', th:'โบรกเกอร์เรียกให้เติมเงิน เพราะ position ขาดทุนเกิน collateral'},
+  {term:'Market Cap', th:'มูลค่าตลาด = Price × Shares Outstanding · Apple ~$3T'},
+  {term:'Market Order', th:'Order ซื้อ/ขายที่ราคาตลาดทันที · เสี่ยง slippage'},
+  {term:'Moving Average', th:'เส้นค่าเฉลี่ยราคา · MA50 = เฉลี่ย 50 วันล่าสุด'},
+  {term:'NASDAQ', th:'ตลาดหุ้น tech เป็นหลัก · มี QQQ เป็น ETF tracking'},
+  {term:'Net Margin', th:'อัตรากำไรสุทธิ = Net Income ÷ Revenue · &gt;10% ถือว่าดี'},
+  {term:'NRA', en:'Non-Resident Alien', th:'คนต่างชาติที่ไม่อาศัยใน US · คนไทยทุกคนเป็น NRA'},
+  {term:'NYSE', en:'New York Stock Exchange', th:'ตลาดหุ้น US · เก่าแก่ที่สุด'},
+  {term:'Options', th:'สัญญาสิทธิ์ซื้อ/ขาย · Call (สิทธิ์ซื้อ), Put (สิทธิ์ขาย)'},
+  {term:'OTC', en:'Over-The-Counter', th:'ตลาดเทรดนอกตลาดหลัก · ส่วนใหญ่หุ้นเล็ก/penny'},
+  {term:'P/E Ratio', th:'Price-to-Earnings · ราคา ÷ EPS · ถูก-แพงดูจาก P/E เทียบกลุ่ม'},
+  {term:'Penny Stock', th:'หุ้นราคา &lt;$5 · เสี่ยงสูง · ระวัง pump-and-dump'},
+  {term:'PEG Ratio', th:'P/E ÷ Growth Rate · ดี &lt;1.5'},
+  {term:'Pivot Point', th:'จุดเปลี่ยน · ในกราฟ = ราคาที่ทะลุแล้ว trend เปลี่ยน'},
+  {term:'Position Size', th:'ขนาด position · % ของพอร์ต ที่ใส่ในหุ้นตัวหนึ่ง'},
+  {term:'Pre-Market', th:'ช่วงเทรดก่อนตลาดเปิด (4:00-9:30 ET / 16:00-21:30 ไทย)'},
+  {term:'Put Option', th:'สิทธิ์ขาย · ใช้ hedge downside หรือ short หุ้น'},
+  {term:'Resistance', th:'แนวต้าน · ราคาที่ seller เข้ามาขายซ้ำ ๆ'},
+  {term:'Risk-Reward Ratio', th:'อัตราส่วนเสี่ยง:กำไร · 1:2 = เสี่ยง $1 ได้ $2'},
+  {term:'ROE', en:'Return on Equity', th:'ผลตอบแทนต่อส่วนผู้ถือหุ้น · &gt;15% ถือว่าดี'},
+  {term:'ROI', en:'Return on Investment', th:'อัตราผลตอบแทนจากการลงทุน'},
+  {term:'RSI', en:'Relative Strength Index', th:'Indicator 0-100 · &gt;70 overbought · &lt;30 oversold'},
+  {term:'S&P 500', th:'ดัชนี 500 บริษัทใหญ่ของ US · มี SPY/VOO เป็น ETF tracking'},
+  {term:'Sector', th:'หมวดธุรกิจ 11 sectors (Tech, Finance, Healthcare, ...)'},
+  {term:'SEC', en:'Securities and Exchange Commission', th:'หน่วยงานกำกับตลาดหุ้น US'},
+  {term:'Short Position', th:'ขาย short หุ้น · กำไรเมื่อหุ้นตก · เสี่ยง unlimited'},
+  {term:'Short Squeeze', th:'หุ้นที่มี short interest สูง · เมื่อขึ้น short ต้องซื้อกลับ → ขึ้นแรง'},
+  {term:'SMA', en:'Simple Moving Average', th:'ค่าเฉลี่ยราคาแบบง่าย · ตรงข้ามกับ EMA'},
+  {term:'Spread', th:'ส่วนต่าง bid-ask · ยิ่งแคบยิ่งดี (สภาพคล่องสูง)'},
+  {term:'Stage 2', th:'Stage 2 Uptrend ของ Stan Weinstein · ราคาเริ่ม uptrend หลัง consolidation'},
+  {term:'Stop-Limit Order', th:'Stop + Limit ผสม · trigger ที่ stop แล้วใช้ limit price'},
+  {term:'Stop-Loss', th:'Order ตัดขาดทุนอัตโนมัติ · ต้องตั้งทุก trade!'},
+  {term:'Support', th:'แนวรับ · ราคาที่ buyer เข้ามารับซ้ำ ๆ'},
+  {term:'Swing Trading', th:'เทรดถือ 2 วัน - 2 สัปดาห์ · เหมาะกับคนไทยมากที่สุด'},
+  {term:'Take Profit', th:'Order ขายเมื่อได้กำไรตามเป้า'},
+  {term:'Technical Analysis', th:'วิเคราะห์ทางเทคนิค · ใช้กราฟ + indicators'},
+  {term:'Ticker', th:'รหัสหุ้น 1-4 ตัวอักษร · เช่น AAPL, MSFT, NVDA'},
+  {term:'Trailing Stop', th:'Stop loss ที่เลื่อนขึ้นตามราคา · ใช้ lock กำไร'},
+  {term:'Trend Template', th:'8 เงื่อนไขของ Minervini ที่หุ้นต้องผ่านก่อนเทรด'},
+  {term:'Triple Witching', th:'วันที่ futures + options ครบกำหนดพร้อมกัน · volatility สูง'},
+  {term:'VCP', en:'Volatility Contraction Pattern', th:'รูปแบบกราฟของ Minervini · ATR หดตัวเรื่อย ๆ'},
+  {term:'VIX', th:'CBOE Volatility Index · "ดัชนีความกลัว" · คำนวณจาก SPX options'},
+  {term:'Volume', th:'ปริมาณการซื้อขาย · เป็นตัวยืนยัน price action'},
+  {term:'W-8BEN', th:'ฟอร์มที่คนไทยต้องยื่นกับโบรกเกอร์ → ลด dividend tax จาก 30% เหลือ 15%'},
+  {term:'Whipsaw', th:'ราคาขึ้น-ลงเร็ว · trigger stop loss แล้วเด้งกลับ · กิน loss ฟรี'},
+  {term:'Yield Curve', th:'กราฟ yield ของ treasuries · Inverted = สัญญาณ recession'},
+];
+
+function renderGloss(filter=''){
+  const grid = document.getElementById('glossGrid');
+  const f = filter.toLowerCase();
+  const arr = GLOSSARY.filter(g=>
+    g.term.toLowerCase().includes(f) ||
+    (g.en||'').toLowerCase().includes(f) ||
+    g.th.toLowerCase().includes(f)
+  );
+  if(arr.length===0){
+    grid.innerHTML = '<div style="grid-column:1/-1;color:var(--muted);text-align:center;padding:20px">ไม่พบศัพท์ที่ค้น</div>';
+    return;
+  }
+  grid.innerHTML = arr.map(g=>`
+    <div class="gloss-card">
+      <div class="term">${g.term}${g.en?'<span class="en">('+g.en+')</span>':''}</div>
+      <div class="def">${g.th}</div>
+    </div>
+  `).join('');
+}
+renderGloss();
+document.getElementById('glossSearch').addEventListener('input', e=>renderGloss(e.target.value));
+
+/* ===== FAQ TOGGLE ===== */
+document.querySelectorAll('.faq-q').forEach(q=>{
+  q.addEventListener('click', ()=>q.parentElement.classList.toggle('open'));
+});
+
+/* ===== TOC ACTIVE STATE ===== */
+const sections = document.querySelectorAll('article section[id]');
+const tocLinks = document.querySelectorAll('.toc-list a');
+function setActive(){
+  let cur = '';
+  const offset = 120;
+  sections.forEach(s=>{
+    if(s.getBoundingClientRect().top - offset < 0) cur = s.id;
+  });
+  tocLinks.forEach(a=>{
+    a.classList.toggle('active', a.getAttribute('href') === '#'+cur);
+  });
+}
+window.addEventListener('scroll', setActive);
+setActive();
+</script>
+</body>
+</html>

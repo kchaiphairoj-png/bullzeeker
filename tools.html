@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>เครื่องมือเทรดเดอร์ไทย — Bullzeeker</title>
+<meta name="description" content="เครื่องมือคำนวณสำหรับเทรดเดอร์ไทยที่เทรดหุ้นอเมริกา — Position Size บาท, FX, ATR Stop Loss, ภาษี, เปรียบเทียบโบรกเกอร์" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>" />
+<style>
+  :root{
+    --bg:#070b14; --bg2:#0e1525; --bg3:#172238; --bg4:#1f2c44;
+    --line:#243044; --line2:#334158;
+    --text:#e6edf7; --muted:#8b97ab; --dim:#5a6478;
+    --accent:#3b82f6; --accent2:#60a5fa; --gold:#fbbf24;
+    --green:#22c55e; --green-bg:rgba(34,197,94,.12);
+    --red:#ef4444; --red-bg:rgba(239,68,68,.12);
+    --orange:#fb923c; --purple:#a855f7; --emerald:#10b981;
+    --thai-red:#ED1C24;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);
+    font-family:'Inter','Noto Sans Thai',-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:14px;line-height:1.6}
+  a{color:var(--accent2);text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bg2)}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px}
+
+  header{background:linear-gradient(180deg,#0a0f1c,#070b14);
+    border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
+  .h-row{display:flex;align-items:center;gap:18px;padding:14px 24px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+  .brand-logo{width:42px;height:42px;border-radius:11px;
+    background:linear-gradient(135deg,var(--thai-red),var(--gold),var(--accent));
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+    box-shadow:0 4px 14px rgba(251,191,36,.3)}
+  .brand-txt h1{font-size:18px;font-weight:800;color:#fff}
+  .brand-txt p{font-size:11px;color:var(--muted);margin-top:1px;font-weight:500}
+  nav.main-nav{display:flex;padding:0 24px;border-bottom:1px solid var(--line);overflow-x:auto;background:#080d18}
+  nav.main-nav a{color:var(--muted);padding:13px 18px;font-size:13px;font-weight:600;
+    border-bottom:2px solid transparent;transition:.15s;white-space:nowrap;
+    display:inline-flex;align-items:center;gap:6px}
+  nav.main-nav a:hover{color:var(--text);background:rgba(255,255,255,.02)}
+  nav.main-nav a.active{color:var(--purple);border-bottom-color:var(--purple);background:rgba(168,85,247,.04)}
+
+  main{max-width:1300px;margin:0 auto;padding:24px 24px 60px}
+
+  /* ===== HERO ===== */
+  .hero-mini{background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(251,191,36,.06));
+    border:1px solid rgba(168,85,247,.25);border-radius:14px;padding:22px 26px;margin-bottom:24px}
+  .hero-mini h1{font-size:24px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+  .hero-mini p{color:var(--muted);font-size:13px;line-height:1.7;max-width:780px}
+
+  /* ===== TOOL TABS ===== */
+  .tool-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;background:var(--bg2);
+    padding:6px;border-radius:12px;border:1px solid var(--line)}
+  .tool-tabs button{
+    background:transparent;color:var(--muted);padding:9px 16px;border-radius:8px;
+    font-size:13px;font-weight:600;transition:.15s;display:inline-flex;align-items:center;gap:6px;
+  }
+  .tool-tabs button:hover{color:var(--text);background:rgba(255,255,255,.03)}
+  .tool-tabs button.active{background:linear-gradient(135deg,var(--purple),var(--accent));color:#fff}
+
+  .tool-pane{display:none}
+  .tool-pane.active{display:block;animation:fade .25s ease-out}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ===== CALCULATOR LAYOUT ===== */
+  .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:900px){.calc-grid{grid-template-columns:1fr}}
+  .panel{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:22px}
+  .panel h2{font-size:18px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .panel .ic{font-size:24px}
+  .panel .sub{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6}
+
+  .field{margin-bottom:14px}
+  .field label{font-size:12px;color:var(--muted);font-weight:600;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+  .field label .hint{color:var(--gold);font-weight:500;font-size:11px}
+  .input-wrap{position:relative;display:flex;align-items:center}
+  .input-wrap input,.input-wrap select{
+    width:100%;background:var(--bg3);color:#fff;border:1px solid var(--line);
+    border-radius:10px;padding:11px 14px;font-size:15px;font-family:inherit;
+    font-variant-numeric:tabular-nums;font-weight:600;
+  }
+  .input-wrap input:focus,.input-wrap select:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 3px rgba(168,85,247,.15)}
+  .input-wrap .prefix,.input-wrap .suffix{
+    position:absolute;color:var(--muted);font-size:13px;font-weight:600;
+  }
+  .input-wrap .prefix{left:14px}
+  .input-wrap .suffix{right:14px}
+  .input-wrap .prefix + input{padding-left:32px}
+  .input-wrap input.has-suffix{padding-right:40px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  .result-box{
+    background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(59,130,246,.06));
+    border:1px solid rgba(16,185,129,.3);border-radius:12px;padding:18px;margin-top:8px;
+  }
+  .result-box.danger{background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(251,146,60,.06));
+    border-color:rgba(239,68,68,.3)}
+  .result-row{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .result-row:last-child{border:none}
+  .result-row .k{font-size:13px;color:var(--muted)}
+  .result-row .v{font-size:18px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums}
+  .result-row .v.big{font-size:26px;color:var(--emerald)}
+  .result-row .v.danger{color:var(--red)}
+  .result-row .v.gold{color:var(--gold)}
+
+  .quick-presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .qp{background:var(--bg3);border:1px solid var(--line);color:var(--text);
+    padding:5px 12px;border-radius:999px;font-size:11px;font-weight:600;transition:.15s}
+  .qp:hover{border-color:var(--purple);background:rgba(168,85,247,.1)}
+
+  /* ===== TABLE STYLES (for broker comparison) ===== */
+  .ctable{width:100%;border-collapse:collapse;font-size:13px}
+  .ctable th{background:#0e1421;color:var(--muted);font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.4px;padding:12px;text-align:left;
+    border-bottom:1px solid var(--line);position:sticky;top:0}
+  .ctable td{padding:12px;border-bottom:1px solid #1a2333;vertical-align:top}
+  .ctable tr:hover{background:#162132}
+  .ctable .pros{color:var(--green);font-size:11px;display:block;margin-top:4px}
+  .ctable .cons{color:var(--orange);font-size:11px;display:block;margin-top:2px}
+  .broker-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;margin-right:4px}
+  .badge-recommend{background:rgba(16,185,129,.2);color:var(--emerald)}
+  .badge-cheap{background:rgba(251,191,36,.2);color:var(--gold)}
+  .badge-easy{background:rgba(96,165,250,.2);color:var(--accent2)}
+
+  .tax-info{background:linear-gradient(135deg,rgba(237,28,36,.08),rgba(251,191,36,.06));
+    border:1px solid rgba(251,191,36,.3);border-radius:12px;padding:18px;margin-top:14px}
+  .tax-info h4{color:var(--gold);font-size:14px;margin-bottom:8px}
+  .tax-info ul{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.8}
+  .tax-info li b{color:var(--text)}
+
+  .formula{background:var(--bg3);border:1px solid var(--line);border-radius:8px;padding:10px 14px;
+    font-family:'Consolas',monospace;font-size:12px;color:var(--accent2);margin:8px 0}
+
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--bg3);border:1px solid var(--line);padding:12px 20px;border-radius:10px;
+    font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:200;
+    opacity:0;pointer-events:none;transition:.25s}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
+
+  .info-callout{background:var(--bg3);border-left:3px solid var(--accent);
+    padding:10px 14px;border-radius:6px;margin-top:12px;font-size:12px;color:var(--muted);line-height:1.6}
+  .info-callout b{color:var(--text)}
+
+  footer{border-top:1px solid var(--line);padding:24px;color:var(--muted);font-size:12px;text-align:center;margin-top:40px;line-height:1.6}
+
+  @media(max-width:780px){
+    .h-row{padding:10px 14px;gap:10px}
+    main{padding:14px}
+    .panel{padding:16px}
+    .hero-mini h1{font-size:18px}
+    .row2{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-row">
+    <a href="index.html" class="brand">
+      <div class="brand-logo">🐂</div>
+      <div class="brand-txt">
+        <h1>Bull<span style="color:var(--gold)">zeeker</span></h1>
+        <p>เครื่องมือเทรดเดอร์มืออาชีพเพื่อคนไทย</p>
+      </div>
+    </a>
+  </div>
+  <nav class="main-nav">
+    <a href="index.html">🏠 หน้าหลัก</a>
+    <a href="screener.html">🎯 Daily Screener</a>
+    <a href="breakout.html">🚀 Breakout</a>
+    <a href="quality.html">💎 Quality</a>
+    <a href="tools.html" class="active">🛠️ เครื่องมือ</a>
+    <a href="macro.html">📊 Macro</a>
+    <a href="learn.html">📚 เรียนรู้</a>
+  </nav>
+</header>
+
+<main>
+
+  <div class="hero-mini">
+    <h1>🛠️ เครื่องมือเทรดเดอร์ไทย</h1>
+    <p>
+      เครื่องคิดเลขครบครันสำหรับคนไทยที่เทรดหุ้นอเมริกา — คำนวณ <b>Position Size เป็นเงินบาท</b>,
+      แปลง <b>USD ↔ THB</b> รวมค่าธรรมเนียม, ตั้ง <b>Stop Loss ด้วย ATR</b>, คำนวณ <b>ภาษี dividend/capital gain</b>,
+      เปรียบเทียบ <b>โบรกเกอร์ไทย</b> ทั้งหมด — ทุกอย่างที่นักเทรดไทยต้องใช้ในที่เดียว
+    </p>
+  </div>
+
+  <div class="tool-tabs" id="toolTabs">
+    <button class="active" data-tab="position">📐 Position Size</button>
+    <button data-tab="fx">💱 USD ↔ THB</button>
+    <button data-tab="atr">⚡ ATR Stop Loss</button>
+    <button data-tab="rr">🎯 Risk-Reward</button>
+    <button data-tab="tax">📋 ภาษีหุ้น US</button>
+    <button data-tab="broker">🏦 โบรกเกอร์ไทย</button>
+    <button data-tab="compound">📈 Compound</button>
+    <button data-tab="fee">💸 ค่าธรรมเนียม</button>
+  </div>
+
+  <!-- ============================================
+       TAB 1: POSITION SIZE CALCULATOR (THB)
+       ============================================ -->
+  <div class="tool-pane active" id="tab-position">
+    <div class="calc-grid">
+      <div class="panel">
+        <h2><span class="ic">📐</span> Position Size Calculator (เงินบาท)</h2>
+        <div class="sub">
+          คำนวณว่า <b>ควรซื้อหุ้นกี่หุ้น</b> โดยใช้ <b>Risk Management แบบมืออาชีพ</b> —
+          กำหนดความเสี่ยงเป็น % ของพอร์ต → ระบบจะคำนวณจำนวนหุ้นที่ซื้อได้โดยไม่เสี่ยงเกินกำหนด
+        </div>
+
+        <div class="field">
+          <label>💰 เงินทุนรวม (Account Equity) <span class="hint">ใส่เป็น THB หรือ USD ก็ได้</span></label>
+          <div class="input-wrap">
+            <span class="prefix">฿</span>
+            <input type="number" id="pAccount" value="500000" step="10000" />
+          </div>
+          <div class="quick-presets">
+            <button class="qp" onclick="setVal('pAccount',100000)">100K ฿</button>
+            <button class="qp" onclick="setVal('pAccount',500000)">500K ฿</button>
+            <button class="qp" onclick="setVal('pAccount',1000000)">1M ฿</button>
+            <button class="qp" onclick="setVal('pAccount',5000000)">5M ฿</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>⚠️ ความเสี่ยงต่อเทรด <span class="hint">มืออาชีพแนะนำ 0.5-2%</span></label>
+          <div class="input-wrap">
+            <input type="number" id="pRisk" value="1" step=".25" class="has-suffix" />
+            <span class="suffix">%</span>
+          </div>
+          <div class="quick-presets">
+            <button class="qp" onclick="setVal('pRisk',0.5)">0.5% (Conservative)</button>
+            <button class="qp" onclick="setVal('pRisk',1)">1% (มาตรฐาน)</button>
+            <button class="qp" onclick="setVal('pRisk',2)">2% (Aggressive)</button>
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label>💵 ราคาเข้า (Entry)</label>
+            <div class="input-wrap">
+              <span class="prefix">$</span>
+              <input type="number" id="pEntry" value="150" step=".01" />
+            </div>
+          </div>
+          <div class="field">
+            <label>🛑 Stop Loss</label>
+            <div class="input-wrap">
+              <span class="prefix">$</span>
+              <input type="number" id="pStop" value="145" step=".01" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>💱 อัตราแลกเปลี่ยน USD/THB <span class="hint" id="fxLive">โหลด...</span></label>
+          <div class="input-wrap">
+            <input type="number" id="pFx" value="36.5" step=".01" class="has-suffix"/>
+            <span class="suffix">฿/$</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2><span class="ic">📊</span> ผลการคำนวณ</h2>
+        <div class="result-box" id="pResult">
+          <div class="result-row">
+            <span class="k">จำนวนหุ้นที่ควรซื้อ</span>
+            <span class="v big" id="pShares">—</span>
+          </div>
+          <div class="result-row">
+            <span class="k">ใช้เงินทั้งหมด (USD)</span>
+            <span class="v" id="pCostUSD">—</span>
+          </div>
+          <div class="result-row">
+            <span class="k">ใช้เงินทั้งหมด (THB)</span>
+            <span class="v gold" id="pCostTHB">—</span>
+          </div>
+          <div class="result-row">
+            <span class="k">% ของพอร์ต</span>
+            <span class="v" id="pPctPort">—</span>
+          </div>
+          <div class="result-row">
+            <span class="k">ขาดทุนสูงสุด (ถ้าโดน Stop)</span>
+            <span class="v danger" id="pMaxLoss">—</span>
+          </div>
+          <div class="result-row">
+            <span class="k">ขาดทุนสูงสุด (THB)</span>
+            <span class="v danger" id="pMaxLossTHB">—</span>
+          </div>
+          <div class="result-row">
+            <span class="k">Risk per share</span>
+            <span class="v" id="pRiskPerShare">—</span>
+          </div>
+        </div>
+
+        <div class="info-callout">
+          📚 <b>สูตรที่ใช้:</b>
+          <div class="formula">Shares = (Account × Risk%) ÷ (Entry - Stop)</div>
+          <b>ตัวอย่าง:</b> พอร์ต 500,000 บาท เสี่ยง 1% = เสี่ยงได้ 5,000 บาท ≈ $137<br/>
+          ถ้าหุ้น $150 stop $145 (เสี่ยง $5/หุ้น) → ซื้อได้ <b>27 หุ้น</b><br/>
+          เสีย stop = -$135 ≈ -4,930 บาท ≈ <b>-1% ของพอร์ต</b> ✓
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       TAB 2: USD <> THB CONVERTER
+       ============================================ -->
+  <div class="tool-pane" id="tab-fx">
+    <div class="calc-grid">
+      <div class="panel">
+        <h2><span class="ic">💱</span> USD ↔ THB Converter</h2>
+        <div class="sub">แปลงค่าเงินพร้อม <b>ค่าธรรมเนียมการแลก (FX Spread)</b> ที่โบรกเกอร์ไทยคิด ~0.5-1.5%</div>
+
+        <div class="field">
+          <label>💵 จำนวน USD</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="fxUSD" value="1000" step="10" oninput="calcFX('usd')"/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>💱 อัตราแลกเปลี่ยน (Mid Rate) <button class="qp" style="margin-left:8px" onclick="refreshFX()">↻ Refresh</button></label>
+          <div class="input-wrap">
+            <input type="number" id="fxMid" value="36.5" step=".01" class="has-suffix" oninput="calcFX('usd')"/>
+            <span class="suffix">฿/$</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>💸 FX Spread (โบรกเกอร์คิด)</label>
+          <div class="input-wrap">
+            <input type="number" id="fxSpread" value="0.5" step=".1" class="has-suffix" oninput="calcFX('usd')"/>
+            <span class="suffix">%</span>
+          </div>
+          <div class="quick-presets">
+            <button class="qp" onclick="setVal('fxSpread',0.25);calcFX('usd')">0.25% (Wise/IBKR)</button>
+            <button class="qp" onclick="setVal('fxSpread',0.5);calcFX('usd')">0.5% (โบรกเกอร์ดี)</button>
+            <button class="qp" onclick="setVal('fxSpread',1);calcFX('usd')">1% (มาตรฐาน)</button>
+            <button class="qp" onclick="setVal('fxSpread',1.5);calcFX('usd')">1.5% (โบรกเกอร์ทั่วไป)</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>💵 จำนวน THB</label>
+          <div class="input-wrap">
+            <span class="prefix">฿</span>
+            <input type="number" id="fxTHB" value="36500" step="100" oninput="calcFX('thb')"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2><span class="ic">📊</span> ผลการแปลง</h2>
+        <div class="result-box">
+          <div class="result-row">
+            <span class="k">USD → THB (รวมค่า spread)</span>
+            <span class="v big" id="fxResultBuy">—</span>
+          </div>
+          <div class="result-row">
+            <span class="k">ค่าธรรมเนียม FX ที่จ่ายไป</span>
+            <span class="v danger" id="fxFee">—</span>
+          </div>
+          <div class="result-row">
+            <span class="k">อัตราแลกจริง (After Spread)</span>
+            <span class="v gold" id="fxRealRate">—</span>
+          </div>
+        </div>
+
+        <h3 style="margin-top:18px;font-size:14px;color:var(--muted)">📌 ตารางอ้างอิงด่วน</h3>
+        <table class="ctable" style="margin-top:8px">
+          <thead><tr><th>USD</th><th>≈ THB (Mid)</th><th>หลังหัก 0.5%</th></tr></thead>
+          <tbody id="fxQuickTable">
+            <!-- filled by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       TAB 3: ATR STOP LOSS
+       ============================================ -->
+  <div class="tool-pane" id="tab-atr">
+    <div class="calc-grid">
+      <div class="panel">
+        <h2><span class="ic">⚡</span> ATR-Based Stop Loss</h2>
+        <div class="sub">
+          ตั้ง stop loss ตาม <b>volatility จริง</b> ของหุ้น (ATR = Average True Range) —
+          วิธีของมืออาชีพที่ใช้กันทั่วโลก เช่น Mark Minervini ใช้ 7-8% หรือ 1.5x ATR
+        </div>
+
+        <div class="field">
+          <label>📈 Symbol (โหลด ATR อัตโนมัติ)</label>
+          <div class="input-wrap">
+            <input type="text" id="atrSym" value="AAPL" placeholder="AAPL, NVDA, ..." style="text-transform:uppercase"/>
+            <button class="qp" style="position:absolute;right:8px" onclick="fetchATR()">📡 โหลด</button>
+          </div>
+          <div id="atrInfo" style="font-size:12px;color:var(--muted);margin-top:6px">หรือใส่ ATR เองด้านล่าง</div>
+        </div>
+
+        <div class="field">
+          <label>💵 ราคาเข้า (Entry)</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="atrEntry" value="150" step=".01" oninput="calcATR()"/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>📊 ATR (14) ของหุ้น</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="atrVal" value="3.5" step=".1" oninput="calcATR()"/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>🎚️ ATR Multiplier (จำนวนเท่าของ ATR)</label>
+          <div class="input-wrap">
+            <input type="number" id="atrMult" value="1.5" step=".1" class="has-suffix" oninput="calcATR()"/>
+            <span class="suffix">× ATR</span>
+          </div>
+          <div class="quick-presets">
+            <button class="qp" onclick="setVal('atrMult',1);calcATR()">1× (Tight)</button>
+            <button class="qp" onclick="setVal('atrMult',1.5);calcATR()">1.5× (Standard)</button>
+            <button class="qp" onclick="setVal('atrMult',2);calcATR()">2× (Loose)</button>
+            <button class="qp" onclick="setVal('atrMult',3);calcATR()">3× (Swing Trade)</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2><span class="ic">🛑</span> Stop Loss แนะนำ</h2>
+        <div class="result-box danger">
+          <div class="result-row">
+            <span class="k">Stop Loss Price</span>
+            <span class="v big danger" id="atrStop">—</span>
+          </div>
+          <div class="result-row">
+            <span class="k">ระยะห่างจาก Entry</span>
+            <span class="v" id="atrDist">—</span>
+          </div>
+          <div class="result-row">
+            <span class="k">% Stop Loss</span>
+            <span class="v" id="atrPct">—</span>
+          </div>
+        </div>
+
+        <h3 style="margin-top:18px;font-size:14px;color:var(--muted)">📊 Stop Levels หลายระดับ</h3>
+        <table class="ctable" style="margin-top:8px">
+          <thead><tr><th>Style</th><th>Multiplier</th><th>Stop Price</th><th>%</th></tr></thead>
+          <tbody id="atrTable"></tbody>
+        </table>
+
+        <div class="info-callout">
+          📚 <b>คำแนะนำเลือก Multiplier:</b>
+          <ul style="margin:6px 0 0 18px;line-height:1.8;color:var(--muted)">
+            <li><b>Day Trade:</b> 1-1.5× ATR (เข้า-ออกในวัน)</li>
+            <li><b>Swing Trade 3-10 วัน:</b> 1.5-2× ATR (มาตรฐาน)</li>
+            <li><b>Position Trade เดือนขึ้น:</b> 2-3× ATR (ทนแกว่ง)</li>
+            <li><b>Mark Minervini:</b> ใช้ 7-8% สำหรับ breakout</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       TAB 4: RISK-REWARD CALCULATOR
+       ============================================ -->
+  <div class="tool-pane" id="tab-rr">
+    <div class="calc-grid">
+      <div class="panel">
+        <h2><span class="ic">🎯</span> Risk-Reward Calculator</h2>
+        <div class="sub">วาง <b>3 Targets</b> ตามอัตราส่วน RR ที่ต้องการ พร้อมคำนวณ <b>Expected Value</b> ของเทรด</div>
+
+        <div class="row2">
+          <div class="field">
+            <label>💵 Entry Price</label>
+            <div class="input-wrap"><span class="prefix">$</span>
+              <input type="number" id="rrEntry" value="150" step=".01" oninput="calcRR()"/></div>
+          </div>
+          <div class="field">
+            <label>🛑 Stop Loss</label>
+            <div class="input-wrap"><span class="prefix">$</span>
+              <input type="number" id="rrStop" value="145" step=".01" oninput="calcRR()"/></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>🎯 Target 1 RR</label>
+          <div class="input-wrap"><input type="number" id="rr1" value="1.5" step=".5" class="has-suffix" oninput="calcRR()"/><span class="suffix">: 1</span></div>
+        </div>
+        <div class="field">
+          <label>🎯 Target 2 RR</label>
+          <div class="input-wrap"><input type="number" id="rr2" value="2" step=".5" class="has-suffix" oninput="calcRR()"/><span class="suffix">: 1</span></div>
+        </div>
+        <div class="field">
+          <label>🎯 Target 3 RR</label>
+          <div class="input-wrap"><input type="number" id="rr3" value="3" step=".5" class="has-suffix" oninput="calcRR()"/><span class="suffix">: 1</span></div>
+        </div>
+
+        <div class="field">
+          <label>🎲 Win Rate ที่คาดการณ์</label>
+          <div class="input-wrap"><input type="number" id="rrWR" value="50" step="5" class="has-suffix" oninput="calcRR()"/><span class="suffix">%</span></div>
+          <div class="quick-presets">
+            <button class="qp" onclick="setVal('rrWR',40);calcRR()">40%</button>
+            <button class="qp" onclick="setVal('rrWR',50);calcRR()">50%</button>
+            <button class="qp" onclick="setVal('rrWR',60);calcRR()">60%</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2><span class="ic">📊</span> Targets & Expected Value</h2>
+        <div class="result-box">
+          <div class="result-row"><span class="k">🎯 Target 1 (1.5R)</span><span class="v" id="rrT1">—</span></div>
+          <div class="result-row"><span class="k">🎯 Target 2 (2R)</span><span class="v gold" id="rrT2">—</span></div>
+          <div class="result-row"><span class="k">🎯 Target 3 (3R)</span><span class="v" style="color:var(--emerald)" id="rrT3">—</span></div>
+          <div class="result-row"><span class="k">🛑 Risk per share</span><span class="v danger" id="rrRisk">—</span></div>
+        </div>
+
+        <h3 style="margin-top:18px;font-size:14px;color:var(--muted)">📈 Expected Value</h3>
+        <div class="result-box">
+          <div class="result-row"><span class="k">EV (Target 1)</span><span class="v" id="rrEV1">—</span></div>
+          <div class="result-row"><span class="k">EV (Target 2)</span><span class="v" id="rrEV2">—</span></div>
+          <div class="result-row"><span class="k">EV (Target 3)</span><span class="v" id="rrEV3">—</span></div>
+        </div>
+
+        <div class="info-callout">
+          💡 <b>Expected Value (EV)</b> = (Win Rate × Reward) − (Loss Rate × Risk)<br/>
+          ถ้า EV > 0 = ระบบกำไรในระยะยาว ✓<br/>
+          ถ้า WR 50% + RR 1:2 → EV = +0.5R ต่อเทรด (ดี!)<br/>
+          ถ้า WR 50% + RR 1:1 → EV = 0 (เสมอตัว)<br/>
+          ถ้า WR 40% + RR 1:1 → EV = -0.2R (ขาดทุน!)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       TAB 5: TAX CALCULATOR
+       ============================================ -->
+  <div class="tool-pane" id="tab-tax">
+    <div class="calc-grid">
+      <div class="panel">
+        <h2><span class="ic">📋</span> ภาษีหุ้น US สำหรับคนไทย</h2>
+        <div class="sub">
+          คำนวณภาษีที่ต้องเสียจาก <b>Dividend</b> และ <b>Capital Gain</b> สำหรับนักลงทุนไทย —
+          ใช้ตามกฎหมายปัจจุบัน (อาจเปลี่ยนแปลงได้)
+        </div>
+
+        <div class="field">
+          <label>💰 Dividend ที่ได้รับ (ก่อนหักภาษี)</label>
+          <div class="input-wrap"><span class="prefix">$</span>
+            <input type="number" id="taxDiv" value="1000" step="10" oninput="calcTax()"/></div>
+        </div>
+        <div class="field">
+          <label>📋 ยื่น W-8BEN กับโบรกเกอร์แล้วหรือไม่?</label>
+          <div class="input-wrap">
+            <select id="taxW8" onchange="calcTax()">
+              <option value="yes" selected>✓ ยื่นแล้ว (หักภาษี 15%)</option>
+              <option value="no">✗ ยังไม่ยื่น (ถูกหักเต็ม 30%)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>📊 Capital Gain (กำไรขายหุ้น)</label>
+          <div class="input-wrap"><span class="prefix">$</span>
+            <input type="number" id="taxCG" value="10000" step="100" oninput="calcTax()"/></div>
+        </div>
+
+        <div class="field">
+          <label>💵 ส่งกำไรกลับไทยในปีภาษีเดียวกัน?</label>
+          <div class="input-wrap">
+            <select id="taxRemit" onchange="calcTax()">
+              <option value="yes">✓ ส่งกลับไทยในปีนี้ → ต้องเสียภาษี</option>
+              <option value="no" selected>✗ เก็บไว้ในบัญชี US → ยังไม่เสียภาษี</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>📈 ฐานภาษีเงินได้บุคคลธรรมดา</label>
+          <div class="input-wrap">
+            <select id="taxRate" onchange="calcTax()">
+              <option value="0">0% (รายได้ < 150K/ปี)</option>
+              <option value="5">5% (150K-300K)</option>
+              <option value="10">10% (300K-500K)</option>
+              <option value="15">15% (500K-750K)</option>
+              <option value="20" selected>20% (750K-1M)</option>
+              <option value="25">25% (1M-2M)</option>
+              <option value="30">30% (2M-5M)</option>
+              <option value="35">35% (> 5M)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>💱 อัตราแลกเปลี่ยน (สำหรับยื่นภาษี)</label>
+          <div class="input-wrap">
+            <input type="number" id="taxFx" value="36.5" step=".01" class="has-suffix" oninput="calcTax()"/>
+            <span class="suffix">฿/$</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2><span class="ic">💸</span> สรุปภาษี</h2>
+        <div class="result-box danger">
+          <div class="result-row"><span class="k">Dividend Tax (หัก ณ ที่จ่าย)</span><span class="v danger" id="taxDivResult">—</span></div>
+          <div class="result-row"><span class="k">Dividend สุทธิที่ได้</span><span class="v gold" id="taxDivNet">—</span></div>
+          <div class="result-row"><span class="k">Capital Gain Tax (ถ้าส่งกลับ)</span><span class="v danger" id="taxCGResult">—</span></div>
+          <div class="result-row"><span class="k">Total Tax (USD)</span><span class="v" id="taxTotalUSD">—</span></div>
+          <div class="result-row"><span class="k">Total Tax (THB)</span><span class="v big danger" id="taxTotalTHB">—</span></div>
+        </div>
+
+        <div class="tax-info">
+          <h4>📌 สิ่งที่ต้องรู้เรื่องภาษีหุ้น US</h4>
+          <ul>
+            <li><b>W-8BEN:</b> ฟอร์มยืนยันว่าเป็นคนไทย → ลด dividend tax จาก 30% เหลือ 15% (Treaty Rate ไทย-สหรัฐ)</li>
+            <li><b>Capital Gain:</b> US ไม่หักภาษีกำไรจากการขายหุ้นสำหรับ Non-Resident Alien (NRA)</li>
+            <li><b>กฎไทย (ใหม่ 2024+):</b> เงินได้จากต่างประเทศที่ส่งกลับไทยในปีเดียวกัน ต้องรวมคำนวณภาษีเงินได้บุคคลธรรมดา</li>
+            <li><b>เก็บในบัญชี US ก่อน:</b> ไม่ต้องเสียภาษีไทย จนกว่าจะส่งกลับ — เป็น tax deferral ที่ถูกกฎหมาย</li>
+            <li><b>เครดิตภาษีต่างประเทศ:</b> ภาษี dividend ที่จ่ายให้ US (15%) สามารถนำมาเครดิตในไทยได้ตาม DTA</li>
+            <li><b>ปรึกษาผู้เชี่ยวชาญ:</b> ตัวเลขนี้เป็นแนวทาง สำหรับเคสซับซ้อนควรปรึกษานักบัญชี/ทนายภาษี</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       TAB 6: BROKER COMPARISON
+       ============================================ -->
+  <div class="tool-pane" id="tab-broker">
+    <div class="panel">
+      <h2><span class="ic">🏦</span> เปรียบเทียบโบรกเกอร์ไทยที่ซื้อหุ้น US ได้</h2>
+      <div class="sub">
+        ข้อมูล ณ ปี 2026 · อาจเปลี่ยนแปลงได้ · ตรวจสอบกับโบรกเกอร์ก่อนเปิดบัญชี ·
+        <b>ราคาที่แสดงเป็นค่าธรรมเนียมโดยประมาณ</b>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="ctable">
+          <thead>
+            <tr>
+              <th>โบรกเกอร์</th>
+              <th>ค่าคอม (Per Trade)</th>
+              <th>FX Spread</th>
+              <th>ขั้นต่ำเปิดบัญชี</th>
+              <th>จุดเด่น / จุดอ่อน</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <b>Liberator</b>
+                <span class="broker-badge badge-recommend">แนะนำ</span>
+                <span class="broker-badge badge-cheap">ถูกที่สุด</span><br/>
+                <small style="color:var(--muted)">บล. Liberator</small>
+              </td>
+              <td><b style="color:var(--green)">ฟรี!</b> $0/trade<br/><small>(ค่าธรรมเนียมเล็กน้อย ~$0.0035/share)</small></td>
+              <td>~0.25-0.5%</td>
+              <td>ไม่มีขั้นต่ำ</td>
+              <td>
+                <span class="pros">✓ ค่าคอมฟรี เหมือน Robinhood เวอร์ชันไทย</span>
+                <span class="pros">✓ UI สะอาด เปิดง่ายผ่านแอป</span>
+                <span class="pros">✓ Fractional Shares ได้ (ซื้อเสี้ยวหุ้น)</span>
+                <span class="cons">✗ หุ้นที่เทรดได้จำกัด (~3000 ตัว, ส่วนใหญ่หุ้นดัง)</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>Pi Securities</b>
+                <span class="broker-badge badge-recommend">แนะนำ</span><br/>
+                <small style="color:var(--muted)">บล. ฟิลลิป (Phillip)</small>
+              </td>
+              <td>$1.5-$4.5 หรือ 0.15-0.25%</td>
+              <td>~0.5-1%</td>
+              <td>ไม่มีขั้นต่ำ</td>
+              <td>
+                <span class="pros">✓ เก่าแก่ น่าเชื่อถือ มีให้บริการนาน</span>
+                <span class="pros">✓ ครอบคลุมหุ้น US ทั้งหมด</span>
+                <span class="pros">✓ มี research team ดี</span>
+                <span class="cons">✗ ค่าคอมสูงกว่า Liberator</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>InnovestX (SCBS)</b>
+                <span class="broker-badge badge-easy">ใช้ง่าย</span><br/>
+                <small style="color:var(--muted)">บล. นวัตกรรม (SCB)</small>
+              </td>
+              <td>0.20% (min $5)</td>
+              <td>~1%</td>
+              <td>ไม่มีขั้นต่ำ</td>
+              <td>
+                <span class="pros">✓ App สวย เชื่อมต่อกับ SCB EASY</span>
+                <span class="pros">✓ เปิดบัญชีง่าย ผ่าน Mobile</span>
+                <span class="pros">✓ มี Robo-advisor ช่วยจัดพอร์ต</span>
+                <span class="cons">✗ ค่าคอมและ FX สูงกว่าคู่แข่ง</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>FSS (Finansia)</b><br/>
+                <small style="color:var(--muted)">บล. ฟินันเซีย ไซรัส</small>
+              </td>
+              <td>0.20% (min $4-5)</td>
+              <td>~0.5-1%</td>
+              <td>ไม่มีขั้นต่ำ</td>
+              <td>
+                <span class="pros">✓ มีหุ้นไทยและ US ในที่เดียว</span>
+                <span class="pros">✓ บริการลูกค้าดี</span>
+                <span class="cons">✗ ค่าคอมและ FX กลาง ๆ</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>KrungThai XSpring</b><br/>
+                <small style="color:var(--muted)">บล. กรุงไทย เอ็กซ์สปริง</small>
+              </td>
+              <td>0.15-0.25%</td>
+              <td>~0.5-1%</td>
+              <td>ไม่มีขั้นต่ำ</td>
+              <td>
+                <span class="pros">✓ เชื่อมต่อกับ KTB ได้ดี</span>
+                <span class="pros">✓ มีโปรลด commission เป็นช่วง ๆ</span>
+                <span class="cons">✗ Interface ใช้ยากกว่าคู่แข่ง</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>Interactive Brokers (IBKR)</b>
+                <span class="broker-badge badge-cheap">Pro Trader</span><br/>
+                <small style="color:var(--muted)">โบรกเกอร์ US เปิดให้คนไทย</small>
+              </td>
+              <td>$0.005/share (min $1)<br/><small>~$1-2 ต่อ trade ปกติ</small></td>
+              <td><b style="color:var(--green)">~0.002% (ดีสุด!)</b></td>
+              <td>$0 (เคยมี $10K, ปัจจุบันยกเลิก)</td>
+              <td>
+                <span class="pros">✓ ค่าคอม + FX ถูกที่สุดในโลก</span>
+                <span class="pros">✓ เข้าตลาดได้ทุกที่ทั่วโลก</span>
+                <span class="pros">✓ Margin rate ต่ำ มี API</span>
+                <span class="cons">✗ Interface ซับซ้อน เหมาะ pro trader</span>
+                <span class="cons">✗ ต้องโอนเงินไป US เอง (Wise/SWIFT)</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>Webull / Moomoo (TH)</b><br/>
+                <small style="color:var(--muted)">App ต่างชาติ มีให้คนไทยใช้</small>
+              </td>
+              <td><b style="color:var(--green)">ฟรี!</b> $0</td>
+              <td>~0.3-0.6%</td>
+              <td>ไม่มี</td>
+              <td>
+                <span class="pros">✓ Commission ฟรี · App สวย</span>
+                <span class="pros">✓ Charting tools ระดับมืออาชีพ</span>
+                <span class="pros">✓ Pre-market/After-hours trading ได้</span>
+                <span class="cons">⚠️ ต้องตรวจสอบ regulatory ให้ดี</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-callout">
+        💡 <b>คำแนะนำสำหรับมือใหม่:</b>
+        <ul style="margin:6px 0 0 18px;line-height:1.8;color:var(--muted)">
+          <li><b>เงินทุน < 100K บาท:</b> ใช้ <b>Liberator</b> (ฟรีค่าคอม, fractional shares เริ่มจาก $1 ก็ได้)</li>
+          <li><b>เงินทุน 100K-1M บาท:</b> <b>Liberator</b> หรือ <b>Pi Securities</b> (สมดุล cost vs service)</li>
+          <li><b>เงินทุน > 1M บาท:</b> พิจารณา <b>IBKR</b> (cost saving FX สำคัญมากที่ volume สูง)</li>
+          <li><b>เน้น Day Trade:</b> ค่าคอมและ FX มีผลมาก → เลือก <b>Liberator</b> หรือ <b>IBKR</b></li>
+          <li><b>เน้น Long-term:</b> ค่าคอมไม่ค่อยมีผล → เลือกที่ใช้สะดวก เช่น <b>InnovestX</b> ที่เชื่อมกับ SCB</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       TAB 7: COMPOUND INTEREST CALCULATOR
+       ============================================ -->
+  <div class="tool-pane" id="tab-compound">
+    <div class="calc-grid">
+      <div class="panel">
+        <h2><span class="ic">📈</span> Compound Growth Calculator</h2>
+        <div class="sub">
+          คำนวณ <b>การเติบโตของพอร์ต</b> ด้วยดอกเบี้ยทบต้น — ดูพลังของการลงทุนระยะยาว
+        </div>
+
+        <div class="field">
+          <label>💰 เงินทุนเริ่มต้น</label>
+          <div class="input-wrap"><span class="prefix">฿</span>
+            <input type="number" id="cStart" value="100000" step="10000" oninput="calcCompound()"/></div>
+        </div>
+        <div class="field">
+          <label>💵 เพิ่มเงินทุกเดือน</label>
+          <div class="input-wrap"><span class="prefix">฿</span>
+            <input type="number" id="cMonthly" value="10000" step="1000" oninput="calcCompound()"/></div>
+        </div>
+        <div class="field">
+          <label>📊 ผลตอบแทนเฉลี่ยต่อปี</label>
+          <div class="input-wrap">
+            <input type="number" id="cReturn" value="12" step=".5" class="has-suffix" oninput="calcCompound()"/>
+            <span class="suffix">% / ปี</span>
+          </div>
+          <div class="quick-presets">
+            <button class="qp" onclick="setVal('cReturn',7);calcCompound()">7% (S&P 500 historical)</button>
+            <button class="qp" onclick="setVal('cReturn',10);calcCompound()">10% (Index inflation-adj)</button>
+            <button class="qp" onclick="setVal('cReturn',15);calcCompound()">15% (Active growth)</button>
+            <button class="qp" onclick="setVal('cReturn',20);calcCompound()">20% (Pro trader)</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>⏰ ระยะเวลา</label>
+          <div class="input-wrap">
+            <input type="number" id="cYears" value="20" step="1" class="has-suffix" oninput="calcCompound()"/>
+            <span class="suffix">ปี</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2><span class="ic">🚀</span> ผลลัพธ์ Compound Growth</h2>
+        <div class="result-box">
+          <div class="result-row"><span class="k">เงินรวมที่ลงทุน</span><span class="v" id="cInvested">—</span></div>
+          <div class="result-row"><span class="k">มูลค่าพอร์ตสุดท้าย</span><span class="v big" id="cFinal">—</span></div>
+          <div class="result-row"><span class="k">กำไรสุทธิ</span><span class="v gold" id="cProfit">—</span></div>
+          <div class="result-row"><span class="k">% เติบโต</span><span class="v" id="cGrowth">—</span></div>
+        </div>
+
+        <h3 style="margin-top:18px;font-size:14px;color:var(--muted)">📊 ปีต่อปี (Snapshot)</h3>
+        <table class="ctable" style="margin-top:8px">
+          <thead><tr><th>ปี</th><th>เงินที่ลงทุน</th><th>มูลค่าพอร์ต</th><th>กำไร</th></tr></thead>
+          <tbody id="cTable"></tbody>
+        </table>
+
+        <div class="info-callout">
+          💡 <b>"พลังของดอกเบี้ยทบต้น คือสิ่งมหัศจรรย์อันดับ 8 ของโลก"</b> — Albert Einstein<br/>
+          ถ้าลงทุนเดือนละ 10K บาท @ 12% ต่อปี 30 ปี → <b>~35 ล้านบาท</b> (จากเงินจริงแค่ 3.6 ล้าน!)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       TAB 8: FEE CALCULATOR
+       ============================================ -->
+  <div class="tool-pane" id="tab-fee">
+    <div class="calc-grid">
+      <div class="panel">
+        <h2><span class="ic">💸</span> Total Cost Calculator</h2>
+        <div class="sub">คำนวณ <b>ค่าใช้จ่ายทั้งหมด</b> ต่อการเทรด 1 รอบ (Buy + Sell) — เพื่อเห็นกำไรสุทธิจริง</div>
+
+        <div class="row2">
+          <div class="field">
+            <label>💵 ราคาซื้อ</label>
+            <div class="input-wrap"><span class="prefix">$</span>
+              <input type="number" id="feeBuy" value="150" step=".01" oninput="calcFee()"/></div>
+          </div>
+          <div class="field">
+            <label>💰 ราคาขาย</label>
+            <div class="input-wrap"><span class="prefix">$</span>
+              <input type="number" id="feeSell" value="160" step=".01" oninput="calcFee()"/></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>📦 จำนวนหุ้น</label>
+          <div class="input-wrap">
+            <input type="number" id="feeShares" value="100" step="1" oninput="calcFee()"/>
+          </div>
+        </div>
+        <div class="field">
+          <label>🏦 เลือกโบรกเกอร์</label>
+          <div class="input-wrap">
+            <select id="feeBroker" onchange="setBrokerPreset();calcFee()">
+              <option value="liberator">Liberator (ฟรีค่าคอม, FX 0.5%)</option>
+              <option value="pi">Pi Securities (0.2%, FX 0.75%)</option>
+              <option value="innovestx">InnovestX (0.2%, FX 1%)</option>
+              <option value="ibkr">IBKR (0.005/share, FX 0.05%)</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>📊 ค่าคอม (% per side)</label>
+            <div class="input-wrap"><input type="number" id="feeCom" value="0" step=".05" class="has-suffix" oninput="calcFee()"/><span class="suffix">%</span></div>
+          </div>
+          <div class="field">
+            <label>💱 FX Spread (รวม 2 ขา)</label>
+            <div class="input-wrap"><input type="number" id="feeFx" value="1" step=".1" class="has-suffix" oninput="calcFee()"/><span class="suffix">%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2><span class="ic">💎</span> สรุปต้นทุนทั้งหมด</h2>
+        <div class="result-box">
+          <div class="result-row"><span class="k">มูลค่าซื้อ (USD)</span><span class="v" id="feeBuyVal">—</span></div>
+          <div class="result-row"><span class="k">มูลค่าขาย (USD)</span><span class="v" id="feeSellVal">—</span></div>
+          <div class="result-row"><span class="k">กำไรขั้นต้น (Gross)</span><span class="v" id="feeGross">—</span></div>
+        </div>
+
+        <div class="result-box danger" style="margin-top:12px">
+          <div class="result-row"><span class="k">ค่าคอมรวม 2 ขา</span><span class="v danger" id="feeCommission">—</span></div>
+          <div class="result-row"><span class="k">FX Spread รวม</span><span class="v danger" id="feeFxFee">—</span></div>
+          <div class="result-row"><span class="k">SEC + TAF (Sell side)</span><span class="v danger" id="feeSec">—</span></div>
+          <div class="result-row"><span class="k">ค่าใช้จ่ายรวม</span><span class="v big danger" id="feeTotal">—</span></div>
+        </div>
+
+        <div class="result-box" style="margin-top:12px">
+          <div class="result-row"><span class="k">กำไรสุทธิ (USD)</span><span class="v big gold" id="feeNet">—</span></div>
+          <div class="result-row"><span class="k">% ROI สุทธิ</span><span class="v" id="feeROI">—</span></div>
+          <div class="result-row"><span class="k">Break-even (ขั้นต่ำต้องขึ้น)</span><span class="v" id="feeBE">—</span></div>
+        </div>
+
+        <div class="info-callout">
+          💡 <b>SEC Fee + TAF:</b> โบรกเกอร์ทุกที่คิดให้ SEC ($27.80/$1M) + FINRA TAF (~$0.000166/share)
+          แค่หลัก cents ต่อ trade แต่บังคับมีตามกฎหมาย US
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div id="toast" class="toast">—</div>
+
+<footer>
+  ⚠️ ข้อมูลที่แสดงเป็นการประมาณการเพื่อการศึกษาเท่านั้น · ค่าธรรมเนียมและอัตราภาษีอาจเปลี่ยนแปลงได้ · โปรดตรวจสอบกับโบรกเกอร์และหน่วยงานราชการก่อนตัดสินใจ<br/>
+  Made with ❤️ for Thai traders · Bullzeeker
+</footer>
+
+<script>
+const $ = s=>document.querySelector(s);
+const $$ = s=>Array.from(document.querySelectorAll(s));
+function setVal(id,v){$('#'+id).value=v; document.getElementById(id).dispatchEvent(new Event('input'))}
+function toast(m,ms=2200){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),ms)}
+function fmt(n,d=2){if(!isFinite(n)||n==null)return'—';return n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+function fmtTHB(n){return '฿' + fmt(n,0)}
+function fmtUSD(n){return '$' + fmt(n,2)}
+
+/* TABS */
+$$('#toolTabs button').forEach(b=>{
+  b.onclick = ()=>{
+    $$('#toolTabs button').forEach(x=>x.classList.remove('active'));
+    $$('.tool-pane').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    $('#tab-'+b.dataset.tab).classList.add('active');
+    history.replaceState(null,'','#'+b.dataset.tab);
+  };
+});
+// Open tab from URL hash
+if(location.hash){
+  const t = location.hash.slice(1);
+  const b = document.querySelector(`#toolTabs button[data-tab="${t}"]`);
+  if(b) b.click();
+}
+
+/* ========== POSITION SIZE ========== */
+function calcPos(){
+  const acc = +$('#pAccount').value;
+  const risk = +$('#pRisk').value/100;
+  const ent = +$('#pEntry').value;
+  const stp = +$('#pStop').value;
+  const fx = +$('#pFx').value;
+  if(!acc||!risk||!ent||!stp||!fx||ent<=stp){
+    $('#pShares').textContent='—'; return;
+  }
+  const riskTHB = acc * risk;
+  const riskUSD = riskTHB / fx;
+  const riskPerShare = ent - stp;
+  const shares = Math.floor(riskUSD / riskPerShare);
+  const costUSD = shares * ent;
+  const costTHB = costUSD * fx;
+  const maxLossUSD = shares * riskPerShare;
+  const maxLossTHB = maxLossUSD * fx;
+
+  $('#pShares').textContent = shares + ' หุ้น';
+  $('#pCostUSD').textContent = fmtUSD(costUSD);
+  $('#pCostTHB').textContent = fmtTHB(costTHB);
+  $('#pPctPort').textContent = (costTHB/acc*100).toFixed(1)+'%';
+  $('#pMaxLoss').textContent = '-' + fmtUSD(maxLossUSD);
+  $('#pMaxLossTHB').textContent = '-' + fmtTHB(maxLossTHB);
+  $('#pRiskPerShare').textContent = fmtUSD(riskPerShare);
+}
+['pAccount','pRisk','pEntry','pStop','pFx'].forEach(id=>$('#'+id).addEventListener('input',calcPos));
+calcPos();
+
+/* ========== FX CONVERTER ========== */
+function calcFX(direction){
+  const usd = +$('#fxUSD').value;
+  const thb = +$('#fxTHB').value;
+  const mid = +$('#fxMid').value;
+  const spread = +$('#fxSpread').value/100;
+  if(!mid) return;
+
+  const effectiveRate = mid * (1 + spread); // buying USD costs more
+  if(direction==='usd'){
+    const thbNeeded = usd * effectiveRate;
+    $('#fxTHB').value = thbNeeded.toFixed(2);
+    const feeAmount = usd * mid * spread;
+    $('#fxResultBuy').textContent = fmtTHB(thbNeeded);
+    $('#fxFee').textContent = fmtTHB(feeAmount) + ` (${(spread*100).toFixed(2)}%)`;
+    $('#fxRealRate').textContent = effectiveRate.toFixed(4) + ' ฿/$';
+  } else {
+    const usdReceived = thb / effectiveRate;
+    $('#fxUSD').value = usdReceived.toFixed(2);
+    const feeAmount = thb * spread / (1+spread);
+    $('#fxResultBuy').textContent = fmtUSD(usdReceived);
+    $('#fxFee').textContent = fmtTHB(feeAmount);
+    $('#fxRealRate').textContent = effectiveRate.toFixed(4) + ' ฿/$';
+  }
+
+  // quick table
+  const rows = [100,500,1000,5000,10000,50000].map(u=>{
+    const midTHB = u*mid;
+    const realTHB = u*mid*(1+0.005);
+    return `<tr><td>$${u.toLocaleString()}</td><td>${fmtTHB(midTHB)}</td><td>${fmtTHB(realTHB)}</td></tr>`;
+  }).join('');
+  $('#fxQuickTable').innerHTML = rows;
+}
+['fxUSD','fxMid','fxSpread'].forEach(id=>$('#'+id).addEventListener('input',()=>calcFX('usd')));
+$('#fxTHB').addEventListener('input',()=>calcFX('thb'));
+
+/* Auto-refresh FX from Yahoo */
+async function refreshFX(){
+  try{
+    const u = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=THB=X';
+    const r = await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(u));
+    const j = JSON.parse(await r.text());
+    const px = j?.quoteResponse?.result?.[0]?.regularMarketPrice;
+    if(px){
+      $('#fxMid').value = px.toFixed(3);
+      $('#pFx').value = px.toFixed(2);
+      $('#taxFx').value = px.toFixed(2);
+      $('#fxLive').textContent = `(live: ${px.toFixed(2)})`;
+      calcFX('usd'); calcPos(); calcTax();
+      toast('💱 อัพเดทอัตราแลก: ' + px.toFixed(3) + ' ฿/$');
+    }
+  }catch(e){
+    $('#fxLive').textContent = '(ใช้ค่า default)';
+  }
+}
+refreshFX();
+calcFX('usd');
+
+/* ========== ATR STOP LOSS ========== */
+function calcATR(){
+  const ent = +$('#atrEntry').value;
+  const atr = +$('#atrVal').value;
+  const m = +$('#atrMult').value;
+  if(!ent||!atr||!m) return;
+  const stop = ent - atr*m;
+  const dist = ent - stop;
+  const pct = dist/ent*100;
+  $('#atrStop').textContent = fmtUSD(stop);
+  $('#atrDist').textContent = '-' + fmtUSD(dist);
+  $('#atrPct').textContent = '-' + pct.toFixed(2) + '%';
+
+  const styles = [
+    {n:'🔥 Aggressive (Day)', m:0.5},
+    {n:'⚡ Tight (Day)', m:1.0},
+    {n:'📊 Standard (Swing)', m:1.5},
+    {n:'🌊 Wide (Swing+)', m:2.0},
+    {n:'🚀 Position Trade', m:3.0},
+  ];
+  $('#atrTable').innerHTML = styles.map(s=>{
+    const st = ent - atr*s.m;
+    const p = (atr*s.m)/ent*100;
+    return `<tr><td>${s.n}</td><td>${s.m}×</td><td>${fmtUSD(st)}</td><td style="color:var(--red)">-${p.toFixed(2)}%</td></tr>`;
+  }).join('');
+}
+['atrEntry','atrVal','atrMult'].forEach(id=>$('#'+id).addEventListener('input',calcATR));
+calcATR();
+
+async function fetchATR(){
+  const sym = $('#atrSym').value.trim().toUpperCase();
+  if(!sym){toast('กรุณาใส่ symbol');return}
+  $('#atrInfo').textContent = '⏳ กำลังโหลด ATR(14)...';
+  try{
+    const u = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?range=2mo&interval=1d`;
+    const r = await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(u));
+    const j = JSON.parse(await r.text());
+    const res = j?.chart?.result?.[0];
+    const q = res?.indicators?.quote?.[0];
+    const highs = q.high, lows = q.low, closes = q.close;
+    // ATR Wilder
+    const tr = [];
+    for(let i=1;i<closes.length;i++){
+      if(closes[i]==null||closes[i-1]==null) continue;
+      tr.push(Math.max(highs[i]-lows[i],Math.abs(highs[i]-closes[i-1]),Math.abs(lows[i]-closes[i-1])));
+    }
+    let atr14 = tr.slice(0,14).reduce((a,b)=>a+b,0)/14;
+    for(let i=14;i<tr.length;i++) atr14 = (atr14*13+tr[i])/14;
+    const lastPx = closes[closes.length-1];
+    $('#atrVal').value = atr14.toFixed(2);
+    $('#atrEntry').value = lastPx.toFixed(2);
+    $('#atrInfo').textContent = `✓ ${sym}: Price $${lastPx.toFixed(2)} · ATR(14) $${atr14.toFixed(2)} (${(atr14/lastPx*100).toFixed(2)}%)`;
+    calcATR();
+  }catch(e){
+    $('#atrInfo').textContent = '❌ โหลดไม่สำเร็จ';
+  }
+}
+
+/* ========== RISK-REWARD ========== */
+function calcRR(){
+  const e = +$('#rrEntry').value, s = +$('#rrStop').value;
+  if(!e||!s||e<=s){$('#rrT1').textContent='—';return}
+  const r1 = +$('#rr1').value, r2 = +$('#rr2').value, r3 = +$('#rr3').value;
+  const wr = +$('#rrWR').value/100;
+  const risk = e - s;
+  $('#rrRisk').textContent = '-' + fmtUSD(risk);
+  $('#rrT1').textContent = fmtUSD(e + risk*r1) + `  (+${(risk*r1/e*100).toFixed(1)}%)`;
+  $('#rrT2').textContent = fmtUSD(e + risk*r2) + `  (+${(risk*r2/e*100).toFixed(1)}%)`;
+  $('#rrT3').textContent = fmtUSD(e + risk*r3) + `  (+${(risk*r3/e*100).toFixed(1)}%)`;
+
+  const ev1 = wr*r1 - (1-wr);
+  const ev2 = wr*r2 - (1-wr);
+  const ev3 = wr*r3 - (1-wr);
+  const evCol = ev=>ev>0?'gold':(ev<0?'danger':'');
+  $('#rrEV1').className = 'v ' + evCol(ev1);
+  $('#rrEV2').className = 'v ' + evCol(ev2);
+  $('#rrEV3').className = 'v ' + evCol(ev3);
+  $('#rrEV1').textContent = (ev1>=0?'+':'')+ev1.toFixed(2)+'R per trade';
+  $('#rrEV2').textContent = (ev2>=0?'+':'')+ev2.toFixed(2)+'R per trade';
+  $('#rrEV3').textContent = (ev3>=0?'+':'')+ev3.toFixed(2)+'R per trade';
+}
+['rrEntry','rrStop','rr1','rr2','rr3','rrWR'].forEach(id=>$('#'+id).addEventListener('input',calcRR));
+calcRR();
+
+/* ========== TAX ========== */
+function calcTax(){
+  const div = +$('#taxDiv').value;
+  const w8 = $('#taxW8').value;
+  const cg = +$('#taxCG').value;
+  const remit = $('#taxRemit').value;
+  const rate = +$('#taxRate').value/100;
+  const fx = +$('#taxFx').value;
+
+  const divTaxRate = w8==='yes' ? 0.15 : 0.30;
+  const divTax = div * divTaxRate;
+  const divNet = div - divTax;
+
+  // CG tax in Thailand: only if remitted in same year
+  let cgTax = 0;
+  if(remit==='yes'){
+    cgTax = cg * rate;
+  }
+
+  const totalUSD = divTax + cgTax;
+  const totalTHB = totalUSD * fx;
+
+  $('#taxDivResult').textContent = '-' + fmtUSD(divTax) + ` (${(divTaxRate*100)}%)`;
+  $('#taxDivNet').textContent = fmtUSD(divNet);
+  $('#taxCGResult').textContent = cgTax>0 ? '-' + fmtUSD(cgTax) + ` (${(rate*100)}%)` : '$0 (เก็บใน US)';
+  $('#taxTotalUSD').textContent = fmtUSD(totalUSD);
+  $('#taxTotalTHB').textContent = fmtTHB(totalTHB);
+}
+['taxDiv','taxW8','taxCG','taxRemit','taxRate','taxFx'].forEach(id=>$('#'+id).addEventListener('input',calcTax));
+$('#taxW8').addEventListener('change',calcTax);
+$('#taxRemit').addEventListener('change',calcTax);
+$('#taxRate').addEventListener('change',calcTax);
+calcTax();
+
+/* ========== COMPOUND ========== */
+function calcCompound(){
+  const start = +$('#cStart').value;
+  const monthly = +$('#cMonthly').value;
+  const annual = +$('#cReturn').value/100;
+  const years = +$('#cYears').value;
+  if(!years) return;
+  const monthlyRate = Math.pow(1+annual, 1/12) - 1;
+  let bal = start;
+  let invested = start;
+  const yearly = [];
+  for(let m=1;m<=years*12;m++){
+    bal = bal*(1+monthlyRate) + monthly;
+    invested += monthly;
+    if(m%12===0){
+      yearly.push({y:m/12, invested, bal, profit:bal-invested});
+    }
+  }
+  $('#cInvested').textContent = fmtTHB(invested);
+  $('#cFinal').textContent = fmtTHB(bal);
+  $('#cProfit').textContent = fmtTHB(bal-invested);
+  $('#cGrowth').textContent = ((bal/invested-1)*100).toFixed(1)+'%';
+
+  // table (every few years)
+  const showYears = yearly.length > 20
+    ? yearly.filter((_,i)=>i===0 || (i+1)%5===0 || i===yearly.length-1)
+    : yearly;
+  $('#cTable').innerHTML = showYears.map(y=>`
+    <tr>
+      <td>ปีที่ ${y.y}</td>
+      <td>${fmtTHB(y.invested)}</td>
+      <td style="color:var(--gold)">${fmtTHB(y.bal)}</td>
+      <td style="color:var(--green)">+${fmtTHB(y.profit)}</td>
+    </tr>
+  `).join('');
+}
+['cStart','cMonthly','cReturn','cYears'].forEach(id=>$('#'+id).addEventListener('input',calcCompound));
+calcCompound();
+
+/* ========== FEE CALCULATOR ========== */
+const BROKER_PRESETS = {
+  liberator:  {com:0,    fx:0.5,  label:'Liberator'},
+  pi:         {com:0.20, fx:0.75, label:'Pi Securities'},
+  innovestx:  {com:0.20, fx:1.0,  label:'InnovestX'},
+  ibkr:       {com:0.025,fx:0.05, label:'IBKR (Tiered)'},
+  custom:     null,
+};
+function setBrokerPreset(){
+  const b = $('#feeBroker').value;
+  const p = BROKER_PRESETS[b];
+  if(p){ $('#feeCom').value = p.com; $('#feeFx').value = p.fx; }
+}
+function calcFee(){
+  const buy = +$('#feeBuy').value, sell = +$('#feeSell').value;
+  const sh = +$('#feeShares').value;
+  const com = +$('#feeCom').value/100;
+  const fx = +$('#feeFx').value/100;
+  if(!buy||!sell||!sh) return;
+
+  const buyVal = buy*sh;
+  const sellVal = sell*sh;
+  const gross = sellVal - buyVal;
+
+  // Commission: 2 sides
+  const commission = (buyVal + sellVal) * com;
+  // FX spread (total cost ~half each way, but here we use combined)
+  const fxFee = (buyVal + sellVal) * fx/2; // simplified
+  // SEC + TAF (US regulatory fees, on sell side only)
+  const secFee = sellVal * 0.0000278 + sh * 0.000166;
+
+  const totalFees = commission + fxFee + secFee;
+  const net = gross - totalFees;
+  const roi = (net / buyVal * 100);
+  const breakEvenPct = (totalFees / buyVal * 100);
+
+  $('#feeBuyVal').textContent = fmtUSD(buyVal);
+  $('#feeSellVal').textContent = fmtUSD(sellVal);
+  $('#feeGross').textContent = (gross>=0?'+':'') + fmtUSD(gross);
+  $('#feeCommission').textContent = '-' + fmtUSD(commission);
+  $('#feeFxFee').textContent = '-' + fmtUSD(fxFee);
+  $('#feeSec').textContent = '-' + fmtUSD(secFee);
+  $('#feeTotal').textContent = '-' + fmtUSD(totalFees);
+  $('#feeNet').textContent = (net>=0?'+':'') + fmtUSD(net);
+  $('#feeROI').textContent = (roi>=0?'+':'') + roi.toFixed(2) + '%';
+  $('#feeBE').textContent = '+' + breakEvenPct.toFixed(3) + '%';
+}
+['feeBuy','feeSell','feeShares','feeCom','feeFx'].forEach(id=>$('#'+id).addEventListener('input',calcFee));
+setBrokerPreset();
+calcFee();
+</script>
+</body>
+</html>

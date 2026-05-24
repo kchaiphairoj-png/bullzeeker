@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Macro Dashboard — ภาพรวมตลาดหุ้นสหรัฐ | Bullzeeker</title>
+<meta name="description" content="Macro Dashboard สำหรับนักเทรดไทย — VIX, DXY, 10Y Yield, Gold, Oil, Fed Rate, Sector Heatmap พร้อมคำอธิบายภาษาไทย" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>" />
+<style>
+  :root{
+    --bg:#070b14; --bg2:#0e1525; --bg3:#172238; --bg4:#1f2c44;
+    --line:#243044; --line2:#334158;
+    --text:#e6edf7; --muted:#8b97ab; --dim:#5a6478;
+    --accent:#3b82f6; --accent2:#60a5fa; --gold:#fbbf24;
+    --green:#22c55e; --green-bg:rgba(34,197,94,.12);
+    --red:#ef4444; --red-bg:rgba(239,68,68,.12);
+    --orange:#fb923c; --purple:#a855f7; --emerald:#10b981; --teal:#14b8a6;
+    --thai-red:#ED1C24;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);
+    font-family:'Inter','Noto Sans Thai',-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:14px;line-height:1.6}
+  a{color:var(--accent2);text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bg2)}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px}
+
+  header{background:linear-gradient(180deg,#0a0f1c,#070b14);
+    border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
+  .h-row{display:flex;align-items:center;gap:18px;padding:14px 24px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+  .brand-logo{width:42px;height:42px;border-radius:11px;
+    background:linear-gradient(135deg,var(--thai-red),var(--gold),var(--accent));
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+    box-shadow:0 4px 14px rgba(251,191,36,.3)}
+  .brand-txt h1{font-size:18px;font-weight:800;color:#fff}
+  .brand-txt p{font-size:11px;color:var(--muted);margin-top:1px;font-weight:500}
+  nav.main-nav{display:flex;padding:0 24px;border-bottom:1px solid var(--line);overflow-x:auto;background:#080d18}
+  nav.main-nav a{color:var(--muted);padding:13px 18px;font-size:13px;font-weight:600;
+    border-bottom:2px solid transparent;transition:.15s;white-space:nowrap;
+    display:inline-flex;align-items:center;gap:6px}
+  nav.main-nav a:hover{color:var(--text);background:rgba(255,255,255,.02)}
+  nav.main-nav a.active{color:var(--accent2);border-bottom-color:var(--accent2);background:rgba(96,165,250,.04)}
+
+  main{max-width:1500px;margin:0 auto;padding:24px 24px 60px}
+
+  .hero-mini{background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(168,85,247,.06));
+    border:1px solid rgba(59,130,246,.25);border-radius:14px;padding:20px 24px;margin-bottom:20px;
+    display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+  .hero-mini .left h1{font-size:22px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+  .hero-mini .left p{color:var(--muted);font-size:13px;line-height:1.6}
+  .hero-mini .right{display:flex;gap:10px;align-items:center}
+  .refresh-btn{background:linear-gradient(135deg,var(--accent),#2563eb);color:#fff;
+    padding:10px 16px;border-radius:10px;font-weight:700;font-size:13px;
+    display:inline-flex;align-items:center;gap:6px;transition:.15s}
+  .refresh-btn:hover{transform:translateY(-1px)}
+  .refresh-btn:disabled{opacity:.5;cursor:wait}
+  .spin{animation:spin 1s linear infinite}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px;margin-top:8px}
+  .sec-head h2{font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .sec-head .sub{color:var(--muted);font-size:12px;margin-top:3px}
+
+  /* ===== MARKET PULSE TOP CARDS ===== */
+  .pulse-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
+  .pulse-card{
+    background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:14px;
+    transition:.15s;position:relative;overflow:hidden;
+  }
+  .pulse-card.gain{border-left:3px solid var(--green)}
+  .pulse-card.loss{border-left:3px solid var(--red)}
+  .pulse-card.neutral{border-left:3px solid var(--gold)}
+  .pulse-card .nm{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+  .pulse-card .ic{font-size:18px;float:right}
+  .pulse-card .sym{font-size:13px;font-weight:700;color:#fff;margin-top:2px}
+  .pulse-card .desc{font-size:11px;color:var(--gold);margin-top:1px;line-height:1.3}
+  .pulse-card .px{font-size:24px;font-weight:800;margin-top:8px;font-variant-numeric:tabular-nums}
+  .pulse-card .ch{font-size:12px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+  .pulse-card .pos{color:var(--green)} .pulse-card .neg{color:var(--red)}
+  .pulse-card .hint{font-size:10px;color:var(--dim);margin-top:6px;line-height:1.4;
+    border-top:1px dashed var(--line);padding-top:6px}
+
+  /* ===== FEAR & GREED METER ===== */
+  .fg-section{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:24px}
+  .fg-grid{display:grid;grid-template-columns:1fr 2fr;gap:24px;align-items:center}
+  @media(max-width:780px){.fg-grid{grid-template-columns:1fr}}
+  .fg-meter{position:relative;width:100%;max-width:280px;margin:0 auto}
+  .fg-meter svg{width:100%;height:auto}
+  .fg-value{font-size:46px;font-weight:800;text-align:center;margin-top:-30px;font-variant-numeric:tabular-nums}
+  .fg-label{font-size:14px;text-align:center;font-weight:700;margin-top:4px}
+  .fg-info h3{font-size:18px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .fg-info p{color:var(--muted);font-size:13px;line-height:1.7;margin-bottom:10px}
+  .fg-stages{display:flex;justify-content:space-between;margin-top:14px;font-size:11px}
+  .fg-stages span{color:var(--muted)}
+
+  /* ===== SECTOR HEATMAP ===== */
+  .sec-heatmap{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:24px}
+  .sec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px;margin-top:14px}
+  .sec-tile{
+    padding:14px;border-radius:10px;cursor:pointer;transition:.15s;
+    position:relative;color:#fff;
+  }
+  .sec-tile:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.4)}
+  .sec-tile .ic{font-size:24px;display:block;margin-bottom:4px}
+  .sec-tile .nm{font-size:11px;font-weight:600;opacity:.9}
+  .sec-tile .full{font-size:13px;font-weight:700;margin-top:2px}
+  .sec-tile .ch{font-size:18px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums}
+  .sec-tile .desc{font-size:10px;opacity:.7;margin-top:2px;line-height:1.3}
+
+  /* Heatmap colors based on % change */
+  .h-vg{background:linear-gradient(135deg,#16a34a,#22c55e)} /* very green +2%+ */
+  .h-g{background:linear-gradient(135deg,#22c55e,#4ade80)}  /* green +1% to +2% */
+  .h-lg{background:linear-gradient(135deg,#4ade80,#86efac);color:#0a0e16} /* light green 0 to +1 */
+  .h-n{background:linear-gradient(135deg,#374151,#4b5563)} /* neutral 0 */
+  .h-lr{background:linear-gradient(135deg,#fca5a5,#f87171);color:#0a0e16} /* light red */
+  .h-r{background:linear-gradient(135deg,#ef4444,#f87171)} /* red */
+  .h-vr{background:linear-gradient(135deg,#b91c1c,#ef4444)} /* very red */
+
+  /* ===== INDICES TABLE ===== */
+  .ind-section{background:var(--bg2);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:24px}
+  .ind-section .head{padding:16px 20px;border-bottom:1px solid var(--line)}
+  .ind-section .head h3{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .ind-section .head .sub{color:var(--muted);font-size:12px;margin-top:3px}
+  table.ind{width:100%;border-collapse:collapse;font-size:13px}
+  table.ind th{background:#0e1421;color:var(--muted);font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.4px;padding:11px 14px;text-align:right;border-bottom:1px solid var(--line)}
+  table.ind th:first-child{text-align:left}
+  table.ind td{padding:12px 14px;border-bottom:1px solid #1a2333;font-variant-numeric:tabular-nums;text-align:right}
+  table.ind td:first-child{text-align:left}
+  table.ind tr:hover{background:#162132;cursor:pointer}
+  .ind-sym{font-weight:700;font-size:14px}
+  .ind-name{color:var(--muted);font-size:11px;margin-top:1px}
+  .pos{color:var(--green)} .neg{color:var(--red)}
+  .spark-cell{width:80px}
+  .spark-cell svg{vertical-align:middle}
+
+  /* ===== FED PANEL ===== */
+  .fed-panel{background:linear-gradient(135deg,rgba(168,85,247,.08),rgba(59,130,246,.06));
+    border:1px solid rgba(168,85,247,.25);border-radius:14px;padding:22px;margin-bottom:24px}
+  .fed-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px}
+  @media(max-width:780px){.fed-grid{grid-template-columns:1fr}}
+  .fed-stat{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .fed-stat .l{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase}
+  .fed-stat .v{font-size:28px;font-weight:800;color:var(--purple);margin-top:4px;font-variant-numeric:tabular-nums}
+  .fed-stat .ds{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+  /* ===== EVENTS ===== */
+  .events-panel{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:24px}
+  .ev-row{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line)}
+  .ev-row:last-child{border:none}
+  .ev-date{background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;width:64px;height:64px;
+    border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+  .ev-date .d{font-size:20px;line-height:1}
+  .ev-date .m{font-size:11px;text-transform:uppercase}
+  .ev-date .yr{font-size:9px;opacity:.7}
+  .ev-info{flex:1;min-width:0}
+  .ev-info .t{font-size:14px;font-weight:700;color:#fff}
+  .ev-info .impact{display:inline-block;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;margin-left:6px}
+  .imp-h{background:var(--red-bg);color:var(--red)} .imp-m{background:rgba(251,191,36,.15);color:var(--gold)} .imp-l{background:rgba(139,151,171,.12);color:var(--muted)}
+  .ev-info .s{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
+  .ev-info .when{font-size:11px;color:var(--accent2);margin-top:4px;font-weight:600}
+
+  /* ===== EDUCATION TIPS ===== */
+  .edu-panel{background:linear-gradient(135deg,rgba(16,185,129,.06),rgba(251,191,36,.05));
+    border:1px solid rgba(16,185,129,.2);border-radius:14px;padding:22px;margin-bottom:24px}
+  .edu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:14px}
+  .edu-card{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .edu-card h4{font-size:14px;font-weight:700;margin-bottom:6px;color:#fff;display:flex;align-items:center;gap:8px}
+  .edu-card p{font-size:12px;color:var(--muted);line-height:1.7}
+  .edu-card .rule{color:var(--gold);font-weight:600}
+
+  footer{border-top:1px solid var(--line);padding:24px;color:var(--muted);font-size:12px;text-align:center;margin-top:40px;line-height:1.6}
+
+  @media(max-width:780px){
+    main{padding:14px}
+    .pulse-card .px{font-size:20px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-row">
+    <a href="index.html" class="brand">
+      <div class="brand-logo">🐂</div>
+      <div class="brand-txt">
+        <h1>Bull<span style="color:var(--gold)">zeeker</span></h1>
+        <p>Macro Dashboard · ภาพรวมตลาดสำหรับคนไทย</p>
+      </div>
+    </a>
+  </div>
+  <nav class="main-nav">
+    <a href="index.html">🏠 หน้าหลัก</a>
+    <a href="screener.html">🎯 Daily Screener</a>
+    <a href="breakout.html">🚀 Breakout</a>
+    <a href="quality.html">💎 Quality</a>
+    <a href="tools.html">🛠️ เครื่องมือ</a>
+    <a href="macro.html" class="active">📊 Macro</a>
+    <a href="learn.html">📚 เรียนรู้</a>
+  </nav>
+</header>
+
+<main>
+
+  <div class="hero-mini">
+    <div class="left">
+      <h1>📊 Macro Dashboard <span style="color:var(--accent2)">ภาพรวมตลาด</span></h1>
+      <p>ดูภาพใหญ่ของตลาดหุ้น US ผ่านมุมมองมาโคร — VIX, DXY, Bonds, Gold, Oil, Fed Rate, Sector rotation พร้อม<b>คำอธิบายภาษาไทย</b>เข้าใจง่าย ก่อนเข้าเทรดทุกครั้ง</p>
+    </div>
+    <div class="right">
+      <button id="refreshBtn" class="refresh-btn" onclick="loadAll()">
+        <span id="rIcon">🔄</span> รีเฟรช
+      </button>
+      <div style="font-size:11px;color:var(--muted);text-align:right">
+        <div>อัพเดทล่าสุด</div>
+        <div id="lastUpd" style="color:var(--text);font-weight:600">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= MARKET PULSE ============= -->
+  <div class="sec-head" id="pulse">
+    <div>
+      <h2>💓 Market Pulse — ชีพจรตลาด</h2>
+      <div class="sub">ตัวชี้วัดสำคัญที่ต้องดูทุกวันก่อนเปิดเทรด</div>
+    </div>
+  </div>
+  <div class="pulse-grid" id="pulseGrid">
+    <!-- filled by JS -->
+  </div>
+
+  <!-- ============= FEAR & GREED METER ============= -->
+  <div class="fg-section">
+    <h2 style="font-size:18px;margin-bottom:6px;display:flex;align-items:center;gap:8px">😱 Market Sentiment (จาก VIX)</h2>
+    <div style="color:var(--muted);font-size:12px;margin-bottom:14px">VIX = ดัชนีความผันผวน · ใช้เป็น proxy สำหรับ Fear & Greed</div>
+    <div class="fg-grid">
+      <div>
+        <div class="fg-meter">
+          <svg viewBox="0 0 200 120">
+            <!-- Gauge arc -->
+            <defs>
+              <linearGradient id="gauge" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#ef4444"/>
+                <stop offset="35%" stop-color="#fb923c"/>
+                <stop offset="50%" stop-color="#fbbf24"/>
+                <stop offset="65%" stop-color="#86efac"/>
+                <stop offset="100%" stop-color="#22c55e"/>
+              </linearGradient>
+            </defs>
+            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gauge)" stroke-width="16" stroke-linecap="round"/>
+            <line id="fgNeedle" x1="100" y1="100" x2="100" y2="30" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="100" cy="100" r="6" fill="#fff"/>
+          </svg>
+        </div>
+        <div class="fg-value" id="fgValue">—</div>
+        <div class="fg-label" id="fgLabel">—</div>
+        <div class="fg-stages">
+          <span>😱 Extreme Fear</span>
+          <span>😐 Neutral</span>
+          <span>🤑 Extreme Greed</span>
+        </div>
+      </div>
+      <div class="fg-info">
+        <h3>📊 ตอนนี้ตลาดรู้สึกยังไง?</h3>
+        <p id="fgDesc">กำลังโหลดข้อมูล VIX...</p>
+        <div style="background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:12px">
+          <b style="color:var(--gold)">💡 กฎ Buffett:</b>
+          <div style="color:var(--muted);font-size:13px;margin-top:6px;line-height:1.7">
+            "<i>Be fearful when others are greedy, and greedy when others are fearful</i>"<br/>
+            • VIX > 30 (กลัวมาก) = โอกาสซื้อ — แต่ระวัง knife-catching<br/>
+            • VIX 15-20 = ตลาดปกติ — เทรดได้ตามแผน<br/>
+            • VIX < 12 (เฉื่อยชา) = ระวัง! ตลาดอาจจะ correct
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= SECTOR HEATMAP ============= -->
+  <div class="sec-heatmap" id="sectors">
+    <div class="sec-head" style="margin:0">
+      <div>
+        <h2>🔥 Sector Heatmap — Sector ไหนนำ?</h2>
+        <div class="sub">11 sectors ETF ของ S&P 500 (XLK, XLF, XLE, ...) · สีเขียว = นำ, สีแดง = ตามหลัง</div>
+      </div>
+    </div>
+    <div class="sec-grid" id="secGrid">
+      <!-- filled by JS -->
+    </div>
+    <div style="margin-top:14px;padding:12px;background:var(--bg3);border:1px solid var(--line);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.7">
+      💡 <b>Sector Rotation:</b> ในแต่ละช่วงของวัฎจักรเศรษฐกิจ จะมี sector นำ-ตามต่างกัน<br/>
+      • <b>Early Cycle (ฟื้นตัว):</b> Tech, Consumer Discretionary, Financials นำ<br/>
+      • <b>Mid Cycle (โต):</b> Industrials, Materials นำ<br/>
+      • <b>Late Cycle (ใกล้ peak):</b> Energy, Materials นำ · Consumer Staples ตามหลัง<br/>
+      • <b>Recession:</b> Consumer Staples, Utilities, Healthcare นำ (defensive)
+    </div>
+  </div>
+
+  <!-- ============= MAJOR INDICES ============= -->
+  <div class="ind-section" id="indices">
+    <div class="head">
+      <h3>📈 Major Indices & ETFs</h3>
+      <div class="sub">ดัชนีหลัก + ETF ยอดนิยมที่นักเทรดติดตาม</div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="ind">
+        <thead>
+          <tr>
+            <th>Symbol</th><th>Price</th><th>เปลี่ยน</th><th>%</th><th>52W Range</th><th>Spark</th>
+          </tr>
+        </thead>
+        <tbody id="indBody">
+          <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">⏳ โหลด...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============= FED + RATES ============= -->
+  <div class="fed-panel" id="fed">
+    <h2 style="font-size:18px;display:flex;align-items:center;gap:8px">🏦 Federal Reserve & Interest Rates</h2>
+    <div style="color:var(--muted);font-size:12px;margin-top:4px">อัตราดอกเบี้ย Fed = ปัจจัยที่ส่งผลต่อหุ้น US มากที่สุด</div>
+    <div class="fed-grid">
+      <div class="fed-stat">
+        <div class="l">🎯 Fed Funds Rate (ปัจจุบัน)</div>
+        <div class="v" id="fedRate">5.25-5.50%</div>
+        <div class="ds">อัตราดอกเบี้ยนโยบายของ Fed · ปรับครั้งล่าสุดเพื่อต่อสู้กับเงินเฟ้อ</div>
+      </div>
+      <div class="fed-stat">
+        <div class="l">📅 ประชุม FOMC ครั้งถัดไป</div>
+        <div class="v" id="nextFOMC">—</div>
+        <div class="ds" id="fomcDesc">ประชุม 8 ครั้งต่อปี · นักเทรดทั่วโลกจับตาดู</div>
+      </div>
+      <div class="fed-stat">
+        <div class="l">📊 10Y Treasury Yield</div>
+        <div class="v" id="tnxRate">—</div>
+        <div class="ds">ผลตอบแทนพันธบัตร 10 ปี · สูง = หุ้น tech / growth อ่อนแรง</div>
+      </div>
+      <div class="fed-stat">
+        <div class="l">📈 2Y - 10Y Spread</div>
+        <div class="v" id="yieldSpread">—</div>
+        <div class="ds">Inverted (ติดลบ) = สัญญาณ recession · ปกติ = เศรษฐกิจขยาย</div>
+      </div>
+    </div>
+    <div style="margin-top:14px;padding:12px;background:var(--bg3);border:1px solid var(--line);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.7">
+      💡 <b>วิธีอ่าน Fed Rate:</b> ถ้า Fed <b>ขึ้นดอกเบี้ย</b> → กดให้หุ้น tech / growth ตก, $DXY แข็ง, ทอง/พันธบัตรร่วง<br/>
+      ถ้า Fed <b>ลดดอกเบี้ย</b> → หุ้น tech / growth พุ่ง, ทองขึ้น, $DXY อ่อน (ดีสำหรับคนไทย — บาทแข็งขึ้น)
+    </div>
+  </div>
+
+  <!-- ============= UPCOMING EVENTS ============= -->
+  <div class="events-panel" id="events">
+    <div class="sec-head" style="margin:0">
+      <div>
+        <h2>📅 ปฏิทินเศรษฐกิจ — เหตุการณ์สำคัญ</h2>
+        <div class="sub">เวลาแสดงเป็น <b>เวลาไทย</b> · กรุณาเช็คก่อนเทรด ระวัง volatility</div>
+      </div>
+    </div>
+    <div id="eventsList" style="margin-top:14px"></div>
+  </div>
+
+  <!-- ============= EDUCATION ============= -->
+  <div class="edu-panel">
+    <h2 style="font-size:18px;display:flex;align-items:center;gap:8px">📚 คู่มืออ่าน Macro ฉบับคนไทย</h2>
+    <div style="color:var(--muted);font-size:12px;margin-top:4px">เคล็ดลับการอ่านสัญญาณตลาดที่นักเทรดมืออาชีพใช้</div>
+    <div class="edu-grid">
+      <div class="edu-card">
+        <h4>📊 VIX (Volatility Index)</h4>
+        <p>VIX วัด"ความกลัว"ของตลาด — คำนวณจาก option ของ S&P 500 ที่ 30 วันข้างหน้า<br/>
+          <span class="rule">กฎทอง:</span> VIX <12 ระวังจะ correct · 15-20 ปกติ · >30 panic, อาจถึงจุดซื้อ</p>
+      </div>
+      <div class="edu-card">
+        <h4>💵 DXY (Dollar Index)</h4>
+        <p>วัดความแข็งของ USD เทียบ 6 สกุลหลัก (EUR, JPY, GBP, ...)<br/>
+          <span class="rule">สำคัญสำหรับคนไทย:</span> DXY ขึ้น = บาทอ่อน = ได้กำไรพิเศษเมื่อแปลงกลับ THB!</p>
+      </div>
+      <div class="edu-card">
+        <h4>📈 10-Year Treasury Yield</h4>
+        <p>"ราคาเงิน" ของพันธบัตรรัฐบาล US 10 ปี — เป็น risk-free rate ที่ใช้ตีมูลค่าหุ้น<br/>
+          <span class="rule">กฎทอง:</span> 10Y yield สูงขึ้น = หุ้น growth (Tesla, AI) ตก เพราะ DCF future cashflow ลดค่า</p>
+      </div>
+      <div class="edu-card">
+        <h4>🥇 Gold (GLD)</h4>
+        <p>ทองเป็น "safe haven" ขึ้นเมื่อกลัว หรือ $USD อ่อน หรือ inflation สูง<br/>
+          <span class="rule">เทคนิค:</span> ดู Gold + VIX พร้อมกัน ถ้าทั้งสองพุ่งพร้อมกัน = ตลาดเริ่ม risk-off</p>
+      </div>
+      <div class="edu-card">
+        <h4>🛢️ Oil (USO/Brent)</h4>
+        <p>ราคาน้ำมัน = ส่วนหนึ่งของ inflation · ราคาขึ้นจะกระทบเงินเฟ้อ Fed จะลังเลลด rate<br/>
+          <span class="rule">เคล็ดลับ:</span> น้ำมันพุ่ง = ดีสำหรับ Energy sector (XLE, XOM, CVX)</p>
+      </div>
+      <div class="edu-card">
+        <h4>🏦 FOMC Meeting</h4>
+        <p>Fed ประชุม 8 ครั้ง/ปี ประกาศอัตราดอกเบี้ย + Dot Plot<br/>
+          <span class="rule">นักเทรดมืออาชีพ:</span> ลด position ก่อนประชุม · รอ Powell แถลง 02:30 (เวลาไทย) เสร็จค่อยเทรด</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  ⚠️ ข้อมูลทั้งหมดมาจาก Yahoo Finance public API (delayed ~15 นาที) · ใช้เพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน<br/>
+  Made with ❤️ for Thai traders · Bullzeeker
+</footer>
+
+<script>
+const $ = s=>document.querySelector(s);
+const $$ = s=>Array.from(document.querySelectorAll(s));
+
+/* ===== DATA FETCH ===== */
+const PROXIES = [
+  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+  url => 'https://corsproxy.io/?' + encodeURIComponent(url),
+  url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
+];
+async function tryProxies(url){
+  for(const p of PROXIES){
+    try{
+      const r = await fetch(p(url),{cache:'no-store'});
+      if(!r.ok) continue;
+      return await r.text();
+    }catch{}
+  }
+  throw new Error('proxy fail');
+}
+async function fetchQuotes(syms){
+  const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${syms.join(',')}`;
+  const t = await tryProxies(url);
+  return JSON.parse(t)?.quoteResponse?.result || [];
+}
+async function fetchChart(sym, range='1mo'){
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?range=${range}&interval=1d`;
+  const t = await tryProxies(url);
+  const r = JSON.parse(t)?.chart?.result?.[0];
+  const c = r?.indicators?.quote?.[0]?.close || [];
+  return c.filter(x=>x!=null);
+}
+
+/* ===== PULSE CARDS DATA ===== */
+const PULSE = [
+  {sym:'SPY',     ic:'🇺🇸', nm:'S&P 500',     desc:'หุ้นใหญ่ 500 ตัว · ดัชนีหลัก US',
+    hintUp:'ตลาดบวก · risk-on', hintDn:'ตลาดลบ · ระวัง'},
+  {sym:'QQQ',     ic:'💻', nm:'Nasdaq 100',  desc:'หุ้นเทค 100 ตัว · กลุ่ม Tech/AI',
+    hintUp:'Tech นำตลาด', hintDn:'Tech อ่อนแอ'},
+  {sym:'IWM',     ic:'📦', nm:'Russell 2000', desc:'หุ้นเล็ก 2000 ตัว · Small Cap',
+    hintUp:'Risk-on, small cap rally', hintDn:'หุ้นเล็กถูกขาย risk-off'},
+  {sym:'^VIX',    ic:'😱', nm:'VIX',         desc:'ดัชนีความกลัว · ความผันผวน',
+    hintUp:'กลัวมากขึ้น ⚠️', hintDn:'กลัวน้อย · ตลาดสงบ'},
+  {sym:'DX-Y.NYB',ic:'💵', nm:'DXY',         desc:'Dollar Index · ความแข็ง USD',
+    hintUp:'USD แข็ง · บาทอ่อน 🇹🇭✓', hintDn:'USD อ่อน · บาทแข็ง'},
+  {sym:'^TNX',    ic:'🏦', nm:'10Y Yield',   desc:'พันธบัตร 10 ปี US',
+    hintUp:'Yield สูง · กดหุ้น tech/growth', hintDn:'Yield ต่ำ · หุ้น growth พุ่ง'},
+  {sym:'GLD',     ic:'🥇', nm:'Gold ETF',    desc:'ทองคำ · Safe haven',
+    hintUp:'Risk-off · ทองนำ', hintDn:'Risk-on · ทองอ่อน'},
+  {sym:'USO',     ic:'🛢️', nm:'Oil ETF',    desc:'น้ำมัน WTI',
+    hintUp:'น้ำมันพุ่ง · Energy ดี', hintDn:'น้ำมันตก · Energy อ่อน'},
+  {sym:'TLT',     ic:'📜', nm:'20Y Bonds',   desc:'พันธบัตร 20+ ปี',
+    hintUp:'Bonds rally · กลัว/Fed cut', hintDn:'Bonds ตก · risk-on'},
+  {sym:'BTC-USD', ic:'₿',  nm:'Bitcoin',     desc:'BTC · Crypto leader',
+    hintUp:'Crypto risk-on', hintDn:'Crypto risk-off'},
+  {sym:'AAPL',    ic:'🍎', nm:'Apple',       desc:'หุ้นใหญ่ที่สุดในโลก',
+    hintUp:'Apple นำ tech', hintDn:'Apple อ่อนแรง'},
+  {sym:'NVDA',    ic:'🚀', nm:'NVIDIA',      desc:'ผู้นำ AI · GPU king',
+    hintUp:'AI/Semi rally 🔥', hintDn:'AI hype lookalike'},
+];
+
+const SECTORS = [
+  {sym:'XLK', nm:'Technology',     ic:'💻', th:'เทคโนโลยี'},
+  {sym:'XLF', nm:'Financials',     ic:'🏦', th:'การเงิน'},
+  {sym:'XLV', nm:'Healthcare',     ic:'⚕️', th:'การแพทย์'},
+  {sym:'XLY', nm:'Cons. Disc.',    ic:'🛍️', th:'สินค้าฟุ่มเฟือย'},
+  {sym:'XLP', nm:'Cons. Staples',  ic:'🥫', th:'สินค้าจำเป็น'},
+  {sym:'XLI', nm:'Industrials',    ic:'🏭', th:'อุตสาหกรรม'},
+  {sym:'XLE', nm:'Energy',         ic:'⛽', th:'พลังงาน'},
+  {sym:'XLU', nm:'Utilities',      ic:'💡', th:'สาธารณูปโภค'},
+  {sym:'XLB', nm:'Materials',      ic:'⛏️', th:'วัสดุ'},
+  {sym:'XLRE',nm:'Real Estate',    ic:'🏢', th:'อสังหา'},
+  {sym:'XLC', nm:'Communication',  ic:'📡', th:'สื่อสาร'},
+];
+
+const INDICES = [
+  {sym:'SPY',  nm:'S&P 500 ETF'},
+  {sym:'QQQ',  nm:'Nasdaq 100 ETF'},
+  {sym:'DIA',  nm:'Dow Jones ETF'},
+  {sym:'IWM',  nm:'Russell 2000 ETF'},
+  {sym:'VTI',  nm:'Total Market'},
+  {sym:'EFA',  nm:'Developed Markets ex-US'},
+  {sym:'EEM',  nm:'Emerging Markets'},
+  {sym:'^VIX', nm:'Volatility Index'},
+  {sym:'DX-Y.NYB', nm:'Dollar Index'},
+  {sym:'^TNX', nm:'10Y Treasury Yield'},
+  {sym:'^FVX', nm:'5Y Treasury Yield'},
+  {sym:'GLD',  nm:'Gold ETF'},
+  {sym:'SLV',  nm:'Silver ETF'},
+  {sym:'USO',  nm:'Oil ETF'},
+  {sym:'TLT',  nm:'20Y+ Bonds ETF'},
+  {sym:'HYG',  nm:'High Yield Bonds'},
+  {sym:'BTC-USD', nm:'Bitcoin'},
+];
+
+/* ===== LOAD ===== */
+async function loadAll(){
+  $('#refreshBtn').disabled = true;
+  $('#rIcon').className='spin'; $('#rIcon').textContent='⏳';
+
+  try{
+    const allSyms = [...new Set([
+      ...PULSE.map(p=>p.sym),
+      ...SECTORS.map(s=>s.sym),
+      ...INDICES.map(i=>i.sym),
+    ])];
+
+    // batch in 50s
+    const batches = [];
+    for(let i=0;i<allSyms.length;i+=50) batches.push(allSyms.slice(i,i+50));
+    const all = (await Promise.all(batches.map(b=>fetchQuotes(b).catch(()=>[])))).flat();
+    const M = Object.fromEntries(all.map(q=>[q.symbol,q]));
+
+    renderPulse(M);
+    renderSectors(M);
+    renderIndices(M);
+    renderFed(M);
+    buildEvents();
+
+    $('#lastUpd').textContent = new Date().toLocaleTimeString('th-TH');
+
+    // load sparklines async
+    loadSparklines(INDICES.slice(0,10).map(i=>i.sym));
+  }catch(e){
+    console.error(e);
+  }finally{
+    $('#refreshBtn').disabled=false;
+    $('#rIcon').className=''; $('#rIcon').textContent='🔄';
+  }
+}
+
+/* ===== RENDER PULSE ===== */
+function renderPulse(M){
+  $('#pulseGrid').innerHTML = PULSE.map(p=>{
+    const q = M[p.sym];
+    if(!q || q.regularMarketPrice==null){
+      return `<div class="pulse-card neutral">
+        <div class="nm">${p.nm}<span class="ic">${p.ic}</span></div>
+        <div class="desc">${p.desc}</div>
+        <div class="px">—</div>
+      </div>`;
+    }
+    const px = q.regularMarketPrice;
+    const ch = q.regularMarketChange ?? 0;
+    const cp = q.regularMarketChangePercent ?? 0;
+    const cls = cp>=0?'gain':'loss';
+    const hint = cp>=0 ? p.hintUp : p.hintDn;
+    const sign = cp>=0?'+':'';
+    return `<div class="pulse-card ${cls}">
+      <div class="nm">${p.nm}<span class="ic">${p.ic}</span></div>
+      <div class="sym">${p.sym.replace('-USD','').replace('^','').replace('DX-Y.NYB','DXY')}</div>
+      <div class="desc">${p.desc}</div>
+      <div class="px">${px<10?px.toFixed(3):px.toFixed(2)}</div>
+      <div class="ch ${cp>=0?'pos':'neg'}">${sign}${ch.toFixed(2)} (${sign}${cp.toFixed(2)}%)</div>
+      <div class="hint">${hint}</div>
+    </div>`;
+  }).join('');
+
+  // === VIX → Fear & Greed gauge ===
+  const vix = M['^VIX'];
+  if(vix && vix.regularMarketPrice){
+    const v = vix.regularMarketPrice;
+    // Map VIX 10..40 → 0..100 (inverted: high VIX = low greed)
+    let gauge = 100 - ((v-10)/30)*100;
+    gauge = Math.max(0, Math.min(100, gauge));
+    // Needle: 0 = left (-90deg), 100 = right (+90deg)
+    const angle = (gauge/100)*180 - 90;
+    const needle = $('#fgNeedle');
+    needle.setAttribute('transform', `rotate(${angle} 100 100)`);
+    $('#fgValue').textContent = Math.round(gauge);
+    let lbl, col, desc;
+    if(gauge>=75){ lbl='🤑 Extreme Greed'; col='var(--green)'; desc=`VIX ${v.toFixed(2)} — ตลาด<b>เฉื่อยชา</b>มาก ระวัง! ช่วงนี้ความเสี่ยงสะสม pullback ใหญ่อาจจะมา`; }
+    else if(gauge>=55){ lbl='😊 Greed'; col='var(--emerald)'; desc=`VIX ${v.toFixed(2)} — ตลาดมั่นใจ · เทรดได้ตามปกติ แต่ไม่ต้อง over-leverage`; }
+    else if(gauge>=45){ lbl='😐 Neutral'; col='var(--gold)'; desc=`VIX ${v.toFixed(2)} — ตลาดปกติ · เป็นจังหวะดีสำหรับการ scan หุ้น Quality + Breakout`; }
+    else if(gauge>=25){ lbl='😰 Fear'; col='var(--orange)'; desc=`VIX ${v.toFixed(2)} — เริ่มมีความกลัวในตลาด · ลด position size, รอจุดที่ชัดเจน`; }
+    else{ lbl='😱 Extreme Fear'; col='var(--red)'; desc=`VIX ${v.toFixed(2)} — Panic mode! · นี่อาจเป็น<b>โอกาสซื้อ</b>หุ้นดีในราคาถูก แต่ต้องระวัง knife-catching`; }
+    $('#fgLabel').textContent = lbl;
+    $('#fgLabel').style.color = col;
+    $('#fgValue').style.color = col;
+    $('#fgDesc').innerHTML = desc;
+  }
+}
+
+/* ===== RENDER SECTORS ===== */
+function renderSectors(M){
+  // sort by % change
+  const arr = SECTORS.map(s=>{
+    const q = M[s.sym];
+    return {...s, q, cp: q?.regularMarketChangePercent ?? 0};
+  }).sort((a,b)=>b.cp-a.cp);
+
+  $('#secGrid').innerHTML = arr.map(s=>{
+    if(!s.q){
+      return `<div class="sec-tile h-n"><span class="ic">${s.ic}</span><div class="full">${s.sym}</div><div class="ch">—</div></div>`;
+    }
+    const cp = s.cp;
+    let cls = 'h-n';
+    if(cp>=2) cls='h-vg';
+    else if(cp>=1) cls='h-g';
+    else if(cp>=0.2) cls='h-lg';
+    else if(cp>-0.2) cls='h-n';
+    else if(cp>-1) cls='h-lr';
+    else if(cp>-2) cls='h-r';
+    else cls='h-vr';
+    const sign = cp>=0?'+':'';
+    return `<div class="sec-tile ${cls}" onclick="window.open('https://finance.yahoo.com/quote/${s.sym}','_blank')">
+      <span class="ic">${s.ic}</span>
+      <div class="nm">${s.sym}</div>
+      <div class="full">${s.th}</div>
+      <div class="ch">${sign}${cp.toFixed(2)}%</div>
+      <div class="desc">${s.nm}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ===== RENDER INDICES TABLE ===== */
+function renderIndices(M){
+  $('#indBody').innerHTML = INDICES.map(i=>{
+    const q = M[i.sym];
+    if(!q){
+      return `<tr><td>${i.sym}</td><td colspan="5" style="color:var(--muted)">no data</td></tr>`;
+    }
+    const px = q.regularMarketPrice;
+    const ch = q.regularMarketChange ?? 0;
+    const cp = q.regularMarketChangePercent ?? 0;
+    const yhi = q.fiftyTwoWeekHigh, ylo = q.fiftyTwoWeekLow;
+    const sign = cp>=0?'+':'';
+    const cls = cp>=0?'pos':'neg';
+    const symClean = i.sym.replace('DX-Y.NYB','DXY').replace('^','').replace('-USD','');
+    return `<tr onclick="window.open('https://finance.yahoo.com/quote/${i.sym}','_blank')">
+      <td>
+        <div class="ind-sym">${symClean}</div>
+        <div class="ind-name">${i.nm}</div>
+      </td>
+      <td>${px<10?px.toFixed(3):px.toFixed(2)}</td>
+      <td class="${cls}">${sign}${ch.toFixed(2)}</td>
+      <td class="${cls}"><b>${sign}${cp.toFixed(2)}%</b></td>
+      <td>${ylo&&yhi ? ylo.toFixed(2)+' - '+yhi.toFixed(2) : '—'}</td>
+      <td class="spark-cell" id="spark-${i.sym.replace(/[^a-zA-Z0-9]/g,'_')}"></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ===== SPARKLINES ===== */
+async function loadSparklines(syms){
+  for(const sym of syms){
+    try{
+      const closes = await fetchChart(sym, '1mo');
+      if(closes.length < 2) continue;
+      const min = Math.min(...closes), max = Math.max(...closes);
+      const span = Math.max(max-min, 1e-6);
+      const w=80, h=24;
+      const path = closes.map((c,i)=>{
+        const x = (i/(closes.length-1))*w;
+        const y = h - ((c-min)/span)*h;
+        return (i===0?'M':'L')+x.toFixed(1)+','+y.toFixed(1);
+      }).join(' ');
+      const up = closes[closes.length-1] >= closes[0];
+      const col = up?'#22c55e':'#ef4444';
+      const cell = $('#spark-'+sym.replace(/[^a-zA-Z0-9]/g,'_'));
+      if(cell) cell.innerHTML = `<svg width="${w}" height="${h}"><path d="${path}" fill="none" stroke="${col}" stroke-width="1.5"/></svg>`;
+    }catch{}
+  }
+}
+
+/* ===== RENDER FED ===== */
+function renderFed(M){
+  // 10Y
+  const tnx = M['^TNX'];
+  if(tnx && tnx.regularMarketPrice!=null){
+    $('#tnxRate').textContent = tnx.regularMarketPrice.toFixed(2) + '%';
+  }
+  // 2Y (use FVX as proxy if 2Y not available; ^IRX = 13W bill)
+  // Just compute spread from common values for now
+  const fvx = M['^FVX'];
+  if(tnx && fvx && tnx.regularMarketPrice && fvx.regularMarketPrice){
+    const spread = (tnx.regularMarketPrice - fvx.regularMarketPrice);
+    $('#yieldSpread').textContent = (spread>=0?'+':'') + spread.toFixed(2) + '%';
+    $('#yieldSpread').style.color = spread<0 ? 'var(--red)' : 'var(--green)';
+  }
+
+  // FOMC next meeting
+  const fomc = ['2026-01-28','2026-03-18','2026-04-29','2026-06-17','2026-07-29','2026-09-16','2026-10-28','2026-12-09'];
+  const now = new Date();
+  const next = fomc.map(d=>new Date(d+'T18:00:00Z')).find(d=>d>now);
+  if(next){
+    const dStr = next.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'});
+    $('#nextFOMC').textContent = dStr;
+    const daysAway = Math.ceil((next-now)/86400000);
+    $('#fomcDesc').textContent = `อีก ${daysAway} วัน · เวลาไทย 01:00-02:30 · ตลาด volatile มาก ระวัง!`;
+  }
+}
+
+/* ===== EVENTS ===== */
+function buildEvents(){
+  const now = new Date();
+  const dayMs = 86400000;
+  const events = [];
+
+  // FOMC
+  const fomc = ['2026-01-28','2026-03-18','2026-04-29','2026-06-17','2026-07-29','2026-09-16','2026-10-28','2026-12-09'];
+  fomc.forEach(d=>{
+    const ev = new Date(d+'T18:00:00Z');
+    if(ev > now && ev < new Date(now.getTime()+45*dayMs)){
+      events.push({d:ev, t:'FOMC Meeting & Rate Decision', s:'ประชุม Fed ตัดสินอัตราดอกเบี้ย + Dot Plot · Powell แถลง', when:'⏰ 02:00 (เวลาไทย)', imp:'h'});
+    }
+  });
+
+  // CPI (typically 2nd Tue of month)
+  const cpi2 = getNthDayOfMonth(now.getFullYear(), now.getMonth(), 2, 2); // 2nd Tuesday
+  const cpi3 = getNthDayOfMonth(now.getFullYear(), now.getMonth()+1, 2, 2);
+  [cpi2,cpi3].forEach(d=>{
+    const ev = new Date(d.getFullYear(),d.getMonth(),d.getDate(),12,30); // 8:30am ET
+    if(ev > now && ev < new Date(now.getTime()+45*dayMs)){
+      events.push({d:ev, t:'CPI Report (เงินเฟ้อ US)', s:'รายงานดัชนีราคาผู้บริโภค · Core CPI สำคัญสุด · ส่งผลต่อ Fed', when:'⏰ 20:30 (เวลาไทย)', imp:'h'});
+    }
+  });
+
+  // NFP (1st Fri)
+  const fri = getFirstDayOfMonth(now.getFullYear(), now.getMonth(), 5);
+  const friNext = getFirstDayOfMonth(now.getFullYear(), now.getMonth()+1, 5);
+  [fri,friNext].forEach(d=>{
+    const ev = new Date(d.getFullYear(),d.getMonth(),d.getDate(),12,30);
+    if(ev > now && ev < new Date(now.getTime()+45*dayMs)){
+      events.push({d:ev, t:'Jobs Report (Non-Farm Payrolls)', s:'ตัวเลขจ้างงานนอกภาคเกษตร · สัญญาณเศรษฐกิจหลัก', when:'⏰ 20:30 (เวลาไทย)', imp:'h'});
+    }
+  });
+
+  // PCE (last Thu/Fri of month - approx 25th-30th)
+  for(let m=0;m<2;m++){
+    const target = new Date(now.getFullYear(), now.getMonth()+m, 28);
+    if(target > now && target < new Date(now.getTime()+45*dayMs)){
+      events.push({d:target, t:"PCE Inflation (Fed's favorite)", s:"PCE เป็นตัวที่ Fed ดูจริง ๆ ในการตัดสินใจดอกเบี้ย", when:'⏰ 20:30 (เวลาไทย)', imp:'m'});
+    }
+  }
+
+  // Major earnings (quarterly pattern around 25-30th)
+  const month = now.getMonth();
+  if([0,3,6,9].includes(month)){
+    const ear = [
+      {n:'AAPL', d:25, th:'Apple — ยอดขาย iPhone, Services'},
+      {n:'MSFT', d:26, th:'Microsoft — Azure cloud, AI Copilot'},
+      {n:'NVDA', d:21, th:'NVIDIA — GPU demand, AI data center'},
+      {n:'META', d:27, th:'Meta — Reels, ad revenue, AI capex'},
+      {n:'GOOGL',d:28, th:'Google — Search ads, Cloud, YouTube'},
+      {n:'TSLA', d:22, th:'Tesla — Deliveries, FSD, margins'},
+    ];
+    ear.forEach(e=>{
+      const ev = new Date(now.getFullYear(), month, e.d, 16, 0);
+      if(ev > now && ev < new Date(now.getTime()+30*dayMs)){
+        events.push({d:ev, t:`${e.n} Earnings Report`, s:e.th, when:'⏰ 04:00 (เวลาไทย, หลังตลาดปิด)', imp:'h'});
+      }
+    });
+  }
+
+  events.sort((a,b)=>a.d-b.d);
+
+  if(events.length===0){
+    $('#eventsList').innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">ไม่มีเหตุการณ์สำคัญใน 45 วันข้างหน้า</div>';
+    return;
+  }
+
+  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  $('#eventsList').innerHTML = events.slice(0,10).map(e=>{
+    const impL = {h:'<span class="impact imp-h">⚠️ HIGH</span>',m:'<span class="impact imp-m">📊 MED</span>',l:'<span class="impact imp-l">LOW</span>'}[e.imp];
+    return `<div class="ev-row">
+      <div class="ev-date">
+        <div class="d">${e.d.getDate()}</div>
+        <div class="m">${months[e.d.getMonth()]}</div>
+        <div class="yr">${e.d.getFullYear()}</div>
+      </div>
+      <div class="ev-info">
+        <div class="t">${e.t}${impL}</div>
+        <div class="s">${e.s}</div>
+        <div class="when">${e.when}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function getNthDayOfMonth(year,month,n,dayOfWeek){
+  // n-th occurrence of dayOfWeek (0=Sun, 5=Fri) in month
+  const d = new Date(year,month,1);
+  let count = 0;
+  while(d.getMonth()===month){
+    if(d.getDay()===dayOfWeek){
+      count++;
+      if(count===n) return new Date(d);
+    }
+    d.setDate(d.getDate()+1);
+  }
+  return new Date(year,month,1);
+}
+function getFirstDayOfMonth(year,month,dayOfWeek){
+  return getNthDayOfMonth(year,month,1,dayOfWeek);
+}
+
+/* ===== INIT ===== */
+loadAll();
+setInterval(()=>{ if(!document.hidden) loadAll(); }, 5*60*1000);
+</script>
+</body>
+</html>
