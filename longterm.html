@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🌊 Big Wave Scanner — หุ้นพักฐาน 4+ ปีพร้อมระเบิด | Bullzeeker</title>
+<meta name="description" content="สแกนหุ้น US ที่พักฐานมานานกว่า 4 ปี และเริ่ม breakout บน weekly timeframe — Multi-year base breakout · Stan Weinstein Stage 2 · ตามล่า 10-bagger" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>" />
+<style>
+  :root{
+    --bg:#070b14; --bg2:#0e1525; --bg3:#172238; --bg4:#1f2c44;
+    --line:#243044; --line2:#334158;
+    --text:#e6edf7; --muted:#8b97ab; --dim:#5a6478;
+    --accent:#3b82f6; --accent2:#60a5fa; --gold:#fbbf24;
+    --green:#22c55e; --green-bg:rgba(34,197,94,.12);
+    --red:#ef4444; --red-bg:rgba(239,68,68,.12);
+    --orange:#fb923c; --purple:#a855f7; --teal:#14b8a6; --emerald:#10b981;
+    --ocean:#0ea5e9; --ocean-bg:rgba(14,165,233,.15);
+    --thai-red:#ED1C24;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);
+    font-family:'Inter','Noto Sans Thai',-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent2);text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bg2)}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px}
+
+  header{background:linear-gradient(180deg,#0a0f1c,#070b14);
+    border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
+  .h-row{display:flex;align-items:center;gap:18px;padding:14px 24px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+  .brand-logo{width:42px;height:42px;border-radius:11px;
+    background:linear-gradient(135deg,var(--thai-red),var(--gold),var(--accent));
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+    box-shadow:0 4px 14px rgba(251,191,36,.3)}
+  .brand-txt h1{font-size:18px;font-weight:800;color:#fff}
+  .brand-txt p{font-size:11px;color:var(--muted);margin-top:1px;font-weight:500}
+  nav.main-nav{display:flex;padding:0 24px;border-bottom:1px solid var(--line);overflow-x:auto;background:#080d18}
+  nav.main-nav a{color:var(--muted);padding:13px 18px;font-size:13px;font-weight:600;
+    border-bottom:2px solid transparent;transition:.15s;white-space:nowrap;
+    display:inline-flex;align-items:center;gap:6px}
+  nav.main-nav a:hover{color:var(--text);background:rgba(255,255,255,.02)}
+  nav.main-nav a.active{color:var(--ocean);border-bottom-color:var(--ocean);background:rgba(14,165,233,.05)}
+
+  main{padding:22px;max-width:1700px;margin:0 auto}
+
+  /* ===== HERO ===== */
+  .intro{
+    background:
+      radial-gradient(ellipse at right, rgba(14,165,233,.12), transparent 60%),
+      radial-gradient(ellipse at left bottom, rgba(168,85,247,.08), transparent 60%),
+      linear-gradient(135deg,#0e1525,#172238);
+    border:1px solid rgba(14,165,233,.3);border-radius:16px;
+    padding:24px 28px;margin-bottom:20px;position:relative;overflow:hidden;
+  }
+  .intro::before{
+    content:"🌊";position:absolute;font-size:200px;right:-20px;top:-40px;opacity:.05;pointer-events:none;
+  }
+  .intro h1{margin:0 0 8px;font-size:26px;font-weight:800;display:flex;align-items:center;gap:12px;letter-spacing:-.3px}
+  .intro h1 .grad{background:linear-gradient(135deg,var(--ocean),var(--emerald));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .intro p{margin:0;color:var(--muted);font-size:14px;line-height:1.7;max-width:900px}
+  .intro p b{color:var(--text)}
+
+  /* Famous examples bar */
+  .examples{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .example{
+    background:rgba(14,165,233,.08);border:1px solid rgba(14,165,233,.3);
+    border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text);
+  }
+  .example b{color:var(--ocean)}
+  .example .gain{color:var(--green);font-weight:700}
+
+  /* ===== CONTROLS ===== */
+  .panel{background:var(--bg2);border:1px solid var(--line);border-radius:14px;
+    padding:18px;margin-bottom:18px;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+  .panel h3{margin:0 0 12px;font-size:14px;color:var(--ocean);text-transform:uppercase;letter-spacing:.5px}
+  .ctrl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .ctrl{display:flex;flex-direction:column;gap:4px}
+  .ctrl label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;display:flex;justify-content:space-between}
+  .ctrl label .v{color:var(--ocean);font-weight:600}
+  .ctrl select,.ctrl input[type=number],.ctrl input[type=text]{
+    background:var(--bg3);color:var(--text);border:1px solid var(--line);
+    border-radius:8px;padding:8px 11px;font-size:13px;font-family:inherit;font-variant-numeric:tabular-nums}
+  .ctrl select:focus,.ctrl input:focus{outline:none;border-color:var(--ocean)}
+  .ctrl input[type=range]{
+    -webkit-appearance:none;appearance:none;height:6px;background:var(--bg3);border-radius:3px;outline:none}
+  .ctrl input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ocean);
+    cursor:pointer;border:2px solid var(--bg);box-shadow:0 0 0 1px var(--ocean)}
+  .ctrl-checks{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+  .check{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer}
+  .check input{accent-color:var(--ocean)}
+  .check.on{color:var(--text)}
+
+  .scan-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--ocean),#0284c7);color:#fff;
+    padding:11px 22px;border-radius:10px;font-weight:700;font-size:14px;
+    display:inline-flex;align-items:center;gap:8px;
+    box-shadow:0 4px 12px rgba(14,165,233,.4);transition:.15s}
+  .btn-primary:hover{transform:translateY(-1px)}
+  .btn-primary:disabled{background:#075985;cursor:wait;opacity:.7}
+  .btn-ghost{background:var(--bg3);color:var(--text);border:1px solid var(--line);
+    padding:10px 16px;border-radius:10px;font-size:13px;font-weight:500}
+  .btn-ghost:hover{border-color:var(--ocean)}
+
+  /* ===== PROGRESS ===== */
+  .prog-wrap{background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+    padding:14px 18px;margin-bottom:18px;display:none}
+  .prog-wrap.show{display:block}
+  .prog-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px}
+  .prog-bar{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+  .prog-fill{height:100%;background:linear-gradient(90deg,var(--ocean),var(--emerald));
+    width:0%;transition:width .25s;border-radius:4px}
+  .prog-log{font-size:11px;color:var(--dim);margin-top:8px;font-family:monospace;max-height:60px;overflow:auto}
+
+  /* ===== STATS ===== */
+  .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+  .stat{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .stat label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .stat .v{font-size:22px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+  .stat.gold .v{color:var(--gold)} .stat.ocean .v{color:var(--ocean)}
+  .stat.green .v{color:var(--green)} .stat.purple .v{color:var(--purple)}
+
+  /* ===== RESULTS ===== */
+  .results-wrap{background:var(--bg2);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .results-head{display:flex;justify-content:space-between;align-items:center;
+    padding:14px 18px;border-bottom:1px solid var(--line)}
+  .results-head h2{margin:0;font-size:17px;display:flex;align-items:center;gap:8px}
+  table.lt{width:100%;border-collapse:collapse;font-size:13px}
+  table.lt thead th{background:#0e1421;color:var(--muted);font-size:10.5px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.5px;padding:10px 8px;text-align:right;
+    border-bottom:1px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
+  table.lt thead th:first-child,table.lt thead th.left{text-align:left}
+  table.lt thead th:hover{color:var(--text)}
+  table.lt tbody td{padding:10px 8px;text-align:right;border-bottom:1px solid #1a2333;
+    font-variant-numeric:tabular-nums;white-space:nowrap;vertical-align:middle}
+  table.lt tbody td:first-child,table.lt tbody td.left{text-align:left}
+  table.lt tbody tr{cursor:pointer;transition:.12s}
+  table.lt tbody tr:hover{background:#162132}
+  table.lt tbody tr.tier-A{background:linear-gradient(90deg,rgba(14,165,233,.08),transparent)}
+  table.lt tbody tr.tier-A:hover{background:linear-gradient(90deg,rgba(14,165,233,.15),#162132)}
+
+  .sym{font-weight:700;font-size:14px}
+  .name{color:var(--dim);font-size:11px;margin-top:1px;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+  .pos{color:var(--green)} .neg{color:var(--red)}
+  .tier{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:.5px}
+  .tier-A{background:rgba(14,165,233,.2);color:var(--ocean);border:1px solid rgba(14,165,233,.4)}
+  .tier-B{background:rgba(96,165,250,.15);color:var(--accent2);border:1px solid rgba(96,165,250,.3)}
+  .tier-C{background:rgba(139,151,171,.15);color:var(--muted);border:1px solid var(--line)}
+  .tier-D{background:rgba(91,100,118,.1);color:var(--dim)}
+  .badge-bo{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;
+    border-radius:4px;background:var(--green-bg);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+  .badge-fresh{background:rgba(14,165,233,.2);color:var(--ocean);border:1px solid rgba(14,165,233,.4);
+    font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;display:inline-block}
+  .badge-setup{background:rgba(168,85,247,.15);color:var(--purple);border:1px solid rgba(168,85,247,.3);
+    font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;display:inline-block}
+  .score-bar{display:inline-block;width:50px;height:8px;background:var(--bg3);
+    border-radius:4px;overflow:hidden;vertical-align:middle;margin-right:6px}
+  .score-bar > div{height:100%;border-radius:4px}
+  .empty{padding:60px 20px;text-align:center;color:var(--muted)}
+  .empty .icon{font-size:42px;margin-bottom:10px;opacity:.6}
+
+  /* ===== MODAL ===== */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);
+    display:none;align-items:center;justify-content:center;z-index:100;padding:14px;overflow:auto}
+  .modal-bg.show{display:flex}
+  .modal{background:var(--bg2);border:1px solid var(--line);border-radius:16px;
+    max-width:1150px;width:100%;max-height:95vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.7)}
+  .m-head{display:flex;justify-content:space-between;align-items:flex-start;padding:18px 22px;border-bottom:1px solid var(--line)}
+  .m-head h3{margin:0;font-size:26px}
+  .m-head .sub{font-size:13px;color:var(--muted);margin-top:2px}
+  .m-close{background:var(--bg3);border:1px solid var(--line);color:var(--text);
+    width:32px;height:32px;border-radius:8px;font-size:18px}
+  .m-body{padding:18px 22px}
+  .price-big{font-size:38px;font-weight:800;font-variant-numeric:tabular-nums}
+  .chg-big{font-size:18px;font-weight:600;margin-left:8px}
+
+  .m-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:18px}
+  @media(min-width:980px){.m-grid{grid-template-columns:1.7fr 1fr}}
+  .m-section{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .m-section h4{margin:0 0 10px;font-size:11px;color:var(--ocean);text-transform:uppercase;letter-spacing:.5px}
+
+  .m-chart-box{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:14px;position:relative}
+  .chart-tip{position:absolute;pointer-events:none;background:rgba(15,23,42,.95);
+    border:1px solid var(--line);padding:6px 10px;border-radius:6px;font-size:11px;
+    z-index:10;font-variant-numeric:tabular-nums;display:none}
+  .chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:var(--muted)}
+  .chart-legend span{display:inline-flex;align-items:center;gap:5px}
+  .chart-legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
+
+  .kv{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px dashed var(--line)}
+  .kv:last-child{border:none}
+  .kv .k{color:var(--muted)}
+  .kv .v{font-weight:600;font-variant-numeric:tabular-nums}
+
+  .potential{
+    background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(251,191,36,.06));
+    border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:14px;margin-bottom:14px;
+  }
+  .potential h4{font-size:11px;color:var(--green);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+  .potential .row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0}
+  .potential .row b{color:#fff}
+  .potential .big{font-size:24px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums}
+
+  .m-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .m-actions a{background:var(--bg3);color:var(--text);border:1px solid var(--line);
+    padding:8px 14px;border-radius:8px;font-size:12px;font-weight:500}
+  .m-actions a:hover{border-color:var(--ocean)}
+
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--bg3);border:1px solid var(--line);padding:12px 20px;border-radius:10px;
+    font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:200;
+    opacity:0;pointer-events:none;transition:.25s}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
+
+  footer{border-top:1px solid var(--line);padding:24px;color:var(--muted);font-size:12px;text-align:center;margin-top:40px;line-height:1.6}
+
+  /* Education box at bottom */
+  .edu{background:linear-gradient(135deg,rgba(168,85,247,.06),rgba(14,165,233,.04));
+    border:1px solid rgba(168,85,247,.2);border-radius:14px;padding:22px;margin-top:24px}
+  .edu h3{font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .edu p{color:var(--muted);font-size:13px;line-height:1.7}
+  .edu p b{color:var(--text)}
+  .edu .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px}
+  .edu .card{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .edu .card h4{font-size:13px;color:var(--ocean);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+  .edu .card p{font-size:12px;color:var(--muted);line-height:1.6;margin:0}
+
+  @media(max-width:780px){
+    .h-row{padding:10px 14px}
+    main{padding:14px}
+    table.lt thead th:nth-child(n+8),table.lt tbody td:nth-child(n+8){display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-row">
+    <a href="index.html" class="brand">
+      <div class="brand-logo">🐂</div>
+      <div class="brand-txt">
+        <h1>Bull<span style="color:var(--gold)">zeeker</span></h1>
+        <p>🌊 Big Wave Scanner · ตามล่า 10-Bagger</p>
+      </div>
+    </a>
+    <div style="flex:1"></div>
+    <a href="index.html" class="btn-ghost" style="text-decoration:none">🏠 หน้าหลัก</a>
+  </div>
+  <nav class="main-nav">
+    <a href="index.html">🏠 หน้าหลัก</a>
+    <a href="screener.html">🎯 Daily Screener</a>
+    <a href="breakout.html">🚀 Breakout</a>
+    <a href="quality.html">💎 Quality</a>
+    <a href="longterm.html" class="active">🌊 Long-Term Weekly</a>
+    <a href="tools.html">🛠️ เครื่องมือ</a>
+    <a href="macro.html">📊 Macro</a>
+    <a href="learn.html">📚 เรียนรู้</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ===== INTRO ===== -->
+  <div class="intro">
+    <h1>🌊 Big Wave Scanner — <span class="grad">หุ้นพักฐาน 4+ ปี พร้อมระเบิดขึ้น</span></h1>
+    <p>
+      Scanner เฉพาะทางสำหรับ <b>นักลงทุนระยะยาว</b> ที่อยากตามล่า <b>10-Bagger</b> — หุ้นที่พักฐาน
+      หรือร่วงลงมานาน <b>มากกว่า 4 ปี</b> แล้วเริ่ม <b>breakout บน weekly timeframe</b> · นี่คือ setup
+      ที่สร้างเศรษฐีจริง (AMD 2016 → +5,000%, NVDA 2016 → +30,000%, META 2024 → +400%) ·
+      ใช้หลักการ <b>Stan Weinstein Stage 2 Analysis</b> + <b>Multi-year base breakout</b>
+    </p>
+    <div class="examples">
+      <div class="example"><b>AMD 2016</b> · พักฐาน 8 ปี · <span class="gain">+5,000%</span> ใน 4 ปี</div>
+      <div class="example"><b>NVDA 2016</b> · พักฐาน 15 ปี · <span class="gain">+30,000%</span> ใน 8 ปี</div>
+      <div class="example"><b>META 2024</b> · พักฐาน 3 ปี · <span class="gain">+400%</span> ใน 1.5 ปี</div>
+      <div class="example"><b>PLTR 2024</b> · พักฐาน 4 ปี · <span class="gain">+700%</span> ใน 1 ปี</div>
+      <div class="example"><b>SMCI 2023</b> · พักฐาน 5 ปี · <span class="gain">+800%</span> ใน 1.5 ปี</div>
+    </div>
+  </div>
+
+  <!-- ===== CONTROL ===== -->
+  <div class="panel">
+    <h3>⚙️ ตั้งค่าการสแกน</h3>
+    <div class="ctrl-grid">
+      <div class="ctrl">
+        <label>Universe</label>
+        <select id="uniSel">
+          <option value="curated600" selected>🌐 Curated 600 (แนะนำ — ครอบคลุมตลาดส่วนใหญ่)</option>
+          <option value="sp500">📊 S&P 500 (หุ้นใหญ่)</option>
+          <option value="recovery">💎 Recovery Stocks (fallen angels)</option>
+          <option value="growth">🚀 High Growth + Tech</option>
+          <option value="custom">✏️ Custom Symbols</option>
+        </select>
+      </div>
+      <div class="ctrl" id="customWrap" style="display:none">
+        <label>Custom symbols (comma-separated)</label>
+        <input type="text" id="customSyms" placeholder="AMD,NVDA,PLTR,..." />
+      </div>
+      <div class="ctrl">
+        <label>Base ขั้นต่ำ (ปี) <span class="v" id="bYrV">4</span></label>
+        <input type="range" id="bYr" min="2" max="8" step="0.5" value="4"/>
+      </div>
+      <div class="ctrl">
+        <label>Score ขั้นต่ำ <span class="v" id="sMinV">55</span></label>
+        <input type="range" id="sMin" min="0" max="100" step="5" value="55"/>
+      </div>
+      <div class="ctrl">
+        <label>โหมดการคัด</label>
+        <select id="modeSel">
+          <option value="fresh" selected>⚡ Fresh Breakout (1-8 สัปดาห์)</option>
+          <option value="setup">🎯 Setup ใกล้ Pivot (พร้อมเบรก)</option>
+          <option value="all">📊 ทั้งหมด</option>
+        </select>
+      </div>
+    </div>
+    <div class="ctrl-checks">
+      <label class="check on"><input type="checkbox" id="cTrend" checked> ต้องอยู่เหนือ MA30W (Stan Weinstein)</label>
+      <label class="check on"><input type="checkbox" id="cVol" checked> Volume Confirmation</label>
+      <label class="check on"><input type="checkbox" id="cMA" checked> MA30W Rising (trend เปลี่ยน)</label>
+      <label class="check"><input type="checkbox" id="cCache" checked> ใช้ Cache (TTL 1 สัปดาห์)</label>
+    </div>
+    <div class="scan-row">
+      <button class="btn-primary" id="scanBtn" onclick="runScan()">
+        <span id="sIcon">🔍</span> <span id="sLbl">เริ่มสแกนระยะยาว</span>
+      </button>
+      <button class="btn-ghost" onclick="clearCache()">🗑️ ล้าง Cache</button>
+      <button class="btn-ghost" onclick="exportCSV()">📥 Export CSV</button>
+      <span style="color:var(--muted);font-size:12px" id="cacheInfo">—</span>
+    </div>
+    <div style="margin-top:10px;padding:10px 14px;background:var(--bg3);border-radius:8px;font-size:11.5px;color:var(--muted);line-height:1.7">
+      ⏰ <b>หมายเหตุ:</b> การสแกนครั้งแรกใช้เวลา ~2-4 นาที (โหลด weekly data 5 ปี ของ 600 หุ้น) ·
+      ครั้งต่อไปเร็วขึ้นมากเพราะ cache · ข้อมูลรายสัปดาห์ <b>ไม่ต้องสแกนบ่อย — แนะนำสแกนสัปดาห์ละครั้ง</b>
+      (ทุกวันเสาร์-อาทิตย์ หลังตลาดปิด)
+    </div>
+  </div>
+
+  <!-- ===== PROGRESS ===== -->
+  <div class="prog-wrap" id="progWrap">
+    <div class="prog-row">
+      <span id="progText">⏳ กำลังเตรียม...</span>
+      <span id="progCount">0 / 0</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-log" id="progLog"></div>
+  </div>
+
+  <!-- ===== STATS ===== -->
+  <div class="stats-bar" id="statsBar" style="display:none">
+    <div class="stat ocean"><label>🌊 Tier A (Score ≥80)</label><div class="v" id="sA">—</div></div>
+    <div class="stat"><label>🥈 Tier B (65-79)</label><div class="v" id="sB">—</div></div>
+    <div class="stat green"><label>⚡ Fresh Breakout</label><div class="v" id="sFresh">—</div></div>
+    <div class="stat purple"><label>🎯 Setup (ใกล้ Pivot)</label><div class="v" id="sSetup">—</div></div>
+    <div class="stat gold"><label>📊 ผ่าน Trend Filter</label><div class="v" id="sTrend">—</div></div>
+    <div class="stat"><label>🔢 Scan ทั้งหมด</label><div class="v" id="sTotal">—</div></div>
+  </div>
+
+  <!-- ===== RESULTS ===== -->
+  <div class="results-wrap" id="resultsWrap" style="display:none">
+    <div class="results-head">
+      <h2 id="resHead">🌊 ผลการสแกน</h2>
+      <span style="color:var(--muted);font-size:12px" id="resMeta">—</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="lt">
+        <thead>
+          <tr>
+            <th class="left" data-sort="symbol">Symbol</th>
+            <th data-sort="score">Score</th>
+            <th class="left">Tier</th>
+            <th class="left">Status</th>
+            <th data-sort="price">Price</th>
+            <th data-sort="pivot">Pivot</th>
+            <th data-sort="distance">Dist %</th>
+            <th data-sort="yearsInBase">Years in Base</th>
+            <th data-sort="drawdownFromATH">From ATH</th>
+            <th data-sort="upsideToATH">Upside to ATH</th>
+            <th data-sort="volSurge">Vol×</th>
+            <th data-sort="ma30Dist">vs MA30W</th>
+          </tr>
+        </thead>
+        <tbody id="resBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== INITIAL ===== -->
+  <div id="initial" class="panel" style="text-align:center;padding:50px 20px">
+    <div style="font-size:48px;margin-bottom:14px">🌊</div>
+    <h2 style="margin:0 0 6px">พร้อมตามล่าหุ้นคลื่นใหญ่</h2>
+    <p style="color:var(--muted);margin:0 0 20px;font-size:13px">
+      กดปุ่ม <b>เริ่มสแกนระยะยาว</b> ด้านบน · ระบบจะดึงข้อมูล weekly 5 ปี ของหุ้น 600 ตัว<br/>
+      แล้วหาตัวที่ <b>พักฐาน 4+ ปี และเริ่ม breakout บน weekly timeframe</b>
+    </p>
+    <div style="display:inline-flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:800px">
+      <div style="background:var(--bg3);border:1px solid var(--line);padding:14px;border-radius:10px;flex:1;min-width:230px;text-align:left">
+        <b style="color:var(--ocean)">🌊 Tier A (80-100)</b><br/>
+        <span style="color:var(--muted);font-size:12px">Multi-year base + breakout + volume + trend ครบ — โอกาส 10-bagger</span>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--line);padding:14px;border-radius:10px;flex:1;min-width:230px;text-align:left">
+        <b style="color:var(--accent2)">🥈 Tier B (65-79)</b><br/>
+        <span style="color:var(--muted);font-size:12px">มี setup ดี แต่อาจขาด volume หรือ trend ยังไม่สมบูรณ์</span>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--line);padding:14px;border-radius:10px;flex:1;min-width:230px;text-align:left">
+        <b style="color:var(--purple)">🎯 Setup mode</b><br/>
+        <span style="color:var(--muted);font-size:12px">หุ้นที่ใกล้เบรก pivot ภายใน 5% — เตรียมเข้าก่อนคนอื่น</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EDUCATION ===== -->
+  <div class="edu">
+    <h3>📚 เข้าใจ Multi-Year Base Breakout</h3>
+    <p>
+      นักลงทุนระดับโลกอย่าง <b>Stan Weinstein</b> สอนว่าหุ้นมี 4 stages — และจังหวะที่หุ้นเปลี่ยนจาก
+      <b>Stage 1 (พักฐาน)</b> ไป <b>Stage 2 (uptrend)</b> คือจุดที่นักลงทุนระยะยาวเข้าซื้อ ·
+      ยิ่งฐานยาว ยิ่งระเบิดแรง — ฐาน 4 ปีให้กำไร 100-300%, ฐาน 8+ ปีให้กำไร 500-5000%
+    </p>
+    <div class="grid">
+      <div class="card">
+        <h4>📊 หลักการคัด</h4>
+        <p>• <b>Base ≥ 4 ปี</b> (208+ weekly bars)<br/>
+          • ราคา <b>break out จาก base</b> ในช่วง 1-8 สัปดาห์ล่าสุด<br/>
+          • อยู่เหนือ <b>MA30W</b> (Stan Weinstein's key MA)<br/>
+          • <b>MA30W เริ่มชี้ขึ้น</b> (trend เปลี่ยนทิศ)<br/>
+          • <b>Volume เพิ่ม</b> ในช่วง breakout</p>
+      </div>
+      <div class="card">
+        <h4>🎯 กลยุทธ์เทรด</h4>
+        <p>• <b>Entry:</b> ที่ pivot หรือใน 5% เหนือ pivot<br/>
+          • <b>Stop Loss:</b> 10-15% ใต้ pivot (เผื่อ volatile)<br/>
+          • <b>Hold time:</b> 1-3 ปี (เป็นการลงทุนระยะยาว)<br/>
+          • <b>Position size:</b> 5-10% ของพอร์ต<br/>
+          • <b>Target:</b> มักวิ่ง 100-500% ใน 1-3 ปี</p>
+      </div>
+      <div class="card">
+        <h4>⚠️ ความเสี่ยง</h4>
+        <p>• <b>False breakout</b> (~30-40%) — ใช้ stop loss กันได้<br/>
+          • <b>Volatility สูง</b> ระหว่างทาง — ต้องทนแกว่งได้<br/>
+          • <b>Macro risk</b> — ตลาดหมีฉุดทุกตัวลง<br/>
+          • <b>Patience</b> — บางตัวใช้ 6-12 เดือนกว่าจะวิ่ง<br/>
+          • <b>ไม่ใช่ทุกตัวเป็น 10-bagger</b></p>
+      </div>
+      <div class="card">
+        <h4>💡 เคล็ดลับสำคัญ</h4>
+        <p>• สแกน <b>วันเสาร์-อาทิตย์</b> (หลังตลาดปิดสัปดาห์)<br/>
+          • คัดได้ 5-15 ตัว → <b>ค่อย ๆ ทยอยเข้า</b><br/>
+          • อย่าใส่ทั้งพอร์ตในตัวเดียว<br/>
+          • <b>Stay patient</b> — ตัวที่ขึ้นช้าตอนแรก มักวิ่งดีสุดในที่สุด<br/>
+          • <b>Re-scan ทุกสัปดาห์</b> เพื่อหา setup ใหม่ ๆ</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target.id==='modalBg')closeModal()">
+  <div class="modal">
+    <div class="m-head">
+      <div>
+        <h3 id="mSym">—</h3>
+        <div class="sub" id="mName">—</div>
+      </div>
+      <button class="m-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="m-body">
+      <div>
+        <span class="price-big" id="mPrice">—</span>
+        <span class="chg-big" id="mChg">—</span>
+        <span id="mTierBadge" style="margin-left:12px"></span>
+      </div>
+
+      <div class="m-grid">
+        <div>
+          <div class="m-chart-box">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px">📊 Weekly Chart · 5 ปี + Base highlight</div>
+            <canvas id="mChart" width="900" height="400" style="width:100%;height:auto;display:block"></canvas>
+            <div class="chart-tip" id="chartTip"></div>
+            <div class="chart-legend">
+              <span><i style="background:#60a5fa"></i>Weekly Close</span>
+              <span><i style="background:#22c55e"></i>MA10W</span>
+              <span><i style="background:#0ea5e9"></i>MA30W</span>
+              <span><i style="background:#a855f7"></i>MA40W</span>
+              <span><i style="background:rgba(14,165,233,.3);border:1px dashed #0ea5e9"></i>Base 4+ Years</span>
+              <span><i style="background:#ef4444"></i>Pivot Line</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="potential">
+            <h4>💰 Upside Potential</h4>
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <div>
+                <div style="font-size:11px;color:var(--muted)">ถ้าราคากลับไป All-Time High</div>
+                <div class="big" id="mUpsideATH">+0%</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:11px;color:var(--muted)">เป้าหมายราคา</div>
+                <div style="font-size:18px;font-weight:700" id="mTargetATH">$0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="m-section">
+            <h4>🎯 Trade Plan (Long-Term)</h4>
+            <div class="kv"><span class="k">Pivot (Buy Point)</span><span class="v" id="kPivot">—</span></div>
+            <div class="kv"><span class="k">Entry Range (+5%)</span><span class="v" id="kEntry">—</span></div>
+            <div class="kv"><span class="k">Stop Loss (-12%)</span><span class="v" id="kStop" style="color:var(--red)">—</span></div>
+            <div class="kv"><span class="k">Target 1 (+50%)</span><span class="v" id="kT1" style="color:var(--green)">—</span></div>
+            <div class="kv"><span class="k">Target 2 (+100%)</span><span class="v" id="kT2" style="color:var(--green)">—</span></div>
+            <div class="kv"><span class="k">Target 3 (ATH)</span><span class="v" id="kT3" style="color:var(--gold)">—</span></div>
+            <div class="kv"><span class="k">Recommended Hold</span><span class="v">1-3 ปี</span></div>
+          </div>
+
+          <div class="m-section" style="margin-top:12px">
+            <h4>📊 Base Analysis</h4>
+            <div class="kv"><span class="k">Years in Base</span><span class="v" id="kYears">—</span></div>
+            <div class="kv"><span class="k">Base High (Pivot)</span><span class="v" id="kBaseHigh">—</span></div>
+            <div class="kv"><span class="k">Base Low</span><span class="v" id="kBaseLow">—</span></div>
+            <div class="kv"><span class="k">Base Range</span><span class="v" id="kBaseRange">—</span></div>
+            <div class="kv"><span class="k">All-Time High</span><span class="v" id="kATH">—</span></div>
+            <div class="kv"><span class="k">From ATH</span><span class="v neg" id="kFromATH">—</span></div>
+          </div>
+
+          <div class="m-section" style="margin-top:12px">
+            <h4>📈 Trend & Volume</h4>
+            <div class="kv"><span class="k">Price vs MA30W</span><span class="v" id="kMA30">—</span></div>
+            <div class="kv"><span class="k">MA30W Rising?</span><span class="v" id="kMA30Rise">—</span></div>
+            <div class="kv"><span class="k">Volume Surge</span><span class="v" id="kVol">—</span></div>
+            <div class="kv"><span class="k">Status</span><span class="v" id="kStatus">—</span></div>
+            <div class="kv"><span class="k">Score</span><span class="v" id="kScore">—</span></div>
+          </div>
+
+          <div class="m-actions">
+            <a id="aTV" target="_blank">📊 TradingView</a>
+            <a id="aFinviz" target="_blank">🔎 Finviz</a>
+            <a id="aYahoo" target="_blank">📈 Yahoo</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast">—</div>
+
+<footer>
+  🌊 <b>Bullzeeker · Big Wave Scanner</b> — ตามล่า 10-Bagger สำหรับนักลงทุนระยะยาว · Powered by Yahoo Finance · Educational only<br/>
+  หลักการอ้างอิง: Stan Weinstein's Stage Analysis · Multi-Year Base Breakout · Weekly Timeframe Investing
+</footer>
+
+<script>
+/* ============================================================
+   LONG-TERM WEEKLY SCANNER · Multi-Year Base Breakout
+   ============================================================ */
+
+/* ---------- CURATED UNIVERSE (~600 names) ---------- */
+const UNI_CURATED = [
+  // === Mega Cap Tech ===
+  'AAPL','MSFT','GOOGL','GOOG','AMZN','META','NVDA','TSLA','AVGO','ORCL','ADBE','CRM','AMD','NFLX',
+  // === S&P 500 Tech ===
+  'INTC','CSCO','QCOM','TXN','IBM','NOW','AMAT','MU','LRCX','KLAC','ADI','PANW','SNPS','CDNS','MRVL',
+  'ANET','FTNT','CRWD','NET','SNOW','DDOG','MDB','ZS','TEAM','WDAY','ADSK','INTU','HPQ','DELL',
+  'STX','WDC','NTAP','EPAM','GLW','AKAM','VRSN','CTSH','GEN','SWKS','MCHP','TER','ENPH','SEDG','TYL',
+  'JKHY','PAYC','PAYX','ADP','MSCI','FICO','CDW','FFIV','MSI','APH','TDY','HUBB','TRMB','ZBRA',
+  // === Mid-cap Tech / Growth ===
+  'PLTR','SHOP','SQ','PYPL','UBER','LYFT','SPOT','ABNB','DASH','SOFI','HOOD','COIN','MSTR','TSM',
+  'ASML','ARM','SMCI','APP','RBLX','U','PATH','S','HUBS','TOST','DOCN','MELI','CELH','TWLO',
+  'CFLT','GTLB','BILL','BOX','PD','OKTA','FROG','SMAR','BL','APPN','NCNO','ESTC','NEWR','DOCN',
+  'AI','SOUN','PATH','BBAI','DUOL','RDDT','META','AXON','TTD','WDAY','PINS','SNAP','MTCH',
+  // === Communication Services ===
+  'DIS','WBD','T','VZ','CMCSA','CHTR','TMUS','NWSA','FOXA','PARA','LYV','LBRDK','BIDU','NTES',
+  // === Financials ===
+  'JPM','BAC','WFC','C','GS','MS','BLK','SCHW','AXP','V','MA','BRK-B','COF','USB','PNC','TFC',
+  'BX','KKR','APO','CME','ICE','NDAQ','MMC','AON','PGR','TRV','ALL','MET','PRU','AFL','AIG',
+  'CB','HIG','RJF','LPLA','AMP','TROW','BEN','IVZ','NTRS','STT','BK','MTB','RF','HBAN','KEY',
+  'CFG','FITB','CMA','ZION','WAL','SBNY','BAP','BX','CARR','BBY','TGT','DG','DLTR',
+  // === Healthcare ===
+  'JNJ','LLY','UNH','PFE','MRK','ABBV','TMO','DHR','ABT','BMY','AMGN','GILD','CVS','MDT','ISRG',
+  'VRTX','REGN','MRNA','BIIB','HUM','ELV','CI','ZTS','BSX','SYK','BDX','EW','HCA','CNC','MCK',
+  'CAH','COR','BAX','RMD','IDXX','DXCM','PODD','ALGN','MTD','WAT','ILMN','A','IQV','LH','DGX',
+  'CRL','BIO','TFX','GMED','HOLX','ZBH','HSIC','PEN','TDOC','VEEV','IRWD','EXAS','NTRA','TWST',
+  // === Consumer ===
+  'WMT','COST','PG','KO','PEP','MDLZ','CL','MO','PM','TGT','HD','LOW','NKE','SBUX','MCD','BKNG',
+  'MAR','HLT','CMG','LULU','ROST','TJX','BURL','GPS','URBN','ANF','RH','WSM','LVS','MGM','WYNN',
+  'CCL','RCL','NCLH','HAS','MAT','TPR','RL','LEVI','UAA','FL','DKS','BBWI','EL','COTY','PVH',
+  'F','GM','RIVN','LCID','NIO','XPEV','LI','POOL','GRMN','VFC','HBI','PLNT','PTON','LULU','DECK',
+  // === Restaurants ===
+  'MCD','CMG','SBUX','YUM','DPZ','QSR','WEN','JACK','SHAK','CAKE','TXRH','EAT','BLMN','DRI','BJRI',
+  // === Consumer Staples ===
+  'KO','PEP','PG','CL','MDLZ','MO','PM','KMB','GIS','K','HSY','CPB','CAG','SJM','MKC','CHD',
+  'CLX','EL','MNST','KDP','STZ','BF-B','DEO','TAP','SAM','BUD','KHC','TSN','HRL','LANC','POST',
+  // === Energy ===
+  'XOM','CVX','COP','SLB','EOG','MPC','PSX','VLO','OXY','HAL','PXD','HES','DVN','FANG','PR',
+  'CTRA','APA','EQT','OVV','MRO','CIVI','PR','MTDR','RRC','CHRD','SWN','AR','CNX','SM','VTLE',
+  'BKR','NOV','FTI','CHX','LBRT','PUMP','HP','WHD','SOI','NEXT','CRC','BTU','ARCH','HCC','CEIX',
+  // === Industrials ===
+  'BA','CAT','HON','UPS','UNP','DE','GE','MMM','LMT','RTX','NOC','GD','ETN','EMR','ITW','CSX',
+  'FDX','DAL','UAL','AAL','LUV','SAVE','JBLU','HA','EXPD','CHRW','XPO','ODFL','LSTR','KNX','WERN',
+  'WAB','TDG','HEI','TRN','GNK','GBX','TRMB','PWR','MTZ','CUM','PCAR','PACK','SWK','DOV','ROK',
+  'LECO','GWW','FAST','MSM','POOL','URI','HRI','AOS','LII','TPR','WCC','MAS','BLDR','TPC','WSO',
+  // === Materials ===
+  'LIN','APD','SHW','FCX','NEM','DD','MLM','VMC','STLD','NUE','RS','CMC','CLF','X','SCCO','AA',
+  'CTRA','MOS','CF','FMC','LYB','DOW','EMN','OLN','HUN','CC','WLK','TROX','RPM','NGVT','MTX','SLGN',
+  // === Utilities ===
+  'NEE','DUK','SO','D','AEP','XEL','SRE','PCG','EXC','EIX','WEC','ED','ETR','DTE','AEE','CMS',
+  'PEG','FE','ES','CNP','PPL','PNW','LNT','EVRG','NRG','VST','UGI','OKE','WMB','KMI','TRGP','EPD',
+  // === REITs ===
+  'AMT','PLD','CCI','EQIX','SPG','O','PSA','EXR','VICI','WELL','AVB','EQR','UDR','MAA','ESS','CPT',
+  'INVH','SUI','ELS','LSI','HST','RHP','PEAK','VTR','OHI','LTC','SBRA','MPW','DOC','DEA','HR',
+  'ARE','BXP','VNO','SLG','KIM','REG','FRT','BRX','MAC','SKT','UE','EPRT','FCPT','GTY','NTST',
+  // === Materials & Mining ===
+  'GOLD','AEM','KGC','AGI','SBSW','RGLD','WPM','FNV','PAAS','HL','CDE','MUX','SVM','EXK','AG',
+  // === Crypto-adjacent ===
+  'COIN','MSTR','MARA','RIOT','HUT','BITF','CLSK','HIVE','BTBT','CIFR','IREN','WULF','CORZ','CAN',
+  // === Recovery / Fallen angels ===
+  'BABA','JD','PDD','BIDU','NTES','BILI','GRPN','FUBO','CHWY','SOFI','LMND','UPST','AFRM',
+  'AMC','GME','CVNA','OPEN','REDFIN','ZG','RDFN','RBLX','HUBS','BMBL','MTCH','DKNG','PENN','CZR',
+  'NIO','LI','XPEV','PSNY','LCID','RIVN','GOEV','RIDE','WKHS','HYLN','FFIE','MULN','BBAI','WULF',
+  // === Biotech / Pharma ===
+  'MRNA','BNTX','NVAX','VKTX','SAVA','AXSM','BIIB','SAGE','EXEL','HALO','NTLA','BEAM','CRSP','VRTX',
+  'EDIT','NTRA','ARWR','VRDN','BMRN','ALNY','SRPT','BLUE','RARE','FOLD','RVMD','RYTM','VRDN','MGNX',
+  'IONS','PTCT','ARQT','TWST','ABCL','ASND','DNA','GH','EXAS','NSTG','PACB','CDNA','OMER','ORIC',
+  // === Software (more) ===
+  'WDAY','VEEV','SPLK','PLTR','PEGA','RPD','TENB','SUMO','CFLT','GTLB','BOX','PD','OKTA','FROG',
+  'SMAR','APPN','NCNO','ESTC','NEWR','MNDY','AYX','ALTR','ASAN','BILL','APPS','PRGS','DT','WK','PCTY',
+  // === Semis / AI ===
+  'NVDA','AMD','TSM','ARM','SMCI','AVGO','QCOM','TXN','MU','LRCX','KLAC','AMAT','MRVL','ON','MCHP',
+  'MPWR','NXPI','STM','UMC','HIMX','SLAB','VECO','COHU','ENTG','POWI','SITM','CRUS','SYNA','SWKS',
+  'AAOI','LITE','VIAV','IIVI','NPTN','OLED','EMKR','AXTI','LSCC','ALGM','AMBA','CEVA','MTSI','RMBS',
+  // === Aerospace & Defense ===
+  'BA','LMT','RTX','NOC','GD','TXT','HII','LHX','AVAV','KTOS','BWXT','LDOS','BAH','SAIC','MRCY',
+  // === ETFs Popular ===
+  'SPY','QQQ','IWM','DIA','VOO','VTI','VEA','VWO','EFA','EEM','XLF','XLE','XLK','XLV','XLI','XLY',
+  'XLP','XLU','XLB','XLRE','XLC','SOXX','SMH','IBB','XBI','GDX','GDXJ','GLD','SLV','USO','UNG','TLT',
+  'ARKK','ARKG','ARKW','ARKQ','ARKF','TQQQ','SOXL','UPRO'
+];
+
+const UNI_SP500 = UNI_CURATED.slice(0, 200);
+
+const UNI_RECOVERY = [
+  'BABA','JD','PDD','BIDU','NTES','BILI','PYPL','INTC','NKE','DIS','SHOP','PYPL','SQ','MELI',
+  'PLTR','UBER','COIN','HOOD','SOFI','UPST','AFRM','AMC','GME','CVNA','OPEN','RDFN','LMND',
+  'NIO','LI','XPEV','PSNY','LCID','RIVN','RBLX','PINS','SNAP','BMBL','MTCH','SPOT','FUBO',
+  'PTON','CHWY','GRPN','WOLF','ETSY','W','OSTK','TDOC','BB','NOK','VRM','TWLO','DOCU','ZM',
+  'NET','SNOW','DDOG','MDB','ZS','OKTA','CRWD','BILL','FROG','PD','APP','PATH','AI','SOUN',
+  'WBA','VFC','GPS','URBN','EL','COTY','TUP','BBBY','EXPR','REAL','POSH','RVLV','LEVI','UAA',
+  'TGT','DG','DLTR','BBY','LOW','HD','MCD','SBUX','LULU','DECK','UAA','KSS','M','JCP','FL',
+  'CAR','HTZ','VIPS','WBA','CVS','WMT','BBY','TGT'
+];
+
+const UNI_GROWTH = [
+  'NVDA','AMD','SMCI','PLTR','CRWD','NET','SNOW','DDOG','SHOP','MELI','CELH','UBER','ABNB','DASH',
+  'SOFI','HOOD','COIN','MSTR','ARM','TSLA','AXON','TTD','MDB','ZS','APP','DKNG','RBLX','U','PATH',
+  'HUBS','TOST','TWLO','NOW','META','AVGO','TSM','ASML','LLY','VRTX','REGN','MRNA','MRVL','ANET',
+  'FTNT','OKTA','BILL','GTLB','CFLT','S','BBAI','SOUN','AI','DUOL','RDDT','RBLX','TEAM','PANW',
+  'CRWD','DDOG','MDB','ZS','OKTA','HUBS','SHOP','TWLO','BILL','GTLB','RBLX','U','RDDT','ARM','APP'
+];
+
+/* Names (display) - small subset, fallback to symbol if not listed */
+const NAMES = {
+  AAPL:'Apple', MSFT:'Microsoft', GOOGL:'Alphabet A', GOOG:'Alphabet C', AMZN:'Amazon',
+  META:'Meta Platforms', NVDA:'NVIDIA', TSLA:'Tesla', AVGO:'Broadcom', ORCL:'Oracle',
+  ADBE:'Adobe', CRM:'Salesforce', AMD:'AMD', INTC:'Intel', CSCO:'Cisco',
+  QCOM:'Qualcomm', TXN:'Texas Instruments', NOW:'ServiceNow', PANW:'Palo Alto',
+  CRWD:'CrowdStrike', NET:'Cloudflare', SNOW:'Snowflake', DDOG:'Datadog',
+  PLTR:'Palantir', SMCI:'Super Micro', ARM:'Arm Holdings', TSM:'Taiwan Semi',
+  NFLX:'Netflix', SPOT:'Spotify', DIS:'Disney', JPM:'JPMorgan', V:'Visa', MA:'Mastercard',
+  COIN:'Coinbase', HOOD:'Robinhood', SHOP:'Shopify', UBER:'Uber', ABNB:'Airbnb',
+  LLY:'Eli Lilly', UNH:'UnitedHealth', JNJ:'Johnson&Johnson', WMT:'Walmart', COST:'Costco',
+  HD:'Home Depot', NKE:'Nike', MCD:'McDonalds', XOM:'Exxon', CVX:'Chevron',
+  SPY:'S&P 500 ETF', QQQ:'Nasdaq 100 ETF', IWM:'Russell 2000 ETF', DIA:'Dow ETF',
+  MSTR:'MicroStrategy', MARA:'Marathon Digital', RIOT:'Riot Platforms', BABA:'Alibaba',
+  JD:'JD.com', PDD:'PDD Holdings', BIDU:'Baidu', NTES:'NetEase', PYPL:'PayPal',
+  SQ:'Block Inc.', AVGO:'Broadcom', ARKK:'ARK Innovation', DKNG:'DraftKings'
+};
+
+/* ---------- HELPERS ---------- */
+const $ = s=>document.querySelector(s);
+const $$ = s=>Array.from(document.querySelectorAll(s));
+function toast(m,ms=2500){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),ms)}
+function fmt$(v){return v==null||!isFinite(v)?'—':'$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmtPct(v,sign=true){if(v==null||!isFinite(v))return'—';return (sign&&v>=0?'+':'')+v.toFixed(2)+'%'}
+function fmtN(v){if(v==null||!isFinite(v))return'—';if(v>=1e9)return(v/1e9).toFixed(2)+'B';if(v>=1e6)return(v/1e6).toFixed(2)+'M';if(v>=1e3)return(v/1e3).toFixed(1)+'K';return v.toFixed(0)}
+
+/* ---------- INDICATORS ---------- */
+function sma(arr, p){
+  const out = new Array(arr.length).fill(null);
+  let s = 0;
+  for(let i=0;i<arr.length;i++){
+    if(arr[i]==null) continue;
+    s += arr[i];
+    if(i>=p) s -= arr[i-p];
+    if(i>=p-1) out[i] = s/p;
+  }
+  return out;
+}
+function ema(arr, p){
+  const k = 2/(p+1);
+  const out = new Array(arr.length).fill(null);
+  if(arr.length<p) return out;
+  let s=0;
+  for(let i=0;i<p;i++) s+=arr[i];
+  out[p-1] = s/p;
+  for(let i=p;i<arr.length;i++){
+    out[i] = arr[i]*k + out[i-1]*(1-k);
+  }
+  return out;
+}
+
+/* ---------- DATA FETCH ---------- */
+const PROXIES = [
+  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+  url => 'https://corsproxy.io/?' + encodeURIComponent(url),
+  url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
+];
+const CACHE_KEY = 'longterm_cache_v1';
+const CACHE_TTL = 1000*60*60*24*7; // 1 week (weekly data doesn't change fast)
+let CACHE = {};
+try{ CACHE = JSON.parse(localStorage.getItem(CACHE_KEY)||'{}'); }catch{}
+
+function saveCache(){
+  try{ localStorage.setItem(CACHE_KEY, JSON.stringify(CACHE)); }
+  catch(e){
+    // Quota — drop oldest 30%
+    const ents = Object.entries(CACHE).sort((a,b)=>a[1].ts-b[1].ts);
+    const dropN = Math.floor(ents.length*0.3);
+    ents.slice(0, dropN).forEach(([k])=>delete CACHE[k]);
+    try{ localStorage.setItem(CACHE_KEY, JSON.stringify(CACHE)); }catch{}
+  }
+}
+function updateCacheInfo(){
+  const n = Object.keys(CACHE).length;
+  const sz = (JSON.stringify(CACHE).length/1024).toFixed(0);
+  $('#cacheInfo').textContent = `📦 cache: ${n} หุ้น · ${sz} KB · TTL 1 สัปดาห์`;
+}
+function clearCache(){
+  CACHE = {}; localStorage.removeItem(CACHE_KEY);
+  updateCacheInfo(); toast('🗑️ ล้าง cache แล้ว');
+}
+
+async function fetchWeekly(symbol, useCache=true){
+  const now = Date.now();
+  if(useCache && CACHE[symbol] && (now-CACHE[symbol].ts)<CACHE_TTL) return CACHE[symbol].data;
+  // 5y weekly
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=5y&interval=1wk`;
+  let lastErr;
+  for(const px of PROXIES){
+    try{
+      const r = await fetch(px(url), {cache:'no-store'});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const j = JSON.parse(await r.text());
+      const res = j?.chart?.result?.[0];
+      if(!res) throw new Error('no chart');
+      const ts = res.timestamp || [];
+      const q = res.indicators?.quote?.[0] || {};
+      const data = ts.map((t,i)=>({
+        t, o:q.open?.[i], h:q.high?.[i], l:q.low?.[i], c:q.close?.[i], v:q.volume?.[i]
+      })).filter(d=>d.c!=null && d.h!=null && d.l!=null);
+      if(data.length < 100) throw new Error('insufficient weeks ('+data.length+')');
+      CACHE[symbol] = {ts: now, data};
+      return data;
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error('fetch failed');
+}
+
+/* ---------- ANALYSIS ---------- */
+function analyzeWeekly(symbol, data, cfg){
+  const n = data.length;
+  if(n < 100) return null;  // need ~2y minimum
+
+  const closes = data.map(d=>d.c);
+  const highs = data.map(d=>d.h);
+  const lows = data.map(d=>d.l);
+  const vols = data.map(d=>d.v).map(v=>v==null?0:v);
+
+  const price = closes[n-1];
+  const prevPrice = closes[n-2] || price;
+  const changePct = (price/prevPrice - 1) * 100;
+
+  // MAs
+  const ma10w = ema(closes, 10);
+  const ma30w = sma(closes, 30);  // Stan Weinstein's key
+  const ma40w = ema(closes, 40);  // Minervini's long-term
+
+  const ma30Now = ma30w[n-1];
+  const ma40Now = ma40w[n-1];
+  if(ma30Now == null) return null;  // need enough data
+
+  // All-Time High in the data
+  const ath = Math.max(...highs);
+  const athIdx = highs.indexOf(ath);
+
+  // Base period: as long as available, up to 5 years
+  // Adaptive: try to find the LONGEST base that meets criteria
+  const baseMinWeeks = Math.round(cfg.baseYears * 52);
+  const maxLookback = Math.min(n-2, 260);  // ~5y max
+  if(maxLookback < baseMinWeeks) return null;
+
+  // Use a fixed lookback at baseMinWeeks for now
+  const baseLookback = Math.min(maxLookback, baseMinWeeks * 1.5);  // try base 4-6y
+  const baseStart = n - 1 - baseLookback;
+  const baseEnd = n - 8;  // exclude last 8 weeks (recent breakout zone)
+  if(baseStart < 0 || baseEnd - baseStart < baseMinWeeks * 0.8) return null;
+
+  const baseHighs = highs.slice(baseStart, baseEnd);
+  const baseLows = lows.slice(baseStart, baseEnd);
+  const baseCloses = closes.slice(baseStart, baseEnd);
+  const baseVols = vols.slice(baseStart, baseEnd);
+
+  const baseHigh = Math.max(...baseHighs);
+  const baseLow = Math.min(...baseLows);
+  const baseRange = (baseHigh - baseLow) / baseHigh;
+
+  // Pivot = highest CLOSE in base (more reliable than high)
+  const pivot = Math.max(...baseCloses);
+
+  // Skip if base too small (< 30% range = probably uptrending, not basing)
+  if(baseRange < 0.10) return null;
+  // Skip if base too wide (catastrophic decline isn't a "base")
+  if(baseRange > 0.95) return null;
+
+  // === BREAKOUT DETECTION ===
+  // Did we close above pivot in last 1-8 weeks?
+  let breakoutWeek = -1;
+  let breakoutPrice = null;
+  for(let i = Math.max(0, n-9); i < n; i++){
+    if(closes[i] > pivot * 1.005){
+      breakoutWeek = i;
+      breakoutPrice = closes[i];
+      break;  // first occurrence
+    }
+  }
+
+  // Distance from pivot
+  const distance = (price - pivot) / pivot * 100;
+
+  let status;
+  let statusLabel;
+  if(breakoutWeek === -1){
+    // not broken yet
+    if(distance >= -5 && distance < 0){
+      status = 'SETUP';
+      statusLabel = '🎯 Setup (ใกล้ Pivot)';
+    } else if(distance >= -15 && distance < -5){
+      status = 'BUILDING';
+      statusLabel = '⏳ Building';
+    } else {
+      return null;  // too far below pivot, not interesting
+    }
+  } else {
+    const weeksSince = n - 1 - breakoutWeek;
+    if(weeksSince <= 2) {
+      status = 'FRESH';
+      statusLabel = '⚡ Fresh Breakout';
+    } else if(weeksSince <= 8) {
+      status = 'RECENT';
+      statusLabel = '🚀 Breakout (' + weeksSince + 'w ago)';
+    } else {
+      status = 'EXTENDED';
+      statusLabel = '⚠️ Extended';
+      return null;  // too late
+    }
+  }
+
+  // === DRAWDOWN ANALYSIS ===
+  const drawdownFromATH = (price - ath) / ath * 100;  // negative
+  const upsideToATH = (ath - price) / price * 100;     // positive
+
+  // === TREND FILTERS ===
+  const aboveMA30 = price > ma30Now;
+  const aboveMA40 = price > ma40Now;
+  const ma30Rising = ma30w[n-13] != null && ma30w[n-1] > ma30w[n-13];
+  const ma40Rising = ma40w[n-13] != null && ma40w[n-1] > ma40w[n-13];
+  const ma30Dist = (price/ma30Now - 1) * 100;
+
+  // === VOLUME ANALYSIS ===
+  // Average vol in base period
+  const baseVolAvg = baseVols.reduce((a,b)=>a+b,0) / baseVols.length;
+  // Recent volume (last 4 weeks)
+  const recentVols = vols.slice(n-4);
+  const recentVolAvg = recentVols.reduce((a,b)=>a+b,0) / recentVols.length;
+  const volSurge = baseVolAvg > 0 ? recentVolAvg / baseVolAvg : 0;
+
+  // === SCORING ===
+  // Years in base
+  const yearsInBase = baseLookback / 52;
+
+  // 1. Base length score (max 25)
+  const baseLenScore = Math.min(yearsInBase / 5, 1.4) * 20;
+
+  // 2. Drawdown depth (deeper = bigger recovery potential, max 15)
+  // Sweet spot: -30% to -80% from ATH
+  let depthScore = 0;
+  const drawdownAbs = Math.abs(drawdownFromATH);
+  if(drawdownAbs >= 30 && drawdownAbs <= 90) {
+    depthScore = 15 - Math.abs(drawdownAbs - 60) * 0.2;  // peak at -60%
+  } else if(drawdownAbs >= 15 && drawdownAbs < 30) {
+    depthScore = 8;
+  }
+
+  // 3. Trend quality (max 30)
+  let trendScore = 0;
+  if(cfg.useTrend){
+    if(aboveMA30) trendScore += 12;
+    if(aboveMA40) trendScore += 8;
+    if(cfg.useMA){
+      if(ma30Rising) trendScore += 7;
+      if(ma40Rising) trendScore += 3;
+    } else {
+      trendScore += 5; // baseline
+    }
+  } else {
+    trendScore = 15;
+  }
+
+  // 4. Breakout quality (max 20)
+  let breakoutScore = 0;
+  if(status === 'FRESH') breakoutScore = 20;
+  else if(status === 'RECENT') breakoutScore = 18;
+  else if(status === 'SETUP') breakoutScore = 12;
+  else if(status === 'BUILDING') breakoutScore = 5;
+
+  // 5. Volume confirmation (max 10)
+  let volScore = 0;
+  if(cfg.useVol){
+    if(volSurge >= 2) volScore = 10;
+    else if(volSurge >= 1.5) volScore = 8;
+    else if(volSurge >= 1.2) volScore = 5;
+    else if(volSurge >= 1.0) volScore = 2;
+  } else {
+    volScore = 5;
+  }
+
+  const score = Math.round(Math.max(0, Math.min(100,
+    baseLenScore + depthScore + trendScore + breakoutScore + volScore
+  )));
+
+  let tier;
+  if(score >= 80) tier = 'A';
+  else if(score >= 65) tier = 'B';
+  else if(score >= 50) tier = 'C';
+  else tier = 'D';
+
+  return {
+    symbol, name: NAMES[symbol] || symbol,
+    price, changePct,
+    status, statusLabel,
+    score, tier,
+    pivot, baseHigh, baseLow, baseRange,
+    distance,
+    yearsInBase, baseStart, baseEnd,
+    ath, athIdx, drawdownFromATH, upsideToATH,
+    ma10w, ma30w, ma40w,
+    ma30Now, ma40Now, ma30Dist,
+    aboveMA30, aboveMA40, ma30Rising, ma40Rising,
+    volSurge, breakoutWeek,
+    data
+  };
+}
+
+/* ---------- SCAN ---------- */
+let state = {results: [], cfg: null, sort:{key:'score',dir:-1}, scanning:false};
+
+function getUniverse(){
+  const sel = $('#uniSel').value;
+  if(sel==='custom'){
+    const t = $('#customSyms').value.trim();
+    if(!t) return [];
+    return [...new Set(t.toUpperCase().split(/[,\s]+/).filter(Boolean))];
+  }
+  if(sel==='sp500') return [...new Set(UNI_SP500)];
+  if(sel==='recovery') return [...new Set(UNI_RECOVERY)];
+  if(sel==='growth') return [...new Set(UNI_GROWTH)];
+  return [...new Set(UNI_CURATED)];
+}
+
+function getCfg(){
+  return {
+    baseYears: parseFloat($('#bYr').value),
+    scoreMin: parseInt($('#sMin').value, 10),
+    mode: $('#modeSel').value,
+    useTrend: $('#cTrend').checked,
+    useVol: $('#cVol').checked,
+    useMA: $('#cMA').checked,
+    useCache: $('#cCache').checked,
+  };
+}
+
+async function concurrent(items, conc, worker, onProgress){
+  let idx=0, done=0;
+  const total = items.length;
+  async function run(){
+    while(idx<total){
+      const i = idx++;
+      try{ await worker(items[i], i); }catch{}
+      done++;
+      if(onProgress) onProgress(done, total, items[i]);
+    }
+  }
+  await Promise.all(Array(conc).fill(0).map(run));
+}
+
+async function runScan(){
+  if(state.scanning) return;
+  const uni = getUniverse();
+  if(!uni.length){ toast('กรุณาใส่ symbols'); return; }
+
+  state.scanning = true;
+  $('#scanBtn').disabled = true;
+  $('#sIcon').textContent='⏳'; $('#sLbl').textContent='กำลังสแกน...';
+  $('#initial').style.display='none';
+  $('#progWrap').classList.add('show');
+  $('#progFill').style.width='0%';
+  $('#progLog').innerHTML='';
+  $('#statsBar').style.display='none';
+  $('#resultsWrap').style.display='none';
+
+  const cfg = getCfg();
+  state.cfg = cfg;
+  const log = (m)=>{
+    const el = $('#progLog');
+    el.innerHTML = m + '<br/>' + el.innerHTML;
+    if(el.children.length>40) el.removeChild(el.lastChild);
+  };
+
+  try{
+    const t0 = performance.now();
+    $('#progText').textContent = `⏳ กำลังดึง weekly data ${uni.length} หุ้น (5 ปี)...`;
+    const dataMap = {};
+    let fetched = 0, failed = 0;
+    await concurrent(uni, 7, async(sym)=>{
+      try{
+        dataMap[sym] = await fetchWeekly(sym, cfg.useCache);
+        fetched++;
+      }catch(e){
+        dataMap[sym] = null;
+        failed++;
+      }
+    }, (done, total, sym)=>{
+      const pct = (done/total)*70;
+      $('#progFill').style.width = pct+'%';
+      $('#progCount').textContent = `${done} / ${total}`;
+      $('#progText').textContent = `📡 ${sym}`;
+    });
+    saveCache();
+    log(`✓ Fetch: ${fetched} ok, ${failed} failed in ${((performance.now()-t0)/1000).toFixed(1)}s`);
+
+    // Analyze
+    $('#progText').textContent = `🧮 กำลังวิเคราะห์ multi-year base breakout...`;
+    const results = [];
+    let analyzed = 0;
+    for(const sym of uni){
+      analyzed++;
+      const data = dataMap[sym];
+      if(!data) continue;
+      try{
+        const r = analyzeWeekly(sym, data, cfg);
+        if(r) results.push(r);
+      }catch{}
+      if(analyzed % 50 === 0){
+        $('#progFill').style.width = (70 + (analyzed/uni.length)*30)+'%';
+        $('#progText').textContent = `🧮 วิเคราะห์ ${analyzed}/${uni.length} · พบ ${results.length} ตัวที่มีลักษณะ`;
+      }
+    }
+    log(`✓ Analyzed ${analyzed} stocks, found ${results.length} candidates`);
+
+    state.results = results;
+    renderResults();
+
+    const secs = ((performance.now()-t0)/1000).toFixed(1);
+    toast(`🌊 สแกนเสร็จ ${secs}s · พบ ${results.length} candidates · Tier A: ${results.filter(r=>r.tier==='A').length}`);
+
+  }catch(e){
+    console.error(e);
+    toast('❌ Error: '+e.message, 4000);
+  }finally{
+    state.scanning = false;
+    $('#scanBtn').disabled = false;
+    $('#sIcon').textContent='🔍'; $('#sLbl').textContent='เริ่มสแกนใหม่';
+    $('#progWrap').classList.remove('show');
+    updateCacheInfo();
+  }
+}
+
+/* ---------- RENDER ---------- */
+function filterResults(rs, cfg){
+  let arr = rs.slice();
+  if(cfg.mode === 'fresh'){
+    arr = arr.filter(r => r.status === 'FRESH' || r.status === 'RECENT');
+  } else if(cfg.mode === 'setup'){
+    arr = arr.filter(r => r.status === 'SETUP' || r.status === 'FRESH' || r.status === 'RECENT');
+  }
+  arr = arr.filter(r => r.score >= cfg.scoreMin);
+  return arr;
+}
+
+function sortResults(arr){
+  const {key, dir} = state.sort;
+  arr.sort((a,b)=>{
+    let va = a[key], vb = b[key];
+    if(va==null) va = -Infinity;
+    if(vb==null) vb = -Infinity;
+    if(typeof va === 'string') return va.localeCompare(vb)*dir;
+    return (va-vb)*dir;
+  });
+  return arr;
+}
+
+function renderResults(){
+  const cfg = state.cfg;
+  const all = state.results;
+  const filtered = sortResults(filterResults(all, cfg));
+
+  // Stats
+  $('#statsBar').style.display='grid';
+  $('#sA').textContent = all.filter(r=>r.tier==='A').length;
+  $('#sB').textContent = all.filter(r=>r.tier==='B').length;
+  $('#sFresh').textContent = all.filter(r=>r.status==='FRESH'||r.status==='RECENT').length;
+  $('#sSetup').textContent = all.filter(r=>r.status==='SETUP').length;
+  $('#sTrend').textContent = all.filter(r=>r.aboveMA30 && r.ma30Rising).length;
+  $('#sTotal').textContent = all.length;
+
+  $('#resultsWrap').style.display='block';
+  const modeLabel = {fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',all:'📊 ทั้งหมด'}[cfg.mode];
+  $('#resHead').textContent = `🌊 ${modeLabel}`;
+  $('#resMeta').textContent = `${filtered.length} / ${all.length} หุ้น · เรียงตาม ${state.sort.key} ${state.sort.dir<0?'↓':'↑'}`;
+
+  if(!filtered.length){
+    $('#resBody').innerHTML = `<tr><td colspan="12" class="empty">
+      <div class="icon">🌊</div>
+      <div><b>ไม่พบหุ้นในเงื่อนไขนี้</b></div>
+      <div style="margin-top:6px;font-size:12px">ลองลด Score, เปลี่ยนโหมดเป็น "ทั้งหมด", หรือลด Base ขั้นต่ำ</div>
+    </td></tr>`;
+    return;
+  }
+
+  $('#resBody').innerHTML = filtered.map(r=>{
+    const tCol = r.tier==='A'?'#0ea5e9':r.tier==='B'?'#60a5fa':r.tier==='C'?'#8b97ab':'#5a6478';
+    const distCls = r.distance>=0 ? 'pos' : 'neg';
+    let statusBadge;
+    if(r.status==='FRESH') statusBadge = '<span class="badge-fresh">⚡ FRESH</span>';
+    else if(r.status==='RECENT') statusBadge = '<span class="badge-bo">🚀 BREAKOUT</span>';
+    else if(r.status==='SETUP') statusBadge = '<span class="badge-setup">🎯 SETUP</span>';
+    else statusBadge = '<span style="color:var(--muted);font-size:11px">⏳ Building</span>';
+
+    return `<tr class="tier-${r.tier}" onclick="openModal('${r.symbol}')">
+      <td class="left">
+        <div class="sym">${r.symbol}</div>
+        <div class="name">${r.name}</div>
+      </td>
+      <td>
+        <span class="score-bar"><div style="width:${r.score}%;background:${tCol}"></div></span>
+        <b style="color:${tCol}">${r.score}</b>
+      </td>
+      <td class="left"><span class="tier tier-${r.tier}">${r.tier}</span></td>
+      <td class="left">${statusBadge}</td>
+      <td>${fmt$(r.price)}</td>
+      <td>${fmt$(r.pivot)}</td>
+      <td class="${distCls}">${fmtPct(r.distance)}</td>
+      <td><b>${r.yearsInBase.toFixed(1)} ปี</b></td>
+      <td class="neg">${fmtPct(r.drawdownFromATH)}</td>
+      <td class="pos"><b>+${r.upsideToATH.toFixed(0)}%</b></td>
+      <td>${r.volSurge>0?r.volSurge.toFixed(2)+'×':'—'}</td>
+      <td class="${r.ma30Dist>=0?'pos':'neg'}">${fmtPct(r.ma30Dist)}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ---------- MODAL ---------- */
+function openModal(sym){
+  const r = state.results.find(x=>x.symbol===sym);
+  if(!r) return;
+  $('#mSym').textContent = r.symbol;
+  $('#mName').textContent = r.name;
+  $('#mPrice').textContent = fmt$(r.price);
+  const ch = $('#mChg');
+  ch.textContent = `${r.changePct>=0?'+':''}${r.changePct.toFixed(2)}% (สัปดาห์)`;
+  ch.className = 'chg-big ' + (r.changePct>=0?'pos':'neg');
+
+  $('#mTierBadge').innerHTML = `<span class="tier tier-${r.tier}">Tier ${r.tier} · ${r.score}</span>`;
+
+  // Upside potential
+  $('#mUpsideATH').textContent = '+' + r.upsideToATH.toFixed(0) + '%';
+  $('#mTargetATH').textContent = fmt$(r.ath);
+
+  // Trade plan
+  $('#kPivot').textContent = fmt$(r.pivot);
+  $('#kEntry').textContent = fmt$(r.pivot) + ' – ' + fmt$(r.pivot*1.05);
+  $('#kStop').textContent = fmt$(r.pivot * 0.88) + ' (-12%)';
+  $('#kT1').textContent = fmt$(r.pivot * 1.5) + ' (+50%)';
+  $('#kT2').textContent = fmt$(r.pivot * 2.0) + ' (+100%)';
+  $('#kT3').textContent = fmt$(r.ath) + ` (+${((r.ath/r.pivot-1)*100).toFixed(0)}%)`;
+
+  // Base
+  $('#kYears').textContent = r.yearsInBase.toFixed(1) + ' ปี';
+  $('#kBaseHigh').textContent = fmt$(r.baseHigh);
+  $('#kBaseLow').textContent = fmt$(r.baseLow);
+  $('#kBaseRange').textContent = (r.baseRange*100).toFixed(1) + '%';
+  $('#kATH').textContent = fmt$(r.ath);
+  $('#kFromATH').textContent = fmtPct(r.drawdownFromATH);
+
+  // Trend
+  $('#kMA30').textContent = `${fmt$(r.ma30Now)} (${r.ma30Dist>=0?'+':''}${r.ma30Dist.toFixed(1)}%)`;
+  $('#kMA30').className = 'v ' + (r.aboveMA30?'pos':'neg');
+  $('#kMA30Rise').textContent = r.ma30Rising ? '✓ Yes (turning up)' : '✗ No (still flat/down)';
+  $('#kMA30Rise').style.color = r.ma30Rising ? 'var(--green)' : 'var(--red)';
+  $('#kVol').textContent = r.volSurge>0 ? r.volSurge.toFixed(2)+'× (vs base avg)' : '—';
+  $('#kStatus').textContent = r.statusLabel;
+  $('#kScore').textContent = r.score + ' / 100';
+
+  // Links
+  $('#aTV').href = `https://www.tradingview.com/symbols/${encodeURIComponent(r.symbol.replace('-','.'))}/`;
+  $('#aFinviz').href = `https://finviz.com/quote.ashx?t=${encodeURIComponent(r.symbol)}`;
+  $('#aYahoo').href = `https://finance.yahoo.com/quote/${encodeURIComponent(r.symbol)}`;
+
+  $('#modalBg').classList.add('show');
+  requestAnimationFrame(()=>drawChart(r));
+}
+function closeModal(){ $('#modalBg').classList.remove('show'); }
+
+/* ---------- WEEKLY CHART ---------- */
+function drawChart(r){
+  const canvas = $('#mChart');
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = canvas.clientWidth || 900;
+  const cssH = 400;
+  canvas.width = cssW*dpr; canvas.height = cssH*dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const W = cssW, H = cssH;
+  ctx.clearRect(0,0,W,H);
+
+  const data = r.data;
+  const n = data.length;
+  const padL = 60, padR = 14, padT = 12, padB = 70;
+  const cw = W - padL - padR;
+  const ch = H - padT - padB;
+  const volH = 36;
+  const volY = H - padB + 10;
+
+  const highs = data.map(d=>d.h);
+  const lows = data.map(d=>d.l);
+  let yMin = Math.min(...lows);
+  let yMax = Math.max(...highs);
+  const pad = (yMax - yMin) * 0.04;
+  yMin -= pad; yMax += pad;
+  const ySpan = yMax - yMin;
+
+  const xAt = i => padL + (i/(n-1)) * cw;
+  const yAt = v => padT + (1 - (v-yMin)/ySpan) * ch;
+
+  // Grid
+  ctx.strokeStyle = '#1a2333'; ctx.lineWidth = 1;
+  ctx.font = '10px sans-serif'; ctx.fillStyle = '#5a6478';
+  for(let i=0;i<=5;i++){
+    const y = padT + i*ch/5;
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    ctx.fillText('$'+(yMax - i*ySpan/5).toFixed(2), padL-4, y);
+  }
+
+  // === Highlight base period ===
+  if(r.baseStart>=0 && r.baseEnd<n){
+    const x1 = xAt(r.baseStart);
+    const x2 = xAt(r.baseEnd);
+    const y1 = yAt(r.baseHigh);
+    const y2 = yAt(r.baseLow);
+    ctx.fillStyle = 'rgba(14,165,233,.10)';
+    ctx.fillRect(x1, y1, x2-x1, y2-y1);
+    ctx.strokeStyle = 'rgba(14,165,233,.5)'; ctx.lineWidth=1; ctx.setLineDash([4,3]);
+    ctx.strokeRect(x1, y1, x2-x1, y2-y1);
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#0ea5e9'; ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    ctx.fillText(`📊 Base ${r.yearsInBase.toFixed(1)} ปี · range ${(r.baseRange*100).toFixed(0)}%`, x1+4, y1+4);
+  }
+
+  // === Pivot line ===
+  const py = yAt(r.pivot);
+  ctx.strokeStyle = '#ef4444'; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+  ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(W-padR, py); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#ef4444'; ctx.font='bold 11px sans-serif';
+  ctx.textAlign='right'; ctx.textBaseline='bottom';
+  ctx.fillText(`PIVOT $${r.pivot.toFixed(2)}`, W-padR-4, py-3);
+
+  // === ATH marker ===
+  if(r.athIdx >= 0 && r.athIdx < n){
+    const ax = xAt(r.athIdx);
+    const ay = yAt(r.ath);
+    ctx.fillStyle = '#fbbf24'; ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`★ ATH $${r.ath.toFixed(2)}`, ax, ay - 5);
+  }
+
+  // === Candlesticks (weekly) ===
+  const candleW = Math.max(1, cw/n * 0.7);
+  data.forEach((d,i)=>{
+    const x = xAt(i);
+    const up = d.c >= d.o;
+    const col = up ? '#22c55e' : '#ef4444';
+    ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, yAt(d.h)); ctx.lineTo(x, yAt(d.l));
+    ctx.stroke();
+    const yO = yAt(d.o), yC = yAt(d.c);
+    const top = Math.min(yO, yC);
+    const bh = Math.max(1, Math.abs(yC-yO));
+    ctx.fillRect(x-candleW/2, top, candleW, bh);
+  });
+
+  // === Breakout highlight ===
+  if(r.breakoutWeek >= 0){
+    const bx = xAt(r.breakoutWeek);
+    const bd = data[r.breakoutWeek];
+    if(bd){
+      ctx.strokeStyle = 'rgba(14,165,233,.9)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(bx, yAt(bd.c), 10, 0, Math.PI*2);
+      ctx.stroke();
+    }
+  }
+
+  // === MAs ===
+  const drawLine = (arr, color, lw=1.5) => {
+    ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.beginPath();
+    let started = false;
+    arr.forEach((v,i)=>{
+      if(v==null) return;
+      const x = xAt(i), y = yAt(v);
+      if(!started){ ctx.moveTo(x,y); started = true; }
+      else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+  };
+  drawLine(r.ma10w, '#22c55e', 1);
+  drawLine(r.ma30w, '#0ea5e9', 2);
+  drawLine(r.ma40w, '#a855f7', 1.5);
+
+  // === Volume bars at bottom ===
+  const maxVol = Math.max(...data.map(d=>d.v || 0));
+  if(maxVol > 0){
+    data.forEach((d,i)=>{
+      const x = xAt(i);
+      const h = ((d.v||0)/maxVol) * volH;
+      ctx.fillStyle = d.c>=d.o ? 'rgba(34,197,94,.5)' : 'rgba(239,68,68,.5)';
+      ctx.fillRect(x-candleW/2, volY+volH-h, candleW, h);
+    });
+    ctx.fillStyle = '#5a6478'; ctx.font='9px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('Volume', padL, volY-2);
+  }
+
+  // === Date axis ===
+  ctx.fillStyle = '#5a6478'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+  [0, Math.floor(n*0.25), Math.floor(n*0.5), Math.floor(n*0.75), n-1].forEach(i=>{
+    const d = new Date(data[i].t*1000);
+    ctx.fillText(d.toLocaleDateString('en-US',{month:'short',year:'2-digit'}), xAt(i), H-padB+volH+18);
+  });
+
+  // === Hover tooltip ===
+  canvas.onmousemove = (e)=>{
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    if(mx<padL || mx>W-padR){ $('#chartTip').style.display='none'; return; }
+    const i = Math.round((mx-padL)/cw * (n-1));
+    if(i<0 || i>=n) return;
+    const d = data[i];
+    const dt = new Date(d.t*1000);
+    const tip = $('#chartTip');
+    tip.innerHTML = `<b>${dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</b><br/>
+      O ${d.o?.toFixed(2)} H ${d.h.toFixed(2)} L ${d.l.toFixed(2)} <b>C ${d.c.toFixed(2)}</b><br/>
+      Vol ${fmtN(d.v)}`;
+    tip.style.display = 'block';
+    tip.style.left = Math.min(mx+10, W-180) + 'px';
+    tip.style.top = '20px';
+  };
+  canvas.onmouseleave = ()=>{ $('#chartTip').style.display='none'; };
+}
+
+/* ---------- CSV EXPORT ---------- */
+function exportCSV(){
+  if(!state.results.length){ toast('ยังไม่มีผลสแกน'); return; }
+  const cfg = state.cfg;
+  const arr = sortResults(filterResults(state.results, cfg));
+  const header = ['Symbol','Name','Score','Tier','Status','Price','Pivot','Distance%','Years_in_Base','Drawdown_from_ATH','Upside_to_ATH%','Vol_Surge','MA30W','Above_MA30W','MA30W_Rising'];
+  const rows = arr.map(r=>[
+    r.symbol, '"'+(r.name||'').replace(/"/g,"'")+'"',
+    r.score, r.tier, r.statusLabel.replace(/"/g,''),
+    r.price?.toFixed(2), r.pivot?.toFixed(2),
+    r.distance?.toFixed(2), r.yearsInBase?.toFixed(2),
+    r.drawdownFromATH?.toFixed(2), r.upsideToATH?.toFixed(2),
+    r.volSurge?.toFixed(2), r.ma30Now?.toFixed(2),
+    r.aboveMA30?'Y':'N', r.ma30Rising?'Y':'N',
+  ]);
+  const csv = [header.join(','), ...rows.map(r=>r.join(','))].join('\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const u = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = u; a.download = `longterm_scan_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(u);
+  toast('📥 CSV downloaded');
+}
+
+/* ---------- EVENTS ---------- */
+$('#uniSel').addEventListener('change', e=>{
+  $('#customWrap').style.display = e.target.value === 'custom' ? 'flex' : 'none';
+});
+['bYr','sMin'].forEach(id=>{
+  const el = $('#'+id);
+  el.addEventListener('input', ()=>{
+    $('#'+id+'V').textContent = el.value;
+    if(id==='sMin' && state.results.length) renderResults();
+  });
+});
+$('#modeSel').addEventListener('change', ()=>{ if(state.results.length) renderResults(); });
+$$('.check input').forEach(c=>{
+  c.addEventListener('change', ()=>c.closest('.check').classList.toggle('on', c.checked));
+});
+$$('thead th[data-sort]').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const k = th.dataset.sort;
+    if(state.sort.key === k) state.sort.dir = -state.sort.dir;
+    else state.sort = {key:k, dir:-1};
+    if(state.results.length) renderResults();
+  });
+});
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+/* ---------- INIT ---------- */
+updateCacheInfo();
+</script>
+</body>
+</html>

@@ -21,6 +21,11 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://bullzeeker.com/longterm.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://bullzeeker.com/tools.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
