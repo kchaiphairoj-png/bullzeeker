@@ -624,13 +624,14 @@ const UNIVERSE = [
   ['TLT','iShares 20+ Year Treasury','ETF']
 ];
 
-// Use shared universe if available (expanded ~1500 stocks), otherwise fallback to local
+// Use shared universe if available — but cap at ~500 for daily screener
+// (each symbol = 1 chart API call, so 1500 would be too slow for a "daily" view)
 const _U = window.BULLZEEKER_UNIVERSE;
 const _localMeta = Object.fromEntries(UNIVERSE.map(u=>[u[0],{name:u[1],sector:u[2]}]));
-const SYMBOLS = _U && _U.market_full && _U.market_full.length > 200
-  ? _U.market_full
+const SYMBOLS = _U && _U.liquid_500 && _U.liquid_500.length > 200
+  ? _U.liquid_500
   : UNIVERSE.map(u=>u[0]);
-// META holds {name, sector} for known stocks. Unknown ones will use symbol as name + 'Other' sector.
+// META holds {name, sector} for known stocks. Unknown ones get symbol as name + 'Other' sector.
 const META = new Proxy(_localMeta, {
   get(target, key){
     return target[key] || {name: key, sector: 'Other'};
@@ -720,22 +721,98 @@ const PROXIES = [
   url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
 ];
 
-async function fetchYahooBatch(symbols){
-  // Yahoo accepts ~50 symbols per call comfortably
-  const url = YQUOTE + '?symbols=' + symbols.join(',');
-  let lastErr;
+// localStorage cache for quotes (5 min TTL)
+const _qCache = (()=>{
+  try { return JSON.parse(localStorage.getItem('screener_qcache')||'{}'); } catch { return {}; }
+})();
+const _qTTL = 5*60*1000;
+function _saveQCache(){
+  try { localStorage.setItem('screener_qcache', JSON.stringify(_qCache)); }
+  catch { /* quota - drop oldest */ }
+}
+
+// Helper: fetch URL via proxy chain
+async function _tryProxies(url){
   for(const px of PROXIES){
     try{
-      const res = await fetch(px(url), {cache:'no-store'});
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      const txt = await res.text();
-      const json = JSON.parse(txt);
-      const arr = json?.quoteResponse?.result;
-      if(Array.isArray(arr) && arr.length) return arr;
-      throw new Error('empty quoteResponse');
-    }catch(e){ lastErr = e; }
+      const r = await fetch(px(url), {cache:'no-store'});
+      if(!r.ok) continue;
+      const t = await r.text();
+      if(t && t.length > 10) return t;
+    }catch{}
   }
-  throw lastErr;
+  throw new Error('all proxies failed');
+}
+
+/*
+ * Use CHART endpoint per symbol (Yahoo batch quote v7 endpoint requires
+ * crumb auth that public proxies cannot provide). Chart endpoint is more
+ * reliable but ~1 call per symbol.
+ *
+ * Returns same shape as old batch quote response so render code unchanged.
+ */
+async function fetchYahooBatch(symbols){
+  const now = Date.now();
+  const results = [];
+  const need = [];
+  for(const s of symbols){
+    const c = _qCache[s];
+    if(c && (now-c.ts) < _qTTL) results.push(c.data);
+    else need.push(s);
+  }
+
+  if(need.length === 0) return results;
+
+  // Concurrent fetch via chart endpoint
+  let idx = 0;
+  async function worker(){
+    while(idx < need.length){
+      const i = idx++;
+      const sym = need[i];
+      try{
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=5d&interval=1d`;
+        const txt = await _tryProxies(url);
+        const j = JSON.parse(txt);
+        const meta = j?.chart?.result?.[0]?.meta;
+        if(meta && meta.regularMarketPrice != null){
+          const px = meta.regularMarketPrice;
+          const prev = meta.chartPreviousClose ?? meta.previousClose ?? px;
+          const change = px - prev;
+          const cp = prev ? (change/prev)*100 : 0;
+          const data = {
+            symbol: sym,
+            regularMarketPrice: px,
+            regularMarketChange: change,
+            regularMarketChangePercent: cp,
+            regularMarketOpen: meta.regularMarketOpen ?? prev,
+            regularMarketDayHigh: meta.regularMarketDayHigh,
+            regularMarketDayLow: meta.regularMarketDayLow,
+            regularMarketVolume: meta.regularMarketVolume,
+            regularMarketPreviousClose: prev,
+            fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh,
+            fiftyTwoWeekLow: meta.fiftyTwoWeekLow,
+            shortName: meta.shortName,
+            longName: meta.longName,
+            exchange: meta.exchangeName,
+            fullExchangeName: meta.fullExchangeName,
+            currency: meta.currency || 'USD',
+            marketState: 'OPEN',
+            averageDailyVolume3Month: meta.regularMarketVolume,  // approximation
+            marketCap: null,  // not available from chart endpoint
+            trailingPE: null,
+            epsTrailingTwelveMonths: null,
+          };
+          results.push(data);
+          _qCache[sym] = {ts: now, data};
+        }
+      }catch{}
+    }
+  }
+  await Promise.all(Array(10).fill(0).map(worker));
+  _saveQCache();
+
+  if(results.length === 0) throw new Error('all symbols failed');
+  return results;
 }
 
 async function fetchStooqOne(sym){

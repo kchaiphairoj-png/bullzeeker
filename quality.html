@@ -618,11 +618,50 @@ async function tryProxies(url){
   throw lastErr || new Error('all proxies failed');
 }
 
+/*
+ * fetchQuoteBatch: Was batch quote endpoint, but Yahoo now requires crumb auth.
+ * Replaced with concurrent chart endpoint calls.
+ * Returns array of quote-like objects.
+ */
 async function fetchQuoteBatch(symbols){
-  const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols.join(',')}`;
-  const txt = await tryProxies(url);
-  const j = JSON.parse(txt);
-  return j?.quoteResponse?.result || [];
+  const results = [];
+  let idx = 0;
+  async function worker(){
+    while(idx < symbols.length){
+      const i = idx++;
+      const sym = symbols[i];
+      try{
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=5d&interval=1d`;
+        const txt = await tryProxies(url);
+        const j = JSON.parse(txt);
+        const meta = j?.chart?.result?.[0]?.meta;
+        if(meta && meta.regularMarketPrice != null){
+          const px = meta.regularMarketPrice;
+          const prev = meta.chartPreviousClose ?? meta.previousClose ?? px;
+          const change = px - prev;
+          const cp = prev ? (change/prev)*100 : 0;
+          results.push({
+            symbol: sym,
+            regularMarketPrice: px,
+            regularMarketChange: change,
+            regularMarketChangePercent: cp,
+            regularMarketVolume: meta.regularMarketVolume,
+            averageDailyVolume3Month: meta.regularMarketVolume,  // approximation
+            fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh,
+            fiftyTwoWeekLow: meta.fiftyTwoWeekLow,
+            marketCap: null,  // not in chart endpoint
+            shortName: meta.shortName,
+            longName: meta.longName,
+            exchange: meta.exchangeName,
+            fullExchangeName: meta.fullExchangeName,
+            currency: meta.currency || 'USD',
+          });
+        }
+      }catch{}
+    }
+  }
+  await Promise.all(Array(10).fill(0).map(worker));
+  return results;
 }
 
 async function fetchChart(symbol){

@@ -703,11 +703,59 @@ async function tryProxies(url){
   throw new Error('all proxies failed');
 }
 
+/* Quote fetching via CHART endpoint (more reliable than batch quote which needs crumb auth) */
+const QCACHE_KEY = 'home_quote_cache';
+const QCACHE_TTL = 5*60*1000;
+let QCACHE = {};
+try{ QCACHE = JSON.parse(localStorage.getItem(QCACHE_KEY)||'{}'); }catch{}
+
 async function fetchQuotes(symbols){
-  const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols.join(',')}`;
-  const t = await tryProxies(url);
-  const j = JSON.parse(t);
-  return j?.quoteResponse?.result || [];
+  const now = Date.now();
+  const results = {};
+  const need = [];
+  for(const s of symbols){
+    const c = QCACHE[s];
+    if(c && (now-c.ts) < QCACHE_TTL) results[s] = c.data;
+    else need.push(s);
+  }
+
+  // Fetch missing via chart endpoint (10 concurrent)
+  let idx = 0;
+  async function worker(){
+    while(idx < need.length){
+      const i = idx++;
+      const sym = need[i];
+      try{
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=5d&interval=1d`;
+        const txt = await tryProxies(url);
+        const j = JSON.parse(txt);
+        const meta = j?.chart?.result?.[0]?.meta;
+        if(meta && meta.regularMarketPrice != null){
+          const px = meta.regularMarketPrice;
+          const prev = meta.chartPreviousClose ?? meta.previousClose ?? px;
+          const change = px - prev;
+          const changePct = prev ? (change/prev)*100 : 0;
+          const data = {
+            symbol: sym,
+            regularMarketPrice: px,
+            regularMarketChange: change,
+            regularMarketChangePercent: changePct,
+            fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh,
+            fiftyTwoWeekLow: meta.fiftyTwoWeekLow,
+            regularMarketVolume: meta.regularMarketVolume,
+            longName: meta.longName,
+            shortName: meta.shortName,
+          };
+          results[sym] = data;
+          QCACHE[sym] = {ts: now, data};
+        }
+      }catch{}
+    }
+  }
+  await Promise.all(Array(10).fill(0).map(worker));
+  try{ localStorage.setItem(QCACHE_KEY, JSON.stringify(QCACHE)); }catch{}
+
+  return Object.values(results);
 }
 
 /* ---------- LOAD HOMEPAGE DATA ---------- */

@@ -1078,41 +1078,39 @@ async function runScan(){
     const t0 = performance.now();
 
     // ============================================
-    // PASS 1: Fast batch quote filter (15-30 sec for 1500 stocks)
+    // PASS 1: Quick chart-endpoint filter (chart endpoint more reliable
+    // than batch quote which now requires crumb auth)
     // ============================================
-    $('#progText').textContent = `⚡ PASS 1: Quick filter ${uni.length} หุ้นด้วย batch quote (เร็ว)...`;
+    $('#progText').textContent = `⚡ PASS 1: Quick filter ${uni.length} หุ้น (chart endpoint, concurrent)...`;
     $('#progFill').style.width = '5%';
     let candidatesP1 = uni;
     try{
-      const batches = [];
-      for(let i=0;i<uni.length;i+=50) batches.push(uni.slice(i,i+50));
-      const quotes = [];
-      let bDone = 0;
-      // run with concurrency 4 (each batch is one HTTP call)
-      await concurrent(batches, 4, async(batch)=>{
+      const qMap = {};
+      let qDone = 0, qOk = 0;
+      await concurrent(uni, 10, async(sym)=>{
         try{
-          const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${batch.map(encodeURIComponent).join(',')}`;
+          const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=2d&interval=1d`;
           const txt = await tryProxies(url);
           const j = JSON.parse(txt);
-          const arr = j?.quoteResponse?.result || [];
-          quotes.push(...arr);
-        }catch(e){}
+          const meta = j?.chart?.result?.[0]?.meta;
+          if(meta && meta.regularMarketPrice != null){
+            qMap[sym] = {price: meta.regularMarketPrice, volume: meta.regularMarketVolume};
+            qOk++;
+          }
+        }catch{}
       }, (done, total)=>{
-        bDone = done;
+        qDone = done;
         $('#progFill').style.width = (5 + (done/total)*20)+'%';
-        $('#progText').textContent = `⚡ PASS 1: Batch quote ${done}/${total} (50 หุ้น/batch) · ได้แล้ว ${quotes.length} ตัว`;
+        $('#progText').textContent = `⚡ PASS 1: ${done}/${total} · ผ่าน ${qOk} ตัว`;
+        $('#progCount').textContent = `${done} / ${total}`;
       });
 
-      // Apply quick filter: price > 3, has data, drawdown >= -10% from 52w high (eliminates stocks too far below to be base candidates)
-      const qMap = {};
-      quotes.forEach(q=>{ if(q.symbol) qMap[q.symbol] = q; });
-
+      // Apply quick filter: price > 3, has min volume
       candidatesP1 = uni.filter(sym=>{
         const q = qMap[sym];
-        if(!q || q.regularMarketPrice == null) return false;
-        if(q.regularMarketPrice < 3) return false;  // skip penny
-        if(q.regularMarketVolume!=null && q.averageDailyVolume3Month!=null
-           && q.averageDailyVolume3Month < 100000) return false;  // skip illiquid
+        if(!q || q.price == null) return false;
+        if(q.price < 3) return false;  // skip penny
+        if(q.volume != null && q.volume < 100000) return false;  // skip illiquid
         return true;
       });
       log(`✓ PASS 1: ${candidatesP1.length}/${uni.length} ผ่าน quick filter ใน ${((performance.now()-t0)/1000).toFixed(1)}s`);

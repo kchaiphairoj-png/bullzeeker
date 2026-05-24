@@ -458,24 +458,91 @@ async function tryProxies(url){
   throw lastErr || new Error('all proxies failed');
 }
 
+/* ===== CACHE for quote data (localStorage, 5 min TTL) ===== */
+const QUOTE_CACHE_KEY = 'macro_quote_cache_v2';
+const QUOTE_CACHE_TTL = 5 * 60 * 1000;  // 5 minutes
+let QUOTE_CACHE = {};
+try { QUOTE_CACHE = JSON.parse(localStorage.getItem(QUOTE_CACHE_KEY) || '{}'); } catch {}
+
+function saveQuoteCache(){
+  try { localStorage.setItem(QUOTE_CACHE_KEY, JSON.stringify(QUOTE_CACHE)); }
+  catch(e){
+    // quota exceeded — drop oldest 30%
+    const ents = Object.entries(QUOTE_CACHE).sort((a,b)=>a[1].ts-b[1].ts);
+    const dropN = Math.floor(ents.length * 0.3);
+    ents.slice(0, dropN).forEach(([k])=>delete QUOTE_CACHE[k]);
+    try { localStorage.setItem(QUOTE_CACHE_KEY, JSON.stringify(QUOTE_CACHE)); } catch {}
+  }
+}
+
+/**
+ * Fetch quotes using CHART endpoint (more reliable than batch quote endpoint
+ * which requires crumb auth that public proxies can't provide).
+ *
+ * Returns array of { symbol, regularMarketPrice, change, changePct, ... }
+ */
 async function fetchQuotes(syms){
-  // Yahoo allows ~50 symbols per call max
-  const batches = [];
-  for(let i=0;i<syms.length;i+=50) batches.push(syms.slice(i,i+50));
+  const now = Date.now();
+  const results = {};
+  const needFetch = [];
 
-  const results = await Promise.allSettled(batches.map(async batch=>{
-    const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${batch.map(encodeURIComponent).join(',')}`;
-    try{
-      const t = await tryProxies(url);
-      const j = JSON.parse(t);
-      return j?.quoteResponse?.result || [];
-    }catch(e){
-      console.warn('Batch failed:', batch.slice(0,5), e.message);
-      return [];
+  // Check cache first
+  for(const sym of syms){
+    const cached = QUOTE_CACHE[sym];
+    if(cached && (now - cached.ts) < QUOTE_CACHE_TTL){
+      results[sym] = cached.data;
+    } else {
+      needFetch.push(sym);
     }
-  }));
+  }
 
-  return results.flatMap(r => r.status==='fulfilled' ? r.value : []);
+  if(needFetch.length === 0) return Object.values(results);
+
+  // Fetch missing via chart endpoint (concurrent)
+  const CONC = 10;
+  let idx = 0;
+  async function worker(){
+    while(idx < needFetch.length){
+      const i = idx++;
+      const sym = needFetch[i];
+      try{
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=5d&interval=1d`;
+        const txt = await tryProxies(url);
+        const j = JSON.parse(txt);
+        const meta = j?.chart?.result?.[0]?.meta;
+        if(meta && meta.regularMarketPrice != null){
+          const px = meta.regularMarketPrice;
+          const prev = meta.chartPreviousClose ?? meta.previousClose ?? px;
+          const change = px - prev;
+          const changePct = prev ? (change / prev) * 100 : 0;
+          const data = {
+            symbol: sym,
+            regularMarketPrice: px,
+            regularMarketChange: change,
+            regularMarketChangePercent: changePct,
+            regularMarketDayHigh: meta.regularMarketDayHigh,
+            regularMarketDayLow: meta.regularMarketDayLow,
+            regularMarketVolume: meta.regularMarketVolume,
+            fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh,
+            fiftyTwoWeekLow: meta.fiftyTwoWeekLow,
+            previousClose: prev,
+            longName: meta.longName,
+            shortName: meta.shortName,
+            currency: meta.currency,
+            exchange: meta.exchangeName,
+          };
+          results[sym] = data;
+          QUOTE_CACHE[sym] = { ts: now, data };
+        }
+      }catch(e){
+        // skip silently
+      }
+    }
+  }
+  await Promise.all(Array(CONC).fill(0).map(worker));
+  saveQuoteCache();
+
+  return Object.values(results);
 }
 
 /* ===== DATA CONFIG ===== */

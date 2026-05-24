@@ -974,45 +974,57 @@ async function runScan(){
     try{ spy = await fetchHistory('SPY', cfg.useCache); }catch{}
     state.spyData = spy;
 
-    // === STEP 1.5: PASS 1 - Fast batch quote filter ===
+    // === STEP 1.5: PASS 1 - Quick chart-endpoint filter ===
+    // Use chart endpoint (more reliable than batch quote which needs crumb)
+    // Only fetch lightweight 2-day chart for quick filter
     let candidates = universe;
     if(universe.length > 200){
-      $('#progText').textContent = `⚡ PASS 1: Quick filter ${universe.length} หุ้นด้วย batch quote...`;
-      try{
-        const batches = [];
-        for(let i=0;i<universe.length;i+=50) batches.push(universe.slice(i,i+50));
-        const quotes = [];
-        for(let bi=0; bi<batches.length; bi++){
+      $('#progText').textContent = `⚡ PASS 1: Quick filter ${universe.length} หุ้น (chart endpoint)...`;
+      const qMap = {};
+      let qDone = 0, qOk = 0;
+      let qIdx = 0;
+      const QCONC = 10;
+      async function qWorker(){
+        while(qIdx < universe.length){
+          const i = qIdx++;
+          const sym = universe[i];
           try{
-            const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${batches[bi].map(encodeURIComponent).join(',')}`;
+            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=2d&interval=1d`;
             for(const px of PROXIES){
               try{
                 const r = await fetch(px(url), {cache:'no-store'});
                 if(!r.ok) continue;
                 const j = JSON.parse(await r.text());
-                quotes.push(...(j?.quoteResponse?.result || []));
+                const meta = j?.chart?.result?.[0]?.meta;
+                if(meta && meta.regularMarketPrice != null){
+                  qMap[sym] = {
+                    price: meta.regularMarketPrice,
+                    volume: meta.regularMarketVolume,
+                  };
+                  qOk++;
+                }
                 break;
               }catch{}
             }
           }catch{}
-          $('#progFill').style.width = ((bi+1)/batches.length * 15) + '%';
-          $('#progCount').textContent = `Batch ${bi+1}/${batches.length} · ${quotes.length} ตัว`;
+          qDone++;
+          if(qDone % 20 === 0){
+            $('#progFill').style.width = (qDone/universe.length * 15) + '%';
+            $('#progCount').textContent = `${qDone}/${universe.length} · ${qOk} ok`;
+          }
         }
-        const qMap = {};
-        quotes.forEach(q=>{ if(q.symbol) qMap[q.symbol] = q; });
-        // Filter: price > 3, has min volume
-        candidates = universe.filter(sym=>{
-          const q = qMap[sym];
-          if(!q || q.regularMarketPrice == null) return false;
-          if(q.regularMarketPrice < 3) return false;
-          if(q.averageDailyVolume3Month != null && q.averageDailyVolume3Month < 200000) return false;
-          return true;
-        });
-        log(`⚡ PASS 1: ${candidates.length}/${universe.length} ผ่าน quick filter`);
-      }catch(e){
-        log('⚠ PASS 1 ผิดพลาด - จะดึงทั้งหมด');
-        candidates = universe;
       }
+      await Promise.all(Array(QCONC).fill(0).map(qWorker));
+
+      // Filter: price > 3, has min volume
+      candidates = universe.filter(sym=>{
+        const q = qMap[sym];
+        if(!q || q.price == null) return false;
+        if(q.price < 3) return false;
+        if(q.volume != null && q.volume < 200000) return false;
+        return true;
+      });
+      log(`⚡ PASS 1: ${candidates.length}/${universe.length} ผ่าน quick filter (chart endpoint)`);
     }
 
     // Step 2: fetch chart for candidates only

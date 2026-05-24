@@ -1039,22 +1039,32 @@ $('#fxTHB').addEventListener('input',()=>calcFX('thb'));
 
 /* Auto-refresh FX from Yahoo */
 async function refreshFX(){
-  try{
-    const u = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=THB=X';
-    const r = await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(u));
-    const j = JSON.parse(await r.text());
-    const px = j?.quoteResponse?.result?.[0]?.regularMarketPrice;
-    if(px){
-      $('#fxMid').value = px.toFixed(3);
-      $('#pFx').value = px.toFixed(2);
-      $('#taxFx').value = px.toFixed(2);
-      $('#fxLive').textContent = `(live: ${px.toFixed(2)})`;
-      calcFX('usd'); calcPos(); calcTax();
-      toast('💱 อัพเดทอัตราแลก: ' + px.toFixed(3) + ' ฿/$');
-    }
-  }catch(e){
-    $('#fxLive').textContent = '(ใช้ค่า default)';
+  // Use chart endpoint (more reliable than batch quote which needs crumb auth)
+  const proxies = [
+    u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+    u => 'https://corsproxy.io/?' + encodeURIComponent(u),
+    u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u),
+  ];
+  const url = 'https://query1.finance.yahoo.com/v8/finance/chart/THB=X?range=2d&interval=1d';
+  for(const pxFn of proxies){
+    try{
+      const r = await fetch(pxFn(url), {cache:'no-store'});
+      if(!r.ok) continue;
+      const j = JSON.parse(await r.text());
+      const meta = j?.chart?.result?.[0]?.meta;
+      const px = meta?.regularMarketPrice;
+      if(px){
+        $('#fxMid').value = px.toFixed(3);
+        $('#pFx').value = px.toFixed(2);
+        $('#taxFx').value = px.toFixed(2);
+        $('#fxLive').textContent = `(live: ${px.toFixed(2)})`;
+        calcFX('usd'); calcPos(); calcTax();
+        toast('💱 อัพเดทอัตราแลก: ' + px.toFixed(3) + ' ฿/$');
+        return;
+      }
+    }catch{}
   }
+  $('#fxLive').textContent = '(ใช้ค่า default)';
 }
 refreshFX();
 calcFX('usd');
