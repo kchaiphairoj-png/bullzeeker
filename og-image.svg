@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <!-- Background gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0e16"/>
+      <stop offset="50%" stop-color="#0e1525"/>
+      <stop offset="100%" stop-color="#172238"/>
+    </linearGradient>
+
+    <!-- Gold gradient -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+
+    <!-- Logo gradient -->
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ED1C24"/>
+      <stop offset="50%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+
+    <!-- Glow effect -->
+    <radialGradient id="glowGold" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowOcean" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Drop shadow -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+      <feOffset dx="0" dy="4" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.5"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+
+  <!-- Glow blobs -->
+  <ellipse cx="1000" cy="100" rx="400" ry="300" fill="url(#glowGold)"/>
+  <ellipse cx="200" cy="500" rx="350" ry="250" fill="url(#glowOcean)"/>
+
+  <!-- Decorative pattern - subtle stock chart lines -->
+  <g opacity="0.06" stroke="#60a5fa" stroke-width="2" fill="none">
+    <path d="M 0 400 L 100 380 L 200 360 L 300 340 L 400 320 L 500 290 L 600 270 L 700 240 L 800 200 L 900 170 L 1000 130 L 1100 110 L 1200 90"/>
+    <path d="M 0 450 L 100 440 L 200 420 L 300 430 L 400 410 L 500 380 L 600 370 L 700 340 L 800 300 L 900 280 L 1000 240 L 1100 220 L 1200 200"/>
+  </g>
+
+  <!-- Background bull emoji (faded) -->
+  <text x="1050" y="320" font-size="380" opacity="0.05" text-anchor="middle">🐂</text>
+
+  <!-- ===== HEADER: Logo + Brand ===== -->
+  <g transform="translate(70, 70)">
+    <!-- Logo square -->
+    <rect x="0" y="0" width="80" height="80" rx="20" fill="url(#logoGrad)" filter="url(#shadow)"/>
+    <text x="40" y="62" font-size="48" text-anchor="middle">🐂</text>
+
+    <!-- Brand text -->
+    <text x="100" y="38" font-family="Inter, -apple-system, sans-serif" font-size="34" font-weight="800" fill="#ffffff">Bull<tspan fill="#fbbf24">zeeker</tspan></text>
+    <text x="100" y="64" font-family="Inter, sans-serif" font-size="15" font-weight="500" fill="#8b97ab">bullzeeker.com</text>
+  </g>
+
+  <!-- ===== FREE BADGE (top right) ===== -->
+  <g transform="translate(1000, 80)">
+    <rect x="0" y="0" width="140" height="44" rx="22" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.5)" stroke-width="2"/>
+    <text x="70" y="29" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#10b981" text-anchor="middle">✓ FREE 100%</text>
+  </g>
+
+  <!-- ===== MAIN HEADLINE ===== -->
+  <g transform="translate(70, 220)">
+    <!-- Top accent line -->
+    <rect x="0" y="0" width="60" height="4" rx="2" fill="url(#goldGrad)"/>
+
+    <!-- Main title - Thai -->
+    <text x="0" y="60" font-family="'Noto Sans Thai', 'Sarabun', Tahoma, sans-serif" font-size="56" font-weight="800" fill="#ffffff">เว็บคัดหุ้นอเมริกา</text>
+    <text x="0" y="125" font-family="'Noto Sans Thai', 'Sarabun', Tahoma, sans-serif" font-size="56" font-weight="800" fill="#ffffff">เพื่อ<tspan fill="#fbbf24">เทรดเดอร์ไทย</tspan> ทุกคน</text>
+
+    <!-- Subtitle -->
+    <text x="0" y="180" font-family="'Noto Sans Thai', Tahoma, sans-serif" font-size="24" font-weight="500" fill="#8b97ab">Screener · Breakout · Quality · Long-Term · เครื่องมือคนไทย</text>
+  </g>
+
+  <!-- ===== FEATURE PILLS ===== -->
+  <g transform="translate(70, 460)" font-family="Inter, sans-serif">
+    <!-- Pill 1: Daily Screener -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="115" height="42" rx="21" fill="rgba(59,130,246,0.15)" stroke="rgba(96,165,250,0.4)" stroke-width="1.5"/>
+      <text x="57" y="27" font-size="14" font-weight="700" fill="#60a5fa" text-anchor="middle">🎯 Screener</text>
+    </g>
+    <!-- Pill 2: Breakout -->
+    <g transform="translate(125, 0)">
+      <rect x="0" y="0" width="115" height="42" rx="21" fill="rgba(251,191,36,0.15)" stroke="rgba(251,191,36,0.4)" stroke-width="1.5"/>
+      <text x="57" y="27" font-size="14" font-weight="700" fill="#fbbf24" text-anchor="middle">🚀 Breakout</text>
+    </g>
+    <!-- Pill 3: Quality -->
+    <g transform="translate(250, 0)">
+      <rect x="0" y="0" width="110" height="42" rx="21" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.4)" stroke-width="1.5"/>
+      <text x="55" y="27" font-size="14" font-weight="700" fill="#10b981" text-anchor="middle">💎 Quality</text>
+    </g>
+    <!-- Pill 4: Long-Term Weekly -->
+    <g transform="translate(370, 0)">
+      <rect x="0" y="0" width="155" height="42" rx="21" fill="rgba(14,165,233,0.15)" stroke="rgba(14,165,233,0.4)" stroke-width="1.5"/>
+      <text x="77" y="27" font-size="14" font-weight="700" fill="#0ea5e9" text-anchor="middle">🌊 Long-Term</text>
+    </g>
+    <!-- Pill 5: Tools -->
+    <g transform="translate(535, 0)">
+      <rect x="0" y="0" width="120" height="42" rx="21" fill="rgba(168,85,247,0.15)" stroke="rgba(168,85,247,0.4)" stroke-width="1.5"/>
+      <text x="60" y="27" font-size="14" font-weight="700" fill="#a855f7" text-anchor="middle">🛠️ เครื่องมือ</text>
+    </g>
+  </g>
+
+  <!-- ===== STATS at bottom ===== -->
+  <g transform="translate(70, 545)" font-family="Inter, sans-serif">
+    <!-- Stat 1 -->
+    <text x="0" y="32" font-size="32" font-weight="800" fill="#fbbf24">200+</text>
+    <text x="0" y="58" font-size="13" font-weight="600" fill="#8b97ab">หุ้น & ETFs</text>
+
+    <!-- Divider -->
+    <line x1="115" y1="10" x2="115" y2="55" stroke="#243044" stroke-width="2"/>
+
+    <!-- Stat 2 -->
+    <text x="140" y="32" font-size="32" font-weight="800" fill="#fbbf24">7</text>
+    <text x="140" y="58" font-size="13" font-weight="600" fill="#8b97ab">เครื่อง Scanner</text>
+
+    <line x1="270" y1="10" x2="270" y2="55" stroke="#243044" stroke-width="2"/>
+
+    <!-- Stat 3 -->
+    <text x="295" y="32" font-size="32" font-weight="800" fill="#fbbf24">8</text>
+    <text x="295" y="58" font-size="13" font-weight="600" fill="#8b97ab">Calculators</text>
+
+    <line x1="430" y1="10" x2="430" y2="55" stroke="#243044" stroke-width="2"/>
+
+    <!-- Stat 4 -->
+    <text x="455" y="32" font-size="32" font-weight="800" fill="#10b981">FREE</text>
+    <text x="455" y="58" font-size="13" font-weight="600" fill="#8b97ab">ไม่ต้องสมัคร</text>
+  </g>
+
+  <!-- ===== CTA on right ===== -->
+  <g transform="translate(820, 460)" font-family="Inter, sans-serif">
+    <rect x="0" y="0" width="310" height="120" rx="16" fill="rgba(251,191,36,0.1)" stroke="rgba(251,191,36,0.4)" stroke-width="2"/>
+    <text x="155" y="40" font-size="16" font-weight="700" fill="#fbbf24" text-anchor="middle">🌟 ตามล่าหุ้นขาขึ้น</text>
+    <text x="155" y="75" font-family="'Noto Sans Thai', Tahoma, sans-serif" font-size="20" font-weight="800" fill="#ffffff" text-anchor="middle">เพื่อเทรดเดอร์ไทย</text>
+    <text x="155" y="100" font-size="13" font-weight="500" fill="#8b97ab" text-anchor="middle">bullzeeker.com</text>
+  </g>
+
+  <!-- Bottom accent bar -->
+  <rect x="0" y="625" width="1200" height="5" fill="url(#goldGrad)"/>
+</svg>
