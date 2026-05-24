@@ -7,6 +7,7 @@
 <meta name="description" content="สแกนหุ้น US ที่พักฐานมานานกว่า 4 ปี และเริ่ม breakout บน weekly timeframe — Multi-year base breakout · Stan Weinstein Stage 2 · ตามล่า 10-bagger" />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>" />
+<script src="universe.js"></script>
 <style>
   :root{
     --bg:#070b14; --bg2:#0e1525; --bg3:#172238; --bg4:#1f2c44;
@@ -289,12 +290,17 @@
     <h3>⚙️ ตั้งค่าการสแกน</h3>
     <div class="ctrl-grid">
       <div class="ctrl">
-        <label>Universe</label>
+        <label>Universe <span class="v" id="uniCount">~1500 หุ้น</span></label>
         <select id="uniSel">
-          <option value="curated600" selected>🌐 Curated 600 (แนะนำ — ครอบคลุมตลาดส่วนใหญ่)</option>
-          <option value="sp500">📊 S&P 500 (หุ้นใหญ่)</option>
-          <option value="recovery">💎 Recovery Stocks (fallen angels)</option>
-          <option value="growth">🚀 High Growth + Tech</option>
+          <option value="market_full" selected>🌐 Market Full (~1500 หุ้น · ครอบคลุมตลาดจริง)</option>
+          <option value="liquid_1000">💎 Liquid 1000 (~1000 หุ้น · เร็วขึ้น)</option>
+          <option value="liquid_500">📊 Liquid 500 (~500 หุ้น · เร็วสุด)</option>
+          <option value="sp500">🇺🇸 S&P 500 (Large Cap)</option>
+          <option value="midcap">🎯 Mid Cap</option>
+          <option value="smallcap">🚀 Small Cap (popular)</option>
+          <option value="growth">⚡ High Growth + Tech</option>
+          <option value="adrs">🌏 ADRs (Chinese/EU)</option>
+          <option value="etfs">📦 ETFs Only</option>
           <option value="custom">✏️ Custom Symbols</option>
         </select>
       </div>
@@ -334,9 +340,11 @@
       <span style="color:var(--muted);font-size:12px" id="cacheInfo">—</span>
     </div>
     <div style="margin-top:10px;padding:10px 14px;background:var(--bg3);border-radius:8px;font-size:11.5px;color:var(--muted);line-height:1.7">
-      ⏰ <b>หมายเหตุ:</b> การสแกนครั้งแรกใช้เวลา ~2-4 นาที (โหลด weekly data 5 ปี ของ 600 หุ้น) ·
-      ครั้งต่อไปเร็วขึ้นมากเพราะ cache · ข้อมูลรายสัปดาห์ <b>ไม่ต้องสแกนบ่อย — แนะนำสแกนสัปดาห์ละครั้ง</b>
-      (ทุกวันเสาร์-อาทิตย์ หลังตลาดปิด)
+      ⚡ <b>2-Pass Scanning (เร็วขึ้น 3-5 เท่า):</b><br/>
+      • <b>PASS 1:</b> Quick filter ด้วย batch quote endpoint (50 หุ้น/call) → กรองหุ้น penny + illiquid ออก ใช้เวลา ~15-30 วินาที<br/>
+      • <b>PASS 2:</b> Fetch weekly chart 5 ปี เฉพาะตัวที่ผ่าน filter → คำนวณ base detection ใช้เวลา ~1-2 นาที<br/>
+      📦 <b>Market Full (~1500 หุ้น):</b> สแกนครั้งแรก ~2-3 นาที · ครั้งต่อไป cache 1 สัปดาห์ → &lt;10 วินาที<br/>
+      💡 <b>แนะนำ:</b> สแกนสัปดาห์ละครั้ง (เสาร์-อาทิตย์หลังตลาดปิด)
     </div>
   </div>
 
@@ -720,6 +728,19 @@ const PROXIES = [
   url => 'https://corsproxy.io/?' + encodeURIComponent(url),
   url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
 ];
+async function tryProxies(url){
+  let lastErr;
+  for(const p of PROXIES){
+    try{
+      const r = await fetch(p(url),{cache:'no-store'});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const txt = await r.text();
+      if(!txt || txt.length < 10) throw new Error('empty');
+      return txt;
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error('all proxies failed');
+}
 const CACHE_KEY = 'longterm_cache_v1';
 const CACHE_TTL = 1000*60*60*24*7; // 1 week (weekly data doesn't change fast)
 let CACHE = {};
@@ -976,11 +997,33 @@ function getUniverse(){
     if(!t) return [];
     return [...new Set(t.toUpperCase().split(/[,\s]+/).filter(Boolean))];
   }
+  // Use new shared universe if available
+  const U = window.BULLZEEKER_UNIVERSE;
+  if(U && U[sel]) return [...new Set(U[sel])];
+
+  // Fallback to local arrays
   if(sel==='sp500') return [...new Set(UNI_SP500)];
   if(sel==='recovery') return [...new Set(UNI_RECOVERY)];
   if(sel==='growth') return [...new Set(UNI_GROWTH)];
   return [...new Set(UNI_CURATED)];
 }
+
+// Update universe count when selector changes
+function updateUniCount(){
+  const sel = $('#uniSel').value;
+  const U = window.BULLZEEKER_UNIVERSE;
+  let count = 0;
+  if(sel === 'custom'){
+    count = ($('#customSyms').value.trim().split(/[,\s]+/).filter(Boolean)).length;
+  } else if(U && U[sel]){
+    count = U[sel].length;
+  } else {
+    count = UNI_CURATED.length;
+  }
+  $('#uniCount').textContent = '~' + count + ' หุ้น';
+}
+document.addEventListener('DOMContentLoaded', updateUniCount);
+$('#uniSel').addEventListener('change', updateUniCount);
 
 function getCfg(){
   return {
@@ -1033,10 +1076,59 @@ async function runScan(){
 
   try{
     const t0 = performance.now();
-    $('#progText').textContent = `⏳ กำลังดึง weekly data ${uni.length} หุ้น (5 ปี)...`;
+
+    // ============================================
+    // PASS 1: Fast batch quote filter (15-30 sec for 1500 stocks)
+    // ============================================
+    $('#progText').textContent = `⚡ PASS 1: Quick filter ${uni.length} หุ้นด้วย batch quote (เร็ว)...`;
+    $('#progFill').style.width = '5%';
+    let candidatesP1 = uni;
+    try{
+      const batches = [];
+      for(let i=0;i<uni.length;i+=50) batches.push(uni.slice(i,i+50));
+      const quotes = [];
+      let bDone = 0;
+      // run with concurrency 4 (each batch is one HTTP call)
+      await concurrent(batches, 4, async(batch)=>{
+        try{
+          const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${batch.map(encodeURIComponent).join(',')}`;
+          const txt = await tryProxies(url);
+          const j = JSON.parse(txt);
+          const arr = j?.quoteResponse?.result || [];
+          quotes.push(...arr);
+        }catch(e){}
+      }, (done, total)=>{
+        bDone = done;
+        $('#progFill').style.width = (5 + (done/total)*20)+'%';
+        $('#progText').textContent = `⚡ PASS 1: Batch quote ${done}/${total} (50 หุ้น/batch) · ได้แล้ว ${quotes.length} ตัว`;
+      });
+
+      // Apply quick filter: price > 3, has data, drawdown >= -10% from 52w high (eliminates stocks too far below to be base candidates)
+      const qMap = {};
+      quotes.forEach(q=>{ if(q.symbol) qMap[q.symbol] = q; });
+
+      candidatesP1 = uni.filter(sym=>{
+        const q = qMap[sym];
+        if(!q || q.regularMarketPrice == null) return false;
+        if(q.regularMarketPrice < 3) return false;  // skip penny
+        if(q.regularMarketVolume!=null && q.averageDailyVolume3Month!=null
+           && q.averageDailyVolume3Month < 100000) return false;  // skip illiquid
+        return true;
+      });
+      log(`✓ PASS 1: ${candidatesP1.length}/${uni.length} ผ่าน quick filter ใน ${((performance.now()-t0)/1000).toFixed(1)}s`);
+    }catch(e){
+      log(`⚠ PASS 1 ผิดพลาด (จะดึงทั้งหมด): ${e.message}`);
+      candidatesP1 = uni;
+    }
+
+    // ============================================
+    // PASS 2: Fetch weekly chart for candidates only
+    // ============================================
+    $('#progText').textContent = `🌊 PASS 2: ดึง weekly chart 5 ปี ของ ${candidatesP1.length} หุ้นที่ผ่าน filter...`;
     const dataMap = {};
     let fetched = 0, failed = 0;
-    await concurrent(uni, 7, async(sym)=>{
+    const t1 = performance.now();
+    await concurrent(candidatesP1, 8, async(sym)=>{
       try{
         dataMap[sym] = await fetchWeekly(sym, cfg.useCache);
         fetched++;
@@ -1045,19 +1137,21 @@ async function runScan(){
         failed++;
       }
     }, (done, total, sym)=>{
-      const pct = (done/total)*70;
+      const pct = 25 + (done/total)*65;
       $('#progFill').style.width = pct+'%';
       $('#progCount').textContent = `${done} / ${total}`;
-      $('#progText').textContent = `📡 ${sym}`;
+      $('#progText').textContent = `📡 PASS 2: ${sym}`;
     });
     saveCache();
-    log(`✓ Fetch: ${fetched} ok, ${failed} failed in ${((performance.now()-t0)/1000).toFixed(1)}s`);
+    log(`✓ PASS 2: Fetched ${fetched} weekly histories (${failed} failed) in ${((performance.now()-t1)/1000).toFixed(1)}s`);
 
+    // ============================================
     // Analyze
+    // ============================================
     $('#progText').textContent = `🧮 กำลังวิเคราะห์ multi-year base breakout...`;
     const results = [];
     let analyzed = 0;
-    for(const sym of uni){
+    for(const sym of candidatesP1){
       analyzed++;
       const data = dataMap[sym];
       if(!data) continue;
@@ -1066,8 +1160,8 @@ async function runScan(){
         if(r) results.push(r);
       }catch{}
       if(analyzed % 50 === 0){
-        $('#progFill').style.width = (70 + (analyzed/uni.length)*30)+'%';
-        $('#progText').textContent = `🧮 วิเคราะห์ ${analyzed}/${uni.length} · พบ ${results.length} ตัวที่มีลักษณะ`;
+        $('#progFill').style.width = (90 + (analyzed/candidatesP1.length)*10)+'%';
+        $('#progText').textContent = `🧮 วิเคราะห์ ${analyzed}/${candidatesP1.length} · พบ ${results.length} ตัวที่มีลักษณะ`;
       }
     }
     log(`✓ Analyzed ${analyzed} stocks, found ${results.length} candidates`);

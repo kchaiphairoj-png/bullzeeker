@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://query1.finance.yahoo.com" crossorigin />
 <link rel="preconnect" href="https://api.allorigins.win" crossorigin />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>" />
+<script src="universe.js"></script>
 <style>
   :root{
     --bg:#0b0f17; --bg2:#111826; --bg3:#1a2333; --line:#243044;
@@ -623,8 +624,18 @@ const UNIVERSE = [
   ['TLT','iShares 20+ Year Treasury','ETF']
 ];
 
-const SYMBOLS = UNIVERSE.map(u=>u[0]);
-const META = Object.fromEntries(UNIVERSE.map(u=>[u[0],{name:u[1],sector:u[2]}]));
+// Use shared universe if available (expanded ~1500 stocks), otherwise fallback to local
+const _U = window.BULLZEEKER_UNIVERSE;
+const _localMeta = Object.fromEntries(UNIVERSE.map(u=>[u[0],{name:u[1],sector:u[2]}]));
+const SYMBOLS = _U && _U.market_full && _U.market_full.length > 200
+  ? _U.market_full
+  : UNIVERSE.map(u=>u[0]);
+// META holds {name, sector} for known stocks. Unknown ones will use symbol as name + 'Other' sector.
+const META = new Proxy(_localMeta, {
+  get(target, key){
+    return target[key] || {name: key, sector: 'Other'};
+  }
+});
 
 /* ---------- STATE ---------- */
 let state = {

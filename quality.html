@@ -6,6 +6,7 @@
 <title>Quality Stocks Screener — คัดหุ้นพื้นฐานดี + เทคนิคแกร่ง</title>
 <meta name="description" content="9-Criteria Quality Screener — Price>$5, Mcap>1B, AvgVol>1M, Price>EMA50/EMA200, 1M Return>5%, ATR>0.5, ROE>15%, Margin>10%, RSI 40-70" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💎</text></svg>" />
+<script src="universe.js"></script>
 <style>
   :root{
     --bg:#0a0e16; --bg2:#10172a; --bg3:#172238; --line:#243044;
@@ -253,11 +254,17 @@
       <div class="ctrl">
         <label>Universe</label>
         <select id="uniSel">
-          <option value="liquid200" selected>Liquid 200 (S&P 100 + Movers)</option>
-          <option value="sp100">S&P 100 (Large Cap)</option>
-          <option value="tech">Tech Sector</option>
-          <option value="growth">High Growth Names</option>
-          <option value="custom">Custom Symbols</option>
+          <option value="market_full">🌐 Market Full (~1500 หุ้น · ตลาดจริง)</option>
+          <option value="liquid_1000" selected>💎 Liquid 1000 (~1000 · แนะนำ)</option>
+          <option value="liquid_500">📊 Liquid 500 (~500 · เร็ว)</option>
+          <option value="sp500">🇺🇸 S&P 500 (Large Cap)</option>
+          <option value="sp100">📊 S&P 100</option>
+          <option value="midcap">🎯 Mid Cap</option>
+          <option value="smallcap">🚀 Small Cap</option>
+          <option value="tech">💻 Tech Sector</option>
+          <option value="growth">⚡ High Growth</option>
+          <option value="adrs">🌏 ADRs</option>
+          <option value="custom">✏️ Custom Symbols</option>
         </select>
       </div>
       <div class="ctrl" id="customWrap" style="display:none">
@@ -802,7 +809,10 @@ async function runScan(){
       const t = $('#customSyms').value.trim();
       return [...new Set(t.toUpperCase().split(/[,\s]+/).filter(Boolean))];
     }
-    return U[v] || U.liquid200;
+    // Use shared universe if available
+    const SU = window.BULLZEEKER_UNIVERSE;
+    if(SU && SU[v]) return [...new Set(SU[v])];
+    return U[v] || U.liquid200 || [];
   })();
   if(!universe.length){ toast('กรุณาใส่ symbol'); return; }
 
