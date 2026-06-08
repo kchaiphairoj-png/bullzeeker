@@ -36,6 +36,14 @@
   </div>
 </header>
 
+<!-- Disclaimer banner (always visible) -->
+<div class="bg-amber-50 border-b-2 border-amber-300">
+  <div class="max-w-6xl mx-auto px-4 py-2.5 flex items-center gap-2 text-amber-900 text-sm">
+    <span class="text-base">⚠️</span>
+    <span><strong>เป็นเพียงข้อมูลในการเรียนรู้ ไม่ใช่คำแนะนำในการลงทุนใดๆ ทั้งสิ้น</strong></span>
+  </div>
+</div>
+
 <main class="max-w-6xl mx-auto px-4 py-6" id="main-content">
   <!-- Loading skeleton -->
   <div id="loading" class="text-center py-20">
@@ -95,10 +103,15 @@
     <div id="strategies-container" class="space-y-6"></div>
 
     <!-- Footer -->
-    <footer class="mt-12 pt-6 border-t border-gray-200 text-center text-xs text-gray-500">
-      <p>📊 Last updated: <span id="footer-updated">—</span></p>
-      <p class="mt-2">⚠️ ข้อมูลศึกษา · ไม่ใช่คำแนะนำการลงทุน · Auto-scanned via Yahoo Finance</p>
-      <p class="mt-1">เทรดเดอร์ต้องใช้ดุลพินิจตัดสินใจเอง — ตั้ง stop loss เสมอ</p>
+    <footer class="mt-12 pt-6 bg-amber-50 border-2 border-amber-300 rounded-2xl p-6">
+      <p class="text-center font-bold text-amber-900 text-base">
+        ⚠️ เป็นเพียงข้อมูลในการเรียนรู้ ไม่ใช่คำแนะนำในการลงทุนใดๆ ทั้งสิ้น
+      </p>
+      <p class="text-center text-xs text-amber-700 mt-3 leading-relaxed">
+        ข้อมูลจาก Yahoo Finance (อาจ delay 15+ นาที) · ผู้ใช้ต้องใช้ดุลพินิจตัดสินใจเอง<br>
+        ตั้ง stop loss เสมอ · จำกัด risk per trade ≤ 2% ของเงินทุน · การลงทุนมีความเสี่ยง ผู้ลงทุนควรศึกษาก่อนตัดสินใจ
+      </p>
+      <p class="text-center text-xs text-gray-500 mt-3">📊 Last updated: <span id="footer-updated">—</span></p>
     </footer>
   </div>
 </main>
