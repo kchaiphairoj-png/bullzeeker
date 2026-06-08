@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>📣 แชร์ Bullzeeker — ให้เพื่อนเทรดเดอร์ของคุณรู้จัก</title>
+<meta name="description" content="แชร์ Bullzeeker ให้เพื่อน — QR Code, ข้อความสำเร็จรูปสำหรับ LINE / Facebook / X / WhatsApp · เว็บคัดหุ้นอเมริกาสำหรับคนไทย" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="🐂 Bullzeeker — เว็บคัดหุ้นอเมริกาสำหรับคนไทย" />
+<meta property="og:description" content="แพลตฟอร์มฟรีรวม 4 scanners + 8 calculators + Macro dashboard · ออกแบบเพื่อเทรดเดอร์ไทย" />
+<meta property="og:image" content="https://bullzeeker.com/og-image.svg" />
+<meta property="og:url" content="https://bullzeeker.com/share.html" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://bullzeeker.com/og-image.svg" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐂</text></svg>" />
+<style>
+  :root{
+    --bg:#070b14; --bg2:#0e1525; --bg3:#172238; --bg4:#1f2c44;
+    --line:#243044; --line2:#334158;
+    --text:#e6edf7; --muted:#8b97ab; --dim:#5a6478;
+    --accent:#3b82f6; --accent2:#60a5fa; --gold:#fbbf24;
+    --green:#22c55e; --red:#ef4444; --orange:#fb923c;
+    --purple:#a855f7; --emerald:#10b981; --ocean:#0ea5e9;
+    --thai-red:#ED1C24;
+    /* Social colors */
+    --line-green:#00B900;
+    --fb-blue:#1877F2;
+    --twitter:#000000;
+    --whatsapp:#25D366;
+    --telegram:#0088cc;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);
+    font-family:'Inter','Noto Sans Thai',-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:14.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent2);text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none}
+
+  /* ===== HEADER ===== */
+  header{background:linear-gradient(180deg,#0a0f1c,#070b14);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}
+  .h-row{display:flex;align-items:center;gap:18px;padding:14px 24px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+  .brand-logo{width:42px;height:42px;border-radius:11px;
+    background:linear-gradient(135deg,var(--thai-red),var(--gold),var(--accent));
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+    box-shadow:0 4px 14px rgba(251,191,36,.3)}
+  .brand-txt h1{font-size:18px;font-weight:800;color:#fff}
+  .brand-txt p{font-size:11px;color:var(--muted);margin-top:1px;font-weight:500}
+
+  main{max-width:1100px;margin:0 auto;padding:32px 22px 60px}
+
+  /* ===== HERO ===== */
+  .hero{
+    text-align:center;margin-bottom:36px;padding:0 12px;
+  }
+  .hero h2{
+    font-size:34px;font-weight:800;line-height:1.2;margin-bottom:10px;
+    background:linear-gradient(135deg,#fff,var(--gold));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p{font-size:15px;color:var(--muted);max-width:600px;margin:0 auto}
+
+  /* ===== MAIN GRID ===== */
+  .grid{display:grid;grid-template-columns:1fr 1.4fr;gap:24px;margin-bottom:32px}
+  @media(max-width:780px){.grid{grid-template-columns:1fr}}
+
+  /* ===== QR CODE PANEL ===== */
+  .qr-panel{
+    background:linear-gradient(135deg,#fff,#f3f4f6);
+    border-radius:20px;padding:28px;text-align:center;
+    box-shadow:0 10px 40px rgba(251,191,36,.15);
+    position:relative;overflow:hidden;
+  }
+  .qr-panel::before{
+    content:"";position:absolute;top:-40px;right:-40px;width:200px;height:200px;
+    background:radial-gradient(circle, rgba(251,191,36,.3), transparent 70%);
+  }
+  .qr-panel h3{color:#0a0e16;font-size:18px;margin-bottom:14px;font-weight:800;position:relative}
+  .qr-img-wrap{
+    background:#fff;padding:14px;border-radius:14px;display:inline-block;
+    box-shadow:0 6px 20px rgba(0,0,0,.15);margin-bottom:14px;
+  }
+  .qr-img-wrap img{display:block;width:240px;height:240px;border-radius:8px}
+  .qr-panel .scan-hint{
+    color:#0a0e16;font-size:13px;font-weight:500;line-height:1.6;
+    background:rgba(251,191,36,.15);padding:8px 14px;border-radius:8px;
+    display:inline-block;margin-top:6px;
+  }
+  .qr-panel .url{
+    font-family:'SF Mono','Consolas',monospace;font-size:16px;font-weight:700;
+    color:#0a0e16;margin-top:14px;
+  }
+  .qr-download{
+    display:inline-block;margin-top:14px;padding:8px 14px;
+    background:#0a0e16;color:#fff;border-radius:8px;font-size:12px;font-weight:600;
+  }
+  .qr-download:hover{background:#1a2332;color:#fff}
+
+  /* ===== ACTION PANELS ===== */
+  .actions{display:flex;flex-direction:column;gap:16px}
+
+  .panel{
+    background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:22px;
+  }
+  .panel h3{font-size:15px;margin-bottom:14px;font-weight:700;display:flex;align-items:center;gap:8px;color:var(--gold)}
+  .panel h3 .ic{font-size:20px}
+
+  /* ===== COPY URL ROW ===== */
+  .url-row{
+    background:var(--bg3);border:1px solid var(--line);border-radius:10px;
+    padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;
+  }
+  .url-row .label{font-size:11px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.4px;flex-shrink:0;width:90px}
+  .url-row .u{flex:1;font-family:'SF Mono','Consolas',monospace;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .url-row button{
+    background:var(--accent);color:#fff;padding:6px 12px;border-radius:6px;
+    font-size:11px;font-weight:700;flex-shrink:0;transition:.15s;
+  }
+  .url-row button:hover{background:#2563eb}
+  .url-row button.copied{background:var(--green)}
+
+  /* ===== SOCIAL SHARE BUTTONS ===== */
+  .social-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+  .social-btn{
+    display:flex;align-items:center;gap:10px;padding:14px 16px;
+    border-radius:12px;font-size:14px;font-weight:700;color:#fff;
+    transition:.15s;text-decoration:none;
+  }
+  .social-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.3);color:#fff}
+  .social-btn .ic{font-size:22px}
+  .social-line{background:var(--line-green)}
+  .social-fb{background:var(--fb-blue)}
+  .social-x{background:var(--twitter)}
+  .social-wa{background:var(--whatsapp)}
+  .social-tg{background:var(--telegram)}
+  .social-mail{background:#6b7280}
+  .social-copy{background:var(--purple)}
+
+  /* ===== MESSAGE TEMPLATES ===== */
+  .msg-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+  .msg-tab{
+    background:var(--bg3);color:var(--muted);border:1px solid var(--line);
+    padding:7px 14px;border-radius:999px;font-size:12px;font-weight:600;
+    cursor:pointer;transition:.15s;
+  }
+  .msg-tab:hover{color:var(--text);border-color:var(--accent)}
+  .msg-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  .msg-box{
+    background:var(--bg3);border:1px solid var(--line);border-radius:10px;
+    padding:16px;font-size:13px;line-height:1.7;color:var(--text);
+    white-space:pre-wrap;font-family:inherit;min-height:170px;
+    position:relative;
+  }
+  .msg-box .copy-btn{
+    position:absolute;top:12px;right:12px;background:var(--accent);color:#fff;
+    padding:6px 14px;border-radius:6px;font-size:11px;font-weight:700;
+  }
+  .msg-box .copy-btn:hover{background:#2563eb}
+  .msg-box .copy-btn.copied{background:var(--green)}
+
+  /* ===== PAGE LINKS ===== */
+  .pages-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:10px}
+  .page-link{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--bg3);border:1px solid var(--line);border-radius:10px;
+    padding:12px 14px;color:var(--text);font-size:13px;transition:.15s;
+  }
+  .page-link:hover{border-color:var(--gold);transform:translateY(-1px);color:var(--text)}
+  .page-link .nm{display:flex;align-items:center;gap:8px;font-weight:600}
+  .page-link .copy-mini{
+    background:var(--bg);color:var(--accent2);border:1px solid var(--line);
+    padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;
+  }
+  .page-link .copy-mini:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .page-link .copy-mini.copied{background:var(--green);color:#fff;border-color:var(--green)}
+
+  /* ===== OG PREVIEW ===== */
+  .og-preview{
+    background:var(--bg2);border:1px solid var(--line);border-radius:16px;
+    padding:22px;margin-top:20px;
+  }
+  .og-preview h3{font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--gold)}
+  .og-preview .img-wrap{
+    border-radius:12px;overflow:hidden;border:1px solid var(--line);
+    background:#000;
+  }
+  .og-preview img{display:block;width:100%;height:auto}
+  .og-preview .hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
+
+  /* ===== BACK BTN ===== */
+  .back-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--bg3);color:var(--text);border:1px solid var(--line);
+    padding:9px 14px;border-radius:8px;font-size:13px;font-weight:600;
+    text-decoration:none;
+  }
+  .back-btn:hover{border-color:var(--accent);color:var(--text)}
+
+  /* Toast */
+  .toast{
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--green);color:#fff;padding:12px 22px;border-radius:10px;
+    font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(34,197,94,.4);
+    z-index:200;opacity:0;pointer-events:none;transition:.25s;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
+
+  footer{border-top:1px solid var(--line);padding:24px;color:var(--muted);font-size:12px;text-align:center;margin-top:40px;line-height:1.6}
+
+  @media(max-width:780px){
+    .h-row{padding:10px 14px}
+    main{padding:20px 14px}
+    .hero h2{font-size:24px}
+    .qr-panel{padding:20px}
+    .qr-img-wrap img{width:200px;height:200px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-row">
+    <a href="index.html" class="brand">
+      <div class="brand-logo">🐂</div>
+      <div class="brand-txt">
+        <h1>Bull<span style="color:var(--gold)">zeeker</span></h1>
+        <p>📣 ศูนย์แชร์ลิงก์</p>
+      </div>
+    </a>
+    <div style="flex:1"></div>
+    <a href="index.html" class="back-btn">← กลับหน้าหลัก</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h2>📣 แชร์ Bullzeeker</h2>
+    <p>เปิดให้เพื่อนเทรดเดอร์ไทยรู้จัก · QR Code + ปุ่ม share + ข้อความสำเร็จรูป<br/>ทุกอย่างที่ต้องใช้แชร์ในที่เดียว</p>
+  </div>
+
+  <!-- MAIN GRID: QR + ACTIONS -->
+  <div class="grid">
+
+    <!-- LEFT: QR CODE -->
+    <div class="qr-panel">
+      <h3>📱 สแกน QR Code</h3>
+      <div class="qr-img-wrap">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=https%3A%2F%2Fbullzeeker.com&bgcolor=ffffff&color=070b14&margin=5&qzone=2" alt="Bullzeeker QR Code" loading="lazy"/>
+      </div>
+      <div class="scan-hint">📷 เปิดกล้องมือถือ → สแกนได้เลย!</div>
+      <div class="url">bullzeeker.com</div>
+      <a href="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=https%3A%2F%2Fbullzeeker.com&bgcolor=ffffff&color=070b14&margin=10&format=png&download=1" target="_blank" class="qr-download">⬇️ Download QR (PNG)</a>
+    </div>
+
+    <!-- RIGHT: ACTIONS -->
+    <div class="actions">
+
+      <!-- COPY URL -->
+      <div class="panel">
+        <h3><span class="ic">🔗</span> ลิงก์หลัก (คัดลอกแล้วส่งได้เลย)</h3>
+        <div class="url-row">
+          <span class="label">หน้าหลัก</span>
+          <span class="u">https://bullzeeker.com</span>
+          <button onclick="copyURL('https://bullzeeker.com', this)">📋 Copy</button>
+        </div>
+        <div class="url-row">
+          <span class="label">Long-Term ⭐</span>
+          <span class="u">https://bullzeeker.com/longterm.html</span>
+          <button onclick="copyURL('https://bullzeeker.com/longterm.html', this)">📋 Copy</button>
+        </div>
+      </div>
+
+      <!-- SOCIAL SHARE BUTTONS -->
+      <div class="panel">
+        <h3><span class="ic">🚀</span> Share ไปยัง... (1 คลิก)</h3>
+        <div class="social-grid">
+          <a href="https://line.me/R/msg/text/?🐂%20Bullzeeker%20-%20เว็บคัดหุ้นอเมริกาเพื่อคนไทย%20ฟรี%20100%25%0A%0A👉%20https%3A%2F%2Fbullzeeker.com" target="_blank" class="social-btn social-line">
+            <span class="ic">💬</span> LINE
+          </a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fbullzeeker.com" target="_blank" class="social-btn social-fb">
+            <span class="ic">📘</span> Facebook
+          </a>
+          <a href="https://twitter.com/intent/tweet?text=🐂%20Bullzeeker%20—%20Free%20US%20stock%20screener%20for%20Thai%20traders%20🇹🇭&url=https%3A%2F%2Fbullzeeker.com" target="_blank" class="social-btn social-x">
+            <span class="ic">𝕏</span> Twitter/X
+          </a>
+          <a href="https://wa.me/?text=🐂%20Bullzeeker%20-%20เว็บคัดหุ้นอเมริกาเพื่อคนไทย%20ฟรี%0A%0Ahttps%3A%2F%2Fbullzeeker.com" target="_blank" class="social-btn social-wa">
+            <span class="ic">📱</span> WhatsApp
+          </a>
+          <a href="https://t.me/share/url?url=https%3A%2F%2Fbullzeeker.com&text=🐂%20Bullzeeker%20-%20เว็บคัดหุ้นอเมริกาเพื่อคนไทย" target="_blank" class="social-btn social-tg">
+            <span class="ic">✈️</span> Telegram
+          </a>
+          <a href="mailto:?subject=🐂%20Bullzeeker%20-%20เว็บคัดหุ้นอเมริกาเพื่อคนไทย&body=ลองดูเว็บนี้สิ%20ฟรีไม่ต้องสมัคร%0A%0Ahttps%3A%2F%2Fbullzeeker.com" class="social-btn social-mail">
+            <span class="ic">📧</span> Email
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== MESSAGE TEMPLATES ===== -->
+  <div class="panel" style="margin-bottom:20px">
+    <h3><span class="ic">💬</span> ข้อความสำเร็จรูป — Copy ไปวางได้เลย</h3>
+    <div class="msg-tabs">
+      <button class="msg-tab active" data-msg="line">💬 LINE (เพื่อน)</button>
+      <button class="msg-tab" data-msg="group">👥 LINE Group</button>
+      <button class="msg-tab" data-msg="fb">📘 Facebook</button>
+      <button class="msg-tab" data-msg="pantip">📝 Pantip</button>
+      <button class="msg-tab" data-msg="x">𝕏 Twitter</button>
+      <button class="msg-tab" data-msg="short">⚡ สั้น ๆ</button>
+    </div>
+    <div class="msg-box" id="msgBox">
+      <button class="copy-btn" onclick="copyMsg(this)">📋 Copy</button>
+      <div id="msgContent"></div>
+    </div>
+  </div>
+
+  <!-- ===== ALL PAGES ===== -->
+  <div class="panel" style="margin-bottom:20px">
+    <h3><span class="ic">📄</span> ลิงก์เฉพาะหน้า — เลือกส่งตามความสนใจ</h3>
+    <div class="pages-grid" id="pagesGrid"></div>
+  </div>
+
+  <!-- ===== OG PREVIEW ===== -->
+  <div class="og-preview">
+    <h3>🎨 Preview รูปภาพ (เวลาแชร์ใน LINE/FB จะแสดงรูปนี้)</h3>
+    <div class="img-wrap">
+      <img src="og-image.svg" alt="Bullzeeker preview"/>
+    </div>
+    <div class="hint">
+      💡 รูปนี้จะปรากฏอัตโนมัติเวลาแชร์ลิงก์ใน LINE, Facebook, X · บางแพลตฟอร์ม cache รูปไว้นาน อาจใช้เวลาให้รูปใหม่ปรากฏ 1-2 วัน
+    </div>
+  </div>
+
+</main>
+
+<div id="toast" class="toast">✓ Copy แล้ว</div>
+
+<footer>
+  🐂 Bullzeeker · เว็บคัดหุ้นอเมริกาเพื่อเทรดเดอร์ไทย · <a href="index.html">กลับหน้าหลัก</a>
+</footer>
+
+<script>
+const $ = s=>document.querySelector(s);
+const $$ = s=>Array.from(document.querySelectorAll(s));
+
+function toast(msg='✓ Copy แล้ว'){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+async function copyToClipboard(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    return true;
+  }catch(e){
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand('copy'); }catch{}
+    document.body.removeChild(ta);
+    return true;
+  }
+}
+
+async function copyURL(url, btn){
+  await copyToClipboard(url);
+  const orig = btn.innerHTML;
+  btn.innerHTML = '✓ Copied';
+  btn.classList.add('copied');
+  toast('✓ คัดลอกลิงก์แล้ว');
+  setTimeout(()=>{
+    btn.innerHTML = orig;
+    btn.classList.remove('copied');
+  }, 1500);
+}
+
+/* ===== MESSAGE TEMPLATES ===== */
+const MESSAGES = {
+  line: `🐂 Bullzeeker — เว็บคัดหุ้นอเมริกาเพื่อคนไทย
+
+ฟรีไม่ต้องสมัคร · ครบทุกอย่างที่นักเทรดต้องการ
+🎯 Daily Screener
+🚀 Breakout Scanner (สไตล์ Minervini)
+💎 Quality Filter 9 เงื่อนไข
+🌊 Long-Term Weekly (พักฐาน 4+ ปี)
+🛠️ เครื่องมือคำนวณ Position Size บาท
+
+ลองดูเลยนะ 👉 https://bullzeeker.com`,
+
+  group: `📣 ขอแชร์เว็บมีประโยชน์สำหรับเทรดเดอร์ไทย!
+
+🐂 Bullzeeker — เว็บคัดหุ้นอเมริกาที่ออกแบบเพื่อคนไทยโดยเฉพาะ
+✨ ฟรี 100% · ไม่ต้องสมัครสมาชิก · ไม่มีโฆษณา
+
+ฟีเจอร์เด่น:
+🎯 Screener 200+ หุ้น แบบ real-time
+🚀 Breakout Scanner (Stage 2 / VCP)
+💎 Quality Stocks (9 เงื่อนไข)
+🌊 Long-Term Weekly — ตามล่า 10-bagger
+🛠️ คำนวณ Position Size, Stop Loss เป็นเงินบาท
+📊 Macro Dashboard (VIX, Fed, Sectors)
+📚 คอร์สเรียนภาษาไทย
+
+🔗 https://bullzeeker.com
+
+ลองเล่นกันดูครับ ติชมได้ 🙏`,
+
+  fb: `🐂 แชร์เว็บคัดหุ้นอเมริกาฟรีที่ทำให้คนไทยใช้
+
+แพลตฟอร์มที่รวม 4 scanners + 8 calculators + macro dashboard + คอร์สเรียนภาษาไทย ในที่เดียว
+
+📊 ฟีเจอร์เด่น
+✓ Daily Screener 200+ หุ้น
+✓ Breakout Scanner (สไตล์ Minervini / O'Neil)
+✓ Quality Filter 9 เงื่อนไข
+✓ 🌊 Long-Term Weekly — หุ้นพักฐาน 4+ ปีพร้อมระเบิด
+✓ เครื่องคิดเลขเทรดเป็นเงินบาท
+✓ เปรียบเทียบโบรกเกอร์ไทย (Liberator, Pi, IBKR ฯลฯ)
+
+🎁 ฟรี 100% · ไม่ต้อง login · ไม่มีโฆษณา
+
+🔗 https://bullzeeker.com
+
+#หุ้นอเมริกา #USStocks #เทรดเดอร์ไทย #Bullzeeker #หุ้นต่างประเทศ`,
+
+  pantip: `[แชร์] เว็บคัดหุ้นอเมริกาฟรีที่ทำขึ้นมาให้คนไทยใช้
+
+สวัสดีครับเพื่อน ๆ ผมทำเว็บนี้ขึ้นมาเพื่อช่วยคนไทยที่เทรดหุ้นอเมริกา เพราะรู้สึกว่า screener ระดับโลก (Finviz, TradingView ฯลฯ) ราคาแพง + เป็นภาษาอังกฤษ + ไม่ตอบโจทย์คนไทย
+
+ฟีเจอร์ที่ใส่:
+- 🎯 Daily Screener สำหรับเทรดรายวัน
+- 🚀 Breakout Scanner ใช้หลัก Mark Minervini Trend Template + VCP
+- 💎 Quality Filter ที่กรอง 9 เงื่อนไขพร้อมกัน (Price, Mcap, EMA, RSI, ROE, Margin ฯลฯ)
+- 🌊 Long-Term Weekly Scanner — ตามล่า Multi-Year Base Breakout (แบบ AMD 2016)
+- 🛠️ Position Size Calculator เป็นเงินบาทตรง ๆ
+- 📊 Macro Dashboard (VIX, DXY, Fed Rate, Sector Heatmap)
+- 📚 คอร์สเรียน 13 บทเรียน + 90 ศัพท์ + Roadmap 12 เดือน
+
+URL: https://bullzeeker.com
+
+ฟรี 100% ไม่ต้องสมัครครับ ทดลองเล่นได้เลย ติชมยินดีรับฟังครับ
+
+#หุ้นอเมริกา #USStocks #หุ้นต่างประเทศ`,
+
+  x: `🐂 Bullzeeker — Free US stock screener built for Thai traders 🇹🇭
+
+✨ 4 scanners · 8 calculators · Macro dashboard · Education
+🆕 Big Wave Scanner — find 10-baggers like AMD '16, NVDA '16
+
+100% free, no signup
+👉 bullzeeker.com
+
+#USStocks #StockMarket #ThaiTrader`,
+
+  short: `🐂 เว็บคัดหุ้น US ฟรี ลองดูสิ
+https://bullzeeker.com`,
+};
+
+function setMessage(key){
+  $('#msgContent').textContent = MESSAGES[key];
+  $$('.msg-tab').forEach(b=>b.classList.toggle('active', b.dataset.msg === key));
+}
+$$('.msg-tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>setMessage(btn.dataset.msg));
+});
+setMessage('line');
+
+async function copyMsg(btn){
+  const text = $('#msgContent').textContent;
+  await copyToClipboard(text);
+  btn.innerHTML = '✓ Copied';
+  btn.classList.add('copied');
+  toast('✓ คัดลอกข้อความแล้ว');
+  setTimeout(()=>{
+    btn.innerHTML = '📋 Copy';
+    btn.classList.remove('copied');
+  }, 1500);
+}
+
+/* ===== PAGES GRID ===== */
+const PAGES = [
+  {ic:'🏠', nm:'หน้าหลัก',          url:'https://bullzeeker.com'},
+  {ic:'🎯', nm:'Daily Screener',     url:'https://bullzeeker.com/screener.html'},
+  {ic:'🚀', nm:'Breakout Scanner',   url:'https://bullzeeker.com/breakout.html'},
+  {ic:'💎', nm:'Quality Stocks',     url:'https://bullzeeker.com/quality.html'},
+  {ic:'🌊', nm:'Long-Term Weekly',   url:'https://bullzeeker.com/longterm.html'},
+  {ic:'🛠️', nm:'เครื่องมือ (Tools)', url:'https://bullzeeker.com/tools.html'},
+  {ic:'📊', nm:'Macro Dashboard',    url:'https://bullzeeker.com/macro.html'},
+  {ic:'📚', nm:'เรียนรู้',           url:'https://bullzeeker.com/learn.html'},
+];
+$('#pagesGrid').innerHTML = PAGES.map((p,i)=>`
+  <a href="${p.url}" target="_blank" class="page-link">
+    <span class="nm">${p.ic} ${p.nm}</span>
+    <button class="copy-mini" onclick="event.preventDefault();copyPage('${p.url}', this)">📋</button>
+  </a>
+`).join('');
+
+async function copyPage(url, btn){
+  await copyToClipboard(url);
+  btn.innerHTML = '✓';
+  btn.classList.add('copied');
+  toast('✓ คัดลอกแล้ว: ' + url.replace('https://bullzeeker.com',''));
+  setTimeout(()=>{
+    btn.innerHTML = '📋';
+    btn.classList.remove('copied');
+  }, 1500);
+}
+</script>
+</body>
+</html>

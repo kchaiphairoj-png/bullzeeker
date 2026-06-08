@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>404 — ไม่พบหน้านี้ | Bullzeeker</title>
+<meta name="robots" content="noindex" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🇹🇭</text></svg>" />
+<style>
+  :root{
+    --bg:#070b14; --bg2:#0e1525; --bg3:#172238;
+    --line:#243044; --text:#e6edf7; --muted:#8b97ab;
+    --gold:#fbbf24; --accent:#3b82f6; --emerald:#10b981;
+    --thai-red:#ED1C24;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{
+    background:var(--bg);color:var(--text);
+    font-family:'Inter','Noto Sans Thai',-apple-system,sans-serif;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    padding:20px;
+    background:
+      radial-gradient(ellipse at top right, rgba(59,130,246,.1), transparent 60%),
+      radial-gradient(ellipse at bottom left, rgba(251,191,36,.08), transparent 60%),
+      var(--bg);
+  }
+  .wrap{max-width:600px;text-align:center}
+  .logo{
+    width:64px;height:64px;border-radius:16px;
+    background:linear-gradient(135deg,var(--thai-red),var(--gold),var(--accent));
+    display:flex;align-items:center;justify-content:center;font-size:34px;
+    margin:0 auto 24px;box-shadow:0 8px 20px rgba(251,191,36,.3);
+  }
+  .big-404{
+    font-size:120px;font-weight:800;line-height:1;
+    background:linear-gradient(135deg,var(--gold),var(--thai-red));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    margin-bottom:12px;
+  }
+  h1{font-size:28px;font-weight:800;margin-bottom:10px}
+  p{color:var(--muted);font-size:15px;line-height:1.7;margin-bottom:24px;max-width:480px;margin-left:auto;margin-right:auto}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:30px}
+  .btn{
+    padding:11px 22px;border-radius:10px;font-weight:700;font-size:14px;
+    text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:.15s;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--gold),#f59e0b);color:#0a0e16;
+    box-shadow:0 4px 12px rgba(251,191,36,.3);
+  }
+  .btn-primary:hover{transform:translateY(-1px)}
+  .btn-secondary{
+    background:rgba(255,255,255,.06);color:#fff;border:1px solid var(--line);
+  }
+  .btn-secondary:hover{background:rgba(255,255,255,.1)}
+  .quick-links{
+    background:var(--bg2);border:1px solid var(--line);border-radius:14px;
+    padding:18px;margin-top:14px;
+  }
+  .quick-links h3{font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+  .links-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+  .ql{
+    background:var(--bg3);border:1px solid var(--line);border-radius:8px;
+    padding:10px 12px;font-size:13px;color:var(--text);text-decoration:none;
+    display:flex;align-items:center;gap:8px;transition:.15s;
+  }
+  .ql:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .ql .ic{font-size:18px}
+  .footer-note{color:var(--muted);font-size:12px;margin-top:20px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="logo">🐂</div>
+    <div class="big-404">404</div>
+    <h1>ไม่พบหน้านี้ครับ 😅</h1>
+    <p>
+      ลิงก์ที่คุณตามมาอาจจะหมดอายุ หรือพิมพ์ URL ผิด —<br/>
+      ไม่ต้องห่วง กลับไปที่หน้าหลักได้เลย หรือเลือกเครื่องมือที่ต้องการด้านล่าง
+    </p>
+
+    <div class="actions">
+      <a href="/" class="btn btn-primary">🏠 กลับหน้าหลัก</a>
+      <a href="javascript:history.back()" class="btn btn-secondary">← ย้อนกลับ</a>
+    </div>
+
+    <div class="quick-links">
+      <h3>🎯 เครื่องมือยอดนิยม</h3>
+      <div class="links-grid">
+        <a href="/screener.html" class="ql"><span class="ic">🎯</span> Daily Screener</a>
+        <a href="/breakout.html" class="ql"><span class="ic">🚀</span> Breakout Scanner</a>
+        <a href="/quality.html" class="ql"><span class="ic">💎</span> Quality Stocks</a>
+        <a href="/longterm.html" class="ql"><span class="ic">🌊</span> Long-Term Weekly</a>
+        <a href="/tools.html" class="ql"><span class="ic">🛠️</span> เครื่องมือ</a>
+        <a href="/macro.html" class="ql"><span class="ic">📊</span> Macro Dashboard</a>
+        <a href="/learn.html" class="ql"><span class="ic">📚</span> เรียนรู้</a>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      Bullzeeker · เว็บคัดหุ้นอเมริกาสำหรับคนไทย
+    </div>
+  </div>
+</body>
+</html>

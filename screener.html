@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>US Stock Screener TH — คัดหุ้นอเมริกาสำหรับเทรดรายวัน</title>
+<meta name="description" content="คัดหุ้นอเมริกาทั้งตลาดสำหรับเทรดรายวัน จากประเทศไทย ดูเวลาเปิด-ปิดตลาด NY ตามเวลาไทย พร้อม Screener, Gainers/Losers, Watchlist" />
+<link rel="preconnect" href="https://query1.finance.yahoo.com" crossorigin />
+<link rel="preconnect" href="https://api.allorigins.win" crossorigin />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>" />
+<script src="universe.js"></script>
+<style>
+  :root{
+    --bg:#0b0f17; --bg2:#111826; --bg3:#1a2333; --line:#243044;
+    --text:#e6edf7; --muted:#8b97ab; --accent:#3b82f6; --accent2:#60a5fa;
+    --green:#22c55e; --green-bg:rgba(34,197,94,.12);
+    --red:#ef4444; --red-bg:rgba(239,68,68,.12);
+    --yellow:#eab308; --purple:#a855f7;
+    --card-shadow: 0 4px 16px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Sukhumvit Set","Noto Sans Thai",sans-serif;
+    font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent2);text-decoration:none}
+  button{font-family:inherit;cursor:pointer}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bg2)}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px}
+  ::-webkit-scrollbar-thumb:hover{background:#334158}
+
+  /* ===== HEADER ===== */
+  header{
+    background:linear-gradient(180deg,#0e1421,#0b0f17);
+    border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(8px);
+  }
+  .header-row{display:flex;align-items:center;gap:16px;padding:12px 20px;flex-wrap:wrap}
+  .logo{font-size:20px;font-weight:800;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+  .logo .emoji{font-size:24px}
+  .logo small{font-size:11px;font-weight:500;color:var(--muted);margin-left:6px}
+
+  .clock-box{
+    display:flex;gap:14px;align-items:center;
+    background:var(--bg2);border:1px solid var(--line);
+    border-radius:10px;padding:8px 14px;font-variant-numeric:tabular-nums;
+  }
+  .clock-cell{display:flex;flex-direction:column;line-height:1.1}
+  .clock-cell label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .clock-cell .t{font-size:14px;font-weight:600}
+  .session-badge{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600;
+  }
+  .session-badge::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;
+    box-shadow:0 0 8px currentColor;animation:pulse 1.8s ease-in-out infinite}
+  .session-open{color:var(--green);background:var(--green-bg)}
+  .session-pre{color:var(--yellow);background:rgba(234,179,8,.12)}
+  .session-after{color:var(--purple);background:rgba(168,85,247,.12)}
+  .session-closed{color:var(--muted);background:rgba(139,151,171,.12)}
+  .session-closed::before{animation:none;opacity:.6}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+  .header-spacer{flex:1}
+  .refresh-btn{
+    background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:8px;
+    font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px;
+    transition:background .15s;
+  }
+  .refresh-btn:hover{background:#2563eb}
+  .refresh-btn:disabled{background:#1e3a8a;cursor:wait;opacity:.6}
+  .refresh-btn .spin{display:inline-block;animation:spin 1s linear infinite}
+  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+  /* ===== TAB NAV ===== */
+  nav.tabs{
+    display:flex;gap:4px;padding:0 20px;border-bottom:1px solid var(--line);
+    overflow-x:auto;background:#0b0f17;
+  }
+  nav.tabs button{
+    background:none;border:none;color:var(--muted);padding:12px 16px;
+    font-size:13px;font-weight:600;border-bottom:2px solid transparent;
+    white-space:nowrap;transition:color .15s,border-color .15s;
+  }
+  nav.tabs button:hover{color:var(--text)}
+  nav.tabs button.active{color:var(--accent2);border-bottom-color:var(--accent2)}
+  nav.tabs button .count{
+    display:inline-block;background:var(--bg3);color:var(--muted);
+    border-radius:10px;padding:1px 7px;margin-left:6px;font-size:11px;
+  }
+
+  /* ===== LAYOUT ===== */
+  main{padding:20px;max-width:1600px;margin:0 auto}
+  .hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+  .stat-card{
+    background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;box-shadow:var(--card-shadow);
+  }
+  .stat-card label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .stat-card .v{font-size:22px;font-weight:700;margin-top:4px}
+  .stat-card .sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .stat-card.gain .v{color:var(--green)}
+  .stat-card.loss .v{color:var(--red)}
+
+  /* ===== SCREENER ===== */
+  .screener-controls{
+    background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+    padding:14px;margin-bottom:16px;
+  }
+  .filter-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+  .filter{display:flex;flex-direction:column;gap:4px}
+  .filter label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .filter input,.filter select{
+    background:var(--bg3);color:var(--text);border:1px solid var(--line);
+    border-radius:8px;padding:7px 10px;font-size:13px;font-family:inherit;
+    min-width:90px;
+  }
+  .filter input:focus,.filter select:focus{outline:none;border-color:var(--accent)}
+  .filter.search input{min-width:180px}
+  .filter-presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+  .preset-btn{
+    background:var(--bg3);color:var(--text);border:1px solid var(--line);
+    padding:6px 12px;border-radius:999px;font-size:12px;font-weight:500;
+    transition:all .15s;
+  }
+  .preset-btn:hover{background:#243044;border-color:var(--accent)}
+  .preset-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  /* ===== TABLE ===== */
+  .table-wrap{
+    background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+    overflow:hidden;box-shadow:var(--card-shadow);
+  }
+  .table-header{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 16px;border-bottom:1px solid var(--line);
+  }
+  .table-header h2{margin:0;font-size:16px;font-weight:700}
+  .table-header .meta{font-size:12px;color:var(--muted)}
+  table.stocks{width:100%;border-collapse:collapse;font-size:13px}
+  table.stocks thead th{
+    background:#0e1421;color:var(--muted);font-size:11px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.5px;
+    padding:10px 12px;text-align:right;border-bottom:1px solid var(--line);
+    position:sticky;top:0;cursor:pointer;user-select:none;white-space:nowrap;
+  }
+  table.stocks thead th:first-child,table.stocks thead th.left{text-align:left}
+  table.stocks thead th:hover{color:var(--text)}
+  table.stocks thead th .sort-arrow{font-size:10px;color:var(--accent2);margin-left:2px}
+  table.stocks tbody td{
+    padding:10px 12px;text-align:right;border-bottom:1px solid #1a2333;
+    font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  table.stocks tbody td:first-child,table.stocks tbody td.left{text-align:left}
+  table.stocks tbody tr{transition:background .12s}
+  table.stocks tbody tr:hover{background:#162132;cursor:pointer}
+  table.stocks tbody tr.in-watchlist{background:linear-gradient(90deg,rgba(234,179,8,.05),transparent)}
+  .sym{font-weight:700;color:var(--text)}
+  .name{color:var(--muted);font-size:12px;margin-top:2px;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+  .pos{color:var(--green)}
+  .neg{color:var(--red)}
+  .badge-sec{
+    display:inline-block;font-size:10px;padding:2px 8px;border-radius:999px;
+    background:var(--bg3);color:var(--muted);border:1px solid var(--line);
+  }
+  .star-btn{
+    background:none;border:none;color:var(--muted);font-size:16px;
+    padding:2px 6px;transition:color .15s,transform .1s;
+  }
+  .star-btn:hover{transform:scale(1.2)}
+  .star-btn.active{color:var(--yellow)}
+  .empty-state{
+    padding:60px 20px;text-align:center;color:var(--muted);
+  }
+  .empty-state .icon{font-size:40px;margin-bottom:8px;opacity:.6}
+
+  /* ===== MINI CHART ===== */
+  .spark{display:inline-block;vertical-align:middle}
+
+  /* ===== MODAL ===== */
+  .modal-bg{
+    position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+    display:none;align-items:center;justify-content:center;z-index:100;padding:20px;
+  }
+  .modal-bg.show{display:flex}
+  .modal{
+    background:var(--bg2);border:1px solid var(--line);border-radius:16px;
+    max-width:760px;width:100%;max-height:90vh;overflow:auto;
+    box-shadow:0 20px 60px rgba(0,0,0,.6);
+  }
+  .modal-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 20px;border-bottom:1px solid var(--line);
+  }
+  .modal-head h3{margin:0;font-size:22px}
+  .modal-head .sub{font-size:13px;color:var(--muted);margin-top:2px}
+  .modal-close{
+    background:var(--bg3);border:1px solid var(--line);color:var(--text);
+    width:32px;height:32px;border-radius:8px;font-size:18px;
+  }
+  .modal-body{padding:20px}
+  .price-big{font-size:36px;font-weight:800;font-variant-numeric:tabular-nums}
+  .change-big{font-size:18px;font-weight:600;margin-left:8px}
+  .modal-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:16px}
+  .modal-stats .s{background:var(--bg3);border:1px solid var(--line);border-radius:8px;padding:10px}
+  .modal-stats .s label{font-size:11px;color:var(--muted);text-transform:uppercase}
+  .modal-stats .s .v{font-size:15px;font-weight:600;margin-top:2px}
+  .modal-chart{margin-top:20px;background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:16px}
+  .modal-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+  .modal-actions a, .modal-actions button{
+    background:var(--bg3);color:var(--text);border:1px solid var(--line);
+    padding:8px 14px;border-radius:8px;font-size:13px;font-weight:500;
+  }
+  .modal-actions a:hover, .modal-actions button:hover{background:#243044;border-color:var(--accent)}
+
+  /* ===== TOAST ===== */
+  .toast{
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--bg3);border:1px solid var(--line);
+    padding:12px 20px;border-radius:10px;font-size:13px;
+    box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:200;
+    opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
+
+  /* ===== INFO BANNER ===== */
+  .banner{
+    background:linear-gradient(90deg,rgba(59,130,246,.1),rgba(168,85,247,.1));
+    border:1px solid rgba(59,130,246,.25);border-radius:12px;
+    padding:12px 16px;margin-bottom:16px;font-size:13px;
+    display:flex;gap:10px;align-items:flex-start;
+  }
+  .banner .icon{font-size:18px}
+  .banner b{color:var(--accent2)}
+
+  /* ===== FOOTER ===== */
+  footer{
+    text-align:center;padding:30px 20px;color:var(--muted);font-size:12px;
+    border-top:1px solid var(--line);margin-top:40px;
+  }
+  footer a{color:var(--accent2)}
+
+  /* ===== LOADER ===== */
+  .loader-overlay{
+    position:absolute;inset:0;background:rgba(11,15,23,.7);
+    display:flex;align-items:center;justify-content:center;
+    border-radius:12px;z-index:5;
+  }
+  .loader{
+    width:32px;height:32px;border:3px solid var(--line);
+    border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width:780px){
+    .header-row{padding:10px 12px;gap:8px}
+    .logo{font-size:16px}
+    .logo small{display:none}
+    .clock-box{padding:6px 10px;gap:10px}
+    main{padding:12px}
+    .filter input,.filter select{min-width:0;width:100%}
+    .filter{flex:1;min-width:140px}
+    table.stocks thead th:nth-child(n+6),
+    table.stocks tbody td:nth-child(n+6){display:none}
+    .price-big{font-size:28px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <div class="logo">
+      <span class="emoji">📈</span>
+      <span>US Stock Screener<small>TH · เทรดจากไทย</small></span>
+    </div>
+    <div class="clock-box" id="clockBox">
+      <div class="clock-cell"><label>🇹🇭 ไทย</label><div class="t" id="clockTH">--:--:--</div></div>
+      <div class="clock-cell"><label>🇺🇸 New York</label><div class="t" id="clockNY">--:--:--</div></div>
+      <div id="sessionBadge" class="session-badge session-closed">ปิดตลาด</div>
+    </div>
+    <div class="header-spacer"></div>
+    <a href="index.html" style="color:var(--text);padding:8px 14px;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none;background:var(--bg3);border:1px solid var(--line)">🏠 หน้าหลัก</a>
+    <button id="refreshBtn" class="refresh-btn" onclick="loadAll(true)">
+      <span id="refreshIcon">🔄</span> รีเฟรช
+    </button>
+  </div>
+  <nav style="display:flex;padding:0 20px;border-bottom:1px solid var(--line);overflow-x:auto;background:#080d18">
+    <a href="index.html" style="color:var(--muted);padding:11px 16px;font-size:13px;font-weight:600;border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap">🏠 หน้าหลัก</a>
+    <a href="screener.html" style="color:var(--accent2);padding:11px 16px;font-size:13px;font-weight:600;border-bottom:2px solid var(--accent2);text-decoration:none;background:rgba(96,165,250,.04);white-space:nowrap">🎯 Daily Screener</a>
+    <a href="breakout.html" style="color:var(--muted);padding:11px 16px;font-size:13px;font-weight:600;border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap">🚀 Breakout</a>
+    <a href="quality.html" style="color:var(--muted);padding:11px 16px;font-size:13px;font-weight:600;border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap">💎 Quality</a>
+    <a href="longterm.html" style="color:var(--muted);padding:11px 16px;font-size:13px;font-weight:600;border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap">🌊 Long-Term Weekly</a>
+    <a href="tools.html" style="color:var(--muted);padding:11px 16px;font-size:13px;font-weight:600;border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap">🛠️ เครื่องมือ</a>
+    <a href="macro.html" style="color:var(--muted);padding:11px 16px;font-size:13px;font-weight:600;border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap">📊 Macro</a>
+    <a href="learn.html" style="color:var(--muted);padding:11px 16px;font-size:13px;font-weight:600;border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap">📚 เรียนรู้</a>
+    <a href="pro/" style="color:var(--gold);padding:11px 16px;font-size:13px;font-weight:700;border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap">🏆 Pro<span style="font-size:9px;background:var(--gold);color:#000;padding:1px 5px;border-radius:3px;margin-left:5px;vertical-align:middle;letter-spacing:.5px">BETA</span></a>
+  </nav>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="screener">🎯 Screener</button>
+    <button class="tab-btn" data-tab="gainers">🚀 Top Gainers</button>
+    <button class="tab-btn" data-tab="losers">📉 Top Losers</button>
+    <button class="tab-btn" data-tab="active">🔥 Most Active</button>
+    <button class="tab-btn" data-tab="picks">⭐ Daily Picks</button>
+    <button class="tab-btn" data-tab="watchlist">⭐ Watchlist <span class="count" id="wlCount">0</span></button>
+    <button class="tab-btn" data-tab="schedule">🕐 ตารางเวลา</button>
+  </nav>
+</header>
+
+<main>
+  <!-- INFO BANNER -->
+  <div class="banner" id="banner">
+    <span class="icon">💡</span>
+    <div>
+      <b>วิธีใช้:</b> เว็บนี้คัดหุ้นอเมริกายอดนิยม ~200 ตัว (S&P 100 + popular movers) แบบ delayed quote ~15 นาที
+      ใช้ Screener กรองหุ้นตามเกณฑ์ที่อยากเทรดรายวัน เช่น %เปลี่ยน, Volume, ราคา —
+      กดดาว ⭐ เก็บเข้า Watchlist · กดที่ row เพื่อดูรายละเอียด + กราฟ
+    </div>
+  </div>
+
+  <!-- HERO STATS -->
+  <div class="hero" id="heroStats">
+    <div class="stat-card"><label>หุ้นที่ติดตาม</label><div class="v" id="statTotal">—</div><div class="sub">tickers</div></div>
+    <div class="stat-card gain"><label>หุ้นบวก</label><div class="v" id="statGainers">—</div><div class="sub" id="statGainersPct">—</div></div>
+    <div class="stat-card loss"><label>หุ้นลบ</label><div class="v" id="statLosers">—</div><div class="sub" id="statLosersPct">—</div></div>
+    <div class="stat-card"><label>ราคาเฉลี่ยเปลี่ยน</label><div class="v" id="statAvgChg">—</div><div class="sub">% แบบเฉลี่ย</div></div>
+    <div class="stat-card"><label>อัพเดทล่าสุด</label><div class="v" id="statUpdated" style="font-size:14px">—</div><div class="sub">data delay ~15 min</div></div>
+  </div>
+
+  <!-- SCREENER CONTROLS (visible on screener tab) -->
+  <div class="screener-controls" id="screenerControls">
+    <div class="filter-row">
+      <div class="filter search">
+        <label>🔍 ค้นหา (Symbol / ชื่อ)</label>
+        <input type="text" id="fSearch" placeholder="เช่น AAPL, Tesla" />
+      </div>
+      <div class="filter">
+        <label>ราคาขั้นต่ำ ($)</label>
+        <input type="number" id="fPriceMin" placeholder="0" min="0" step="1" />
+      </div>
+      <div class="filter">
+        <label>ราคาสูงสุด ($)</label>
+        <input type="number" id="fPriceMax" placeholder="∞" min="0" step="1" />
+      </div>
+      <div class="filter">
+        <label>%เปลี่ยน ขั้นต่ำ</label>
+        <input type="number" id="fChgMin" placeholder="-100" step=".1" />
+      </div>
+      <div class="filter">
+        <label>%เปลี่ยน สูงสุด</label>
+        <input type="number" id="fChgMax" placeholder="100" step=".1" />
+      </div>
+      <div class="filter">
+        <label>Volume ขั้นต่ำ</label>
+        <select id="fVolMin">
+          <option value="0">ไม่จำกัด</option>
+          <option value="100000">100K+</option>
+          <option value="500000">500K+</option>
+          <option value="1000000" selected>1M+</option>
+          <option value="5000000">5M+</option>
+          <option value="10000000">10M+</option>
+          <option value="50000000">50M+</option>
+        </select>
+      </div>
+      <div class="filter">
+        <label>Sector</label>
+        <select id="fSector">
+          <option value="">ทั้งหมด</option>
+        </select>
+      </div>
+      <div class="filter">
+        <label>&nbsp;</label>
+        <button class="preset-btn" onclick="resetFilters()" style="padding:7px 14px">↺ Reset</button>
+      </div>
+    </div>
+    <div class="filter-presets">
+      <span style="font-size:12px;color:var(--muted);align-self:center">⚡ Quick presets:</span>
+      <button class="preset-btn" data-preset="all">All Stocks</button>
+      <button class="preset-btn" data-preset="momentum">📈 Momentum (+3% & vol 5M+)</button>
+      <button class="preset-btn" data-preset="oversold">📉 Oversold (-3% & vol 5M+)</button>
+      <button class="preset-btn" data-preset="lowprice">💰 Low Price ($5-$30)</button>
+      <button class="preset-btn" data-preset="bigcap">🏦 Big Cap (>$100B)</button>
+      <button class="preset-btn" data-preset="hot">🔥 Hot Volume (>20M)</button>
+      <button class="preset-btn" data-preset="tech">💻 Tech Only</button>
+    </div>
+  </div>
+
+  <!-- MAIN TABLE -->
+  <div class="table-wrap" id="tableWrap" style="position:relative">
+    <div class="table-header">
+      <h2 id="tableTitle">Screener — หุ้นทั้งหมด</h2>
+      <span class="meta" id="tableMeta">—</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="stocks">
+        <thead>
+          <tr>
+            <th class="left" data-sort="symbol">Symbol</th>
+            <th data-sort="price">Price</th>
+            <th data-sort="change">Chg $</th>
+            <th data-sort="changePct">Chg %</th>
+            <th data-sort="volume">Volume</th>
+            <th data-sort="marketCap">Mkt Cap</th>
+            <th data-sort="dayRange">Day Range</th>
+            <th class="left" data-sort="sector">Sector</th>
+            <th>Chart</th>
+            <th>⭐</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="10" class="empty-state">
+            <div class="icon">⏳</div>
+            <div>กำลังโหลดข้อมูลหุ้น...</div>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="loaderOverlay" class="loader-overlay" style="display:none"><div class="loader"></div></div>
+  </div>
+
+  <!-- SCHEDULE PANEL (hidden by default) -->
+  <div id="schedulePanel" style="display:none">
+    <div class="table-wrap" style="padding:24px">
+      <h2 style="margin-top:0">🕐 ตารางเวลาเทรดหุ้นอเมริกาตามเวลาไทย</h2>
+      <p style="color:var(--muted)">ตลาดหุ้น NYSE / NASDAQ เปิดทำการตามเวลา New York (ET). ในไทยตามเวลาเหล่านี้:</p>
+      <table class="stocks" style="margin-top:16px">
+        <thead>
+          <tr>
+            <th class="left">Session</th>
+            <th class="left">เวลา New York (ET)</th>
+            <th class="left">เวลาไทย (DST)</th>
+            <th class="left">เวลาไทย (มาตรฐาน)</th>
+            <th class="left">หมายเหตุ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="left">🌅 Pre-Market</td><td class="left">04:00 - 09:30</td><td class="left">15:00 - 20:30</td><td class="left">16:00 - 21:30</td><td class="left">Volume น้อย, spread กว้าง</td></tr>
+          <tr><td class="left">📊 <b style="color:var(--green)">Regular Hours</b></td><td class="left">09:30 - 16:00</td><td class="left"><b>20:30 - 03:00</b></td><td class="left"><b>21:30 - 04:00</b></td><td class="left">เวลาเทรดหลัก liquidity สูงสุด</td></tr>
+          <tr><td class="left">🌙 After-Hours</td><td class="left">16:00 - 20:00</td><td class="left">03:00 - 07:00</td><td class="left">04:00 - 08:00</td><td class="left">Earnings reports มักออกช่วงนี้</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:20px;padding:14px;background:var(--bg3);border-radius:10px;border:1px solid var(--line)">
+        <b>📌 หมายเหตุสำคัญ:</b>
+        <ul style="margin:8px 0 0 0;padding-left:20px;line-height:1.8">
+          <li><b>DST (Daylight Saving Time):</b> มีผลช่วงประมาณ 2nd Sun of Mar — 1st Sun of Nov (เวลาไทยเร็วกว่า NY 11 ชั่วโมง)</li>
+          <li><b>มาตรฐาน:</b> ช่วงที่เหลือของปี (เวลาไทยเร็วกว่า NY 12 ชั่วโมง)</li>
+          <li><b>วันหยุดตลาด US:</b> New Year, MLK Day, Presidents Day, Good Friday, Memorial Day, Juneteenth, Independence Day, Labor Day, Thanksgiving, Christmas</li>
+          <li><b>วันก่อนวันหยุด:</b> ตลาดมักปิดเร็ว 13:00 ET (เวลาไทย ~01:00 หลังเที่ยงคืน)</li>
+        </ul>
+      </div>
+      <div style="margin-top:20px;padding:14px;background:var(--bg3);border-radius:10px;border:1px solid var(--line)">
+        <b>💡 กลยุทธ์เทรดสำหรับคนไทย:</b>
+        <ul style="margin:8px 0 0 0;padding-left:20px;line-height:1.8">
+          <li><b>Set & Forget (เหมาะที่สุด):</b> วาง limit order ก่อนนอน 21:30, ตื่นเช้าเช็คผล (เวลาเปิดสนุก ๆ ที่ 21:30-23:00 มี volatility สูง)</li>
+          <li><b>Pre-Market Scan:</b> 17:00-20:30 ดูข่าว, earnings, gap, premarket gainers</li>
+          <li><b>Opening Bell:</b> 21:30-22:30 ช่วงเทรดเดอร์มืออาชีพชอบมาก volatility สูง</li>
+          <li><b>Power Hour:</b> 02:00-03:00 ก่อนปิดตลาด มี momentum สวยบ่อยครั้ง (แต่คนไทยมักนอนแล้ว 😄)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL: Stock Detail -->
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div>
+        <h3 id="mSymbol">—</h3>
+        <div class="sub" id="mName">—</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <span class="price-big" id="mPrice">—</span>
+        <span class="change-big" id="mChange">—</span>
+      </div>
+      <div class="modal-stats" id="mStats"></div>
+      <div class="modal-chart">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">📊 ราคาช่วง 30 วันล่าสุด (delayed)</div>
+        <canvas id="mChart" width="700" height="220" style="width:100%;height:auto"></canvas>
+        <div id="mChartLoading" style="color:var(--muted);font-size:12px;margin-top:8px;display:none">⏳ กำลังโหลดกราฟ...</div>
+      </div>
+      <div class="modal-actions">
+        <button id="mWatchBtn">⭐ Add Watchlist</button>
+        <a id="mYahoo" target="_blank" rel="noopener">📈 ดูที่ Yahoo Finance</a>
+        <a id="mTV" target="_blank" rel="noopener">📊 เปิดที่ TradingView</a>
+        <a id="mFinviz" target="_blank" rel="noopener">🔎 ดูที่ Finviz</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast">—</div>
+
+<footer>
+  <div>🐂 <b>Bullzeeker</b> · 📈 Daily Screener — Built for Thai traders · Data delayed ~15 min · Educational use only · ไม่ใช่คำแนะนำการลงทุน</div>
+  <div style="margin-top:6px">Powered by Yahoo Finance public quote API · CORS proxy: allorigins.win</div>
+</footer>
+
+<script>
+/* =====================================================================
+   US STOCK SCREENER — Full client-side app
+   ===================================================================== */
+
+/* ---------- TICKER UNIVERSE (S&P 100 + popular movers + ETFs) ---------- */
+const UNIVERSE = [
+  // Mega cap tech
+  ['AAPL','Apple Inc.','Technology'], ['MSFT','Microsoft Corp.','Technology'],
+  ['GOOGL','Alphabet Inc. A','Technology'], ['GOOG','Alphabet Inc. C','Technology'],
+  ['AMZN','Amazon.com','Consumer Cyclical'], ['META','Meta Platforms','Technology'],
+  ['NVDA','NVIDIA Corp.','Technology'], ['TSLA','Tesla Inc.','Consumer Cyclical'],
+  ['AVGO','Broadcom Inc.','Technology'], ['ORCL','Oracle Corp.','Technology'],
+  ['ADBE','Adobe Inc.','Technology'], ['CRM','Salesforce','Technology'],
+  ['AMD','Advanced Micro Devices','Technology'], ['INTC','Intel Corp.','Technology'],
+  ['CSCO','Cisco Systems','Technology'], ['QCOM','Qualcomm Inc.','Technology'],
+  ['TXN','Texas Instruments','Technology'], ['IBM','IBM Corp.','Technology'],
+  ['NOW','ServiceNow','Technology'], ['AMAT','Applied Materials','Technology'],
+  ['MU','Micron Technology','Technology'], ['LRCX','Lam Research','Technology'],
+  ['KLAC','KLA Corp.','Technology'], ['ADI','Analog Devices','Technology'],
+  ['PANW','Palo Alto Networks','Technology'], ['SNPS','Synopsys','Technology'],
+  ['CDNS','Cadence Design','Technology'], ['MRVL','Marvell Technology','Technology'],
+  ['ANET','Arista Networks','Technology'], ['FTNT','Fortinet','Technology'],
+  ['CRWD','CrowdStrike','Technology'], ['NET','Cloudflare','Technology'],
+  ['SNOW','Snowflake','Technology'], ['DDOG','Datadog','Technology'],
+  ['SHOP','Shopify','Technology'], ['SQ','Block Inc.','Technology'],
+  ['PYPL','PayPal','Financial Services'], ['UBER','Uber Tech','Industrials'],
+  ['LYFT','Lyft','Industrials'], ['SPOT','Spotify','Communication Services'],
+  ['NFLX','Netflix','Communication Services'], ['DIS','Walt Disney','Communication Services'],
+  ['WBD','Warner Bros Discovery','Communication Services'], ['T','AT&T','Communication Services'],
+  ['VZ','Verizon','Communication Services'], ['CMCSA','Comcast','Communication Services'],
+
+  // Financials
+  ['JPM','JPMorgan Chase','Financial Services'], ['BAC','Bank of America','Financial Services'],
+  ['WFC','Wells Fargo','Financial Services'], ['C','Citigroup','Financial Services'],
+  ['GS','Goldman Sachs','Financial Services'], ['MS','Morgan Stanley','Financial Services'],
+  ['BLK','BlackRock','Financial Services'], ['SCHW','Charles Schwab','Financial Services'],
+  ['AXP','American Express','Financial Services'], ['V','Visa Inc.','Financial Services'],
+  ['MA','Mastercard','Financial Services'], ['BRK-B','Berkshire Hathaway B','Financial Services'],
+  ['COF','Capital One','Financial Services'], ['USB','U.S. Bancorp','Financial Services'],
+  ['PNC','PNC Financial','Financial Services'], ['TFC','Truist Financial','Financial Services'],
+  ['COIN','Coinbase','Financial Services'], ['HOOD','Robinhood','Financial Services'],
+
+  // Healthcare
+  ['JNJ','Johnson & Johnson','Healthcare'], ['LLY','Eli Lilly','Healthcare'],
+  ['UNH','UnitedHealth','Healthcare'], ['PFE','Pfizer','Healthcare'],
+  ['MRK','Merck','Healthcare'], ['ABBV','AbbVie','Healthcare'],
+  ['TMO','Thermo Fisher','Healthcare'], ['DHR','Danaher','Healthcare'],
+  ['ABT','Abbott Labs','Healthcare'], ['BMY','Bristol-Myers','Healthcare'],
+  ['AMGN','Amgen','Healthcare'], ['GILD','Gilead Sciences','Healthcare'],
+  ['CVS','CVS Health','Healthcare'], ['MDT','Medtronic','Healthcare'],
+  ['ISRG','Intuitive Surgical','Healthcare'], ['VRTX','Vertex Pharma','Healthcare'],
+  ['REGN','Regeneron','Healthcare'], ['MRNA','Moderna','Healthcare'],
+  ['BIIB','Biogen','Healthcare'], ['HUM','Humana','Healthcare'],
+
+  // Consumer
+  ['WMT','Walmart','Consumer Defensive'], ['COST','Costco','Consumer Defensive'],
+  ['PG','Procter & Gamble','Consumer Defensive'], ['KO','Coca-Cola','Consumer Defensive'],
+  ['PEP','PepsiCo','Consumer Defensive'], ['MDLZ','Mondelez','Consumer Defensive'],
+  ['CL','Colgate-Palmolive','Consumer Defensive'], ['MO','Altria','Consumer Defensive'],
+  ['PM','Philip Morris','Consumer Defensive'], ['TGT','Target','Consumer Defensive'],
+  ['HD','Home Depot','Consumer Cyclical'], ['LOW','Lowe\'s','Consumer Cyclical'],
+  ['NKE','Nike','Consumer Cyclical'], ['SBUX','Starbucks','Consumer Cyclical'],
+  ['MCD','McDonald\'s','Consumer Cyclical'], ['BKNG','Booking','Consumer Cyclical'],
+  ['MAR','Marriott','Consumer Cyclical'], ['HLT','Hilton','Consumer Cyclical'],
+  ['CMG','Chipotle','Consumer Cyclical'], ['LULU','Lululemon','Consumer Cyclical'],
+  ['F','Ford Motor','Consumer Cyclical'], ['GM','General Motors','Consumer Cyclical'],
+  ['RIVN','Rivian','Consumer Cyclical'], ['LCID','Lucid Group','Consumer Cyclical'],
+  ['NIO','NIO Inc.','Consumer Cyclical'], ['XPEV','XPeng','Consumer Cyclical'],
+
+  // Energy
+  ['XOM','Exxon Mobil','Energy'], ['CVX','Chevron','Energy'],
+  ['COP','ConocoPhillips','Energy'], ['SLB','Schlumberger','Energy'],
+  ['EOG','EOG Resources','Energy'], ['MPC','Marathon Petroleum','Energy'],
+  ['PSX','Phillips 66','Energy'], ['VLO','Valero Energy','Energy'],
+  ['OXY','Occidental Petroleum','Energy'], ['HAL','Halliburton','Energy'],
+
+  // Industrials
+  ['BA','Boeing','Industrials'], ['CAT','Caterpillar','Industrials'],
+  ['HON','Honeywell','Industrials'], ['UPS','United Parcel','Industrials'],
+  ['UNP','Union Pacific','Industrials'], ['DE','Deere & Co','Industrials'],
+  ['GE','General Electric','Industrials'], ['MMM','3M Co','Industrials'],
+  ['LMT','Lockheed Martin','Industrials'], ['RTX','RTX Corp','Industrials'],
+  ['NOC','Northrop Grumman','Industrials'], ['GD','General Dynamics','Industrials'],
+  ['ETN','Eaton Corp','Industrials'], ['EMR','Emerson Electric','Industrials'],
+  ['ITW','Illinois Tool','Industrials'], ['CSX','CSX Corp','Industrials'],
+  ['FDX','FedEx','Industrials'], ['DAL','Delta Airlines','Industrials'],
+  ['UAL','United Airlines','Industrials'], ['AAL','American Airlines','Industrials'],
+  ['LUV','Southwest Air','Industrials'],
+
+  // Materials, Utilities, REITs
+  ['LIN','Linde plc','Materials'], ['APD','Air Products','Materials'],
+  ['SHW','Sherwin-Williams','Materials'], ['FCX','Freeport-McMoRan','Materials'],
+  ['NEM','Newmont Corp','Materials'], ['DD','DuPont','Materials'],
+  ['NEE','NextEra Energy','Utilities'], ['DUK','Duke Energy','Utilities'],
+  ['SO','Southern Co','Utilities'], ['D','Dominion Energy','Utilities'],
+  ['AMT','American Tower','Real Estate'], ['PLD','Prologis','Real Estate'],
+  ['CCI','Crown Castle','Real Estate'], ['EQIX','Equinix','Real Estate'],
+  ['SPG','Simon Property','Real Estate'], ['O','Realty Income','Real Estate'],
+
+  // Hot/Meme/Momentum names
+  ['PLTR','Palantir','Technology'], ['SOFI','SoFi Technologies','Financial Services'],
+  ['NIKE','Nike Inc.','Consumer Cyclical'], ['DKNG','DraftKings','Consumer Cyclical'],
+  ['GME','GameStop','Consumer Cyclical'], ['AMC','AMC Entertainment','Communication Services'],
+  ['ROKU','Roku','Communication Services'], ['PTON','Peloton','Consumer Cyclical'],
+  ['BB','BlackBerry','Technology'], ['NOK','Nokia','Technology'],
+  ['BABA','Alibaba','Consumer Cyclical'], ['JD','JD.com','Consumer Cyclical'],
+  ['PDD','PDD Holdings','Consumer Cyclical'], ['BIDU','Baidu','Communication Services'],
+  ['NTES','NetEase','Communication Services'], ['TSM','Taiwan Semi','Technology'],
+  ['ASML','ASML Holding','Technology'], ['ARM','Arm Holdings','Technology'],
+  ['SMCI','Super Micro','Technology'], ['MARA','Marathon Digital','Financial Services'],
+  ['RIOT','Riot Platforms','Financial Services'], ['MSTR','MicroStrategy','Technology'],
+  ['NKLA','Nikola Corp','Consumer Cyclical'], ['CHPT','ChargePoint','Industrials'],
+
+  // ETFs (popular)
+  ['SPY','SPDR S&P 500 ETF','ETF'], ['QQQ','Invesco QQQ ETF','ETF'],
+  ['IWM','iShares Russell 2000','ETF'], ['DIA','SPDR Dow Jones','ETF'],
+  ['VOO','Vanguard S&P 500','ETF'], ['VTI','Vanguard Total Market','ETF'],
+  ['ARKK','ARK Innovation','ETF'], ['SOXL','Direxion 3x Semi Bull','ETF'],
+  ['TQQQ','ProShares 3x QQQ','ETF'], ['SQQQ','ProShares 3x QQQ Inverse','ETF'],
+  ['UVXY','ProShares VIX','ETF'], ['GLD','SPDR Gold','ETF'],
+  ['SLV','iShares Silver','ETF'], ['USO','US Oil Fund','ETF'],
+  ['TLT','iShares 20+ Year Treasury','ETF']
+];
+
+// Use shared universe if available — but cap at ~500 for daily screener
+// (each symbol = 1 chart API call, so 1500 would be too slow for a "daily" view)
+const _U = window.BULLZEEKER_UNIVERSE;
+const _localMeta = Object.fromEntries(UNIVERSE.map(u=>[u[0],{name:u[1],sector:u[2]}]));
+const SYMBOLS = _U && _U.liquid_500 && _U.liquid_500.length > 200
+  ? _U.liquid_500
+  : UNIVERSE.map(u=>u[0]);
+// META holds {name, sector} for known stocks. Unknown ones get symbol as name + 'Other' sector.
+const META = new Proxy(_localMeta, {
+  get(target, key){
+    return target[key] || {name: key, sector: 'Other'};
+  }
+});
+
+/* ---------- STATE ---------- */
+let state = {
+  data: [],          // array of quote objects
+  filtered: [],
+  activeTab: 'screener',
+  sort: {key:'changePct', dir:-1},
+  watchlist: JSON.parse(localStorage.getItem('us_screener_wl')||'[]'),
+  lastFetch: 0,
+  activePreset: 'all',
+};
+
+/* ---------- HELPERS ---------- */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const fmt = {
+  price: v => v==null||isNaN(v) ? '—' : v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}),
+  pct: v => v==null||isNaN(v) ? '—' : (v>=0?'+':'')+v.toFixed(2)+'%',
+  chg: v => v==null||isNaN(v) ? '—' : (v>=0?'+':'')+v.toFixed(2),
+  num: v => {
+    if(v==null||isNaN(v)) return '—';
+    if(v>=1e12) return (v/1e12).toFixed(2)+'T';
+    if(v>=1e9) return (v/1e9).toFixed(2)+'B';
+    if(v>=1e6) return (v/1e6).toFixed(2)+'M';
+    if(v>=1e3) return (v/1e3).toFixed(2)+'K';
+    return v.toLocaleString();
+  },
+  range: (lo,hi) => (lo==null||hi==null) ? '—' : fmt.price(lo)+' - '+fmt.price(hi),
+};
+function toast(msg, ms=2200){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._tid); toast._tid = setTimeout(()=>t.classList.remove('show'), ms);
+}
+
+/* ---------- CLOCK / SESSION ---------- */
+function pad(n){return String(n).padStart(2,'0')}
+function nyParts(d){
+  // get hours/minutes/seconds/day-of-week in America/New_York
+  const fmtNY = new Intl.DateTimeFormat('en-US',{
+    timeZone:'America/New_York', hour12:false,
+    weekday:'short', hour:'2-digit', minute:'2-digit', second:'2-digit',
+  });
+  const parts = Object.fromEntries(fmtNY.formatToParts(d).map(p=>[p.type,p.value]));
+  return {
+    weekday: parts.weekday,
+    hh: parseInt(parts.hour,10) % 24,
+    mm: parseInt(parts.minute,10),
+    ss: parseInt(parts.second,10),
+  };
+}
+function getSession(d){
+  const ny = nyParts(d);
+  if(ny.weekday==='Sat'||ny.weekday==='Sun') return {key:'closed',label:'ปิดตลาด (เสาร์-อาทิตย์)'};
+  const min = ny.hh*60 + ny.mm;
+  if(min>=240 && min<570) return {key:'pre',label:'Pre-Market'};
+  if(min>=570 && min<960) return {key:'open',label:'เปิดตลาด (Regular)'};
+  if(min>=960 && min<1200) return {key:'after',label:'After-Hours'};
+  return {key:'closed',label:'ปิดตลาด'};
+}
+function updateClock(){
+  const now = new Date();
+  const th = new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(now);
+  const ny = new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(now).replace('24:','00:');
+  $('#clockTH').textContent = th;
+  $('#clockNY').textContent = ny;
+  const s = getSession(now);
+  const badge = $('#sessionBadge');
+  badge.className = 'session-badge session-'+s.key;
+  badge.textContent = s.label;
+}
+setInterval(updateClock, 1000); updateClock();
+
+/* ---------- DATA FETCH ----------
+   Strategy: Yahoo Finance public quote API via CORS proxy (allorigins).
+   Fallback: per-symbol stooq CSV (allows CORS).
+*/
+
+const YQUOTE = 'https://query1.finance.yahoo.com/v7/finance/quote';
+const PROXIES = [
+  url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
+  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+  url => 'https://corsproxy.io/?' + encodeURIComponent(url),
+  url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
+];
+
+// localStorage cache for quotes (5 min TTL)
+const _qCache = (()=>{
+  try { return JSON.parse(localStorage.getItem('screener_qcache')||'{}'); } catch { return {}; }
+})();
+const _qTTL = 5*60*1000;
+function _saveQCache(){
+  try { localStorage.setItem('screener_qcache', JSON.stringify(_qCache)); }
+  catch { /* quota - drop oldest */ }
+}
+
+// Helper: fetch URL via proxy chain
+async function _tryProxies(url){
+  for(const px of PROXIES){
+    try{
+      const r = await fetch(px(url), {cache:'no-store'});
+      if(!r.ok) continue;
+      const t = await r.text();
+      if(t && t.length > 10) return t;
+    }catch{}
+  }
+  throw new Error('all proxies failed');
+}
+
+/*
+ * Use CHART endpoint per symbol (Yahoo batch quote v7 endpoint requires
+ * crumb auth that public proxies cannot provide). Chart endpoint is more
+ * reliable but ~1 call per symbol.
+ *
+ * Returns same shape as old batch quote response so render code unchanged.
+ */
+async function fetchYahooBatch(symbols){
+  const now = Date.now();
+  const results = [];
+  const need = [];
+  for(const s of symbols){
+    const c = _qCache[s];
+    if(c && (now-c.ts) < _qTTL) results.push(c.data);
+    else need.push(s);
+  }
+
+  if(need.length === 0) return results;
+
+  // Concurrent fetch via chart endpoint
+  let idx = 0;
+  async function worker(){
+    while(idx < need.length){
+      const i = idx++;
+      const sym = need[i];
+      try{
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=5d&interval=1d`;
+        const txt = await _tryProxies(url);
+        const j = JSON.parse(txt);
+        const meta = j?.chart?.result?.[0]?.meta;
+        if(meta && meta.regularMarketPrice != null){
+          const px = meta.regularMarketPrice;
+          const prev = meta.chartPreviousClose ?? meta.previousClose ?? px;
+          const change = px - prev;
+          const cp = prev ? (change/prev)*100 : 0;
+          const data = {
+            symbol: sym,
+            regularMarketPrice: px,
+            regularMarketChange: change,
+            regularMarketChangePercent: cp,
+            regularMarketOpen: meta.regularMarketOpen ?? prev,
+            regularMarketDayHigh: meta.regularMarketDayHigh,
+            regularMarketDayLow: meta.regularMarketDayLow,
+            regularMarketVolume: meta.regularMarketVolume,
+            regularMarketPreviousClose: prev,
+            fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh,
+            fiftyTwoWeekLow: meta.fiftyTwoWeekLow,
+            shortName: meta.shortName,
+            longName: meta.longName,
+            exchange: meta.exchangeName,
+            fullExchangeName: meta.fullExchangeName,
+            currency: meta.currency || 'USD',
+            marketState: 'OPEN',
+            averageDailyVolume3Month: meta.regularMarketVolume,  // approximation
+            marketCap: null,  // not available from chart endpoint
+            trailingPE: null,
+            epsTrailingTwelveMonths: null,
+          };
+          results.push(data);
+          _qCache[sym] = {ts: now, data};
+        }
+      }catch{}
+    }
+  }
+  await Promise.all(Array(10).fill(0).map(worker));
+  _saveQCache();
+
+  if(results.length === 0) throw new Error('all symbols failed');
+  return results;
+}
+
+async function fetchStooqOne(sym){
+  // Stooq supports CORS for /q/l/?s=aapl.us&f=sd2t2ohlcv&h&e=csv
+  const s = sym.replace('-','.').toLowerCase()+'.us';
+  const url = `https://stooq.com/q/l/?s=${s}&f=sd2t2ohlcv&h&e=csv`;
+  const res = await fetch(url);
+  const txt = await res.text();
+  // Symbol,Date,Time,Open,High,Low,Close,Volume
+  const lines = txt.trim().split('\n');
+  if(lines.length<2) return null;
+  const cols = lines[1].split(',');
+  const open=parseFloat(cols[3]), high=parseFloat(cols[4]),
+        low=parseFloat(cols[5]),  close=parseFloat(cols[6]),
+        vol=parseFloat(cols[7]);
+  if(isNaN(close)) return null;
+  return {
+    symbol: sym, regularMarketPrice: close, regularMarketOpen: open,
+    regularMarketDayHigh: high, regularMarketDayLow: low,
+    regularMarketVolume: vol,
+    regularMarketChange: close-open,
+    regularMarketChangePercent: open ? (close-open)/open*100 : 0,
+  };
+}
+
+function normalize(q){
+  const sym = q.symbol;
+  const m = META[sym] || {name:q.shortName||q.longName||sym, sector:'Other'};
+  return {
+    symbol: sym,
+    name: q.shortName||q.longName||m.name,
+    sector: m.sector,
+    price: q.regularMarketPrice ?? null,
+    open: q.regularMarketOpen ?? null,
+    prevClose: q.regularMarketPreviousClose ?? null,
+    change: q.regularMarketChange ?? null,
+    changePct: q.regularMarketChangePercent ?? null,
+    volume: q.regularMarketVolume ?? null,
+    avgVol: q.averageDailyVolume3Month ?? null,
+    high: q.regularMarketDayHigh ?? null,
+    low: q.regularMarketDayLow ?? null,
+    yearHigh: q.fiftyTwoWeekHigh ?? null,
+    yearLow: q.fiftyTwoWeekLow ?? null,
+    marketCap: q.marketCap ?? null,
+    pe: q.trailingPE ?? null,
+    eps: q.epsTrailingTwelveMonths ?? null,
+    currency: q.currency || 'USD',
+    exchange: q.fullExchangeName || q.exchange || '',
+    marketState: q.marketState || '',
+  };
+}
+
+async function loadAll(force=false){
+  if(!force && Date.now()-state.lastFetch < 60000) {
+    toast('โหลดมาสด ๆ แล้ว — ลองอีกครั้งใน 1 นาที');
+    return;
+  }
+  $('#loaderOverlay').style.display='flex';
+  $('#refreshBtn').disabled = true;
+  $('#refreshIcon').className = 'spin'; $('#refreshIcon').textContent='⏳';
+
+  try{
+    // batch by 50
+    const batches = [];
+    for(let i=0;i<SYMBOLS.length;i+=50) batches.push(SYMBOLS.slice(i,i+50));
+    const results = await Promise.allSettled(batches.map(b=>fetchYahooBatch(b)));
+    let all = [];
+    let failedSyms = [];
+    results.forEach((r,idx)=>{
+      if(r.status==='fulfilled') all = all.concat(r.value);
+      else failedSyms = failedSyms.concat(batches[idx]);
+    });
+
+    // Try stooq fallback for failed batches
+    if(failedSyms.length && all.length < SYMBOLS.length*0.5){
+      toast('Yahoo proxy ขัดข้อง — กำลังลอง fallback Stooq...');
+      const fb = await Promise.allSettled(failedSyms.slice(0,30).map(fetchStooqOne));
+      fb.forEach(r=>{ if(r.status==='fulfilled' && r.value) all.push(r.value); });
+    }
+
+    if(all.length===0){
+      throw new Error('ไม่ได้ข้อมูลเลย — proxy อาจถูกบล็อก ลองรีเฟรชอีกครั้ง');
+    }
+
+    state.data = all.map(normalize).filter(q=>q.price!=null);
+    state.lastFetch = Date.now();
+    populateSectors();
+    render();
+    toast(`✅ โหลดข้อมูล ${state.data.length}/${SYMBOLS.length} ตัวสำเร็จ`);
+  }catch(e){
+    console.error(e);
+    toast('❌ '+(e.message||'โหลดข้อมูลไม่สำเร็จ'), 4000);
+    if(state.data.length===0){
+      $('#tbody').innerHTML = `<tr><td colspan="10" class="empty-state">
+        <div class="icon">⚠️</div>
+        <div><b>โหลดข้อมูลไม่สำเร็จ</b></div>
+        <div style="margin-top:8px;font-size:12px">CORS proxy อาจล่ม — ลองกด รีเฟรช อีกครั้ง<br/>
+        หรือเปิดผ่าน <a href="https://api.allorigins.win/raw?url=${encodeURIComponent(YQUOTE+'?symbols=AAPL')}" target="_blank">ทดสอบ proxy</a></div>
+      </td></tr>`;
+    }
+  }finally{
+    $('#loaderOverlay').style.display='none';
+    $('#refreshBtn').disabled = false;
+    $('#refreshIcon').className = ''; $('#refreshIcon').textContent='🔄';
+  }
+}
+
+/* ---------- SECTOR POPULATE ---------- */
+function populateSectors(){
+  const sel = $('#fSector');
+  if(sel.options.length>1) return;
+  const sectors = [...new Set(state.data.map(d=>d.sector))].sort();
+  sectors.forEach(s=>{
+    const o = document.createElement('option'); o.value=s; o.textContent=s;
+    sel.appendChild(o);
+  });
+}
+
+/* ---------- FILTER / SORT / TAB ---------- */
+function applyFilters(){
+  const search = $('#fSearch').value.trim().toUpperCase();
+  const pMin = parseFloat($('#fPriceMin').value);
+  const pMax = parseFloat($('#fPriceMax').value);
+  const cMin = parseFloat($('#fChgMin').value);
+  const cMax = parseFloat($('#fChgMax').value);
+  const vMin = parseFloat($('#fVolMin').value);
+  const sec  = $('#fSector').value;
+
+  let arr = state.data.slice();
+
+  // Tab-specific filtering
+  if(state.activeTab==='gainers'){
+    arr = arr.filter(d=>d.changePct>0).sort((a,b)=>b.changePct-a.changePct).slice(0,30);
+  } else if(state.activeTab==='losers'){
+    arr = arr.filter(d=>d.changePct<0).sort((a,b)=>a.changePct-b.changePct).slice(0,30);
+  } else if(state.activeTab==='active'){
+    arr = arr.slice().sort((a,b)=>(b.volume||0)-(a.volume||0)).slice(0,30);
+  } else if(state.activeTab==='picks'){
+    arr = computeDailyPicks(arr);
+  } else if(state.activeTab==='watchlist'){
+    arr = arr.filter(d=>state.watchlist.includes(d.symbol));
+  } else {
+    // screener
+    if(search){
+      arr = arr.filter(d => d.symbol.includes(search) || (d.name||'').toUpperCase().includes(search));
+    }
+    if(!isNaN(pMin)) arr = arr.filter(d=>d.price>=pMin);
+    if(!isNaN(pMax)) arr = arr.filter(d=>d.price<=pMax);
+    if(!isNaN(cMin)) arr = arr.filter(d=>d.changePct>=cMin);
+    if(!isNaN(cMax)) arr = arr.filter(d=>d.changePct<=cMax);
+    if(vMin)        arr = arr.filter(d=>(d.volume||0)>=vMin);
+    if(sec)         arr = arr.filter(d=>d.sector===sec);
+  }
+
+  // sort
+  if(state.activeTab==='screener' || state.activeTab==='watchlist' || state.activeTab==='picks'){
+    const {key,dir} = state.sort;
+    arr.sort((a,b)=>{
+      let va = a[key], vb = b[key];
+      if(key==='dayRange'){ va=a.high-a.low; vb=b.high-b.low; }
+      if(va==null) va = -Infinity;
+      if(vb==null) vb = -Infinity;
+      if(typeof va==='string') return va.localeCompare(vb)*dir;
+      return (va-vb)*dir;
+    });
+  }
+  state.filtered = arr;
+}
+
+/* ---------- DAILY PICKS ALGO ----------
+   Simple scoring: large positive %chg AND high relative volume AND mid-cap+ */
+function computeDailyPicks(arr){
+  return arr.map(d=>{
+    let score = 0;
+    if(d.changePct!=null){
+      score += Math.min(Math.abs(d.changePct)*5, 50); // up to 50 from move size
+      if(d.changePct>0) score += 10;
+    }
+    // volume score
+    if(d.volume && d.avgVol){
+      const rvol = d.volume/d.avgVol;
+      score += Math.min(rvol*15, 30);
+    } else if(d.volume>5e6) score += 10;
+
+    // price filter: avoid penny stocks
+    if(d.price>=5 && d.price<=500) score += 5;
+    // marketcap weight
+    if(d.marketCap && d.marketCap>1e10) score += 5;
+
+    return {...d, _score: score};
+  }).filter(d=>d.price>=3 && (d.volume||0)>=500000)
+    .sort((a,b)=>b._score-a._score)
+    .slice(0,25);
+}
+
+/* ---------- RENDER ---------- */
+function render(){
+  applyFilters();
+  renderHero();
+  renderTable();
+  renderTabCounts();
+}
+
+function renderHero(){
+  const d = state.data;
+  $('#statTotal').textContent = d.length;
+  const gainers = d.filter(x=>x.changePct>0).length;
+  const losers = d.filter(x=>x.changePct<0).length;
+  $('#statGainers').textContent = gainers;
+  $('#statLosers').textContent  = losers;
+  $('#statGainersPct').textContent = d.length ? (gainers/d.length*100).toFixed(1)+'%' : '—';
+  $('#statLosersPct').textContent  = d.length ? (losers/d.length*100).toFixed(1)+'%'  : '—';
+  const avg = d.length ? d.reduce((s,x)=>s+(x.changePct||0),0)/d.length : 0;
+  const el = $('#statAvgChg');
+  el.textContent = fmt.pct(avg);
+  el.style.color = avg>=0 ? 'var(--green)' : 'var(--red)';
+  $('#statUpdated').textContent = new Date(state.lastFetch).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+function sparkline(d){
+  // mini visual: line up/down based on price vs open
+  if(!d.open||!d.price||!d.low||!d.high) return '';
+  const w=64,h=20;
+  // synthesize a 4-point path from open->low or high mid->price
+  const yMin=d.low, yMax=d.high, span=Math.max(yMax-yMin,1e-6);
+  const pts = [d.open, (d.open+d.price)/2, d.changePct>=0?d.high:d.low, d.price];
+  const path = pts.map((v,i)=>{
+    const x = (i/(pts.length-1))*w;
+    const y = h - ((v-yMin)/span)*h;
+    return (i===0?'M':'L') + x.toFixed(1) + ',' + y.toFixed(1);
+  }).join(' ');
+  const col = d.changePct>=0 ? 'var(--green)' : 'var(--red)';
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+    <path d="${path}" fill="none" stroke="${col}" stroke-width="1.5"/>
+  </svg>`;
+}
+
+function renderTable(){
+  const tbody = $('#tbody');
+  const arr = state.filtered;
+  $('#tableMeta').textContent = arr.length + ' ตัว · อัพเดท ' + (state.lastFetch?new Date(state.lastFetch).toLocaleTimeString('th-TH'):'—');
+
+  // title by tab
+  const titles = {
+    screener:'🎯 Screener — กรองตามเงื่อนไข',
+    gainers:'🚀 Top Gainers วันนี้',
+    losers:'📉 Top Losers วันนี้',
+    active:'🔥 Most Active (Volume)',
+    picks:'⭐ Daily Picks — สำหรับเทรดวันนี้',
+    watchlist:'⭐ Watchlist ของคุณ'
+  };
+  $('#tableTitle').textContent = titles[state.activeTab] || 'หุ้นทั้งหมด';
+
+  if(!arr.length){
+    tbody.innerHTML = `<tr><td colspan="10" class="empty-state">
+      <div class="icon">${state.activeTab==='watchlist'?'⭐':'🔍'}</div>
+      <div>${state.activeTab==='watchlist'?'ยังไม่มีหุ้นใน Watchlist — กดดาว ⭐ ที่ตัวที่ชอบ':'ไม่พบหุ้นตามเงื่อนไข — ลองปรับ filter'}</div>
+    </td></tr>`;
+    return;
+  }
+
+  const html = arr.map(d=>{
+    const isPos = (d.changePct||0)>=0;
+    const cls = isPos?'pos':'neg';
+    const inWL = state.watchlist.includes(d.symbol);
+    return `<tr class="${inWL?'in-watchlist':''}" onclick="openModal('${d.symbol}')">
+      <td class="left">
+        <div class="sym">${d.symbol}</div>
+        <div class="name">${d.name||''}</div>
+      </td>
+      <td>$${fmt.price(d.price)}</td>
+      <td class="${cls}">${fmt.chg(d.change)}</td>
+      <td class="${cls}"><b>${fmt.pct(d.changePct)}</b></td>
+      <td>${fmt.num(d.volume)}</td>
+      <td>${fmt.num(d.marketCap)}</td>
+      <td>${fmt.range(d.low,d.high)}</td>
+      <td class="left"><span class="badge-sec">${d.sector||'—'}</span></td>
+      <td>${sparkline(d)}</td>
+      <td><button class="star-btn ${inWL?'active':''}" onclick="event.stopPropagation();toggleWatch('${d.symbol}')">${inWL?'★':'☆'}</button></td>
+    </tr>`;
+  }).join('');
+  tbody.innerHTML = html;
+}
+
+function renderTabCounts(){
+  $('#wlCount').textContent = state.watchlist.length;
+  // update sort arrows
+  $$('thead th').forEach(th=>{
+    const key = th.dataset.sort;
+    let arr = '';
+    if(key===state.sort.key) arr = ' <span class="sort-arrow">'+(state.sort.dir<0?'▼':'▲')+'</span>';
+    // strip then re-add
+    th.innerHTML = th.textContent.replace(/[▼▲]/g,'').trim() + arr;
+  });
+}
+
+/* ---------- WATCHLIST ---------- */
+function toggleWatch(sym){
+  const i = state.watchlist.indexOf(sym);
+  if(i>=0){ state.watchlist.splice(i,1); toast('ลบ '+sym+' จาก Watchlist'); }
+  else { state.watchlist.push(sym); toast('เพิ่ม '+sym+' ใน Watchlist'); }
+  localStorage.setItem('us_screener_wl', JSON.stringify(state.watchlist));
+  render();
+}
+
+/* ---------- MODAL / CHART ---------- */
+async function openModal(sym){
+  const d = state.data.find(x=>x.symbol===sym);
+  if(!d) return;
+  $('#mSymbol').textContent = d.symbol;
+  $('#mName').textContent = (d.name||'')+' · '+(d.exchange||'');
+  $('#mPrice').textContent = '$'+fmt.price(d.price);
+  const chgEl = $('#mChange');
+  chgEl.textContent = `${fmt.chg(d.change)} (${fmt.pct(d.changePct)})`;
+  chgEl.className = 'change-big ' + ((d.changePct||0)>=0?'pos':'neg');
+
+  const stats = [
+    ['Open', '$'+fmt.price(d.open)],
+    ['Prev Close', '$'+fmt.price(d.prevClose)],
+    ['Day Range', fmt.range(d.low,d.high)],
+    ['52W Range', d.yearLow&&d.yearHigh?`$${fmt.price(d.yearLow)} - $${fmt.price(d.yearHigh)}`:'—'],
+    ['Volume', fmt.num(d.volume)],
+    ['Avg Vol (3M)', fmt.num(d.avgVol)],
+    ['Market Cap', fmt.num(d.marketCap)],
+    ['P/E', d.pe? d.pe.toFixed(2) : '—'],
+    ['EPS', d.eps? '$'+d.eps.toFixed(2) : '—'],
+    ['Sector', d.sector||'—'],
+  ];
+  $('#mStats').innerHTML = stats.map(([k,v])=>`<div class="s"><label>${k}</label><div class="v">${v}</div></div>`).join('');
+
+  // action links
+  $('#mYahoo').href = `https://finance.yahoo.com/quote/${encodeURIComponent(sym)}`;
+  $('#mTV').href    = `https://www.tradingview.com/symbols/${encodeURIComponent(sym.replace('-','.'))}/`;
+  $('#mFinviz').href= `https://finviz.com/quote.ashx?t=${encodeURIComponent(sym)}`;
+
+  const wlBtn = $('#mWatchBtn');
+  const upd = ()=>{
+    const isWL = state.watchlist.includes(sym);
+    wlBtn.textContent = isWL ? '★ ลบจาก Watchlist' : '⭐ Add Watchlist';
+    wlBtn.style.background = isWL ? 'rgba(234,179,8,.15)' : '';
+    wlBtn.style.borderColor = isWL ? 'var(--yellow)' : '';
+  };
+  upd();
+  wlBtn.onclick = ()=>{ toggleWatch(sym); upd(); };
+
+  $('#modalBg').classList.add('show');
+
+  // load chart
+  $('#mChartLoading').style.display='block';
+  drawChart(null);
+  const hist = await fetchHistory(sym).catch(()=>null);
+  $('#mChartLoading').style.display='none';
+  drawChart(hist);
+}
+function closeModal(e){
+  if(e && e.target.id!=='modalBg' && !e.target.closest('.modal-close')) {
+    if(e.target.id!=='modalBg') return;
+  }
+  $('#modalBg').classList.remove('show');
+}
+
+async function fetchHistory(sym){
+  // chart API supports CORS via proxy
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1mo&interval=1d`;
+  for(const px of PROXIES){
+    try{
+      const r = await fetch(px(url));
+      if(!r.ok) continue;
+      const j = JSON.parse(await r.text());
+      const res = j?.chart?.result?.[0];
+      if(!res) continue;
+      const ts = res.timestamp || [];
+      const close = res.indicators?.quote?.[0]?.close || [];
+      return ts.map((t,i)=>({t,c:close[i]})).filter(p=>p.c!=null);
+    }catch{}
+  }
+  return null;
+}
+
+function drawChart(data){
+  const canvas = $('#mChart');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  if(!data || !data.length){
+    ctx.fillStyle = '#8b97ab'; ctx.font = '13px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(data===null?'⏳ กำลังโหลด...':'ไม่มีข้อมูลกราฟ', W/2, H/2);
+    return;
+  }
+  const closes = data.map(d=>d.c);
+  const min = Math.min(...closes), max = Math.max(...closes);
+  const span = Math.max(max-min, 1e-6);
+  const pad = 30;
+
+  // grid
+  ctx.strokeStyle = '#243044'; ctx.lineWidth = 1;
+  for(let i=0;i<=4;i++){
+    const y = pad + i*(H-2*pad)/4;
+    ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(W-pad,y); ctx.stroke();
+    ctx.fillStyle='#8b97ab'; ctx.font='10px sans-serif'; ctx.textAlign='right';
+    ctx.fillText('$'+(max - i*span/4).toFixed(2), pad-4, y+3);
+  }
+
+  // line
+  const isUp = closes[closes.length-1] >= closes[0];
+  ctx.strokeStyle = isUp ? '#22c55e' : '#ef4444';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  data.forEach((p,i)=>{
+    const x = pad + (i/(data.length-1))*(W-2*pad);
+    const y = pad + (1-(p.c-min)/span)*(H-2*pad);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  // gradient fill
+  const grad = ctx.createLinearGradient(0,pad,0,H-pad);
+  grad.addColorStop(0, isUp?'rgba(34,197,94,.3)':'rgba(239,68,68,.3)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.lineTo(W-pad, H-pad); ctx.lineTo(pad, H-pad); ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+
+  // dates
+  ctx.fillStyle='#8b97ab'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+  [0, Math.floor(data.length/2), data.length-1].forEach(i=>{
+    const d = new Date(data[i].t*1000);
+    const x = pad + (i/(data.length-1))*(W-2*pad);
+    ctx.fillText(d.toLocaleDateString('en-US',{month:'short',day:'numeric'}), x, H-8);
+  });
+}
+
+/* ---------- PRESETS ---------- */
+function resetFilters(){
+  ['fSearch','fPriceMin','fPriceMax','fChgMin','fChgMax'].forEach(id=>$('#'+id).value='');
+  $('#fVolMin').value='1000000';
+  $('#fSector').value='';
+  state.activePreset='all';
+  $$('.preset-btn[data-preset]').forEach(b=>b.classList.toggle('active', b.dataset.preset==='all'));
+  render();
+}
+
+function applyPreset(name){
+  resetFilters();
+  $$('.preset-btn[data-preset]').forEach(b=>b.classList.toggle('active', b.dataset.preset===name));
+  state.activePreset = name;
+  switch(name){
+    case 'momentum': $('#fChgMin').value='3'; $('#fVolMin').value='5000000'; break;
+    case 'oversold': $('#fChgMax').value='-3'; $('#fVolMin').value='5000000'; break;
+    case 'lowprice': $('#fPriceMin').value='5'; $('#fPriceMax').value='30'; break;
+    case 'bigcap':   $('#fVolMin').value='1000000'; break; // we filter big cap below
+    case 'hot':      $('#fVolMin').value='10000000'; break;
+    case 'tech':     $('#fSector').value='Technology'; break;
+  }
+  if(name==='bigcap'){
+    // manual: filter big cap >100B in addition
+    render();
+    state.filtered = state.filtered.filter(d=>(d.marketCap||0)>1e11)
+                                   .sort((a,b)=>b.marketCap-a.marketCap);
+    renderTable();
+    return;
+  }
+  render();
+}
+
+/* ---------- EVENTS ---------- */
+$$('.tab-btn').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    $$('.tab-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    state.activeTab = b.dataset.tab;
+    const showSchedule = state.activeTab==='schedule';
+    $('#schedulePanel').style.display = showSchedule ? 'block' : 'none';
+    $('#tableWrap').style.display     = showSchedule ? 'none'  : 'block';
+    $('#heroStats').style.display     = showSchedule ? 'none'  : 'grid';
+    $('#screenerControls').style.display = (state.activeTab==='screener') ? 'block' : 'none';
+    if(!showSchedule) render();
+  });
+});
+
+$$('#fSearch,#fPriceMin,#fPriceMax,#fChgMin,#fChgMax,#fVolMin,#fSector').forEach(el=>{
+  el.addEventListener('input', ()=>{ state.activePreset='custom';
+    $$('.preset-btn[data-preset]').forEach(b=>b.classList.remove('active'));
+    render();
+  });
+});
+$$('.preset-btn[data-preset]').forEach(b=>{
+  b.addEventListener('click', ()=>applyPreset(b.dataset.preset));
+});
+
+$$('thead th[data-sort]').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.dataset.sort;
+    if(state.sort.key===key) state.sort.dir = -state.sort.dir;
+    else { state.sort = {key, dir:-1}; }
+    render();
+  });
+});
+
+// keyboard: ESC close modal
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') closeModal({target:{id:'modalBg'}});
+  if(e.key==='r' && (e.ctrlKey||e.metaKey)) return; // let browser refresh
+});
+
+// auto-refresh every 5 min during US market hours
+setInterval(()=>{
+  const s = getSession(new Date());
+  if(s.key==='open' || s.key==='pre' || s.key==='after'){
+    loadAll();
+  }
+}, 5*60*1000);
+
+// initial preset activation
+document.querySelector('.preset-btn[data-preset="all"]').classList.add('active');
+
+/* ---------- INIT ---------- */
+loadAll();
+
+</script>
+</body>
+</html>

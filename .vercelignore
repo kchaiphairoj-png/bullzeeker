@@ -1,0 +1,9 @@
+# ไม่ deploy ไฟล์เหล่านี้บน Vercel
+# (Vercel host static เท่านั้น — Python scanner รันผ่าน GitHub Actions)
+
+scanner/
+.github/
+*.md
+!README.md
+.gitignore
+.vercelignore

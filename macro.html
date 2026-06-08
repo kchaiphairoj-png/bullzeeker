@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>📊 Macro Dashboard — ภาพรวมตลาดทั่วโลก | Bullzeeker</title>
+<meta name="description" content="Macro Dashboard ครบครันสำหรับนักเทรดไทย — Indices, VIX, DXY, Yields, Commodities, Currencies, Crypto, World Markets, Sectors พร้อมคำอธิบายภาษาไทย" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>" />
+<style>
+  :root{
+    --bg:#070b14; --bg2:#0e1525; --bg3:#172238; --bg4:#1f2c44;
+    --line:#243044; --line2:#334158;
+    --text:#e6edf7; --muted:#8b97ab; --dim:#5a6478;
+    --accent:#3b82f6; --accent2:#60a5fa; --gold:#fbbf24;
+    --green:#22c55e; --green-bg:rgba(34,197,94,.12);
+    --red:#ef4444; --red-bg:rgba(239,68,68,.12);
+    --orange:#fb923c; --purple:#a855f7; --teal:#14b8a6;
+    --emerald:#10b981; --ocean:#0ea5e9;
+    --thai-red:#ED1C24;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);
+    font-family:'Inter','Noto Sans Thai',-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:14px;line-height:1.6}
+  a{color:var(--accent2);text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bg2)}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px}
+
+  header{background:linear-gradient(180deg,#0a0f1c,#070b14);
+    border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
+  .h-row{display:flex;align-items:center;gap:18px;padding:14px 24px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+  .brand-logo{width:42px;height:42px;border-radius:11px;
+    background:linear-gradient(135deg,var(--thai-red),var(--gold),var(--accent));
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+    box-shadow:0 4px 14px rgba(251,191,36,.3)}
+  .brand-txt h1{font-size:18px;font-weight:800;color:#fff}
+  .brand-txt p{font-size:11px;color:var(--muted);margin-top:1px;font-weight:500}
+  nav.main-nav{display:flex;padding:0 24px;border-bottom:1px solid var(--line);overflow-x:auto;background:#080d18}
+  nav.main-nav a{color:var(--muted);padding:13px 18px;font-size:13px;font-weight:600;
+    border-bottom:2px solid transparent;transition:.15s;white-space:nowrap;
+    display:inline-flex;align-items:center;gap:6px}
+  nav.main-nav a:hover{color:var(--text);background:rgba(255,255,255,.02)}
+  nav.main-nav a.active{color:var(--accent2);border-bottom-color:var(--accent2);background:rgba(96,165,250,.04)}
+
+  main{max-width:1600px;margin:0 auto;padding:22px 22px 60px}
+
+  .hero-mini{background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(168,85,247,.06));
+    border:1px solid rgba(59,130,246,.25);border-radius:14px;padding:18px 22px;margin-bottom:18px;
+    display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  .hero-mini .left h1{font-size:22px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+  .hero-mini .left p{color:var(--muted);font-size:13px;line-height:1.6;max-width:680px}
+  .hero-mini .right{display:flex;gap:10px;align-items:center}
+  .refresh-btn{background:linear-gradient(135deg,var(--accent),#2563eb);color:#fff;
+    padding:10px 16px;border-radius:10px;font-weight:700;font-size:13px;
+    display:inline-flex;align-items:center;gap:6px;transition:.15s}
+  .refresh-btn:hover{transform:translateY(-1px)}
+  .refresh-btn:disabled{opacity:.5;cursor:wait}
+  .spin{animation:spin 1s linear infinite}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+  /* ===== SECTION ===== */
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;margin:24px 0 12px}
+  .sec-head h2{font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .sec-head .sub{color:var(--muted);font-size:12px;margin-top:3px}
+
+  /* ===== CARDS GRID ===== */
+  .cards-grid{display:grid;gap:10px}
+  .grid-6{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+  .grid-4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+  .grid-3{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+
+  /* Base card */
+  .card{
+    background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+    padding:13px 14px;transition:.15s;cursor:pointer;position:relative;overflow:hidden;
+  }
+  .card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 6px 16px rgba(0,0,0,.3)}
+  .card.gain{border-left:3px solid var(--green)}
+  .card.loss{border-left:3px solid var(--red)}
+  .card.neutral{border-left:3px solid var(--muted)}
+  .card .lbl{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.4px;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+  .card .lbl .ic{font-size:16px}
+  .card .nm{font-size:13px;font-weight:700;color:#fff;margin-top:2px}
+  .card .nm-th{font-size:11px;color:var(--gold);margin-top:1px}
+  .card .px{font-size:20px;font-weight:800;margin-top:6px;font-variant-numeric:tabular-nums;color:#fff}
+  .card .ch{font-size:12px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+  .pos{color:var(--green)} .neg{color:var(--red)}
+  .card .hint{font-size:10px;color:var(--dim);margin-top:5px;line-height:1.4;border-top:1px dashed var(--line);padding-top:5px}
+
+  /* Loading state */
+  .card.loading .px,.card.loading .ch{
+    background:linear-gradient(90deg,var(--bg3),#1f2c44,var(--bg3));background-size:200% 100%;
+    animation:skel 1.5s linear infinite;color:transparent;border-radius:4px;display:inline-block;min-width:60px;height:18px
+  }
+  @keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  /* ===== FEAR & GREED ===== */
+  .fg-section{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px}
+  .fg-grid{display:grid;grid-template-columns:1fr 2fr;gap:24px;align-items:center}
+  @media(max-width:780px){.fg-grid{grid-template-columns:1fr}}
+  .fg-meter{position:relative;width:100%;max-width:280px;margin:0 auto}
+  .fg-meter svg{width:100%;height:auto}
+  .fg-value{font-size:46px;font-weight:800;text-align:center;margin-top:-30px;font-variant-numeric:tabular-nums}
+  .fg-label{font-size:14px;text-align:center;font-weight:700;margin-top:4px}
+  .fg-info h3{font-size:18px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .fg-info p{color:var(--muted);font-size:13px;line-height:1.7;margin-bottom:10px}
+
+  /* ===== SECTOR HEATMAP ===== */
+  .sec-heatmap{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px}
+  .sec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;margin-top:12px}
+  .sec-tile{padding:14px;border-radius:10px;cursor:pointer;transition:.15s;position:relative;color:#fff}
+  .sec-tile:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.4)}
+  .sec-tile .ic{font-size:22px;display:block;margin-bottom:4px}
+  .sec-tile .nm{font-size:11px;font-weight:600;opacity:.9}
+  .sec-tile .full{font-size:13px;font-weight:700;margin-top:2px}
+  .sec-tile .ch{font-size:18px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums}
+  .sec-tile .desc{font-size:10px;opacity:.7;margin-top:2px}
+  .h-vg{background:linear-gradient(135deg,#16a34a,#22c55e)}
+  .h-g{background:linear-gradient(135deg,#22c55e,#4ade80)}
+  .h-lg{background:linear-gradient(135deg,#4ade80,#86efac);color:#0a0e16}
+  .h-n{background:linear-gradient(135deg,#374151,#4b5563)}
+  .h-lr{background:linear-gradient(135deg,#fca5a5,#f87171);color:#0a0e16}
+  .h-r{background:linear-gradient(135deg,#ef4444,#f87171)}
+  .h-vr{background:linear-gradient(135deg,#b91c1c,#ef4444)}
+
+  /* ===== TABLE ===== */
+  .tbl-wrap{background:var(--bg2);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .tbl-wrap .head{padding:14px 18px;border-bottom:1px solid var(--line)}
+  .tbl-wrap .head h3{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .tbl-wrap .head .sub{color:var(--muted);font-size:12px;margin-top:3px}
+  table.t{width:100%;border-collapse:collapse;font-size:13px}
+  table.t th{background:#0e1421;color:var(--muted);font-size:10.5px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.4px;padding:10px 12px;text-align:right;border-bottom:1px solid var(--line)}
+  table.t th:first-child{text-align:left}
+  table.t td{padding:10px 12px;border-bottom:1px solid #1a2333;font-variant-numeric:tabular-nums;text-align:right}
+  table.t td:first-child{text-align:left}
+  table.t tr:hover{background:#162132;cursor:pointer}
+  .sym{font-weight:700;font-size:13px;color:#fff}
+  .ind-name{color:var(--muted);font-size:11px;margin-top:1px}
+
+  /* ===== FED PANEL ===== */
+  .fed-panel{background:linear-gradient(135deg,rgba(168,85,247,.08),rgba(59,130,246,.06));
+    border:1px solid rgba(168,85,247,.25);border-radius:14px;padding:20px;margin-bottom:18px}
+  .fed-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:14px}
+  .fed-stat{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .fed-stat .l{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase}
+  .fed-stat .v{font-size:24px;font-weight:800;color:var(--purple);margin-top:4px;font-variant-numeric:tabular-nums}
+  .fed-stat .ds{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5}
+
+  /* ===== ECON DATA ===== */
+  .econ-data{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px}
+  .econ-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:12px}
+  .econ-card{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:12px}
+  .econ-card .l{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+  .econ-card .v{font-size:18px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums}
+  .econ-card .ds{font-size:11px;color:var(--dim);margin-top:4px}
+
+  /* ===== EVENTS ===== */
+  .events-panel{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px}
+  .ev-row{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line)}
+  .ev-row:last-child{border:none}
+  .ev-date{background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;width:60px;height:60px;
+    border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+  .ev-date .d{font-size:18px;line-height:1}
+  .ev-date .m{font-size:10px;text-transform:uppercase}
+  .ev-info{flex:1;min-width:0}
+  .ev-info .t{font-size:14px;font-weight:700;color:#fff}
+  .ev-info .impact{display:inline-block;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;margin-left:6px}
+  .imp-h{background:var(--red-bg);color:var(--red)}
+  .imp-m{background:rgba(251,191,36,.15);color:var(--gold)}
+  .imp-l{background:rgba(139,151,171,.12);color:var(--muted)}
+  .ev-info .s{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
+  .ev-info .when{font-size:11px;color:var(--accent2);margin-top:4px;font-weight:600}
+
+  /* ===== STATUS BANNER ===== */
+  .status-banner{
+    background:linear-gradient(135deg,rgba(34,197,94,.06),rgba(59,130,246,.04));
+    border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:14px;
+    font-size:12px;display:flex;align-items:center;gap:10px;color:var(--muted);
+  }
+  .status-banner .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.8s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+  footer{border-top:1px solid var(--line);padding:24px;color:var(--muted);font-size:12px;text-align:center;margin-top:40px;line-height:1.6}
+
+  @media(max-width:780px){main{padding:14px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-row">
+    <a href="index.html" class="brand">
+      <div class="brand-logo">🐂</div>
+      <div class="brand-txt">
+        <h1>Bull<span style="color:var(--gold)">zeeker</span></h1>
+        <p>📊 Macro Dashboard · ภาพรวมตลาดสำหรับคนไทย</p>
+      </div>
+    </a>
+  </div>
+  <nav class="main-nav">
+    <a href="index.html">🏠 หน้าหลัก</a>
+    <a href="screener.html">🎯 Daily Screener</a>
+    <a href="breakout.html">🚀 Breakout</a>
+    <a href="quality.html">💎 Quality</a>
+    <a href="longterm.html">🌊 Long-Term Weekly</a>
+    <a href="tools.html">🛠️ เครื่องมือ</a>
+    <a href="macro.html" class="active">📊 Macro</a>
+    <a href="learn.html">📚 เรียนรู้</a>
+    <a href="pro/" style="color:var(--gold);font-weight:700">🏆 Pro<span style="font-size:9px;background:var(--gold);color:#000;padding:1px 5px;border-radius:3px;margin-left:5px;vertical-align:middle;letter-spacing:.5px">BETA</span></a>
+  </nav>
+</header>
+
+<main>
+
+  <div class="hero-mini">
+    <div class="left">
+      <h1>📊 Macro Dashboard <span style="color:var(--accent2);font-size:18px">ภาพรวมตลาดโลก</span></h1>
+      <p>
+        ติดตามภาพใหญ่ตลาดหุ้น US + ตลาดโลก — Indices, VIX, Treasury Yields, Currencies (USD/THB), Commodities (Gold, Oil), Crypto,
+        World Markets (Asia/Europe), 11 Sectors พร้อม Fear & Greed, ปฏิทินเศรษฐกิจ · <b>คำอธิบายภาษาไทย</b>เข้าใจง่าย
+      </p>
+    </div>
+    <div class="right">
+      <button id="refreshBtn" class="refresh-btn" onclick="loadAll()">
+        <span id="rIcon">🔄</span> รีเฟรช
+      </button>
+      <div style="font-size:11px;color:var(--muted);text-align:right">
+        <div>อัพเดทล่าสุด</div>
+        <div id="lastUpd" style="color:var(--text);font-weight:600">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-banner" id="statusBanner">
+    <span class="dot"></span>
+    <span id="statusText">⏳ กำลังโหลดข้อมูลครั้งแรก... ใช้เวลา ~15 วินาที</span>
+  </div>
+
+  <!-- ============== MAJOR US INDICES ============== -->
+  <div class="sec-head">
+    <div>
+      <h2>🇺🇸 Major US Indices</h2>
+      <div class="sub">ดัชนีหลักของสหรัฐ — SPY/QQQ/DIA/IWM = ตัวแทน 4 ดัชนีหลัก</div>
+    </div>
+  </div>
+  <div class="cards-grid grid-4" id="usIndices"></div>
+
+  <!-- ============== VOLATILITY & SENTIMENT ============== -->
+  <div class="sec-head">
+    <div>
+      <h2>😱 Volatility & Sentiment</h2>
+      <div class="sub">ความผันผวน + อารมณ์ตลาด — VIX สูง = กลัว · VIX ต่ำ = สงบ</div>
+    </div>
+  </div>
+  <div class="cards-grid grid-4" id="volSentiment"></div>
+
+  <!-- ============== FEAR & GREED ============== -->
+  <div class="fg-section">
+    <h2 style="font-size:18px;margin-bottom:6px;display:flex;align-items:center;gap:8px">🌡️ Fear & Greed (จาก VIX)</h2>
+    <div style="color:var(--muted);font-size:12px;margin-bottom:14px">VIX = ดัชนีความผันผวน · ใช้เป็น proxy สำหรับ Fear & Greed</div>
+    <div class="fg-grid">
+      <div>
+        <div class="fg-meter">
+          <svg viewBox="0 0 200 120">
+            <defs>
+              <linearGradient id="gauge" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#ef4444"/>
+                <stop offset="35%" stop-color="#fb923c"/>
+                <stop offset="50%" stop-color="#fbbf24"/>
+                <stop offset="65%" stop-color="#86efac"/>
+                <stop offset="100%" stop-color="#22c55e"/>
+              </linearGradient>
+            </defs>
+            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gauge)" stroke-width="16" stroke-linecap="round"/>
+            <line id="fgNeedle" x1="100" y1="100" x2="100" y2="30" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="100" cy="100" r="6" fill="#fff"/>
+          </svg>
+        </div>
+        <div class="fg-value" id="fgValue">—</div>
+        <div class="fg-label" id="fgLabel">—</div>
+      </div>
+      <div class="fg-info">
+        <h3>💭 ตลาดรู้สึกยังไง?</h3>
+        <p id="fgDesc">กำลังโหลดข้อมูล VIX...</p>
+        <div style="background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:12px;font-size:13px;color:var(--muted);line-height:1.7">
+          <b style="color:var(--gold)">💡 กฎ Buffett:</b> "Be fearful when others are greedy, and greedy when others are fearful"<br/>
+          • VIX > 30 (กลัวมาก) = โอกาสซื้อ (knife-catching)<br/>
+          • VIX 15-20 = ตลาดปกติ — เทรดได้ตามแผน<br/>
+          • VIX < 12 (สงบเกินไป) = ระวัง correction
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== TREASURIES & RATES ============== -->
+  <div class="sec-head">
+    <div>
+      <h2>🏦 Treasury Yields & Bonds</h2>
+      <div class="sub">ผลตอบแทนพันธบัตรสหรัฐ — Yield สูง = หุ้น growth ตก · Yield ต่ำ = หุ้น tech พุ่ง</div>
+    </div>
+  </div>
+  <div class="cards-grid grid-4" id="treasuries"></div>
+
+  <!-- ============== CURRENCIES ============== -->
+  <div class="sec-head">
+    <div>
+      <h2>💱 Currencies & USD/THB</h2>
+      <div class="sub">อัตราแลกเปลี่ยน — สำคัญสำหรับคนไทยเทรดหุ้น US</div>
+    </div>
+  </div>
+  <div class="cards-grid grid-4" id="currencies"></div>
+
+  <!-- ============== COMMODITIES ============== -->
+  <div class="sec-head">
+    <div>
+      <h2>🥇 Commodities</h2>
+      <div class="sub">ทอง · น้ำมัน · เงิน · ทองแดง — สัญญาณ inflation/risk-off</div>
+    </div>
+  </div>
+  <div class="cards-grid grid-6" id="commodities"></div>
+
+  <!-- ============== CRYPTO ============== -->
+  <div class="sec-head">
+    <div>
+      <h2>₿ Crypto</h2>
+      <div class="sub">Bitcoin, Ethereum + crypto stocks — สัญญาณ risk appetite</div>
+    </div>
+  </div>
+  <div class="cards-grid grid-6" id="crypto"></div>
+
+  <!-- ============== WORLD MARKETS ============== -->
+  <div class="sec-head">
+    <div>
+      <h2>🌍 World Markets</h2>
+      <div class="sub">ตลาดโลกที่ส่งผลต่อหุ้น US — Asia, Europe, Emerging</div>
+    </div>
+  </div>
+  <div class="cards-grid grid-6" id="worldMarkets"></div>
+
+  <!-- ============== SECTOR HEATMAP ============== -->
+  <div class="sec-heatmap" id="sectors">
+    <div class="sec-head" style="margin:0">
+      <div>
+        <h2>🔥 Sector Heatmap — Sector ไหนนำตลาด?</h2>
+        <div class="sub">11 sectors ของ S&P 500 · สีเขียว = นำ, สีแดง = ตามหลัง</div>
+      </div>
+    </div>
+    <div class="sec-grid" id="secGrid"></div>
+    <div style="margin-top:12px;padding:12px;background:var(--bg3);border:1px solid var(--line);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.7">
+      💡 <b>Sector Rotation Cycle:</b><br/>
+      • <b>Early (ฟื้นตัว):</b> Tech, Cons Disc, Financials นำ &nbsp;
+      • <b>Mid (โต):</b> Industrials, Materials นำ<br/>
+      • <b>Late (peak):</b> Energy, Materials นำ &nbsp;
+      • <b>Recession:</b> Staples, Utilities, Healthcare (defensive)
+    </div>
+  </div>
+
+  <!-- ============== FULL INDICES TABLE ============== -->
+  <div class="tbl-wrap" style="margin-bottom:18px">
+    <div class="head">
+      <h3>📋 ดัชนี & ETFs ทั้งหมด (เรียงตาม % เปลี่ยน)</h3>
+      <div class="sub">รายละเอียดของทุกตัวที่ติดตาม · คลิกเพื่อเปิดดูบน Yahoo Finance</div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="t">
+        <thead>
+          <tr>
+            <th>Symbol</th><th>ราคา</th><th>เปลี่ยน</th><th>%</th><th>52W High</th><th>52W Low</th><th>Volume</th>
+          </tr>
+        </thead>
+        <tbody id="allTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============== FED + ECONOMIC DATA ============== -->
+  <div class="fed-panel">
+    <h2 style="font-size:18px;display:flex;align-items:center;gap:8px">🏦 Federal Reserve & Economic Data</h2>
+    <div style="color:var(--muted);font-size:12px;margin-top:4px">อัตราดอกเบี้ย Fed + ตัวเลขเศรษฐกิจสำคัญ (อัพเดท manually)</div>
+    <div class="fed-grid">
+      <div class="fed-stat">
+        <div class="l">🎯 Fed Funds Rate</div>
+        <div class="v">4.25-4.50%</div>
+        <div class="ds">อัตราดอกเบี้ยนโยบายของ Fed · ลด 100bps จาก peak 5.25-5.50%</div>
+      </div>
+      <div class="fed-stat">
+        <div class="l">📅 ประชุม FOMC ครั้งถัดไป</div>
+        <div class="v" id="nextFOMC" style="font-size:18px">—</div>
+        <div class="ds" id="fomcDesc">ประชุม 8 ครั้งต่อปี · นักเทรดทั่วโลกจับตาดู</div>
+      </div>
+      <div class="fed-stat">
+        <div class="l">📊 CPI (Inflation YoY)</div>
+        <div class="v">2.7%</div>
+        <div class="ds">เป้าหมาย Fed: 2% · ยังสูงกว่าเป้า · Core CPI: 3.2%</div>
+      </div>
+      <div class="fed-stat">
+        <div class="l">📈 GDP Growth (QoQ Annualized)</div>
+        <div class="v">2.8%</div>
+        <div class="ds">เศรษฐกิจ US ยังเติบโต · ไม่เข้าสู่ recession</div>
+      </div>
+      <div class="fed-stat">
+        <div class="l">👷 Unemployment Rate</div>
+        <div class="v">4.1%</div>
+        <div class="ds">ตลาดแรงงานยังแข็งแกร่ง · ใกล้ full employment</div>
+      </div>
+      <div class="fed-stat">
+        <div class="l">💼 Non-Farm Payrolls (เดือนล่าสุด)</div>
+        <div class="v">+180K</div>
+        <div class="ds">การจ้างงานใหม่ · &gt;200K = ดี, &lt;100K = อ่อนแอ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== ECONOMIC CALENDAR ============== -->
+  <div class="events-panel" id="events">
+    <div class="sec-head" style="margin:0">
+      <div>
+        <h2>📅 ปฏิทินเศรษฐกิจ — เหตุการณ์สำคัญ</h2>
+        <div class="sub">เวลาแสดงเป็น <b>เวลาไทย</b> · ระวัง volatility ก่อน-หลังเหตุการณ์</div>
+      </div>
+    </div>
+    <div id="eventsList" style="margin-top:14px"></div>
+  </div>
+
+</main>
+
+<footer>
+  📊 <b>Bullzeeker · Macro Dashboard</b> — ข้อมูลจาก Yahoo Finance public API (delayed ~15 นาที) · Educational use only · ไม่ใช่คำแนะนำการลงทุน<br/>
+  ตัวเลขเศรษฐกิจ (Fed Rate, CPI, GDP) อัพเดทจากแหล่งทางการ (Federal Reserve, BLS, BEA)
+</footer>
+
+<script>
+const $ = s=>document.querySelector(s);
+const $$ = s=>Array.from(document.querySelectorAll(s));
+
+/* ===== CONFIG ===== */
+const PROXIES = [
+  url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
+  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+  url => 'https://corsproxy.io/?' + encodeURIComponent(url),
+  url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
+];
+
+async function tryProxies(url){
+  let lastErr;
+  for(const p of PROXIES){
+    try{
+      const r = await fetch(p(url),{cache:'no-store'});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const txt = await r.text();
+      if(!txt || txt.length < 10) throw new Error('empty');
+      return txt;
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error('all proxies failed');
+}
+
+/* ===== CACHE for quote data (localStorage, 5 min TTL) ===== */
+const QUOTE_CACHE_KEY = 'macro_quote_cache_v2';
+const QUOTE_CACHE_TTL = 5 * 60 * 1000;  // 5 minutes
+let QUOTE_CACHE = {};
+try { QUOTE_CACHE = JSON.parse(localStorage.getItem(QUOTE_CACHE_KEY) || '{}'); } catch {}
+
+function saveQuoteCache(){
+  try { localStorage.setItem(QUOTE_CACHE_KEY, JSON.stringify(QUOTE_CACHE)); }
+  catch(e){
+    // quota exceeded — drop oldest 30%
+    const ents = Object.entries(QUOTE_CACHE).sort((a,b)=>a[1].ts-b[1].ts);
+    const dropN = Math.floor(ents.length * 0.3);
+    ents.slice(0, dropN).forEach(([k])=>delete QUOTE_CACHE[k]);
+    try { localStorage.setItem(QUOTE_CACHE_KEY, JSON.stringify(QUOTE_CACHE)); } catch {}
+  }
+}
+
+/**
+ * Fetch quotes using CHART endpoint (more reliable than batch quote endpoint
+ * which requires crumb auth that public proxies can't provide).
+ *
+ * Returns array of { symbol, regularMarketPrice, change, changePct, ... }
+ */
+async function fetchQuotes(syms){
+  const now = Date.now();
+  const results = {};
+  const needFetch = [];
+
+  // Check cache first
+  for(const sym of syms){
+    const cached = QUOTE_CACHE[sym];
+    if(cached && (now - cached.ts) < QUOTE_CACHE_TTL){
+      results[sym] = cached.data;
+    } else {
+      needFetch.push(sym);
+    }
+  }
+
+  if(needFetch.length === 0) return Object.values(results);
+
+  // Fetch missing via chart endpoint (concurrent)
+  const CONC = 10;
+  let idx = 0;
+  async function worker(){
+    while(idx < needFetch.length){
+      const i = idx++;
+      const sym = needFetch[i];
+      try{
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=5d&interval=1d`;
+        const txt = await tryProxies(url);
+        const j = JSON.parse(txt);
+        const meta = j?.chart?.result?.[0]?.meta;
+        if(meta && meta.regularMarketPrice != null){
+          const px = meta.regularMarketPrice;
+          const prev = meta.chartPreviousClose ?? meta.previousClose ?? px;
+          const change = px - prev;
+          const changePct = prev ? (change / prev) * 100 : 0;
+          const data = {
+            symbol: sym,
+            regularMarketPrice: px,
+            regularMarketChange: change,
+            regularMarketChangePercent: changePct,
+            regularMarketDayHigh: meta.regularMarketDayHigh,
+            regularMarketDayLow: meta.regularMarketDayLow,
+            regularMarketVolume: meta.regularMarketVolume,
+            fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh,
+            fiftyTwoWeekLow: meta.fiftyTwoWeekLow,
+            previousClose: prev,
+            longName: meta.longName,
+            shortName: meta.shortName,
+            currency: meta.currency,
+            exchange: meta.exchangeName,
+          };
+          results[sym] = data;
+          QUOTE_CACHE[sym] = { ts: now, data };
+        }
+      }catch(e){
+        // skip silently
+      }
+    }
+  }
+  await Promise.all(Array(CONC).fill(0).map(worker));
+  saveQuoteCache();
+
+  return Object.values(results);
+}
+
+/* ===== DATA CONFIG ===== */
+const US_INDICES = [
+  {sym:'SPY',  ic:'🇺🇸', nm:'S&P 500',     desc:'หุ้นใหญ่ 500 ตัว · ดัชนีหลัก US'},
+  {sym:'QQQ',  ic:'💻', nm:'Nasdaq 100',   desc:'หุ้นเทค 100 ตัว · กลุ่ม Tech/AI'},
+  {sym:'DIA',  ic:'🏛️', nm:'Dow Jones',    desc:'30 หุ้น blue chip · industrial'},
+  {sym:'IWM',  ic:'📦', nm:'Russell 2000', desc:'หุ้นเล็ก 2000 ตัว · Small Cap'},
+  {sym:'VTI',  ic:'🌐', nm:'Total Market', desc:'หุ้น US ทั้งหมด ~4000 ตัว'},
+  {sym:'MDY',  ic:'🎯', nm:'S&P 400 MidCap',desc:'หุ้นกลาง 400 ตัว · sweet spot'},
+];
+
+const VOL_SENTIMENT = [
+  {sym:'^VIX',  ic:'😱', nm:'VIX',          desc:'ดัชนีความกลัว · ความผันผวน'},
+  {sym:'VIXY',  ic:'📈', nm:'VIX ETF',      desc:'VIX ETF (เทรดได้)'},
+  {sym:'UVXY',  ic:'🔥', nm:'VIX 1.5x',     desc:'VIX ETF leveraged'},
+  {sym:'SVXY',  ic:'❄️', nm:'Short VIX',    desc:'Inverse VIX (bet ตลาดสงบ)'},
+];
+
+const TREASURIES = [
+  {sym:'^TNX',  ic:'📊', nm:'10Y Yield',    desc:'พันธบัตร 10 ปี US (yield %)'},
+  {sym:'^FVX',  ic:'📊', nm:'5Y Yield',     desc:'พันธบัตร 5 ปี US (yield %)'},
+  {sym:'^IRX',  ic:'📊', nm:'13W T-Bill',   desc:'พันธบัตรระยะสั้น 3 เดือน'},
+  {sym:'^TYX',  ic:'📊', nm:'30Y Yield',    desc:'พันธบัตร 30 ปี US'},
+  {sym:'TLT',   ic:'📜', nm:'20Y Bonds ETF',desc:'ราคา bonds long-term'},
+  {sym:'IEF',   ic:'📜', nm:'7-10Y Bonds',  desc:'พันธบัตรกลาง'},
+  {sym:'SHY',   ic:'📜', nm:'1-3Y Bonds',   desc:'พันธบัตรสั้น'},
+  {sym:'HYG',   ic:'⚠️', nm:'High Yield',   desc:'หุ้นกู้เสี่ยงสูง · risk-on'},
+];
+
+const CURRENCIES = [
+  {sym:'THB=X',     ic:'🇹🇭', nm:'USD/THB',  desc:'$1 = ? บาท (สำคัญสุด!)'},
+  {sym:'DX-Y.NYB',  ic:'💵', nm:'DXY',       desc:'Dollar Index · ความแข็ง USD'},
+  {sym:'UUP',       ic:'💵', nm:'DXY ETF',   desc:'USD index ETF'},
+  {sym:'EURUSD=X',  ic:'🇪🇺', nm:'EUR/USD',  desc:'ยูโรเทียบ USD'},
+  {sym:'JPY=X',     ic:'🇯🇵', nm:'USD/JPY',  desc:'$1 = ? เยน'},
+  {sym:'GBPUSD=X',  ic:'🇬🇧', nm:'GBP/USD',  desc:'ปอนด์เทียบ USD'},
+  {sym:'CNY=X',     ic:'🇨🇳', nm:'USD/CNY',  desc:'$1 = ? หยวน'},
+  {sym:'AUDUSD=X',  ic:'🇦🇺', nm:'AUD/USD',  desc:'ดอลลาร์ออสเตรเลีย'},
+];
+
+const COMMODITIES = [
+  {sym:'GLD',  ic:'🥇', nm:'Gold ETF',    desc:'ทองคำ (safe haven)'},
+  {sym:'SLV',  ic:'🥈', nm:'Silver ETF',  desc:'เงิน'},
+  {sym:'USO',  ic:'🛢️', nm:'Oil (WTI)',  desc:'น้ำมัน WTI'},
+  {sym:'BNO',  ic:'🛢️', nm:'Brent Oil',  desc:'น้ำมัน Brent'},
+  {sym:'UNG',  ic:'🔥', nm:'Natural Gas', desc:'ก๊าซธรรมชาติ'},
+  {sym:'DBA',  ic:'🌾', nm:'Agriculture', desc:'สินค้าเกษตร'},
+  {sym:'DBC',  ic:'📦', nm:'Commodity',   desc:'commodity basket'},
+  {sym:'PALL', ic:'⚙️', nm:'Palladium',  desc:'palladium'},
+  {sym:'JJC',  ic:'🔌', nm:'Copper',      desc:'ทองแดง · Dr. Copper'},
+  {sym:'CPER', ic:'🔌', nm:'Copper Fund', desc:'copper ETF'},
+  {sym:'WEAT', ic:'🌾', nm:'Wheat',       desc:'ข้าวสาลี'},
+  {sym:'CORN', ic:'🌽', nm:'Corn',        desc:'ข้าวโพด'},
+];
+
+const CRYPTO = [
+  {sym:'BTC-USD',  ic:'₿',  nm:'Bitcoin',     desc:'BTC · Crypto leader'},
+  {sym:'ETH-USD',  ic:'Ξ',  nm:'Ethereum',    desc:'ETH'},
+  {sym:'BNB-USD',  ic:'🪙', nm:'BNB',         desc:'Binance Coin'},
+  {sym:'SOL-USD',  ic:'☀️', nm:'Solana',      desc:'SOL'},
+  {sym:'XRP-USD',  ic:'⚡', nm:'XRP',         desc:'Ripple'},
+  {sym:'DOGE-USD', ic:'🐕', nm:'Dogecoin',    desc:'meme coin'},
+  {sym:'COIN',     ic:'🏦', nm:'Coinbase',    desc:'ผู้ให้บริการแลกเปลี่ยน'},
+  {sym:'MSTR',     ic:'💼', nm:'MicroStrategy',desc:'ผู้ถือ BTC รายใหญ่'},
+  {sym:'MARA',     ic:'⛏️', nm:'Marathon',   desc:'BTC mining'},
+  {sym:'RIOT',     ic:'⛏️', nm:'Riot',        desc:'BTC mining'},
+  {sym:'CLSK',     ic:'⛏️', nm:'CleanSpark', desc:'BTC mining'},
+  {sym:'WULF',     ic:'⛏️', nm:'TeraWulf',   desc:'BTC mining'},
+];
+
+const WORLD_MARKETS = [
+  {sym:'EFA',   ic:'🌍', nm:'Developed',    desc:'ตลาดพัฒนาแล้ว (ex-US)'},
+  {sym:'EEM',   ic:'🌏', nm:'Emerging',     desc:'ตลาดเกิดใหม่'},
+  {sym:'FXI',   ic:'🇨🇳', nm:'China Large', desc:'หุ้นจีนใหญ่'},
+  {sym:'MCHI',  ic:'🇨🇳', nm:'China Total', desc:'หุ้นจีนทั้งหมด'},
+  {sym:'KWEB',  ic:'🇨🇳', nm:'China Tech',  desc:'หุ้นเทคจีน'},
+  {sym:'EWJ',   ic:'🇯🇵', nm:'Japan',       desc:'ดัชนี Nikkei'},
+  {sym:'INDA',  ic:'🇮🇳', nm:'India',       desc:'ดัชนีอินเดีย'},
+  {sym:'EWZ',   ic:'🇧🇷', nm:'Brazil',      desc:'ดัชนี Bovespa'},
+  {sym:'EWY',   ic:'🇰🇷', nm:'S. Korea',    desc:'ดัชนี KOSPI'},
+  {sym:'EWT',   ic:'🇹🇼', nm:'Taiwan',      desc:'ดัชนีไต้หวัน'},
+  {sym:'THD',   ic:'🇹🇭', nm:'Thailand',    desc:'ดัชนี SET (ไทย!)'},
+  {sym:'EWG',   ic:'🇩🇪', nm:'Germany',     desc:'ดัชนี DAX'},
+  {sym:'EWU',   ic:'🇬🇧', nm:'UK',          desc:'ดัชนี FTSE'},
+  {sym:'EZU',   ic:'🇪🇺', nm:'Eurozone',    desc:'ยูโรโซน'},
+];
+
+const SECTORS = [
+  {sym:'XLK', nm:'Technology',     ic:'💻', th:'เทคโนโลยี'},
+  {sym:'XLF', nm:'Financials',     ic:'🏦', th:'การเงิน'},
+  {sym:'XLV', nm:'Healthcare',     ic:'⚕️', th:'การแพทย์'},
+  {sym:'XLY', nm:'Cons. Disc.',    ic:'🛍️', th:'สินค้าฟุ่มเฟือย'},
+  {sym:'XLP', nm:'Cons. Staples',  ic:'🥫', th:'สินค้าจำเป็น'},
+  {sym:'XLI', nm:'Industrials',    ic:'🏭', th:'อุตสาหกรรม'},
+  {sym:'XLE', nm:'Energy',         ic:'⛽', th:'พลังงาน'},
+  {sym:'XLU', nm:'Utilities',      ic:'💡', th:'สาธารณูปโภค'},
+  {sym:'XLB', nm:'Materials',      ic:'⛏️', th:'วัสดุ'},
+  {sym:'XLRE',nm:'Real Estate',    ic:'🏢', th:'อสังหา'},
+  {sym:'XLC', nm:'Communication',  ic:'📡', th:'สื่อสาร'},
+];
+
+/* ===== INITIAL SKELETON RENDER (so user sees structure immediately) ===== */
+function skeleton(group, items){
+  return items.map(it=>`
+    <div class="card neutral loading">
+      <div class="lbl"><span>${it.nm}</span><span class="ic">${it.ic||''}</span></div>
+      ${it.desc?`<div class="nm-th">${it.desc}</div>`:''}
+      <div class="px">$000.00</div>
+      <div class="ch">+0.00%</div>
+    </div>`).join('');
+}
+$('#usIndices').innerHTML = skeleton('us', US_INDICES);
+$('#volSentiment').innerHTML = skeleton('vol', VOL_SENTIMENT);
+$('#treasuries').innerHTML = skeleton('tr', TREASURIES);
+$('#currencies').innerHTML = skeleton('cur', CURRENCIES);
+$('#commodities').innerHTML = skeleton('com', COMMODITIES);
+$('#crypto').innerHTML = skeleton('cr', CRYPTO);
+$('#worldMarkets').innerHTML = skeleton('w', WORLD_MARKETS);
+
+/* ===== CARD RENDER ===== */
+function fmtPrice(v){
+  if(v==null||!isFinite(v)) return '—';
+  if(Math.abs(v) >= 1000) return v.toLocaleString('en-US',{maximumFractionDigits:2});
+  if(Math.abs(v) >= 10) return v.toFixed(2);
+  return v.toFixed(3);
+}
+
+function renderCard(item, q){
+  if(!q || q.regularMarketPrice == null){
+    return `<div class="card neutral">
+      <div class="lbl"><span>${item.nm}</span><span class="ic">${item.ic}</span></div>
+      ${item.desc?`<div class="nm-th">${item.desc}</div>`:''}
+      <div class="px" style="font-size:14px;color:var(--muted)">⚠️ No data</div>
+    </div>`;
+  }
+  const px = q.regularMarketPrice;
+  const ch = q.regularMarketChange ?? 0;
+  const cp = q.regularMarketChangePercent ?? 0;
+  const cls = cp>=0?'gain':'loss';
+  const sign = cp>=0?'+':'';
+  return `<div class="card ${cls}" onclick="window.open('https://finance.yahoo.com/quote/${encodeURIComponent(item.sym)}','_blank')">
+    <div class="lbl"><span>${item.nm}</span><span class="ic">${item.ic}</span></div>
+    ${item.desc?`<div class="nm-th">${item.desc}</div>`:''}
+    <div class="px">${fmtPrice(px)}</div>
+    <div class="ch ${cp>=0?'pos':'neg'}">${sign}${ch.toFixed(2)} (${sign}${cp.toFixed(2)}%)</div>
+  </div>`;
+}
+
+function renderGroup(elId, items, M){
+  const html = items.map(it => renderCard(it, M[it.sym])).join('');
+  $(elId).innerHTML = html;
+}
+
+/* ===== SECTOR HEATMAP ===== */
+function renderSectors(M){
+  const arr = SECTORS.map(s=>{
+    const q = M[s.sym];
+    return {...s, q, cp: q?.regularMarketChangePercent ?? 0};
+  }).sort((a,b)=>b.cp-a.cp);
+
+  $('#secGrid').innerHTML = arr.map(s=>{
+    if(!s.q){
+      return `<div class="sec-tile h-n"><span class="ic">${s.ic}</span><div class="full">${s.sym}</div><div class="ch">—</div></div>`;
+    }
+    const cp = s.cp;
+    let cls = 'h-n';
+    if(cp>=2) cls='h-vg';
+    else if(cp>=1) cls='h-g';
+    else if(cp>=0.2) cls='h-lg';
+    else if(cp>-0.2) cls='h-n';
+    else if(cp>-1) cls='h-lr';
+    else if(cp>-2) cls='h-r';
+    else cls='h-vr';
+    const sign = cp>=0?'+':'';
+    return `<div class="sec-tile ${cls}" onclick="window.open('https://finance.yahoo.com/quote/${s.sym}','_blank')">
+      <span class="ic">${s.ic}</span>
+      <div class="nm">${s.sym}</div>
+      <div class="full">${s.th}</div>
+      <div class="ch">${sign}${cp.toFixed(2)}%</div>
+      <div class="desc">${s.nm}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ===== FULL TABLE ===== */
+function renderTable(M){
+  // Combine all symbols
+  const all = [...US_INDICES, ...VOL_SENTIMENT, ...TREASURIES, ...CURRENCIES,
+               ...COMMODITIES, ...CRYPTO, ...WORLD_MARKETS, ...SECTORS];
+
+  // Get unique
+  const seen = new Set();
+  const rows = [];
+  for(const item of all){
+    if(seen.has(item.sym)) continue;
+    seen.add(item.sym);
+    const q = M[item.sym];
+    if(!q || q.regularMarketPrice == null) continue;
+    rows.push({...item, q, cp: q.regularMarketChangePercent ?? 0});
+  }
+  rows.sort((a,b)=>b.cp-a.cp);
+
+  $('#allTable').innerHTML = rows.map(r=>{
+    const q = r.q;
+    const px = q.regularMarketPrice;
+    const ch = q.regularMarketChange ?? 0;
+    const cp = q.regularMarketChangePercent ?? 0;
+    const yhi = q.fiftyTwoWeekHigh;
+    const ylo = q.fiftyTwoWeekLow;
+    const vol = q.regularMarketVolume;
+    const sign = cp>=0?'+':'';
+    const cls = cp>=0?'pos':'neg';
+    const fv = (v)=>{
+      if(v==null||!isFinite(v))return'—';
+      if(v>=1e9)return(v/1e9).toFixed(2)+'B';
+      if(v>=1e6)return(v/1e6).toFixed(2)+'M';
+      if(v>=1e3)return(v/1e3).toFixed(1)+'K';
+      return v.toFixed(0);
+    };
+    return `<tr onclick="window.open('https://finance.yahoo.com/quote/${encodeURIComponent(r.sym)}','_blank')">
+      <td>
+        <div class="sym">${r.ic} ${r.sym.replace('=X','').replace('DX-Y.NYB','DXY').replace('^','').replace('-USD','')}</div>
+        <div class="ind-name">${r.nm} · ${r.desc||r.th||''}</div>
+      </td>
+      <td>${fmtPrice(px)}</td>
+      <td class="${cls}">${sign}${ch.toFixed(2)}</td>
+      <td class="${cls}"><b>${sign}${cp.toFixed(2)}%</b></td>
+      <td>${yhi?fmtPrice(yhi):'—'}</td>
+      <td>${ylo?fmtPrice(ylo):'—'}</td>
+      <td>${fv(vol)}</td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">⚠️ ไม่มีข้อมูล — ลองกด รีเฟรช</td></tr>`;
+}
+
+/* ===== FEAR & GREED ===== */
+function renderFearGreed(M){
+  const vix = M['^VIX'] || M['VIXY'];
+  if(!vix || vix.regularMarketPrice == null){
+    $('#fgValue').textContent = '—';
+    $('#fgLabel').textContent = 'No VIX data';
+    $('#fgDesc').textContent = 'ไม่สามารถโหลด VIX ได้ ลองรีเฟรชอีกครั้ง';
+    return;
+  }
+  const v = vix.regularMarketPrice;
+  // Map VIX 10..40 → 0..100 (inverted: high VIX = low greed)
+  let gauge = 100 - ((v-10)/30)*100;
+  gauge = Math.max(0, Math.min(100, gauge));
+  const angle = (gauge/100)*180 - 90;
+  $('#fgNeedle').setAttribute('transform', `rotate(${angle} 100 100)`);
+  $('#fgValue').textContent = Math.round(gauge);
+  let lbl, col, desc;
+  if(gauge>=75){ lbl='🤑 Extreme Greed'; col='var(--green)'; desc=`VIX ${v.toFixed(2)} — ตลาด<b>เฉื่อยชา</b>มาก ระวัง! ช่วงนี้ความเสี่ยงสะสม pullback ใหญ่อาจมา`; }
+  else if(gauge>=55){ lbl='😊 Greed'; col='var(--emerald)'; desc=`VIX ${v.toFixed(2)} — ตลาดมั่นใจ · เทรดได้ตามปกติ แต่อย่า over-leverage`; }
+  else if(gauge>=45){ lbl='😐 Neutral'; col='var(--gold)'; desc=`VIX ${v.toFixed(2)} — ตลาดปกติ · จังหวะดีสำหรับ scan หุ้น Quality + Breakout`; }
+  else if(gauge>=25){ lbl='😰 Fear'; col='var(--orange)'; desc=`VIX ${v.toFixed(2)} — เริ่มกลัวในตลาด · ลด position size รอจุดชัดเจน`; }
+  else{ lbl='😱 Extreme Fear'; col='var(--red)'; desc=`VIX ${v.toFixed(2)} — Panic mode! · อาจเป็น<b>โอกาสซื้อ</b>หุ้นดีราคาถูก แต่ระวัง knife-catching`; }
+  $('#fgLabel').textContent = lbl;
+  $('#fgLabel').style.color = col;
+  $('#fgValue').style.color = col;
+  $('#fgDesc').innerHTML = desc;
+}
+
+/* ===== FOMC ===== */
+function renderFOMC(){
+  const fomc = ['2026-01-28','2026-03-18','2026-04-29','2026-06-17','2026-07-29','2026-09-16','2026-10-28','2026-12-09',
+                '2027-01-27','2027-03-17','2027-04-28','2027-06-16','2027-07-28','2027-09-15','2027-10-27','2027-12-08'];
+  const now = new Date();
+  const next = fomc.map(d=>new Date(d+'T18:00:00Z')).find(d=>d>now);
+  if(!next){ return; }
+  const dStr = next.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'});
+  $('#nextFOMC').textContent = dStr;
+  const daysAway = Math.ceil((next-now)/86400000);
+  $('#fomcDesc').textContent = `อีก ${daysAway} วัน · เวลาไทย 01:00-02:30 (วันรุ่งขึ้น) · ตลาด volatile มาก!`;
+}
+
+/* ===== EVENTS ===== */
+function buildEvents(){
+  const now = new Date();
+  const dayMs = 86400000;
+  const events = [];
+
+  // FOMC
+  const fomc = ['2026-01-28','2026-03-18','2026-04-29','2026-06-17','2026-07-29','2026-09-16','2026-10-28','2026-12-09'];
+  fomc.forEach(d=>{
+    const ev = new Date(d+'T18:00:00Z');
+    if(ev > now && ev < new Date(now.getTime()+60*dayMs)){
+      events.push({d:ev, t:'FOMC Meeting & Rate Decision', s:'ประชุม Fed ตัดสินอัตราดอกเบี้ย + Dot Plot · Powell แถลง', when:'⏰ 02:00 (เวลาไทย)', imp:'h'});
+    }
+  });
+
+  // CPI (2nd Tuesday)
+  for(let m=0;m<2;m++){
+    const targetMonth = (now.getMonth()+m) % 12;
+    const targetYear = now.getFullYear() + Math.floor((now.getMonth()+m)/12);
+    const d = new Date(targetYear, targetMonth, 1);
+    let count = 0;
+    while(d.getMonth()===targetMonth){
+      if(d.getDay()===2){
+        count++;
+        if(count===2){
+          const ev = new Date(d.getFullYear(),d.getMonth(),d.getDate(),12,30);
+          if(ev > now && ev < new Date(now.getTime()+60*dayMs)){
+            events.push({d:ev, t:'CPI Report (เงินเฟ้อ US)', s:'รายงานดัชนีราคาผู้บริโภค · Core CPI สำคัญสุด · ส่งผลต่อ Fed อย่างมาก', when:'⏰ 20:30 (เวลาไทย)', imp:'h'});
+          }
+          break;
+        }
+      }
+      d.setDate(d.getDate()+1);
+    }
+  }
+
+  // NFP (1st Friday)
+  for(let m=0;m<2;m++){
+    const targetMonth = (now.getMonth()+m) % 12;
+    const targetYear = now.getFullYear() + Math.floor((now.getMonth()+m)/12);
+    const d = new Date(targetYear, targetMonth, 1);
+    while(d.getDay()!==5) d.setDate(d.getDate()+1);
+    const ev = new Date(d.getFullYear(),d.getMonth(),d.getDate(),12,30);
+    if(ev > now && ev < new Date(now.getTime()+60*dayMs)){
+      events.push({d:ev, t:'Jobs Report (Non-Farm Payrolls)', s:'ตัวเลขจ้างงานนอกภาคเกษตร · สัญญาณเศรษฐกิจหลัก', when:'⏰ 20:30 (เวลาไทย)', imp:'h'});
+    }
+  }
+
+  // PCE (last week)
+  for(let m=0;m<2;m++){
+    const targetMonth = (now.getMonth()+m) % 12;
+    const targetYear = now.getFullYear() + Math.floor((now.getMonth()+m)/12);
+    const target = new Date(targetYear, targetMonth, 28, 12, 30);
+    if(target > now && target < new Date(now.getTime()+60*dayMs)){
+      events.push({d:target, t:"PCE Inflation (Fed's favorite)", s:"PCE เป็นตัวที่ Fed ดูจริง ๆ ในการตัดสินใจดอกเบี้ย", when:'⏰ 20:30 (เวลาไทย)', imp:'m'});
+    }
+  }
+
+  // Retail Sales (mid-month, ~15th)
+  for(let m=0;m<2;m++){
+    const targetMonth = (now.getMonth()+m) % 12;
+    const targetYear = now.getFullYear() + Math.floor((now.getMonth()+m)/12);
+    const target = new Date(targetYear, targetMonth, 15, 12, 30);
+    if(target > now && target < new Date(now.getTime()+60*dayMs)){
+      events.push({d:target, t:"Retail Sales", s:"ยอดขายปลีก · วัดการใช้จ่ายผู้บริโภค", when:'⏰ 20:30 (เวลาไทย)', imp:'m'});
+    }
+  }
+
+  // Earnings season (quarterly, ~25-30th)
+  const month = now.getMonth();
+  if([0,3,6,9].includes(month) || [1,4,7,10].includes(month)){
+    const ear = [
+      {n:'AAPL', d:25, th:'Apple — ยอดขาย iPhone, Services growth'},
+      {n:'MSFT', d:26, th:'Microsoft — Azure cloud, AI Copilot'},
+      {n:'NVDA', d:21, th:'NVIDIA — GPU demand, AI data center growth'},
+      {n:'META', d:27, th:'Meta — Reels, ad revenue, AI capex'},
+      {n:'GOOGL',d:28, th:'Google — Search ads, Cloud, YouTube'},
+      {n:'AMZN', d:30, th:'Amazon — AWS growth, retail margins'},
+      {n:'TSLA', d:22, th:'Tesla — Deliveries, FSD, margins'},
+    ];
+    ear.forEach(e=>{
+      const ev = new Date(now.getFullYear(), month, e.d, 16, 0);
+      if(ev > now && ev < new Date(now.getTime()+45*dayMs)){
+        events.push({d:ev, t:`${e.n} Earnings Report`, s:e.th, when:'⏰ 04:00 (เวลาไทย, หลังตลาดปิด)', imp:'h'});
+      }
+    });
+  }
+
+  events.sort((a,b)=>a.d-b.d);
+
+  if(events.length===0){
+    $('#eventsList').innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">ไม่มีเหตุการณ์สำคัญใน 60 วันข้างหน้า</div>';
+    return;
+  }
+
+  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  $('#eventsList').innerHTML = events.slice(0,15).map(e=>{
+    const impL = {h:'<span class="impact imp-h">⚠️ HIGH</span>',m:'<span class="impact imp-m">📊 MED</span>',l:'<span class="impact imp-l">LOW</span>'}[e.imp];
+    return `<div class="ev-row">
+      <div class="ev-date">
+        <div class="d">${e.d.getDate()}</div>
+        <div class="m">${months[e.d.getMonth()]}</div>
+      </div>
+      <div class="ev-info">
+        <div class="t">${e.t}${impL}</div>
+        <div class="s">${e.s}</div>
+        <div class="when">${e.when}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ===== MAIN LOAD ===== */
+async function loadAll(){
+  $('#refreshBtn').disabled = true;
+  $('#rIcon').className = 'spin'; $('#rIcon').textContent = '⏳';
+  $('#statusText').textContent = '⏳ กำลังโหลดข้อมูล... อาจใช้เวลา 10-20 วินาที';
+
+  // Collect ALL unique symbols
+  const allSymbols = [...new Set([
+    ...US_INDICES.map(x=>x.sym),
+    ...VOL_SENTIMENT.map(x=>x.sym),
+    ...TREASURIES.map(x=>x.sym),
+    ...CURRENCIES.map(x=>x.sym),
+    ...COMMODITIES.map(x=>x.sym),
+    ...CRYPTO.map(x=>x.sym),
+    ...WORLD_MARKETS.map(x=>x.sym),
+    ...SECTORS.map(x=>x.sym),
+  ])];
+
+  try{
+    const startTime = performance.now();
+    const quotes = await fetchQuotes(allSymbols);
+    const elapsed = ((performance.now()-startTime)/1000).toFixed(1);
+    const M = Object.fromEntries(quotes.map(q=>[q.symbol, q]));
+
+    // Render all sections
+    renderGroup('#usIndices', US_INDICES, M);
+    renderGroup('#volSentiment', VOL_SENTIMENT, M);
+    renderGroup('#treasuries', TREASURIES, M);
+    renderGroup('#currencies', CURRENCIES, M);
+    renderGroup('#commodities', COMMODITIES, M);
+    renderGroup('#crypto', CRYPTO, M);
+    renderGroup('#worldMarkets', WORLD_MARKETS, M);
+    renderSectors(M);
+    renderTable(M);
+    renderFearGreed(M);
+    renderFOMC();
+
+    const okCount = Object.keys(M).length;
+    $('#lastUpd').textContent = new Date().toLocaleTimeString('th-TH');
+    $('#statusText').textContent = `✅ โหลดข้อมูลสำเร็จ ${okCount}/${allSymbols.length} ตัว · ใช้เวลา ${elapsed}s · อัพเดทอัตโนมัติทุก 5 นาที`;
+  }catch(e){
+    console.error('Load error:', e);
+    $('#statusText').textContent = `❌ โหลดข้อมูลไม่สำเร็จ: ${e.message} · ลองรีเฟรชอีกครั้ง`;
+  }finally{
+    $('#refreshBtn').disabled = false;
+    $('#rIcon').className = ''; $('#rIcon').textContent = '🔄';
+  }
+}
+
+/* ===== INIT ===== */
+buildEvents();
+renderFOMC();
+loadAll();
+setInterval(()=>{ if(!document.hidden) loadAll(); }, 5*60*1000);
+</script>
+</body>
+</html>

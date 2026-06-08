@@ -1,0 +1,62 @@
+name: Daily Stock Scan (Bullzeeker Pro)
+
+on:
+  # รันทุกวันอังคาร-เสาร์ UTC 21:30 = 04:30 น. ไทย (หลัง US ปิด ~30 นาที)
+  # ฤดูหนาว US (no DST, ธ.ค.-ก.พ.) → ปรับเป็น 22:30 UTC = 05:30 น. ไทย
+  schedule:
+    - cron: '30 21 * * 2-6'
+
+  # รัน manual ก็ได้
+  workflow_dispatch:
+    inputs:
+      universe:
+        description: 'Universe (sp500/nasdaq100/dow30)'
+        required: false
+        default: 'sp500'
+      strategies:
+        description: 'Strategies (comma หรือ all)'
+        required: false
+        default: 'minervini_tt,canslim'
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        working-directory: scanner
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run scan → JSON
+        working-directory: scanner
+        env:
+          UNIVERSE: ${{ inputs.universe || 'sp500' }}
+          STRATEGY: ${{ inputs.strategies || 'minervini_tt,canslim' }}
+        run: |
+          python scan_json.py --output ../pro/data
+
+      - name: Commit + push JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pro/data
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "scan: daily update $(date -u +%Y-%m-%d)"
+            git push
+          fi

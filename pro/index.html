@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#16a34a">
+<title>Bullzeeker Pro — Daily Scanner</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2316a34a' rx='20'/%3E%3Ctext x='50' y='65' font-size='55' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'%3E🎯%3C/text%3E%3C/svg%3E">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .gradient-bg { background: linear-gradient(135deg, #16a34a 0%, #0d9488 100%); }
+</style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+<div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+  <!-- Logo -->
+  <div class="text-center mb-6">
+    <div class="inline-block bg-green-600 w-20 h-20 rounded-2xl flex items-center justify-center mb-3 mx-auto">
+      <span class="text-4xl">🎯</span>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-900">Bullzeeker Pro</h1>
+    <p class="text-gray-500 text-sm mt-1">Daily Stock Scanner · Members Only</p>
+  </div>
+
+  <!-- Login form -->
+  <form id="loginForm" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">รหัสสมาชิก</label>
+      <input
+        type="password"
+        id="password"
+        placeholder="กรอกรหัสสมาชิก"
+        autocomplete="current-password"
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
+        required
+      >
+    </div>
+
+    <div class="flex items-center">
+      <input type="checkbox" id="remember" class="rounded text-green-600 focus:ring-green-500" checked>
+      <label for="remember" class="ml-2 text-sm text-gray-600">จำรหัสไว้ (sessionStorage)</label>
+    </div>
+
+    <button
+      type="submit"
+      class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors text-lg shadow-md"
+    >เข้าใช้งาน →</button>
+
+    <div id="error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+      ❌ รหัสไม่ถูกต้อง ลองใหม่หรือติดต่อ admin
+    </div>
+  </form>
+
+  <!-- Features -->
+  <div class="mt-8 pt-6 border-t border-gray-200">
+    <p class="text-xs text-gray-500 mb-3 font-medium uppercase tracking-wide">สมาชิกได้อะไร</p>
+    <ul class="space-y-2 text-sm text-gray-600">
+      <li class="flex items-start gap-2">
+        <span class="text-green-600 font-bold">✓</span>
+        <span>Daily scan 4 strategies (Minervini, CAN SLIM, Breakout)</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-green-600 font-bold">✓</span>
+        <span>Market regime indicator (SPY trend)</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-green-600 font-bold">✓</span>
+        <span>RS Rating, EPS Growth, Revenue check</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-green-600 font-bold">✓</span>
+        <span>30 วัน history + high-conviction picks</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-green-600 font-bold">✓</span>
+        <span>📱 Install เป็น app บนมือถือได้ (PWA)</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Footer -->
+  <p class="text-xs text-gray-400 text-center mt-6">
+    ⚠️ ข้อมูลศึกษา · ไม่ใช่คำแนะนำการลงทุน
+  </p>
+</div>
+
+<script src="./assets/auth.js"></script>
+<script>
+  // Auto-redirect ถ้า login แล้ว
+  if (Auth.isAuthenticated()) {
+    window.location.href = './dashboard.html';
+  }
+
+  // Login handler
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pw = document.getElementById('password').value;
+    const remember = document.getElementById('remember').checked;
+    const ok = await Auth.login(pw, remember);
+    if (ok) {
+      window.location.href = './dashboard.html';
+    } else {
+      document.getElementById('error').classList.remove('hidden');
+      document.getElementById('password').value = '';
+      document.getElementById('password').focus();
+    }
+  });
+
+  // Register service worker (PWA)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+</script>
+</body>
+</html>
