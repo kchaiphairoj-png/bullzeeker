@@ -1,0 +1,9 @@
+{
+  "name": "bullzeeker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Static site - no build step needed'",
+    "vercel-build": "echo 'Static site - no build step needed'"
+  }
+}
