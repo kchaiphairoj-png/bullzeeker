@@ -625,12 +625,11 @@ const UNIVERSE = [
   ['TLT','iShares 20+ Year Treasury','ETF']
 ];
 
-// Use shared universe if available — but cap at ~500 for daily screener
-// (each symbol = 1 chart API call, so 1500 would be too slow for a "daily" view)
+// Use shared universe — Worker proxy lets us scan ~1000 stocks comfortably
 const _U = window.BULLZEEKER_UNIVERSE;
 const _localMeta = Object.fromEntries(UNIVERSE.map(u=>[u[0],{name:u[1],sector:u[2]}]));
-const SYMBOLS = _U && _U.liquid_500 && _U.liquid_500.length > 200
-  ? _U.liquid_500
+const SYMBOLS = _U && _U.liquid_1000 && _U.liquid_1000.length > 200
+  ? _U.liquid_1000  // ~1000 stocks (Worker handles it in ~10-15s)
   : UNIVERSE.map(u=>u[0]);
 // META holds {name, sector} for known stocks. Unknown ones get symbol as name + 'Other' sector.
 const META = new Proxy(_localMeta, {
@@ -810,7 +809,7 @@ async function fetchYahooBatch(symbols){
       }catch{}
     }
   }
-  await Promise.all(Array(10).fill(0).map(worker));
+  await Promise.all(Array(25).fill(0).map(worker));  // bumped from 10 — Worker handles concurrency
   _saveQCache();
 
   if(results.length === 0) throw new Error('all symbols failed');

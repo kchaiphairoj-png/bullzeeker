@@ -662,7 +662,7 @@ async function fetchQuoteBatch(symbols){
       }catch{}
     }
   }
-  await Promise.all(Array(10).fill(0).map(worker));
+  await Promise.all(Array(25).fill(0).map(worker));  // bumped from 10 — Worker is faster
   return results;
 }
 
@@ -936,7 +936,7 @@ async function runScan(){
     $('#progText').textContent = '③ ดึงกราฟ 1 ปี + คำนวณ EMA/ATR/RSI/1M Return ...';
     const techMap = {};
     let prog = 0;
-    await concurrent(candidates, 6, async (sym)=>{
+    await concurrent(candidates, 15, async (sym)=>{  // bumped from 6 — Worker handles concurrency
       try{
         const data = await fetchChart(sym);
         const closes = data.map(d=>d.c);
@@ -1005,7 +1005,7 @@ async function runScan(){
       let p2 = 0;
       // For 'all' mode: only fetch for passed candidates. For 'any'/'rank': fetch for all candidates.
       const fundTargets = matchMode==='all' ? passedTech : candidates;
-      await concurrent(fundTargets, 5, async(sym)=>{
+      await concurrent(fundTargets, 12, async(sym)=>{  // bumped from 5
         try{
           fundMap[sym] = await fetchFundamentals(sym);
         }catch{ fundMap[sym] = {roe:null,netMargin:null}; }

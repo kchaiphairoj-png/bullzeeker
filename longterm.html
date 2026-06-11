@@ -1089,9 +1089,11 @@ async function runScan(){
     try{
       const qMap = {};
       let qDone = 0, qOk = 0;
-      await concurrent(uni, 10, async(sym)=>{
+      // Concurrency 25 — Worker handles high parallelism well
+      await concurrent(uni, 25, async(sym)=>{
         try{
-          const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=2d&interval=1d`;
+          // range=1d for minimal payload (we only need price + volume for filter)
+          const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1d&interval=1d`;
           const txt = await tryProxies(url);
           const j = JSON.parse(txt);
           const meta = j?.chart?.result?.[0]?.meta;
@@ -1128,7 +1130,8 @@ async function runScan(){
     const dataMap = {};
     let fetched = 0, failed = 0;
     const t1 = performance.now();
-    await concurrent(candidatesP1, 8, async(sym)=>{
+    // Concurrency 15 — bumped from 8 since Worker handles it
+    await concurrent(candidatesP1, 15, async(sym)=>{
       try{
         dataMap[sym] = await fetchWeekly(sym, cfg.useCache);
         fetched++;

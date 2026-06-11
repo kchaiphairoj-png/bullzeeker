@@ -898,7 +898,7 @@ let state = {
 
 async function fetchHistoryConcurrent(symbols, useCache, onProgress){
   const out = {};
-  const CONC = 6;
+  const CONC = 15;  // bumped from 6 — Worker handles high concurrency well
   let idx = 0, done = 0;
   async function worker(){
     while(idx < symbols.length){
@@ -985,7 +985,7 @@ async function runScan(){
       const qMap = {};
       let qDone = 0, qOk = 0;
       let qIdx = 0;
-      const QCONC = 10;
+      const QCONC = 25;  // bumped from 10 — Worker handles high concurrency
       async function qWorker(){
         while(qIdx < universe.length){
           const i = qIdx++;

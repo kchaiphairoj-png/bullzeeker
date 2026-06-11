@@ -754,7 +754,7 @@ async function fetchQuotes(symbols){
       }catch{}
     }
   }
-  await Promise.all(Array(10).fill(0).map(worker));
+  await Promise.all(Array(25).fill(0).map(worker));  // bumped from 10 — Worker is faster
   try{ localStorage.setItem(QCACHE_KEY, JSON.stringify(QCACHE)); }catch{}
 
   return Object.values(results);

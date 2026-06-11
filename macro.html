@@ -460,9 +460,9 @@ async function tryProxies(url){
   throw lastErr || new Error('all proxies failed');
 }
 
-/* ===== CACHE for quote data (localStorage, 5 min TTL) ===== */
-const QUOTE_CACHE_KEY = 'macro_quote_cache_v2';
-const QUOTE_CACHE_TTL = 5 * 60 * 1000;  // 5 minutes
+/* ===== CACHE for quote data (localStorage, 10 min TTL — Worker has its own 60s edge cache) ===== */
+const QUOTE_CACHE_KEY = 'macro_quote_cache_v3';
+const QUOTE_CACHE_TTL = 10 * 60 * 1000;  // 10 minutes (longer because Worker caches at edge too)
 let QUOTE_CACHE = {};
 try { QUOTE_CACHE = JSON.parse(localStorage.getItem(QUOTE_CACHE_KEY) || '{}'); } catch {}
 
@@ -500,8 +500,8 @@ async function fetchQuotes(syms){
 
   if(needFetch.length === 0) return Object.values(results);
 
-  // Fetch missing via chart endpoint (concurrent)
-  const CONC = 10;
+  // Fetch missing via chart endpoint (concurrent — Worker handles high concurrency well)
+  const CONC = 25;
   let idx = 0;
   async function worker(){
     while(idx < needFetch.length){
