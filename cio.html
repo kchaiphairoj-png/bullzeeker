@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🤖 AI CIO Command Center — Master Portfolio Manager | Bullzeeker</title>
+<meta name="description" content="AI CIO ที่ทำหน้าที่เหมือน Chief Investment Officer + Quant Analyst + Risk Manager · Master Portfolio $100K · Real-time monitoring · Rules-based execution · Trade log + audit" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>" />
+<script src="universe.js"></script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D593QC1NXE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-D593QC1NXE');
+</script>
+<style>
+  :root{
+    --bg:#050810; --bg2:#0a1220; --bg3:#111c30; --bg4:#1a2842;
+    --line:#243044; --line2:#334158;
+    --text:#e6edf7; --muted:#8b97ab; --dim:#5a6478;
+    --accent:#3b82f6; --accent2:#60a5fa;
+    --gold:#fbbf24; --gold2:#f59e0b;
+    --green:#22c55e; --green-bg:rgba(34,197,94,.12);
+    --red:#ef4444; --red-bg:rgba(239,68,68,.12);
+    --orange:#fb923c; --purple:#a855f7; --teal:#14b8a6;
+    --emerald:#10b981; --ocean:#0ea5e9;
+    --thai-red:#ED1C24;
+    --cio-purple:#8b5cf6; --cio-pink:#ec4899;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);
+    font-family:'Inter','Noto Sans Thai',-apple-system,sans-serif;
+    font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent2);text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none}
+  input,select,textarea{font-family:inherit}
+  .mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bg2)}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px}
+
+  /* ===== HEADER ===== */
+  header{background:linear-gradient(180deg,#080f1e,#050810);
+    border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;backdrop-filter:blur(12px)}
+  .h-row{display:flex;align-items:center;gap:18px;padding:14px 24px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+  .brand-logo{width:42px;height:42px;border-radius:11px;
+    background:linear-gradient(135deg,var(--thai-red),var(--gold),var(--accent));
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+    box-shadow:0 4px 14px rgba(251,191,36,.3)}
+  .brand-txt h1{font-size:18px;font-weight:800;color:#fff}
+  .brand-txt p{font-size:11px;color:var(--muted);margin-top:1px;font-weight:500}
+  .brand-txt p .beta{background:linear-gradient(135deg,var(--cio-purple),var(--cio-pink));
+    -webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+  nav.main-nav{display:flex;padding:0 24px;border-bottom:1px solid var(--line);overflow-x:auto;background:#060b17}
+  nav.main-nav a{color:var(--muted);padding:13px 18px;font-size:13px;font-weight:600;
+    border-bottom:2px solid transparent;transition:.15s;white-space:nowrap;
+    display:inline-flex;align-items:center;gap:6px}
+  nav.main-nav a:hover{color:var(--text);background:rgba(255,255,255,.02)}
+  nav.main-nav a.active{color:var(--cio-purple);border-bottom-color:var(--cio-purple);background:rgba(139,92,246,.06)}
+
+  main{max-width:1700px;margin:0 auto;padding:20px 22px 60px}
+
+  /* ===== HERO ===== */
+  .cio-hero{
+    background:
+      radial-gradient(ellipse at top right, rgba(139,92,246,.15), transparent 60%),
+      radial-gradient(ellipse at bottom left, rgba(236,72,153,.10), transparent 60%),
+      linear-gradient(135deg,#0a1220,#111c30);
+    border:1px solid rgba(139,92,246,.3);border-radius:16px;
+    padding:22px 26px;margin-bottom:18px;position:relative;overflow:hidden;
+  }
+  .cio-hero::before{content:"🤖";position:absolute;font-size:180px;right:-20px;top:-30px;opacity:.05;pointer-events:none}
+  .cio-hero-row{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;position:relative;z-index:2}
+  .cio-hero h1{font-size:24px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+  .cio-hero h1 .grad{background:linear-gradient(135deg,var(--cio-purple),var(--cio-pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .cio-hero p{color:var(--muted);font-size:13px;line-height:1.6;max-width:780px}
+  .cio-hero .phase-badge{background:linear-gradient(135deg,rgba(251,191,36,.15),rgba(245,158,11,.1));
+    border:1px solid rgba(251,191,36,.4);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;color:var(--gold)}
+
+  /* ===== MAIN GRID ===== */
+  .cio-grid{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:16px;margin-bottom:18px}
+  @media(max-width:1100px){.cio-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:780px){.cio-grid{grid-template-columns:1fr}}
+
+  /* ===== CARD BASE ===== */
+  .card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .card-h h3{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:6px}
+  .card-h .pill{font-size:10px;padding:2px 8px;border-radius:999px;font-weight:700}
+  .pill-g{background:var(--green-bg);color:var(--green)}
+  .pill-r{background:var(--red-bg);color:var(--red)}
+  .pill-y{background:rgba(251,191,36,.15);color:var(--gold)}
+  .pill-b{background:rgba(96,165,250,.15);color:var(--accent2)}
+  .pill-p{background:rgba(139,92,246,.15);color:var(--cio-purple)}
+
+  /* ===== NAV / STATUS ===== */
+  .nav-big{font-size:36px;font-weight:800;letter-spacing:-.5px}
+  .nav-sub{font-size:13px;color:var(--muted);margin-top:2px;display:flex;gap:12px;flex-wrap:wrap}
+  .nav-sub span b{color:var(--text)}
+  .pnl-pos{color:var(--green)}.pnl-neg{color:var(--red)}
+  .stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .stat-cell{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .stat-cell .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-weight:700}
+  .stat-cell .v{font-size:16px;font-weight:700;margin-top:2px}
+  .stat-cell .s{font-size:11px;color:var(--muted);margin-top:1px}
+
+  /* ===== MARKET REGIME ===== */
+  .regime-card{background:linear-gradient(135deg,var(--bg2),var(--bg3));position:relative;overflow:hidden}
+  .regime-hero{display:flex;align-items:center;justify-content:space-between;padding:6px 0;margin-bottom:14px}
+  .regime-label{font-size:26px;font-weight:800;letter-spacing:-.3px}
+  .regime-label.bull{color:var(--green)}
+  .regime-label.bear{color:var(--red)}
+  .regime-label.neutral{color:var(--gold)}
+  .regime-emoji{font-size:52px;line-height:1}
+  .regime-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px}
+  .regime-score{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+  .regime-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;margin-top:10px}
+  .rb-item{background:var(--bg3);border:1px solid var(--line);border-radius:6px;padding:6px 10px;display:flex;justify-content:space-between}
+  .rb-item .lbl{color:var(--muted)}
+  .rb-item .v{font-weight:700}
+  .rb-item .v.pos{color:var(--green)}
+  .rb-item .v.neg{color:var(--red)}
+
+  /* ===== COMMAND BAR ===== */
+  .cmd-card{background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(236,72,153,.05));
+    border:1px solid rgba(139,92,246,.3);text-align:center}
+  .cmd-btn{
+    background:linear-gradient(135deg,var(--cio-purple),var(--cio-pink));color:#fff;
+    padding:14px 26px;border-radius:12px;font-weight:800;font-size:15px;
+    display:inline-flex;align-items:center;gap:10px;
+    box-shadow:0 6px 20px rgba(139,92,246,.4);transition:.15s;width:100%;justify-content:center;
+  }
+  .cmd-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(139,92,246,.55)}
+  .cmd-btn:disabled{opacity:.6;cursor:wait}
+  .cmd-status{font-size:11px;color:var(--muted);margin-top:8px}
+  .cmd-status .dot{width:6px;height:6px;background:var(--green);border-radius:50%;display:inline-block;margin-right:6px;animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+  /* ===== POSITIONS TABLE ===== */
+  .pos-wrap{overflow-x:auto}
+  table.pos{width:100%;border-collapse:collapse;font-size:13px}
+  table.pos th{background:#0d1626;color:var(--muted);font-size:10.5px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.4px;padding:10px 8px;text-align:right;
+    border-bottom:1px solid var(--line);white-space:nowrap}
+  table.pos th:first-child,table.pos th.left{text-align:left}
+  table.pos td{padding:10px 8px;border-bottom:1px solid #172238;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+  table.pos td:first-child,table.pos td.left{text-align:left}
+  table.pos tbody tr{transition:.12s}
+  table.pos tbody tr:hover{background:#111c30}
+  .p-sym{font-weight:800;font-size:14px}
+  .p-nm{color:var(--dim);font-size:11px;margin-top:1px}
+  .p-act{background:none;border:1px solid var(--line);color:var(--muted);
+    padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;margin-left:4px}
+  .p-act:hover{border-color:var(--cio-purple);color:var(--cio-purple)}
+  .p-act.danger:hover{border-color:var(--red);color:var(--red)}
+
+  .weight-bar{
+    display:inline-block;width:50px;height:6px;background:var(--bg3);
+    border-radius:3px;overflow:hidden;vertical-align:middle;margin-right:6px;
+  }
+  .weight-bar > div{height:100%;border-radius:3px;background:var(--accent)}
+  .weight-bar > div.warn{background:var(--orange)}
+  .weight-bar > div.danger{background:var(--red)}
+
+  /* ===== RISK DASHBOARD ===== */
+  .risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .risk-item{background:var(--bg3);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+  .risk-item .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.4px}
+  .risk-item .v{font-size:16px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+  .risk-item .bar{height:5px;background:var(--bg);border-radius:3px;overflow:hidden;margin-top:6px}
+  .risk-item .bar > div{height:100%;background:var(--green);transition:.3s}
+  .risk-item .bar > div.warn{background:var(--orange)}
+  .risk-item .bar > div.danger{background:var(--red)}
+  .risk-item .limit{font-size:10px;color:var(--dim);margin-top:3px}
+
+  /* ===== WATCHLIST ===== */
+  .wl-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:8px;background:var(--bg3);margin-bottom:5px;transition:.12s}
+  .wl-item:hover{background:#182740}
+  .wl-l{display:flex;align-items:center;gap:8px}
+  .wl-sym{font-weight:800;font-size:13px}
+  .wl-nm{font-size:10.5px;color:var(--dim)}
+  .wl-r{text-align:right;font-variant-numeric:tabular-nums}
+  .wl-px{font-size:13px;font-weight:700}
+  .wl-ch{font-size:11px;font-weight:700}
+
+  /* ===== ALERTS PANEL ===== */
+  .alerts-panel{margin-top:18px}
+  .alert{display:flex;gap:12px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;margin-bottom:8px;border-left:4px solid;transition:.15s}
+  .alert:hover{transform:translateX(2px)}
+  .alert.buy{border-left-color:var(--green);background:linear-gradient(90deg,rgba(34,197,94,.06),var(--bg2))}
+  .alert.sell{border-left-color:var(--red);background:linear-gradient(90deg,rgba(239,68,68,.06),var(--bg2))}
+  .alert.reduce{border-left-color:var(--orange);background:linear-gradient(90deg,rgba(251,146,60,.06),var(--bg2))}
+  .alert.watch{border-left-color:var(--accent2);background:linear-gradient(90deg,rgba(96,165,250,.06),var(--bg2))}
+  .alert.info{border-left-color:var(--cio-purple);background:linear-gradient(90deg,rgba(139,92,246,.06),var(--bg2))}
+  .alert.hold{border-left-color:var(--muted);background:linear-gradient(90deg,rgba(139,151,171,.05),var(--bg2))}
+  .alert-ic{font-size:22px;flex-shrink:0}
+  .alert-body{flex:1;min-width:0}
+  .alert-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:6px}
+  .alert-head .t{font-size:14px;font-weight:800;color:#fff}
+  .alert-head .b{font-size:10px;padding:2px 8px;border-radius:6px;font-weight:800;letter-spacing:.3px}
+  .b-buy{background:var(--green-bg);color:var(--green)}
+  .b-sell{background:var(--red-bg);color:var(--red)}
+  .b-reduce{background:rgba(251,146,60,.15);color:var(--orange)}
+  .b-watch{background:rgba(96,165,250,.15);color:var(--accent2)}
+  .b-hold{background:rgba(139,151,171,.15);color:var(--muted)}
+  .alert-body p{font-size:12.5px;color:var(--muted);line-height:1.6}
+  .alert-body p b{color:var(--text)}
+  .alert-meta{display:flex;gap:12px;margin-top:6px;font-size:11px;color:var(--dim)}
+  .alert-meta .m{display:inline-flex;gap:4px;align-items:center}
+
+  /* ===== TABS ===== */
+  .tab-bar{display:flex;gap:4px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:4px;margin-bottom:14px;overflow-x:auto}
+  .tab{background:none;color:var(--muted);padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;white-space:nowrap;transition:.12s}
+  .tab:hover{color:var(--text)}
+  .tab.active{background:var(--cio-purple);color:#fff}
+  .tab-pane{display:none}
+  .tab-pane.active{display:block;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  /* ===== SECTOR CHART ===== */
+  .sector-bars{display:flex;flex-direction:column;gap:6px}
+  .sec-bar-row{display:flex;align-items:center;gap:10px;font-size:12px}
+  .sec-bar-row .n{width:110px;flex-shrink:0;font-weight:600}
+  .sec-bar-row .bar{flex:1;height:14px;background:var(--bg3);border-radius:4px;overflow:hidden;position:relative}
+  .sec-bar-row .bar > div{height:100%;background:linear-gradient(90deg,var(--accent),var(--cio-purple));border-radius:4px}
+  .sec-bar-row .p{font-variant-numeric:tabular-nums;font-weight:700;width:52px;text-align:right;font-size:12px}
+
+  /* ===== TRADE LOG ===== */
+  .log-row{display:grid;grid-template-columns:80px 60px 40px 1fr 80px 80px;gap:10px;padding:9px 12px;
+    border-bottom:1px solid #172238;font-size:12px;align-items:center}
+  .log-row.head{background:#0d1626;border-radius:8px 8px 0 0;color:var(--muted);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;border:none}
+  .log-row .a-b{color:var(--green);font-weight:800}
+  .log-row .a-s{color:var(--red);font-weight:800}
+  .log-row .a-r{color:var(--orange);font-weight:800}
+  .log-row .sym{font-weight:800}
+  .log-empty{padding:24px;text-align:center;color:var(--muted);font-size:13px}
+
+  /* ===== MODAL ===== */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);
+    display:none;align-items:center;justify-content:center;z-index:200;padding:14px;overflow:auto}
+  .modal-bg.show{display:flex}
+  .modal-card{background:var(--bg2);border:1px solid var(--line);border-radius:16px;
+    max-width:600px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.7)}
+  .modal-h{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .modal-h h3{font-size:18px;font-weight:800}
+  .modal-close{background:var(--bg3);border:1px solid var(--line);color:var(--text);
+    width:32px;height:32px;border-radius:8px;font-size:18px}
+  .modal-b{padding:20px 22px}
+
+  .form-grp{margin-bottom:14px}
+  .form-grp label{display:block;font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
+  .form-grp input,.form-grp select,.form-grp textarea{
+    width:100%;background:var(--bg3);color:var(--text);border:1px solid var(--line);border-radius:8px;
+    padding:10px 12px;font-size:14px;font-variant-numeric:tabular-nums
+  }
+  .form-grp input:focus,.form-grp select:focus,.form-grp textarea:focus{outline:none;border-color:var(--cio-purple);box-shadow:0 0 0 3px rgba(139,92,246,.15)}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .form-hint{font-size:11px;color:var(--dim);margin-top:4px}
+  .btn-p{background:linear-gradient(135deg,var(--cio-purple),var(--cio-pink));color:#fff;padding:11px 22px;border-radius:10px;font-weight:800;font-size:14px}
+  .btn-g{background:var(--bg3);color:var(--text);border:1px solid var(--line);padding:11px 22px;border-radius:10px;font-weight:600;font-size:14px}
+  .btn-g:hover{border-color:var(--cio-purple)}
+  .btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
+
+  /* ===== SETUP WIZARD ===== */
+  .setup-hero{background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(236,72,153,.08));
+    border:1px solid rgba(139,92,246,.4);border-radius:20px;padding:40px 32px;text-align:center;margin-bottom:18px}
+  .setup-hero h2{font-size:28px;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,var(--cio-purple),var(--cio-pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .setup-hero p{color:var(--muted);font-size:14px;max-width:680px;margin:0 auto 24px;line-height:1.7}
+  .setup-steps{display:flex;gap:10px;justify-content:center;margin-bottom:24px;flex-wrap:wrap}
+  .setup-step{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:10px 16px;font-size:13px;color:var(--muted);font-weight:600}
+  .setup-step.done{border-color:var(--green);color:var(--green)}
+  .setup-step.active{border-color:var(--cio-purple);color:var(--cio-purple)}
+  .setup-cta{display:inline-flex;gap:8px;background:linear-gradient(135deg,var(--cio-purple),var(--cio-pink));color:#fff;padding:14px 32px;border-radius:12px;font-weight:800;font-size:16px;box-shadow:0 6px 20px rgba(139,92,246,.4)}
+
+  /* ===== EMPTY STATES ===== */
+  .empty-state{padding:30px 20px;text-align:center;color:var(--muted)}
+  .empty-state .ic{font-size:42px;margin-bottom:8px;opacity:.6}
+  .empty-state .h{font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px}
+  .empty-state .p{font-size:12.5px;line-height:1.6;margin-bottom:12px}
+  .empty-state button{background:var(--cio-purple);color:#fff;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700}
+
+  /* ===== SETTINGS INLINE ===== */
+  .setting-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)}
+  .setting-row:last-child{border:none}
+  .setting-row .lbl{font-size:13px}
+  .setting-row .val{font-variant-numeric:tabular-nums;font-weight:700;color:var(--gold)}
+
+  /* ===== TOAST ===== */
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--bg3);border:1px solid var(--line);padding:12px 20px;border-radius:10px;
+    font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:300;
+    opacity:0;pointer-events:none;transition:.25s}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
+  .toast.err{border-color:var(--red);color:var(--red)}
+  .toast.ok{border-color:var(--green);color:var(--green)}
+
+  /* ===== AI PLACEHOLDER ===== */
+  .ai-preview{background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(236,72,153,.05));
+    border:1px dashed rgba(139,92,246,.4);border-radius:14px;padding:20px;text-align:center;margin-top:14px}
+  .ai-preview .ic{font-size:36px;margin-bottom:8px}
+  .ai-preview h4{font-size:15px;font-weight:800;color:var(--cio-purple);margin-bottom:6px}
+  .ai-preview p{font-size:12.5px;color:var(--muted);line-height:1.6;max-width:500px;margin:0 auto}
+  .ai-preview .cta{margin-top:12px;background:linear-gradient(135deg,var(--cio-purple),var(--cio-pink));color:#fff;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:700;display:inline-block}
+
+  footer{border-top:1px solid var(--line);padding:24px;color:var(--muted);font-size:12px;text-align:center;margin-top:40px;line-height:1.6}
+
+  @media(max-width:780px){
+    main{padding:12px}
+    .cio-hero{padding:18px}
+    .cio-hero h1{font-size:18px}
+    .nav-big{font-size:26px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-row">
+    <a href="index.html" class="brand">
+      <div class="brand-logo">🐂</div>
+      <div class="brand-txt">
+        <h1>Bull<span style="color:var(--gold)">zeeker</span></h1>
+        <p>🤖 AI CIO · <span class="beta">Beta · Phase 1</span></p>
+      </div>
+    </a>
+  </div>
+  <nav class="main-nav">
+    <a href="index.html">🏠 หน้าหลัก</a>
+    <a href="screener.html">🎯 Daily Screener</a>
+    <a href="breakout.html">🚀 Breakout</a>
+    <a href="quality.html">💎 Quality</a>
+    <a href="longterm.html">🌊 Long-Term Weekly</a>
+    <a href="cio.html" class="active">🤖 AI CIO</a>
+    <a href="tools.html">🛠️ เครื่องมือ</a>
+    <a href="macro.html">📊 Macro</a>
+    <a href="learn.html">📚 เรียนรู้</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ============================================================
+       SETUP WIZARD (shown when no portfolio exists)
+       ============================================================ -->
+  <div id="setupWizard" style="display:none">
+    <div class="setup-hero">
+      <div style="font-size:64px;margin-bottom:12px">🤖</div>
+      <h2>AI CIO Command Center</h2>
+      <p>
+        ระบบจัดพอร์ตแบบ <b>Chief Investment Officer + Quant Analyst + Risk Manager</b>
+        ในคนเดียว · ทำหน้าที่เหมือน CIO มืออาชีพ · ไม่ overtrade · ไม่ตัดสินใจจากอารมณ์
+        <br/><br/>
+        <b>Master Portfolio $100,000</b> = source of truth เพียงชุดเดียว
+      </p>
+      <div class="setup-steps">
+        <div class="setup-step active">1️⃣ ตั้ง Capital</div>
+        <div class="setup-step">2️⃣ เพิ่ม Positions (optional)</div>
+        <div class="setup-step">3️⃣ เพิ่ม Watchlist</div>
+        <div class="setup-step">4️⃣ Start</div>
+      </div>
+      <button class="setup-cta" onclick="openSetupModal()">🚀 เริ่ม Setup Portfolio</button>
+      <div style="margin-top:14px;font-size:12px;color:var(--muted)">
+        💾 ข้อมูลทั้งหมดเก็บใน browser ของพี่ (localStorage) · ปลอดภัย · ไม่ส่ง server
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:10px">📋 CIO ทำงานยังไง?</h3>
+      <div style="font-size:13px;color:var(--muted);line-height:1.8">
+        1. 🌅 <b>ทุกวันตลาด US เปิด</b> — กด "UPDATE PORTFOLIO" → AI วิเคราะห์เต็มระบบ<br/>
+        2. 📊 <b>Market Regime</b> Bull/Neutral/Bear คำนวณจาก VIX/SPY/DXY/Yields<br/>
+        3. 🎯 <b>Top Actions</b> — จัดอันดับ Buy/Sell/Reduce/Watch พร้อมเหตุผล + confidence<br/>
+        4. 🛡️ <b>Risk Check</b> — ตรวจ position size, sector exposure, drawdown ก่อนอนุมัติทุก trade<br/>
+        5. 📝 <b>Trade Log</b> — บันทึกทุก decision · Compare prediction vs actual<br/>
+        6. 🚫 <b>NO TRADE = valid decision</b> — ไม่บังคับให้เทรดทุกวัน · ถือ cash ถ้าไม่มี edge<br/>
+        7. 📈 <b>Monthly Audit</b> — เดือนละครั้งวัดผลงาน · ปรับ signals ที่ไม่มี edge
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MAIN DASHBOARD (shown when portfolio exists)
+       ============================================================ -->
+  <div id="dashboard" style="display:none">
+
+    <!-- HERO -->
+    <div class="cio-hero">
+      <div class="cio-hero-row">
+        <div>
+          <h1>🤖 AI CIO <span class="grad">Command Center</span></h1>
+          <p>Chief Investment Officer + Quant Analyst + Risk Manager · Master Portfolio จัดการโดยระบบที่ไม่ overtrade · ไม่ตัดสินใจจากอารมณ์</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <span class="phase-badge">🚧 Phase 1: Foundation</span>
+          <button class="btn-g" onclick="openSettings()">⚙️ Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MAIN 3-COLUMN GRID ============ -->
+    <div class="cio-grid">
+
+      <!-- Column 1: Portfolio Status -->
+      <div class="card">
+        <div class="card-h">
+          <h3>💼 Portfolio Status</h3>
+          <span class="pill pill-b">MASTER</span>
+        </div>
+        <div class="nav-big mono" id="navValue">$0</div>
+        <div class="nav-sub">
+          <span id="navChangeDay"><b>0.00%</b> วันนี้</span>
+          <span id="navChangeTotal"><b>0.00%</b> รวม</span>
+        </div>
+        <div class="stat-row">
+          <div class="stat-cell">
+            <div class="l">💵 Cash</div>
+            <div class="v mono" id="statCash">$0</div>
+            <div class="s"><span id="statCashPct">0%</span> of NAV</div>
+          </div>
+          <div class="stat-cell">
+            <div class="l">📈 Invested</div>
+            <div class="v mono" id="statInvested">$0</div>
+            <div class="s"><span id="statInvestedPct">0%</span> of NAV</div>
+          </div>
+          <div class="stat-cell">
+            <div class="l">📊 Positions</div>
+            <div class="v" id="statPosCount">0</div>
+            <div class="s">holdings</div>
+          </div>
+          <div class="stat-cell">
+            <div class="l">📉 Drawdown</div>
+            <div class="v mono" id="statDrawdown">0%</div>
+            <div class="s">from peak</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 2: Market Regime + Command -->
+      <div class="card regime-card">
+        <div class="card-h">
+          <h3>🌡️ Market Regime</h3>
+          <span class="pill pill-p" id="regimePill">—</span>
+        </div>
+        <div class="regime-hero">
+          <div>
+            <div class="regime-label" id="regimeLabel">Loading...</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px">Score: <span class="regime-score mono" id="regimeScore">—</span> / 10</div>
+          </div>
+          <div class="regime-emoji" id="regimeEmoji">⏳</div>
+        </div>
+        <div class="regime-desc" id="regimeDesc">กำลังโหลดข้อมูล SPY, VIX, DXY, 10Y Yield...</div>
+        <div class="regime-breakdown" id="regimeBreakdown"></div>
+
+        <div class="ai-preview" style="margin-top:14px">
+          <div class="ic">🤖</div>
+          <h4>UPDATE PORTFOLIO</h4>
+          <p>กดเพื่อให้ AI CIO วิเคราะห์เต็มระบบ · Morning Brief · Top 5 Actions · Alerts</p>
+          <button class="cmd-btn" style="margin-top:12px" onclick="runCIOAnalysis()">
+            <span id="cmdIcon">🎯</span> <span id="cmdLbl">UPDATE PORTFOLIO</span>
+          </button>
+          <div class="cmd-status"><span class="dot"></span>Phase 2 will connect to AI · Meanwhile: rule-based analysis</div>
+        </div>
+      </div>
+
+      <!-- Column 3: Watchlist -->
+      <div class="card">
+        <div class="card-h">
+          <h3>👁️ Watchlist</h3>
+          <button class="p-act" onclick="openAddWatchModal()">+ Add</button>
+        </div>
+        <div id="watchlistBody">
+          <div class="empty-state" style="padding:20px 10px">
+            <div class="ic">👁️</div>
+            <div class="p">ยังไม่มี watchlist</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============ POSITIONS TABLE ============ -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-h">
+        <h3>📊 Positions <span id="posMetaBadge" style="margin-left:8px;color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0"></span></h3>
+        <div style="display:flex;gap:6px">
+          <button class="p-act" onclick="refreshPositions()">🔄 Refresh</button>
+          <button class="p-act" onclick="openAddPositionModal()" style="border-color:var(--cio-purple);color:var(--cio-purple)">+ Add Position</button>
+        </div>
+      </div>
+      <div class="pos-wrap">
+        <table class="pos">
+          <thead>
+            <tr>
+              <th class="left">Ticker</th>
+              <th>Shares</th>
+              <th>Avg Cost</th>
+              <th>Current</th>
+              <th>P&L</th>
+              <th>P&L %</th>
+              <th>Value</th>
+              <th>Weight</th>
+              <th>Stop</th>
+              <th>Target</th>
+              <th class="left">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="positionsBody">
+            <tr><td colspan="11" class="empty-state">
+              <div class="ic">📊</div>
+              <div class="h">ยังไม่มี positions</div>
+              <div class="p">เพิ่มหุ้นแรกเพื่อเริ่มใช้ AI CIO</div>
+              <button onclick="openAddPositionModal()">+ Add First Position</button>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============ RECOMMENDATIONS PANEL ============ -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-h">
+        <h3>🎯 Top Actions Today</h3>
+        <span class="pill pill-p" id="recTimestamp">Not analyzed yet</span>
+      </div>
+      <div id="recommendationsBody">
+        <div class="empty-state">
+          <div class="ic">🤖</div>
+          <div class="h">พร้อมวิเคราะห์</div>
+          <div class="p">กด <b>"UPDATE PORTFOLIO"</b> ด้านบนเพื่อให้ AI CIO วิเคราะห์ portfolio + market regime + generate top actions</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ BOTTOM ROW: Risk + Sector + Trade Log ============ -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+
+      <!-- Risk Dashboard -->
+      <div class="card">
+        <div class="card-h">
+          <h3>🛡️ Risk Dashboard</h3>
+          <span class="pill" id="riskStatus">—</span>
+        </div>
+        <div class="risk-grid" id="riskGrid"></div>
+      </div>
+
+      <!-- Sector Exposure -->
+      <div class="card">
+        <div class="card-h">
+          <h3>🏭 Sector Exposure</h3>
+          <span class="pill pill-b" id="secDivPill">—</span>
+        </div>
+        <div class="sector-bars" id="sectorBars">
+          <div class="empty-state" style="padding:20px 10px">
+            <div class="ic">🏭</div>
+            <div class="p">ไม่มีข้อมูล</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ TRADE LOG ============ -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-h">
+        <h3>📝 Trade Log & Decision History</h3>
+        <div style="display:flex;gap:6px">
+          <button class="p-act" onclick="exportTradeLog()">📥 Export CSV</button>
+        </div>
+      </div>
+      <div class="log-row head">
+        <div>Date</div>
+        <div>Action</div>
+        <div>Sym</div>
+        <div>Reason</div>
+        <div style="text-align:right">Qty × Px</div>
+        <div style="text-align:right">Value</div>
+      </div>
+      <div id="tradeLogBody">
+        <div class="log-empty">ยังไม่มี trades — เริ่มโดยเพิ่ม position หรือกด UPDATE PORTFOLIO</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ============================================================
+     MODAL: Add / Edit Position
+     ============================================================ -->
+<div class="modal-bg" id="positionModal" onclick="if(event.target.id==='positionModal')closeModal('positionModal')">
+  <div class="modal-card">
+    <div class="modal-h">
+      <h3 id="posModalTitle">➕ Add Position</h3>
+      <button class="modal-close" onclick="closeModal('positionModal')">✕</button>
+    </div>
+    <div class="modal-b">
+      <input type="hidden" id="posEditId" value="" />
+
+      <div class="form-grp">
+        <label>📈 Ticker (US symbol)</label>
+        <input type="text" id="posTicker" placeholder="เช่น NVDA, AAPL, MSFT" style="text-transform:uppercase" />
+        <div class="form-hint">กดที่นี่แล้วผมจะ fetch ราคาปัจจุบันให้ (คลิกใน Current Price)</div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-grp">
+          <label>📦 Shares</label>
+          <input type="number" id="posShares" placeholder="10" step="0.01" min="0" />
+        </div>
+        <div class="form-grp">
+          <label>💵 Avg Cost per Share ($)</label>
+          <input type="number" id="posCost" placeholder="720.00" step=".01" min="0" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-grp">
+          <label>📅 Entry Date</label>
+          <input type="date" id="posDate" />
+        </div>
+        <div class="form-grp">
+          <label>🏭 Sector (optional)</label>
+          <select id="posSector">
+            <option value="">— Auto —</option>
+            <option>Technology</option>
+            <option>Financials</option>
+            <option>Healthcare</option>
+            <option>Consumer Cyclical</option>
+            <option>Consumer Defensive</option>
+            <option>Communication Services</option>
+            <option>Energy</option>
+            <option>Industrials</option>
+            <option>Materials</option>
+            <option>Utilities</option>
+            <option>Real Estate</option>
+            <option>ETF</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-grp">
+          <label>🛑 Stop Loss ($) <span style="color:var(--red)">*แนะนำ</span></label>
+          <input type="number" id="posStop" placeholder="680.00" step=".01" min="0" />
+          <div class="form-hint">Invalidation price — ถ้าราคาลงถึงจุดนี้ = SELL</div>
+        </div>
+        <div class="form-grp">
+          <label>🎯 Target ($) <span style="color:var(--muted)">optional</span></label>
+          <input type="number" id="posTarget" placeholder="900.00" step=".01" min="0" />
+        </div>
+      </div>
+
+      <div class="form-grp">
+        <label>📝 Investment Thesis (why you bought)</label>
+        <textarea id="posThesis" rows="3" placeholder="เช่น: Multi-year base breakout + AI demand tailwind + strong earnings"></textarea>
+        <div class="form-hint">สำคัญมาก — AI ใช้ตรวจ "thesis ยัง valid ไหม?"</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-g" onclick="closeModal('positionModal')">Cancel</button>
+        <button class="btn-p" onclick="savePosition()">💾 Save Position</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL: Add Watchlist
+     ============================================================ -->
+<div class="modal-bg" id="watchModal" onclick="if(event.target.id==='watchModal')closeModal('watchModal')">
+  <div class="modal-card" style="max-width:480px">
+    <div class="modal-h">
+      <h3>👁️ Add to Watchlist</h3>
+      <button class="modal-close" onclick="closeModal('watchModal')">✕</button>
+    </div>
+    <div class="modal-b">
+      <div class="form-grp">
+        <label>📈 Ticker</label>
+        <input type="text" id="watchTicker" placeholder="AAPL, NVDA, TSLA..." style="text-transform:uppercase" />
+        <div class="form-hint">คั่นด้วย comma เพื่อเพิ่มหลายตัว (AAPL,MSFT,GOOGL)</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-g" onclick="closeModal('watchModal')">Cancel</button>
+        <button class="btn-p" onclick="saveWatchlist()">➕ Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL: Settings
+     ============================================================ -->
+<div class="modal-bg" id="settingsModal" onclick="if(event.target.id==='settingsModal')closeModal('settingsModal')">
+  <div class="modal-card" style="max-width:520px">
+    <div class="modal-h">
+      <h3>⚙️ CIO Settings & Risk Limits</h3>
+      <button class="modal-close" onclick="closeModal('settingsModal')">✕</button>
+    </div>
+    <div class="modal-b">
+      <div class="form-grp">
+        <label>💰 Total Capital ($) — Master Portfolio Size</label>
+        <input type="number" id="setCapital" step="1000" />
+      </div>
+
+      <h4 style="font-size:12px;color:var(--gold);text-transform:uppercase;margin:16px 0 10px">🛡️ Risk Limits</h4>
+
+      <div class="form-row">
+        <div class="form-grp">
+          <label>⚠️ Risk per Trade (%)</label>
+          <input type="number" id="setRiskPerTrade" step=".25" min=".25" max="5" />
+          <div class="form-hint">Professional: 1%</div>
+        </div>
+        <div class="form-grp">
+          <label>📊 Max Single Position (%)</label>
+          <input type="number" id="setMaxSingle" step="1" min="5" max="50" />
+          <div class="form-hint">Concentration limit</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-grp">
+          <label>🏭 Max Sector Weight (%)</label>
+          <input type="number" id="setMaxSector" step="5" min="15" max="80" />
+        </div>
+        <div class="form-grp">
+          <label>💵 Min Cash Reserve (%)</label>
+          <input type="number" id="setMinCash" step="5" min="0" max="90" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-grp">
+          <label>📉 Max Daily Loss (%)</label>
+          <input type="number" id="setMaxDailyLoss" step=".5" min="1" max="10" />
+          <div class="form-hint">Circuit breaker</div>
+        </div>
+        <div class="form-grp">
+          <label>📉 Max Drawdown Alert (%)</label>
+          <input type="number" id="setMaxDD" step="1" min="5" max="30" />
+        </div>
+      </div>
+
+      <h4 style="font-size:12px;color:var(--cio-purple);text-transform:uppercase;margin:16px 0 10px">🤖 AI Configuration (Phase 2)</h4>
+      <div class="form-grp">
+        <label>AI Provider (Phase 2 — coming soon)</label>
+        <select id="setAiProvider" disabled>
+          <option value="claude">Claude API (recommended)</option>
+          <option value="openai">OpenAI GPT-4</option>
+          <option value="gemini">Google Gemini</option>
+        </select>
+        <div class="form-hint">🚧 Phase 2 จะเปิดใช้งาน AI real-time</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-g" onclick="closeModal('settingsModal')">Cancel</button>
+        <button class="btn-p" onclick="saveSettings()">💾 Save Settings</button>
+      </div>
+
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line)">
+        <button class="btn-g" style="width:100%;color:var(--red);border-color:var(--red)" onclick="resetAllData()">🗑️ Reset All Data (ล้าง portfolio + settings)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast">—</div>
+
+<footer>
+  🤖 <b>Bullzeeker AI CIO</b> · Phase 1: Foundation · Data via Yahoo Finance (delayed ~15 min) · Educational use only · ไม่ใช่คำแนะนำการลงทุน<br/>
+  🎓 อยากใช้ Full CIO + AI · <a href="https://line.me/R/ti/p/~wisit777" target="_blank" style="color:var(--cio-purple);font-weight:700">💬 คอร์สเทรดสำหรับมือใหม่ · LINE @wisit777</a>
+</footer>
+
+<script>
+/* ============================================================
+   BULLZEEKER AI CIO — Phase 1 Foundation
+   ============================================================ */
+
+/* ---------- CONFIG ---------- */
+const PROXIES = [
+  url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
+  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+  url => 'https://corsproxy.io/?' + encodeURIComponent(url),
+];
+const STORAGE_KEY = 'bullzeeker_cio_state_v1';
+
+/* ---------- DEFAULT STATE ---------- */
+const DEFAULT_STATE = {
+  version: 1,
+  capital: 100000,
+  positions: [],           // {id, ticker, shares, avgCost, entryDate, sector, stopLoss, target, thesis}
+  watchlist: [],           // [{ticker, addedAt}]
+  cashOverride: null,      // if user manually sets cash; else computed
+  navHistory: [],          // [{date, nav}]
+  tradeLog: [],            // {id, date, action, ticker, shares, price, reason, thesis}
+  alerts: [],              // AI generated alerts
+  auditLog: [],            // decision history
+  lastAnalysis: null,      // last AI analysis timestamp
+  settings: {
+    riskPerTrade: 1,       // %
+    maxSingleStock: 20,    // %
+    maxSectorWeight: 40,   // %
+    minCashReserve: 10,    // %
+    maxDailyLoss: 3,       // %
+    maxDrawdownAlert: 15,  // %
+    aiProvider: 'claude',
+  },
+  createdAt: Date.now(),
+};
+
+/* ---------- STATE MANAGEMENT ---------- */
+let STATE = loadState();
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return null;
+    const s = JSON.parse(raw);
+    return deepMerge(structuredClone(DEFAULT_STATE), s);
+  }catch(e){ console.error('Load state failed:', e); return null; }
+}
+
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE));
+    return true;
+  }catch(e){
+    toast('❌ Save failed: ' + e.message, 'err');
+    return false;
+  }
+}
+
+function deepMerge(target, source){
+  if(!source) return target;
+  for(const k of Object.keys(source)){
+    if(source[k] && typeof source[k] === 'object' && !Array.isArray(source[k])){
+      target[k] = deepMerge(target[k] || {}, source[k]);
+    } else {
+      target[k] = source[k];
+    }
+  }
+  return target;
+}
+
+function initStateIfNeeded(){
+  if(STATE === null){
+    STATE = structuredClone(DEFAULT_STATE);
+    saveState();
+  }
+}
+
+/* ---------- MARKET DATA ---------- */
+const QUOTE_CACHE = {};
+const QUOTE_TTL = 60 * 1000;  // 1 min
+
+async function tryProxies(url){
+  for(const p of PROXIES){
+    try{
+      const r = await fetch(p(url), {cache:'no-store'});
+      if(!r.ok) continue;
+      const t = await r.text();
+      if(t && t.length > 10) return t;
+    }catch{}
+  }
+  throw new Error('all proxies failed');
+}
+
+async function fetchQuote(ticker){
+  const now = Date.now();
+  const cached = QUOTE_CACHE[ticker];
+  if(cached && now - cached.ts < QUOTE_TTL) return cached.data;
+
+  try{
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?range=5d&interval=1d`;
+    const txt = await tryProxies(url);
+    const j = JSON.parse(txt);
+    const meta = j?.chart?.result?.[0]?.meta;
+    if(!meta || meta.regularMarketPrice == null) return null;
+
+    const px = meta.regularMarketPrice;
+    const prev = meta.chartPreviousClose ?? meta.previousClose ?? px;
+    const data = {
+      ticker,
+      price: px,
+      change: px - prev,
+      changePct: prev ? (px - prev) / prev * 100 : 0,
+      prev,
+      dayHigh: meta.regularMarketDayHigh,
+      dayLow: meta.regularMarketDayLow,
+      volume: meta.regularMarketVolume,
+      yearHigh: meta.fiftyTwoWeekHigh,
+      yearLow: meta.fiftyTwoWeekLow,
+      name: meta.shortName || meta.longName || ticker,
+      currency: meta.currency || 'USD',
+      updatedAt: now,
+    };
+    QUOTE_CACHE[ticker] = {ts: now, data};
+    return data;
+  }catch(e){
+    return null;
+  }
+}
+
+async function fetchQuotes(tickers){
+  const results = {};
+  await Promise.all(tickers.map(async t => {
+    const q = await fetchQuote(t);
+    if(q) results[t] = q;
+  }));
+  return results;
+}
+
+/* ---------- CHART DATA (for MA calculation) ---------- */
+async function fetchChart(ticker, range='1y'){
+  try{
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?range=${range}&interval=1d`;
+    const txt = await tryProxies(url);
+    const j = JSON.parse(txt);
+    const res = j?.chart?.result?.[0];
+    if(!res) return null;
+    const closes = res.indicators?.quote?.[0]?.close?.filter(x => x != null) || [];
+    return closes;
+  }catch{ return null; }
+}
+
+function sma(arr, p){
+  if(arr.length < p) return null;
+  const slice = arr.slice(-p);
+  return slice.reduce((a,b) => a+b, 0) / p;
+}
+
+/* ---------- MARKET REGIME ---------- */
+async function calculateMarketRegime(){
+  // Fetch key macro
+  const symbols = ['SPY', '^VIX', '^TNX', 'DX-Y.NYB', 'QQQ'];
+  const quotes = await fetchQuotes(symbols);
+
+  // Also fetch SPY chart for MA calculation
+  const spyChart = await fetchChart('SPY', '1y');
+
+  const spy = quotes['SPY'];
+  const vix = quotes['^VIX'];
+  const tnx = quotes['^TNX'];
+  const dxy = quotes['DX-Y.NYB'];
+  const qqq = quotes['QQQ'];
+
+  let score = 0;
+  const breakdown = [];
+
+  // 1. SPY vs MA50, MA200
+  if(spy && spyChart && spyChart.length >= 200){
+    const ma50 = sma(spyChart, 50);
+    const ma200 = sma(spyChart, 200);
+    if(ma50 && ma200){
+      if(spy.price > ma50){ score += 1.5; breakdown.push({lbl:'SPY > MA50', v:'+1.5', pos:true}); }
+      else { score -= 1; breakdown.push({lbl:'SPY < MA50', v:'-1.0', pos:false}); }
+
+      if(spy.price > ma200){ score += 2; breakdown.push({lbl:'SPY > MA200', v:'+2.0', pos:true}); }
+      else { score -= 2; breakdown.push({lbl:'SPY < MA200 ⚠️', v:'-2.0', pos:false}); }
+
+      if(ma50 > ma200){ score += 1; breakdown.push({lbl:'MA50 > MA200', v:'+1.0', pos:true}); }
+      else { score -= 1; breakdown.push({lbl:'MA50 < MA200', v:'-1.0', pos:false}); }
+    }
+  }
+
+  // 2. SPY daily change
+  if(spy){
+    if(spy.changePct > 0.5){ score += 0.5; breakdown.push({lbl:'SPY วันนี้ +', v:'+0.5', pos:true}); }
+    else if(spy.changePct < -1){ score -= 1; breakdown.push({lbl:'SPY วันนี้ --', v:'-1.0', pos:false}); }
+  }
+
+  // 3. VIX
+  if(vix){
+    if(vix.price < 15){ score += 2; breakdown.push({lbl:`VIX ${vix.price.toFixed(1)} (calm)`, v:'+2.0', pos:true}); }
+    else if(vix.price < 20){ score += 1; breakdown.push({lbl:`VIX ${vix.price.toFixed(1)} (normal)`, v:'+1.0', pos:true}); }
+    else if(vix.price < 25){ score += 0; breakdown.push({lbl:`VIX ${vix.price.toFixed(1)}`, v:'0', pos:true}); }
+    else if(vix.price < 30){ score -= 1; breakdown.push({lbl:`VIX ${vix.price.toFixed(1)} (fear)`, v:'-1.0', pos:false}); }
+    else { score -= 2.5; breakdown.push({lbl:`VIX ${vix.price.toFixed(1)} (panic!)`, v:'-2.5', pos:false}); }
+  }
+
+  // 4. QQQ vs SPY (tech leadership)
+  if(qqq && spy){
+    if(qqq.changePct > spy.changePct){ score += 0.5; breakdown.push({lbl:'Tech leads', v:'+0.5', pos:true}); }
+  }
+
+  // 5. 10Y Yield direction (high yield = pressure on stocks)
+  if(tnx){
+    if(tnx.price < 4){ score += 0.5; breakdown.push({lbl:`10Y ${tnx.price.toFixed(2)}% (low)`, v:'+0.5', pos:true}); }
+    else if(tnx.price > 5){ score -= 1; breakdown.push({lbl:`10Y ${tnx.price.toFixed(2)}% (high)`, v:'-1.0', pos:false}); }
+    else { breakdown.push({lbl:`10Y ${tnx.price.toFixed(2)}%`, v:'0', pos:true}); }
+  }
+
+  // 6. DXY direction (strong USD can pressure stocks)
+  if(dxy){
+    if(dxy.changePct < -0.3){ score += 0.3; breakdown.push({lbl:'DXY อ่อน', v:'+0.3', pos:true}); }
+    else if(dxy.changePct > 0.5){ score -= 0.3; breakdown.push({lbl:'DXY แข็ง', v:'-0.3', pos:false}); }
+  }
+
+  // Determine regime label
+  let label, emoji, cls, desc;
+  if(score >= 5){
+    label = 'STRONG BULL'; emoji = '🚀'; cls = 'bull';
+    desc = 'ตลาดขาขึ้นแข็งแกร่ง · เหมาะกับ Long positions · ควรมี exposure สูง (70-90%)';
+  } else if(score >= 2.5){
+    label = 'BULL'; emoji = '📈'; cls = 'bull';
+    desc = 'ตลาดขาขึ้น · Trade breakouts + quality growth · Exposure 60-80%';
+  } else if(score >= 0){
+    label = 'NEUTRAL'; emoji = '⚖️'; cls = 'neutral';
+    desc = 'ตลาดกลาง ๆ · Selective entries · เน้น quality · Exposure 40-60%';
+  } else if(score >= -3){
+    label = 'CAUTION'; emoji = '⚠️'; cls = 'neutral';
+    desc = 'ระวัง · ลด position size · ถือ cash เพิ่ม · เทรดเฉพาะ high conviction';
+  } else {
+    label = 'BEAR'; emoji = '🐻'; cls = 'bear';
+    desc = 'ตลาดหมี · ลด exposure ให้เหลือ 20-40% · หรือถือ cash · รอ setup ชัดเจน';
+  }
+
+  return {
+    score: Math.round(score * 10) / 10,
+    maxScore: 10,
+    label,
+    emoji,
+    cls,
+    desc,
+    breakdown,
+    quotes: {spy, vix, tnx, dxy, qqq},
+  };
+}
+
+/* ---------- PORTFOLIO CALCULATIONS ---------- */
+async function calculatePortfolio(){
+  const positions = STATE.positions;
+
+  // Fetch quotes for all positions
+  const tickers = positions.map(p => p.ticker);
+  const quotes = tickers.length ? await fetchQuotes(tickers) : {};
+
+  let totalPositionValue = 0;
+  let totalCost = 0;
+  let totalDayChange = 0;
+
+  const enriched = positions.map(p => {
+    const q = quotes[p.ticker];
+    const currentPrice = q?.price ?? p.avgCost;
+    const value = p.shares * currentPrice;
+    const cost = p.shares * p.avgCost;
+    const pl = value - cost;
+    const plPct = cost ? (pl / cost) * 100 : 0;
+    const dayChange = q ? p.shares * q.change : 0;
+
+    totalPositionValue += value;
+    totalCost += cost;
+    totalDayChange += dayChange;
+
+    return {
+      ...p,
+      currentPrice, value, cost, pl, plPct, dayChange,
+      quote: q,
+    };
+  });
+
+  // Cash = capital - initial investment (cost basis)
+  // If manually overridden, use that
+  const cash = STATE.cashOverride !== null
+    ? STATE.cashOverride
+    : Math.max(0, STATE.capital - totalCost);
+
+  const nav = cash + totalPositionValue;
+  const totalReturn = (nav - STATE.capital) / STATE.capital * 100;
+
+  // Day return
+  const investedYesterday = totalPositionValue - totalDayChange;
+  const navYesterday = cash + investedYesterday;
+  const dayReturnPct = navYesterday ? (totalDayChange / navYesterday) * 100 : 0;
+
+  // Drawdown
+  const navHistory = STATE.navHistory || [];
+  const peakNav = Math.max(STATE.capital, ...navHistory.map(h => h.nav), nav);
+  const drawdown = peakNav > 0 ? ((peakNav - nav) / peakNav) * 100 : 0;
+
+  return {
+    positions: enriched,
+    quotes,
+    cash,
+    invested: totalPositionValue,
+    nav,
+    totalReturn,
+    dayReturnPct,
+    dayReturnDollar: totalDayChange,
+    drawdown,
+    peakNav,
+  };
+}
+
+/* ---------- FORMATTERS ---------- */
+function fmt$(v, d=2){
+  if(v == null || !isFinite(v)) return '—';
+  return '$' + Number(v).toLocaleString('en-US', {minimumFractionDigits: d, maximumFractionDigits: d});
+}
+function fmtPct(v, showSign=true){
+  if(v == null || !isFinite(v)) return '—';
+  return (showSign && v >= 0 ? '+' : '') + v.toFixed(2) + '%';
+}
+function fmtN(v){
+  if(v == null || !isFinite(v)) return '—';
+  if(Math.abs(v) >= 1e9) return (v/1e9).toFixed(2)+'B';
+  if(Math.abs(v) >= 1e6) return (v/1e6).toFixed(2)+'M';
+  if(Math.abs(v) >= 1e3) return (v/1e3).toFixed(1)+'K';
+  return v.toFixed(0);
+}
+function toast(msg, type=''){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (type ? type : '');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* ---------- RENDERERS ---------- */
+
+function renderPortfolioStatus(P){
+  document.getElementById('navValue').textContent = fmt$(P.nav);
+
+  const dayCls = P.dayReturnDollar >= 0 ? 'pnl-pos' : 'pnl-neg';
+  const totalCls = P.totalReturn >= 0 ? 'pnl-pos' : 'pnl-neg';
+  document.getElementById('navChangeDay').innerHTML =
+    `<b class="${dayCls}">${fmtPct(P.dayReturnPct)}</b> วันนี้ (<span class="${dayCls}">${P.dayReturnDollar >= 0 ? '+' : ''}${fmt$(P.dayReturnDollar)}</span>)`;
+  document.getElementById('navChangeTotal').innerHTML =
+    `<b class="${totalCls}">${fmtPct(P.totalReturn)}</b> รวม (${P.totalReturn >= 0 ? '+' : ''}${fmt$(P.nav - STATE.capital)})`;
+
+  document.getElementById('statCash').textContent = fmt$(P.cash);
+  document.getElementById('statCashPct').textContent = P.nav ? ((P.cash / P.nav) * 100).toFixed(1) + '%' : '0%';
+  document.getElementById('statInvested').textContent = fmt$(P.invested);
+  document.getElementById('statInvestedPct').textContent = P.nav ? ((P.invested / P.nav) * 100).toFixed(1) + '%' : '0%';
+  document.getElementById('statPosCount').textContent = P.positions.length;
+
+  const ddEl = document.getElementById('statDrawdown');
+  ddEl.textContent = '-' + P.drawdown.toFixed(1) + '%';
+  ddEl.className = 'v mono ' + (P.drawdown > STATE.settings.maxDrawdownAlert ? 'pnl-neg' : '');
+}
+
+function renderPositions(P){
+  const body = document.getElementById('positionsBody');
+  document.getElementById('posMetaBadge').textContent = `· ${P.positions.length} holdings · Invested ${fmt$(P.invested)}`;
+
+  if(P.positions.length === 0){
+    body.innerHTML = `<tr><td colspan="11" class="empty-state">
+      <div class="ic">📊</div>
+      <div class="h">ยังไม่มี positions</div>
+      <div class="p">เพิ่มหุ้นแรกเพื่อเริ่มใช้ AI CIO</div>
+      <button onclick="openAddPositionModal()">+ Add First Position</button>
+    </td></tr>`;
+    return;
+  }
+
+  body.innerHTML = P.positions.map(p => {
+    const weight = P.nav > 0 ? (p.value / P.nav) * 100 : 0;
+    const weightCls = weight > STATE.settings.maxSingleStock ? 'danger'
+                    : weight > STATE.settings.maxSingleStock * 0.75 ? 'warn' : '';
+    const plCls = p.pl >= 0 ? 'pnl-pos' : 'pnl-neg';
+    const stopHit = p.stopLoss && p.currentPrice <= p.stopLoss;
+
+    return `<tr ${stopHit ? 'style="background:rgba(239,68,68,.05)"' : ''}>
+      <td class="left">
+        <div class="p-sym">${p.ticker}${stopHit ? ' 🚨' : ''}</div>
+        <div class="p-nm">${p.quote?.name?.slice(0,26) || ''}</div>
+      </td>
+      <td class="mono">${p.shares}</td>
+      <td class="mono">${fmt$(p.avgCost)}</td>
+      <td class="mono">${fmt$(p.currentPrice)}</td>
+      <td class="mono ${plCls}">${p.pl >= 0 ? '+' : ''}${fmt$(p.pl)}</td>
+      <td class="mono ${plCls}"><b>${fmtPct(p.plPct)}</b></td>
+      <td class="mono">${fmt$(p.value)}</td>
+      <td>
+        <span class="weight-bar"><div class="${weightCls}" style="width:${Math.min(100, weight*3)}%"></div></span>
+        <span class="mono">${weight.toFixed(1)}%</span>
+      </td>
+      <td class="mono" ${stopHit ? 'style="color:var(--red);font-weight:800"' : ''}>${p.stopLoss ? fmt$(p.stopLoss) : '—'}</td>
+      <td class="mono">${p.target ? fmt$(p.target) : '—'}</td>
+      <td class="left">
+        <button class="p-act" onclick="editPosition('${p.id}')">✏️</button>
+        <button class="p-act danger" onclick="deletePosition('${p.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderMarketRegime(R){
+  document.getElementById('regimeLabel').textContent = R.label;
+  document.getElementById('regimeLabel').className = 'regime-label ' + R.cls;
+  document.getElementById('regimeEmoji').textContent = R.emoji;
+  document.getElementById('regimeScore').textContent = (R.score >= 0 ? '+' : '') + R.score;
+  document.getElementById('regimeDesc').textContent = R.desc;
+
+  const pill = document.getElementById('regimePill');
+  pill.className = 'pill ' + (R.cls === 'bull' ? 'pill-g' : R.cls === 'bear' ? 'pill-r' : 'pill-y');
+  pill.textContent = R.label;
+
+  const bd = document.getElementById('regimeBreakdown');
+  bd.innerHTML = R.breakdown.map(b =>
+    `<div class="rb-item">
+      <span class="lbl">${b.lbl}</span>
+      <span class="v ${b.pos ? 'pos' : 'neg'}">${b.v}</span>
+    </div>`
+  ).join('');
+}
+
+async function renderWatchlist(){
+  const body = document.getElementById('watchlistBody');
+  const wl = STATE.watchlist;
+
+  if(wl.length === 0){
+    body.innerHTML = `<div class="empty-state" style="padding:20px 10px">
+      <div class="ic">👁️</div>
+      <div class="p">ยังไม่มี watchlist</div>
+      <button onclick="openAddWatchModal()" style="background:var(--cio-purple);color:#fff;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700">+ Add First Ticker</button>
+    </div>`;
+    return;
+  }
+
+  const tickers = wl.map(w => w.ticker);
+  const quotes = await fetchQuotes(tickers);
+
+  body.innerHTML = wl.map(w => {
+    const q = quotes[w.ticker];
+    if(!q){
+      return `<div class="wl-item">
+        <div class="wl-l"><div class="wl-sym">${w.ticker}</div></div>
+        <div class="wl-r"><div class="wl-px">—</div>
+        <button class="p-act" onclick="removeWatch('${w.ticker}')" style="padding:2px 6px;font-size:10px">✕</button></div>
+      </div>`;
+    }
+    const cls = q.changePct >= 0 ? 'pnl-pos' : 'pnl-neg';
+    return `<div class="wl-item">
+      <div class="wl-l">
+        <div>
+          <div class="wl-sym">${w.ticker}</div>
+          <div class="wl-nm">${q.name?.slice(0,20) || ''}</div>
+        </div>
+      </div>
+      <div class="wl-r">
+        <div class="wl-px mono">$${q.price.toFixed(2)}</div>
+        <div class="wl-ch mono ${cls}">${q.changePct >= 0 ? '+' : ''}${q.changePct.toFixed(2)}%</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderRiskDashboard(P){
+  const s = STATE.settings;
+
+  // Cash %
+  const cashPct = P.nav ? (P.cash / P.nav) * 100 : 0;
+  const cashRatio = s.minCashReserve ? cashPct / s.minCashReserve : 1;
+
+  // Max position weight
+  const maxPos = P.positions.reduce((max, p) => {
+    const w = P.nav ? (p.value / P.nav) * 100 : 0;
+    return w > max ? w : max;
+  }, 0);
+  const posRatio = maxPos / s.maxSingleStock;
+
+  // Sector concentration
+  const sectorMap = {};
+  P.positions.forEach(p => {
+    const sec = p.sector || 'Unknown';
+    sectorMap[sec] = (sectorMap[sec] || 0) + (P.nav ? (p.value / P.nav) * 100 : 0);
+  });
+  const maxSector = Math.max(0, ...Object.values(sectorMap));
+  const secRatio = maxSector / s.maxSectorWeight;
+
+  // Drawdown
+  const ddRatio = P.drawdown / s.maxDrawdownAlert;
+
+  const items = [
+    {lbl:'💵 Cash Level', v:cashPct.toFixed(1)+'%', limit:`min ${s.minCashReserve}%`,
+      ratio: cashPct < s.minCashReserve ? 1 : 0.3,
+      cls: cashPct < s.minCashReserve ? 'danger' : ''},
+    {lbl:'📊 Max Position', v:maxPos.toFixed(1)+'%', limit:`max ${s.maxSingleStock}%`,
+      ratio: Math.min(1, posRatio),
+      cls: posRatio > 1 ? 'danger' : posRatio > 0.75 ? 'warn' : ''},
+    {lbl:'🏭 Max Sector', v:maxSector.toFixed(1)+'%', limit:`max ${s.maxSectorWeight}%`,
+      ratio: Math.min(1, secRatio),
+      cls: secRatio > 1 ? 'danger' : secRatio > 0.75 ? 'warn' : ''},
+    {lbl:'📉 Drawdown', v:P.drawdown.toFixed(1)+'%', limit:`alert ${s.maxDrawdownAlert}%`,
+      ratio: Math.min(1, ddRatio),
+      cls: ddRatio > 1 ? 'danger' : ddRatio > 0.75 ? 'warn' : ''},
+  ];
+
+  document.getElementById('riskGrid').innerHTML = items.map(it => `
+    <div class="risk-item">
+      <div class="lbl">${it.lbl}</div>
+      <div class="v">${it.v}</div>
+      <div class="bar"><div class="${it.cls}" style="width:${(it.ratio*100).toFixed(0)}%"></div></div>
+      <div class="limit">${it.limit}</div>
+    </div>
+  `).join('');
+
+  // Risk status
+  const hasWarn = items.some(i => i.cls === 'warn');
+  const hasDanger = items.some(i => i.cls === 'danger');
+  const rs = document.getElementById('riskStatus');
+  if(hasDanger){ rs.className = 'pill pill-r'; rs.textContent = '⚠️ BREACH'; }
+  else if(hasWarn){ rs.className = 'pill pill-y'; rs.textContent = '⚡ WATCH'; }
+  else { rs.className = 'pill pill-g'; rs.textContent = '✓ OK'; }
+}
+
+function renderSectorExposure(P){
+  const sectorMap = {};
+  P.positions.forEach(p => {
+    const sec = p.sector || 'Unknown';
+    sectorMap[sec] = (sectorMap[sec] || 0) + p.value;
+  });
+
+  const sectors = Object.entries(sectorMap).sort((a,b) => b[1] - a[1]);
+  const bars = document.getElementById('sectorBars');
+
+  if(sectors.length === 0){
+    bars.innerHTML = `<div class="empty-state" style="padding:20px 10px">
+      <div class="ic">🏭</div>
+      <div class="p">ไม่มี positions</div>
+    </div>`;
+    document.getElementById('secDivPill').textContent = '0 sectors';
+    return;
+  }
+
+  const maxVal = sectors[0][1];
+  bars.innerHTML = sectors.map(([sec, val]) => {
+    const pct = P.nav ? (val / P.nav) * 100 : 0;
+    const w = maxVal ? (val / maxVal) * 100 : 0;
+    return `<div class="sec-bar-row">
+      <div class="n">${sec}</div>
+      <div class="bar"><div style="width:${w}%"></div></div>
+      <div class="p">${pct.toFixed(1)}%</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('secDivPill').textContent = sectors.length + ' sectors';
+}
+
+function renderTradeLog(){
+  const body = document.getElementById('tradeLogBody');
+  const log = STATE.tradeLog;
+
+  if(log.length === 0){
+    body.innerHTML = '<div class="log-empty">ยังไม่มี trades — เริ่มโดยเพิ่ม position หรือกด UPDATE PORTFOLIO</div>';
+    return;
+  }
+
+  const sorted = [...log].sort((a,b) => b.date.localeCompare(a.date)).slice(0, 20);
+
+  body.innerHTML = sorted.map(t => {
+    const actCls = t.action === 'BUY' ? 'a-b' : t.action === 'SELL' ? 'a-s' : 'a-r';
+    return `<div class="log-row">
+      <div class="mono" style="font-size:11px">${t.date}</div>
+      <div class="${actCls}">${t.action}</div>
+      <div class="sym">${t.ticker}</div>
+      <div style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.reason||''}">${t.reason || 'Manual entry'}</div>
+      <div class="mono" style="text-align:right">${t.shares} × $${t.price?.toFixed(2)||'—'}</div>
+      <div class="mono" style="text-align:right">${fmt$(t.shares * t.price)}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- ACTIONS ---------- */
+
+function openAddPositionModal(){
+  document.getElementById('posModalTitle').textContent = '➕ Add Position';
+  document.getElementById('posEditId').value = '';
+  document.getElementById('posTicker').value = '';
+  document.getElementById('posShares').value = '';
+  document.getElementById('posCost').value = '';
+  document.getElementById('posDate').value = new Date().toISOString().slice(0,10);
+  document.getElementById('posSector').value = '';
+  document.getElementById('posStop').value = '';
+  document.getElementById('posTarget').value = '';
+  document.getElementById('posThesis').value = '';
+  document.getElementById('positionModal').classList.add('show');
+}
+
+function editPosition(id){
+  const p = STATE.positions.find(x => x.id === id);
+  if(!p) return;
+  document.getElementById('posModalTitle').textContent = '✏️ Edit Position';
+  document.getElementById('posEditId').value = p.id;
+  document.getElementById('posTicker').value = p.ticker;
+  document.getElementById('posShares').value = p.shares;
+  document.getElementById('posCost').value = p.avgCost;
+  document.getElementById('posDate').value = p.entryDate || '';
+  document.getElementById('posSector').value = p.sector || '';
+  document.getElementById('posStop').value = p.stopLoss || '';
+  document.getElementById('posTarget').value = p.target || '';
+  document.getElementById('posThesis').value = p.thesis || '';
+  document.getElementById('positionModal').classList.add('show');
+}
+
+async function savePosition(){
+  const ticker = document.getElementById('posTicker').value.trim().toUpperCase();
+  const shares = parseFloat(document.getElementById('posShares').value);
+  const avgCost = parseFloat(document.getElementById('posCost').value);
+  if(!ticker || !shares || !avgCost){
+    toast('❌ กรอก Ticker + Shares + Avg Cost', 'err');
+    return;
+  }
+
+  const editId = document.getElementById('posEditId').value;
+  const data = {
+    id: editId || 'p_' + Date.now(),
+    ticker,
+    shares,
+    avgCost,
+    entryDate: document.getElementById('posDate').value || new Date().toISOString().slice(0,10),
+    sector: document.getElementById('posSector').value || null,
+    stopLoss: parseFloat(document.getElementById('posStop').value) || null,
+    target: parseFloat(document.getElementById('posTarget').value) || null,
+    thesis: document.getElementById('posThesis').value.trim() || null,
+  };
+
+  if(editId){
+    const idx = STATE.positions.findIndex(p => p.id === editId);
+    if(idx >= 0) STATE.positions[idx] = data;
+    toast('✅ Position updated', 'ok');
+  } else {
+    STATE.positions.push(data);
+    STATE.tradeLog.push({
+      id: 't_' + Date.now(),
+      date: data.entryDate,
+      action: 'BUY',
+      ticker,
+      shares,
+      price: avgCost,
+      reason: 'Manual entry: ' + (data.thesis || 'no thesis'),
+      thesis: data.thesis,
+    });
+    toast('✅ Position added', 'ok');
+  }
+
+  saveState();
+  closeModal('positionModal');
+  await refreshAll();
+}
+
+async function deletePosition(id){
+  const p = STATE.positions.find(x => x.id === id);
+  if(!p) return;
+  if(!confirm(`Delete ${p.ticker} (${p.shares} shares)?\nจะบันทึกเป็น SELL ใน trade log อัตโนมัติ`)) return;
+
+  // Log as SELL
+  const q = await fetchQuote(p.ticker);
+  STATE.tradeLog.push({
+    id: 't_' + Date.now(),
+    date: new Date().toISOString().slice(0,10),
+    action: 'SELL',
+    ticker: p.ticker,
+    shares: p.shares,
+    price: q?.price ?? p.avgCost,
+    reason: 'Manual close',
+    thesis: p.thesis,
+  });
+  STATE.positions = STATE.positions.filter(x => x.id !== id);
+  saveState();
+  toast('✅ Position removed', 'ok');
+  await refreshAll();
+}
+
+function openAddWatchModal(){
+  document.getElementById('watchTicker').value = '';
+  document.getElementById('watchModal').classList.add('show');
+}
+
+async function saveWatchlist(){
+  const raw = document.getElementById('watchTicker').value.trim().toUpperCase();
+  if(!raw) return;
+  const tickers = raw.split(/[,\s]+/).filter(Boolean);
+  const existing = new Set(STATE.watchlist.map(w => w.ticker));
+  const added = [];
+  tickers.forEach(t => {
+    if(!existing.has(t)){
+      STATE.watchlist.push({ticker: t, addedAt: Date.now()});
+      added.push(t);
+    }
+  });
+  saveState();
+  closeModal('watchModal');
+  if(added.length) toast(`✅ Added ${added.length}: ${added.join(', ')}`, 'ok');
+  await renderWatchlist();
+}
+
+function removeWatch(ticker){
+  STATE.watchlist = STATE.watchlist.filter(w => w.ticker !== ticker);
+  saveState();
+  renderWatchlist();
+}
+
+function openSettings(){
+  document.getElementById('setCapital').value = STATE.capital;
+  document.getElementById('setRiskPerTrade').value = STATE.settings.riskPerTrade;
+  document.getElementById('setMaxSingle').value = STATE.settings.maxSingleStock;
+  document.getElementById('setMaxSector').value = STATE.settings.maxSectorWeight;
+  document.getElementById('setMinCash').value = STATE.settings.minCashReserve;
+  document.getElementById('setMaxDailyLoss').value = STATE.settings.maxDailyLoss;
+  document.getElementById('setMaxDD').value = STATE.settings.maxDrawdownAlert;
+  document.getElementById('setAiProvider').value = STATE.settings.aiProvider;
+  document.getElementById('settingsModal').classList.add('show');
+}
+
+async function saveSettings(){
+  const capital = parseFloat(document.getElementById('setCapital').value);
+  if(!capital || capital < 100){
+    toast('❌ Capital ต้อง ≥ 100', 'err');
+    return;
+  }
+  STATE.capital = capital;
+  STATE.settings.riskPerTrade = parseFloat(document.getElementById('setRiskPerTrade').value) || 1;
+  STATE.settings.maxSingleStock = parseFloat(document.getElementById('setMaxSingle').value) || 20;
+  STATE.settings.maxSectorWeight = parseFloat(document.getElementById('setMaxSector').value) || 40;
+  STATE.settings.minCashReserve = parseFloat(document.getElementById('setMinCash').value) || 10;
+  STATE.settings.maxDailyLoss = parseFloat(document.getElementById('setMaxDailyLoss').value) || 3;
+  STATE.settings.maxDrawdownAlert = parseFloat(document.getElementById('setMaxDD').value) || 15;
+  saveState();
+  closeModal('settingsModal');
+  toast('✅ Settings saved', 'ok');
+  await refreshAll();
+}
+
+function resetAllData(){
+  if(!confirm('⚠️ ล้างข้อมูลทั้งหมด? Portfolio, watchlist, trade log, settings จะหายทั้งหมด · ทำไม่ได้กลับ!')) return;
+  if(!confirm('⚠️ แน่ใจใช่ไหม? ครั้งสุดท้าย!')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  STATE = null;
+  location.reload();
+}
+
+function closeModal(id){
+  document.getElementById(id).classList.remove('show');
+}
+
+function openSetupModal(){
+  // Initialize with default state then jump to portfolio
+  STATE = structuredClone(DEFAULT_STATE);
+  saveState();
+  location.reload();
+}
+
+/* ---------- REFRESH ---------- */
+
+async function refreshAll(){
+  const [P, R] = await Promise.all([
+    calculatePortfolio(),
+    calculateMarketRegime(),
+  ]);
+  renderPortfolioStatus(P);
+  renderPositions(P);
+  renderMarketRegime(R);
+  renderRiskDashboard(P);
+  renderSectorExposure(P);
+  renderTradeLog();
+  await renderWatchlist();
+
+  // Save NAV history (once per day)
+  const today = new Date().toISOString().slice(0,10);
+  const lastEntry = STATE.navHistory[STATE.navHistory.length - 1];
+  if(!lastEntry || lastEntry.date !== today){
+    STATE.navHistory.push({date: today, nav: P.nav});
+    // Keep last 365 days only
+    if(STATE.navHistory.length > 365) STATE.navHistory.shift();
+    saveState();
+  }
+}
+
+async function refreshPositions(){
+  toast('🔄 Refreshing prices...');
+  Object.keys(QUOTE_CACHE).forEach(k => delete QUOTE_CACHE[k]);
+  await refreshAll();
+  toast('✅ Updated', 'ok');
+}
+
+/* ---------- CIO ANALYSIS (Placeholder for Phase 2) ---------- */
+async function runCIOAnalysis(){
+  const btn = document.querySelector('.cmd-btn');
+  const icon = document.getElementById('cmdIcon');
+  const lbl = document.getElementById('cmdLbl');
+  btn.disabled = true;
+  icon.textContent = '⏳';
+  lbl.textContent = 'Analyzing...';
+
+  try {
+    // Fetch fresh data
+    const [P, R] = await Promise.all([
+      calculatePortfolio(),
+      calculateMarketRegime(),
+    ]);
+
+    // Rule-based analysis (Phase 1 — no AI yet, but structured output)
+    const analysis = generateRuleBasedAnalysis(P, R);
+    renderRecommendations(analysis, R);
+
+    STATE.lastAnalysis = Date.now();
+    saveState();
+
+    document.getElementById('recTimestamp').className = 'pill pill-g';
+    document.getElementById('recTimestamp').textContent = '✓ ' + new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
+
+    toast('🤖 Analysis complete · Phase 2 will use AI', 'ok');
+  } catch (e) {
+    console.error(e);
+    toast('❌ Analysis failed: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false;
+    icon.textContent = '🎯';
+    lbl.textContent = 'UPDATE PORTFOLIO';
+  }
+}
+
+/**
+ * Rule-based analysis (Phase 1 fallback until AI integration in Phase 2)
+ * Generates alerts based on:
+ * - Stop loss triggers
+ * - Target hits
+ * - Overweight positions
+ * - Cash level
+ * - Market regime signals
+ */
+function generateRuleBasedAnalysis(P, R){
+  const alerts = [];
+  const s = STATE.settings;
+
+  // 1. STOP LOSS ALERTS (SELL)
+  P.positions.forEach(p => {
+    if(p.stopLoss && p.currentPrice <= p.stopLoss){
+      alerts.push({
+        type: 'sell',
+        priority: 1,
+        ticker: p.ticker,
+        title: `🚨 SELL ${p.ticker} — Stop Loss triggered`,
+        reason: `Current $${p.currentPrice.toFixed(2)} ≤ Stop $${p.stopLoss.toFixed(2)}`,
+        action: `SELL ${p.shares} shares · Realize ${fmtPct(p.plPct)} P&L`,
+        thesis: p.thesis || 'No thesis',
+        confidence: 'HIGH',
+        rule: 'Stop loss rule',
+      });
+    }
+  });
+
+  // 2. TARGET HIT (REDUCE)
+  P.positions.forEach(p => {
+    if(p.target && p.currentPrice >= p.target){
+      alerts.push({
+        type: 'reduce',
+        priority: 2,
+        ticker: p.ticker,
+        title: `🎯 REDUCE ${p.ticker} — Target hit`,
+        reason: `Current $${p.currentPrice.toFixed(2)} ≥ Target $${p.target.toFixed(2)}`,
+        action: `Consider taking partial profit (25-50% of position)`,
+        thesis: p.thesis || 'No thesis',
+        confidence: 'MEDIUM',
+        rule: 'Target hit rule',
+      });
+    }
+  });
+
+  // 3. OVERWEIGHT POSITIONS (REDUCE)
+  P.positions.forEach(p => {
+    const weight = P.nav > 0 ? (p.value / P.nav) * 100 : 0;
+    if(weight > s.maxSingleStock){
+      alerts.push({
+        type: 'reduce',
+        priority: 3,
+        ticker: p.ticker,
+        title: `⚠️ REDUCE ${p.ticker} — Position too large`,
+        reason: `Weight ${weight.toFixed(1)}% > limit ${s.maxSingleStock}%`,
+        action: `Trim to bring weight within limit`,
+        thesis: 'Risk management rule',
+        confidence: 'HIGH',
+        rule: 'Concentration limit',
+      });
+    }
+  });
+
+  // 4. CASH LEVEL LOW (WATCH)
+  const cashPct = P.nav ? (P.cash / P.nav) * 100 : 0;
+  if(cashPct < s.minCashReserve){
+    alerts.push({
+      type: 'watch',
+      priority: 4,
+      ticker: 'CASH',
+      title: `💵 Cash Below Minimum`,
+      reason: `Cash ${cashPct.toFixed(1)}% < min ${s.minCashReserve}%`,
+      action: `Consider reducing positions to raise cash · or wait for opportunities`,
+      thesis: 'Portfolio liquidity',
+      confidence: 'MEDIUM',
+      rule: 'Min cash reserve',
+    });
+  }
+
+  // 5. MARKET REGIME WARNING
+  if(R.score < -3){
+    alerts.push({
+      type: 'sell',
+      priority: 2,
+      ticker: 'MARKET',
+      title: `🐻 BEAR REGIME — Reduce exposure`,
+      reason: `Market score ${R.score} · ${R.desc}`,
+      action: `พิจารณาลด long exposure · เพิ่ม cash · หลีกเลี่ยง new BUYs`,
+      thesis: 'Macro regime shift',
+      confidence: 'HIGH',
+      rule: 'Market regime filter',
+    });
+  } else if(R.score < 0){
+    alerts.push({
+      type: 'watch',
+      priority: 5,
+      ticker: 'MARKET',
+      title: `⚠️ Market Weakness Detected`,
+      reason: `Regime score ${R.score} · trend deteriorating`,
+      action: `ระวัง new BUYs · tighten stops · เตรียม trim ถ้ากลายเป็น bear`,
+      thesis: 'Momentum weakening',
+      confidence: 'MEDIUM',
+      rule: 'Regime deterioration',
+    });
+  }
+
+  // 6. HIGH DRAWDOWN
+  if(P.drawdown > s.maxDrawdownAlert){
+    alerts.push({
+      type: 'sell',
+      priority: 1,
+      ticker: 'PORTFOLIO',
+      title: `📉 Portfolio Drawdown Alert`,
+      reason: `Drawdown ${P.drawdown.toFixed(1)}% > alert ${s.maxDrawdownAlert}%`,
+      action: `Review all positions · ตัด losers · ห้ามเพิ่ม BUYs จนกว่าจะ recover`,
+      thesis: 'Risk management',
+      confidence: 'HIGH',
+      rule: 'Max drawdown breach',
+    });
+  }
+
+  // 7. BUY OPPORTUNITIES (from watchlist — placeholder for Phase 2 AI)
+  // Phase 2 will actually analyze technicals of watchlist tickers
+  if(alerts.length === 0 && R.score >= 2){
+    alerts.push({
+      type: 'info',
+      priority: 6,
+      ticker: 'CIO',
+      title: `✅ Portfolio Healthy — No actions needed`,
+      reason: `Market: ${R.label} · No breaches · All positions within limits`,
+      action: `HOLD · Monitor watchlist for setups · Phase 2 AI will scan candidates`,
+      thesis: 'Discipline > Action',
+      confidence: 'HIGH',
+      rule: 'NO TRADE = valid decision',
+    });
+  }
+
+  // Sort by priority
+  alerts.sort((a,b) => a.priority - b.priority);
+
+  return {
+    alerts,
+    regime: R,
+    portfolio: P,
+    timestamp: Date.now(),
+  };
+}
+
+function renderRecommendations(analysis, R){
+  const body = document.getElementById('recommendationsBody');
+  const alerts = analysis.alerts;
+
+  const morningBrief = generateMorningBrief(analysis);
+
+  let html = `
+    <!-- Morning Brief -->
+    <div class="card" style="background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(236,72,153,.04));border:1px dashed rgba(139,92,246,.3);margin-bottom:14px">
+      <div class="card-h" style="margin-bottom:8px">
+        <h3>🌅 Morning Brief</h3>
+        <span class="pill pill-p">Rule-based · Phase 1</span>
+      </div>
+      <div style="font-size:13px;line-height:1.8;color:var(--text)">${morningBrief}</div>
+    </div>
+
+    <!-- Alerts -->
+  `;
+
+  if(alerts.length === 0){
+    html += `<div class="alert hold">
+      <div class="alert-ic">😴</div>
+      <div class="alert-body">
+        <div class="alert-head">
+          <div class="t">NO ACTION</div>
+          <div class="b b-hold">HOLD</div>
+        </div>
+        <p>ไม่มีสัญญาณที่ต้อง action วันนี้ · HOLD · เก็บ cash · รอ setup ที่ดีกว่า</p>
+      </div>
+    </div>`;
+  } else {
+    html += alerts.map(a => {
+      const iconMap = {sell: '🚨', buy: '🚀', reduce: '⚠️', watch: '👁️', info: 'ℹ️', hold: '😴'};
+      const badgeMap = {sell: 'b-sell', buy: 'b-buy', reduce: 'b-reduce', watch: 'b-watch', info: 'b-watch', hold: 'b-hold'};
+      const actionMap = {sell: 'SELL', buy: 'BUY', reduce: 'REDUCE', watch: 'WATCH', info: 'INFO', hold: 'HOLD'};
+      return `<div class="alert ${a.type}">
+        <div class="alert-ic">${iconMap[a.type]}</div>
+        <div class="alert-body">
+          <div class="alert-head">
+            <div class="t">${a.title}</div>
+            <div class="b ${badgeMap[a.type]}">${actionMap[a.type]}</div>
+          </div>
+          <p><b>Reason:</b> ${a.reason}</p>
+          <p><b>Action:</b> ${a.action}</p>
+          <div class="alert-meta">
+            <span class="m">🎯 ${a.ticker}</span>
+            <span class="m">💡 ${a.confidence} confidence</span>
+            <span class="m">📏 ${a.rule}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  html += `
+    <!-- AI Preview (Phase 2) -->
+    <div class="ai-preview" style="margin-top:14px">
+      <div class="ic">🤖</div>
+      <h4>🚀 Phase 2 · Coming Soon</h4>
+      <p>Phase 2 จะเพิ่ม: Real AI analysis (Claude/GPT), Deep technical scan, Earnings surprise detection, Multi-signal correlation, Confidence scoring, และ event-driven overrides</p>
+      <a href="https://line.me/R/ti/p/~wisit777" target="_blank" class="cta">💬 ลงชื่อรอ Phase 2 · LINE @wisit777</a>
+    </div>
+  `;
+
+  body.innerHTML = html;
+}
+
+function generateMorningBrief(analysis){
+  const R = analysis.regime;
+  const P = analysis.portfolio;
+  const alerts = analysis.alerts;
+
+  const critical = alerts.filter(a => a.type === 'sell').length;
+  const reduces = alerts.filter(a => a.type === 'reduce').length;
+  const watches = alerts.filter(a => a.type === 'watch').length;
+
+  const positionCount = P.positions.length;
+  const winners = P.positions.filter(p => p.pl > 0).length;
+  const losers = P.positions.filter(p => p.pl < 0).length;
+
+  let brief = `<b>📊 Market Regime:</b> ${R.emoji} <b class="${R.cls === 'bull' ? 'pnl-pos' : R.cls === 'bear' ? 'pnl-neg' : ''}">${R.label}</b> (score ${R.score >= 0 ? '+' : ''}${R.score}) · ${R.desc}<br/><br/>`;
+
+  brief += `<b>💼 Portfolio:</b> NAV ${fmt$(P.nav)} · Daily <span class="${P.dayReturnPct >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(P.dayReturnPct)}</span> · Total <span class="${P.totalReturn >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(P.totalReturn)}</span><br/>`;
+  brief += `<b>📈 Positions:</b> ${positionCount} holdings (${winners} winners · ${losers} losers) · Cash ${((P.cash/P.nav)*100).toFixed(0)}%<br/><br/>`;
+
+  if(critical > 0){
+    brief += `<b class="pnl-neg">🚨 ${critical} SELL alerts · ต้อง action ทันที</b><br/>`;
+  }
+  if(reduces > 0){
+    brief += `<span style="color:var(--orange)"><b>⚠️ ${reduces} REDUCE alerts</b></span><br/>`;
+  }
+  if(watches > 0){
+    brief += `<span style="color:var(--accent2)"><b>👁️ ${watches} WATCH items</b></span><br/>`;
+  }
+  if(critical === 0 && reduces === 0){
+    brief += `<b class="pnl-pos">✅ ไม่มี urgent action · Portfolio healthy · HOLD</b><br/>`;
+  }
+
+  return brief;
+}
+
+/* ---------- EXPORT ---------- */
+function exportTradeLog(){
+  const log = STATE.tradeLog;
+  if(!log.length){ toast('ไม่มี trades', 'err'); return; }
+
+  const header = ['Date', 'Action', 'Ticker', 'Shares', 'Price', 'Value', 'Reason', 'Thesis'];
+  const rows = log.map(t => [
+    t.date, t.action, t.ticker, t.shares, t.price?.toFixed(2)||'', (t.shares * t.price).toFixed(2),
+    '"'+(t.reason||'').replace(/"/g,"'")+'"', '"'+(t.thesis||'').replace(/"/g,"'")+'"'
+  ]);
+  const csv = [header.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `bullzeeker_tradelog_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  toast('📥 Downloaded', 'ok');
+}
+
+/* ---------- INIT ---------- */
+async function init(){
+  if(STATE === null){
+    // First-time user — show setup wizard
+    document.getElementById('setupWizard').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+  } else {
+    document.getElementById('setupWizard').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    await refreshAll();
+    // Auto-refresh prices every 60 seconds
+    setInterval(() => {
+      Object.keys(QUOTE_CACHE).forEach(k => delete QUOTE_CACHE[k]);
+      refreshAll().catch(console.error);
+    }, 60 * 1000);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
