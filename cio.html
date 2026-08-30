@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>🤖 AI CIO Command Center — Master Portfolio Manager | Bullzeeker</title>
-<meta name="description" content="AI CIO ที่ทำหน้าที่เหมือน Chief Investment Officer + Quant Analyst + Risk Manager · Master Portfolio $100K · Real-time monitoring · Rules-based execution · Trade log + audit" />
+<title>🤖 AI CIO Command Center — Powered by Claude/Gemini | Bullzeeker</title>
+<meta name="description" content="AI CIO powered by Claude/Gemini — ทำหน้าที่เหมือน Chief Investment Officer + Quant Analyst + Risk Manager · Master Portfolio $100K · Real AI reasoning · Trade log + audit · ฟรี BYO key" />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>" />
 <script src="universe.js"></script>
@@ -325,7 +325,7 @@
       <div class="brand-logo">🐂</div>
       <div class="brand-txt">
         <h1>Bull<span style="color:var(--gold)">zeeker</span></h1>
-        <p>🤖 AI CIO · <span class="beta">Beta · Phase 1</span></p>
+        <p>🤖 AI CIO · <span class="beta">Live · Claude/Gemini</span></p>
       </div>
     </a>
   </div>
@@ -363,9 +363,13 @@
         <div class="setup-step">3️⃣ เพิ่ม Watchlist</div>
         <div class="setup-step">4️⃣ Start</div>
       </div>
-      <button class="setup-cta" onclick="openSetupModal()">🚀 เริ่ม Setup Portfolio</button>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="setup-cta" onclick="openSetupModal()">🚀 เริ่มต้นด้วย Portfolio ว่าง</button>
+        <button class="setup-cta" onclick="loadSamplePortfolio()" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 6px 20px rgba(16,185,129,.4)">📊 Load Demo Portfolio</button>
+      </div>
       <div style="margin-top:14px;font-size:12px;color:var(--muted)">
-        💾 ข้อมูลทั้งหมดเก็บใน browser ของพี่ (localStorage) · ปลอดภัย · ไม่ส่ง server
+        💾 ข้อมูลทั้งหมดเก็บใน browser ของพี่ (localStorage) · ปลอดภัย · ไม่ส่ง server<br/>
+        📊 <b>Demo Portfolio:</b> 7 หุ้น mega-cap + 7 watchlist · ~30% invested · ทดลอง AI ได้ทันที
       </div>
     </div>
 
@@ -379,6 +383,20 @@
         5. 📝 <b>Trade Log</b> — บันทึกทุก decision · Compare prediction vs actual<br/>
         6. 🚫 <b>NO TRADE = valid decision</b> — ไม่บังคับให้เทรดทุกวัน · ถือ cash ถ้าไม่มี edge<br/>
         7. 📈 <b>Monthly Audit</b> — เดือนละครั้งวัดผลงาน · ปรับ signals ที่ไม่มี edge
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(236,72,153,.04));border:1px solid rgba(139,92,246,.3)">
+      <h3 style="font-size:15px;margin-bottom:10px;color:var(--cio-purple)">🤖 Phase 2 · AI Integration LIVE</h3>
+      <div style="font-size:13px;color:var(--muted);line-height:1.8">
+        <b style="color:var(--text)">ตอนนี้เลือกใช้ AI จริงได้แล้ว!</b><br/>
+        • 🧠 <b>Claude (Anthropic)</b> — แนะนำ · reasoning ระดับ CIO มืออาชีพ<br/>
+        • ⚡ <b>Gemini (Google)</b> — ฟรี 15 requests/นาที · เหมาะเริ่มต้น<br/>
+        <br/>
+        <b style="color:var(--gold)">🔐 API key เก็บใน browser เท่านั้น</b> — ไม่ผ่าน server ของเรา<br/>
+        <b style="color:var(--green)">💰 ราคา ~$0.001-0.01 ต่อ query</b> · ใช้บ่อย ๆ ยัง <$1/เดือน<br/>
+        <br/>
+        <b style="color:var(--text)">อยากได้ AI unlimited + LINE alerts + สอน trade?</b> · <a href="https://line.me/R/ti/p/~wisit777" target="_blank" style="color:var(--cio-purple);font-weight:700">💬 คอร์สเทรด LINE @wisit777</a>
       </div>
     </div>
   </div>
@@ -396,7 +414,8 @@
           <p>Chief Investment Officer + Quant Analyst + Risk Manager · Master Portfolio จัดการโดยระบบที่ไม่ overtrade · ไม่ตัดสินใจจากอารมณ์</p>
         </div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <span class="phase-badge">🚧 Phase 1: Foundation</span>
+          <span id="aiStatusBadge" class="phase-badge" style="background:rgba(139,151,171,.15);color:var(--muted)">⚙️ AI: OFF</span>
+          <span class="phase-badge">🚀 Phase 2: AI Integration</span>
           <button class="btn-g" onclick="openSettings()">⚙️ Settings</button>
         </div>
       </div>
@@ -743,15 +762,40 @@
         </div>
       </div>
 
-      <h4 style="font-size:12px;color:var(--cio-purple);text-transform:uppercase;margin:16px 0 10px">🤖 AI Configuration (Phase 2)</h4>
+      <h4 style="font-size:12px;color:var(--cio-purple);text-transform:uppercase;margin:16px 0 10px">🤖 AI Configuration · Phase 2 <span style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;padding:2px 8px;border-radius:6px;font-size:9px;font-weight:800;letter-spacing:.5px;margin-left:6px">LIVE</span></h4>
+
       <div class="form-grp">
-        <label>AI Provider (Phase 2 — coming soon)</label>
-        <select id="setAiProvider" disabled>
-          <option value="claude">Claude API (recommended)</option>
-          <option value="openai">OpenAI GPT-4</option>
-          <option value="gemini">Google Gemini</option>
+        <label>🤖 AI Provider</label>
+        <select id="setAiProvider" onchange="onAIProviderChange()">
+          <option value="none">— Rules-based only (no AI) —</option>
+          <option value="claude">Claude (Anthropic) · แนะนำ · ดีสุด</option>
+          <option value="gemini">Gemini (Google) · Free tier · แนะนำสำหรับผู้เริ่มต้น</option>
         </select>
-        <div class="form-hint">🚧 Phase 2 จะเปิดใช้งาน AI real-time</div>
+        <div class="form-hint" id="aiProviderHint">เลือก AI provider เพื่อเปิด real-time analysis</div>
+      </div>
+
+      <div class="form-grp" id="aiKeyGrp" style="display:none">
+        <label>🔑 API Key <span id="aiKeyLabel">(paste จาก provider)</span></label>
+        <input type="password" id="setAiKey" placeholder="sk-ant-... หรือ AIza..." />
+        <div class="form-hint" id="aiKeyHint">
+          🔒 <b>Key เก็บใน browser ของคุณเท่านั้น</b> — ไม่ส่งไป server ของ Bullzeeker
+        </div>
+      </div>
+
+      <div class="form-grp" id="aiModelGrp" style="display:none">
+        <label>🎯 Model</label>
+        <select id="setAiModel"></select>
+      </div>
+
+      <div class="form-grp" id="aiTestGrp" style="display:none">
+        <button class="btn-g" onclick="testAIConnection()" style="width:100%">🧪 Test Connection</button>
+        <div id="aiTestResult" style="margin-top:8px;font-size:12px;padding:8px 12px;border-radius:6px;display:none"></div>
+      </div>
+
+      <div id="aiCostBox" style="display:none;background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(139,92,246,.05));border:1px solid rgba(16,185,129,.3);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:11.5px;color:var(--muted);line-height:1.7">
+        📊 <b>วันนี้ใช้ AI ไปแล้ว:</b> <span id="aiCallsToday">0</span> ครั้ง<br/>
+        💰 <b>ประมาณค่าใช้จ่าย:</b> ~$<span id="aiCostToday">0.00</span> (~฿<span id="aiCostThb">0.00</span>)<br/>
+        🎯 <b>Total:</b> <span id="aiTotalCalls">0</span> calls
       </div>
 
       <div class="btn-row">
@@ -769,7 +813,7 @@
 <div id="toast" class="toast">—</div>
 
 <footer>
-  🤖 <b>Bullzeeker AI CIO</b> · Phase 1: Foundation · Data via Yahoo Finance (delayed ~15 min) · Educational use only · ไม่ใช่คำแนะนำการลงทุน<br/>
+  🤖 <b>Bullzeeker AI CIO</b> · Phase 2: AI Integration (Claude/Gemini) · Data via Yahoo Finance (delayed ~15 min) · Educational use only · ไม่ใช่คำแนะนำการลงทุน<br/>
   🎓 อยากใช้ Full CIO + AI · <a href="https://line.me/R/ti/p/~wisit777" target="_blank" style="color:var(--cio-purple);font-weight:700">💬 คอร์สเทรดสำหรับมือใหม่ · LINE @wisit777</a>
 </footer>
 
@@ -805,9 +849,87 @@ const DEFAULT_STATE = {
     minCashReserve: 10,    // %
     maxDailyLoss: 3,       // %
     maxDrawdownAlert: 15,  // %
-    aiProvider: 'claude',
+    // AI settings
+    aiProvider: 'none',     // 'none' | 'claude' | 'gemini'
+    aiKey: '',              // encrypted-like: stored plain in localStorage (user's own device)
+    aiModel: '',
+  },
+  aiStats: {
+    totalCalls: 0,
+    dailyCalls: {},         // { 'YYYY-MM-DD': count }
+    totalCostUSD: 0,
+    lastCall: null,
   },
   createdAt: Date.now(),
+};
+
+/* ---------- SAMPLE PORTFOLIO (Demo data) ---------- */
+const SAMPLE_POSITIONS = [
+  {ticker:'NVDA', shares:10, avgCost:720, sector:'Technology', stopLoss:650, target:900,
+    thesis:'AI infrastructure demand + data center growth · Multi-year secular trend'},
+  {ticker:'AAPL', shares:25, avgCost:180, sector:'Technology', stopLoss:165, target:220,
+    thesis:'iPhone cycle + Services growth + Vision Pro potential'},
+  {ticker:'MSFT', shares:8, avgCost:415, sector:'Technology', stopLoss:380, target:500,
+    thesis:'Azure cloud + AI Copilot monetization'},
+  {ticker:'BRK-B', shares:12, avgCost:455, sector:'Financials', stopLoss:420, target:520,
+    thesis:'Berkshire compounding · defensive · Buffett strategy'},
+  {ticker:'LLY', shares:4, avgCost:780, sector:'Healthcare', stopLoss:720, target:920,
+    thesis:'Mounjaro/Zepbound GLP-1 growth + strong pipeline'},
+  {ticker:'V', shares:15, avgCost:290, sector:'Financials', stopLoss:265, target:340,
+    thesis:'Payments moat · consistent growth · dividend'},
+  {ticker:'COST', shares:3, avgCost:920, sector:'Consumer Defensive', stopLoss:850, target:1050,
+    thesis:'Membership model · pricing power · quality compounder'},
+];
+const SAMPLE_WATCHLIST = ['AMD', 'GOOGL', 'META', 'TSLA', 'PLTR', 'SMCI', 'ARM'];
+
+/* ---------- AI PROVIDERS CONFIG ---------- */
+const AI_PROVIDERS = {
+  claude: {
+    name: 'Claude (Anthropic)',
+    endpoint: 'https://api.anthropic.com/v1/messages',
+    keyLabel: 'sk-ant-... (Anthropic Console)',
+    keyPattern: /^sk-ant-/,
+    getKeyURL: 'https://console.anthropic.com/settings/keys',
+    models: {
+      'claude-sonnet-4-5-20250929': {
+        label: 'Claude Sonnet 4.5 · แนะนำ · Balance คุณภาพ/ราคา',
+        pricePerCall: 0.008,  // ~$0.008 per full analysis
+      },
+      'claude-opus-4-5-20250929': {
+        label: 'Claude Opus 4.5 · ดีที่สุด · แพงกว่า 5×',
+        pricePerCall: 0.040,
+      },
+      'claude-haiku-4-5-20250929': {
+        label: 'Claude Haiku 4.5 · เร็ว/ถูกที่สุด',
+        pricePerCall: 0.002,
+      },
+    },
+    defaultModel: 'claude-sonnet-4-5-20250929',
+    supportsDirectBrowser: true,  // via anthropic-dangerous-direct-browser-access
+  },
+  gemini: {
+    name: 'Gemini (Google)',
+    endpoint: null,  // dynamic URL
+    keyLabel: 'AIza... (Google AI Studio)',
+    keyPattern: /^AIza/,
+    getKeyURL: 'https://aistudio.google.com/apikey',
+    models: {
+      'gemini-2.0-flash-exp': {
+        label: 'Gemini 2.0 Flash · Free tier + เร็ว · แนะนำ',
+        pricePerCall: 0.001,
+      },
+      'gemini-1.5-pro-latest': {
+        label: 'Gemini 1.5 Pro · แม่นยำสุด',
+        pricePerCall: 0.005,
+      },
+      'gemini-1.5-flash-latest': {
+        label: 'Gemini 1.5 Flash · เร็วมาก · ถูก',
+        pricePerCall: 0.001,
+      },
+    },
+    defaultModel: 'gemini-2.0-flash-exp',
+    supportsDirectBrowser: true,
+  },
 };
 
 /* ---------- STATE MANAGEMENT ---------- */
@@ -1149,8 +1271,11 @@ function renderPositions(P){
     body.innerHTML = `<tr><td colspan="11" class="empty-state">
       <div class="ic">📊</div>
       <div class="h">ยังไม่มี positions</div>
-      <div class="p">เพิ่มหุ้นแรกเพื่อเริ่มใช้ AI CIO</div>
-      <button onclick="openAddPositionModal()">+ Add First Position</button>
+      <div class="p">เพิ่มหุ้นแรกเพื่อเริ่มใช้ AI CIO · หรือลอง demo portfolio</div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button onclick="openAddPositionModal()">+ Add First Position</button>
+        <button onclick="loadSamplePortfolio()" style="background:linear-gradient(135deg,#10b981,#059669)">📊 Load Demo</button>
+      </div>
     </td></tr>`;
     return;
   }
@@ -1502,8 +1627,128 @@ function openSettings(){
   document.getElementById('setMinCash').value = STATE.settings.minCashReserve;
   document.getElementById('setMaxDailyLoss').value = STATE.settings.maxDailyLoss;
   document.getElementById('setMaxDD').value = STATE.settings.maxDrawdownAlert;
-  document.getElementById('setAiProvider').value = STATE.settings.aiProvider;
+  document.getElementById('setAiProvider').value = STATE.settings.aiProvider || 'none';
+  document.getElementById('setAiKey').value = STATE.settings.aiKey || '';
+  onAIProviderChange();  // render model list + show/hide
+  if(STATE.settings.aiModel && document.getElementById('setAiModel')){
+    document.getElementById('setAiModel').value = STATE.settings.aiModel;
+  }
+  updateAICostDisplay();
   document.getElementById('settingsModal').classList.add('show');
+}
+
+/**
+ * When AI provider selection changes:
+ * - Show/hide key + model + test button
+ * - Populate model dropdown
+ * - Update helpful hints
+ */
+function onAIProviderChange(){
+  const provider = document.getElementById('setAiProvider').value;
+  const keyGrp = document.getElementById('aiKeyGrp');
+  const modelGrp = document.getElementById('aiModelGrp');
+  const testGrp = document.getElementById('aiTestGrp');
+  const costBox = document.getElementById('aiCostBox');
+  const hint = document.getElementById('aiProviderHint');
+
+  if(provider === 'none' || !AI_PROVIDERS[provider]){
+    keyGrp.style.display = 'none';
+    modelGrp.style.display = 'none';
+    testGrp.style.display = 'none';
+    costBox.style.display = 'none';
+    hint.textContent = 'AI ปิดอยู่ → ระบบใช้ rule-based analysis (ยังทำงานได้ แต่ไม่มี real AI reasoning)';
+    return;
+  }
+
+  const cfg = AI_PROVIDERS[provider];
+  keyGrp.style.display = 'block';
+  modelGrp.style.display = 'block';
+  testGrp.style.display = 'block';
+  costBox.style.display = 'block';
+
+  // Update key label + hint
+  document.getElementById('aiKeyLabel').textContent = cfg.keyLabel;
+  document.getElementById('aiKeyHint').innerHTML =
+    `🔒 <b>Key เก็บใน browser เท่านั้น</b> · ไม่ส่งไป Bullzeeker server · <a href="${cfg.getKeyURL}" target="_blank" style="color:var(--cio-purple);font-weight:700">🔗 สมัคร ${cfg.name} API</a>`;
+
+  // Populate model dropdown
+  const modelSel = document.getElementById('setAiModel');
+  modelSel.innerHTML = Object.entries(cfg.models).map(([id, info]) =>
+    `<option value="${id}">${info.label} · ~$${info.pricePerCall.toFixed(3)}/call</option>`
+  ).join('');
+  modelSel.value = cfg.defaultModel;
+
+  hint.textContent = `${cfg.name} · Free tier: ${provider === 'gemini' ? '15 requests/นาที ฟรี' : 'มี $5 credit ฟรีตอนสมัคร'}`;
+
+  updateAICostDisplay();
+}
+
+function updateAICostDisplay(){
+  const today = new Date().toISOString().slice(0,10);
+  const stats = STATE.aiStats || {totalCalls: 0, dailyCalls: {}, totalCostUSD: 0};
+  const todayCalls = stats.dailyCalls[today] || 0;
+  const provider = STATE.settings.aiProvider;
+  const model = STATE.settings.aiModel;
+  const pricePerCall = (provider && AI_PROVIDERS[provider]?.models[model]?.pricePerCall) || 0.005;
+  const todayCost = todayCalls * pricePerCall;
+
+  const el = id => document.getElementById(id);
+  if(el('aiCallsToday')) el('aiCallsToday').textContent = todayCalls;
+  if(el('aiCostToday')) el('aiCostToday').textContent = todayCost.toFixed(3);
+  if(el('aiCostThb')) el('aiCostThb').textContent = (todayCost * 36.5).toFixed(2);
+  if(el('aiTotalCalls')) el('aiTotalCalls').textContent = stats.totalCalls;
+}
+
+/**
+ * Test AI connection with minimal request.
+ * Verifies API key works before user commits.
+ */
+async function testAIConnection(){
+  const provider = document.getElementById('setAiProvider').value;
+  const key = document.getElementById('setAiKey').value.trim();
+  const model = document.getElementById('setAiModel').value;
+  const resultEl = document.getElementById('aiTestResult');
+
+  if(provider === 'none'){
+    resultEl.style.display = 'block';
+    resultEl.style.background = 'var(--red-bg)';
+    resultEl.style.color = 'var(--red)';
+    resultEl.innerHTML = '❌ เลือก AI provider ก่อน';
+    return;
+  }
+
+  const cfg = AI_PROVIDERS[provider];
+  if(!cfg.keyPattern.test(key)){
+    resultEl.style.display = 'block';
+    resultEl.style.background = 'var(--red-bg)';
+    resultEl.style.color = 'var(--red)';
+    resultEl.innerHTML = `❌ Key format ไม่ถูก · ต้องขึ้นต้นด้วย <code>${cfg.keyLabel.split(' ')[0]}</code>`;
+    return;
+  }
+
+  resultEl.style.display = 'block';
+  resultEl.style.background = 'var(--bg3)';
+  resultEl.style.color = 'var(--muted)';
+  resultEl.innerHTML = '⏳ กำลังทดสอบ connection...';
+
+  try{
+    const testPrompt = 'Reply with only the word "OK" — one word, no quotes.';
+    const response = await callAI(provider, key, model, testPrompt, 'You are a test bot.');
+
+    if(response && response.toLowerCase().includes('ok')){
+      resultEl.style.background = 'var(--green-bg)';
+      resultEl.style.color = 'var(--green)';
+      resultEl.innerHTML = `✅ Connection สำเร็จ! · Model: ${model} · Response: "${response.slice(0,50)}"`;
+    } else {
+      resultEl.style.background = 'rgba(251,191,36,.15)';
+      resultEl.style.color = 'var(--gold)';
+      resultEl.innerHTML = `⚠️ Response แปลก ๆ · Response: "${response?.slice(0,80) || 'empty'}"`;
+    }
+  }catch(e){
+    resultEl.style.background = 'var(--red-bg)';
+    resultEl.style.color = 'var(--red)';
+    resultEl.innerHTML = `❌ Error: ${e.message}`;
+  }
 }
 
 async function saveSettings(){
@@ -1519,10 +1764,36 @@ async function saveSettings(){
   STATE.settings.minCashReserve = parseFloat(document.getElementById('setMinCash').value) || 10;
   STATE.settings.maxDailyLoss = parseFloat(document.getElementById('setMaxDailyLoss').value) || 3;
   STATE.settings.maxDrawdownAlert = parseFloat(document.getElementById('setMaxDD').value) || 15;
+
+  // AI settings
+  STATE.settings.aiProvider = document.getElementById('setAiProvider').value;
+  STATE.settings.aiKey = document.getElementById('setAiKey').value.trim();
+  STATE.settings.aiModel = document.getElementById('setAiModel').value || AI_PROVIDERS[STATE.settings.aiProvider]?.defaultModel || '';
+
   saveState();
   closeModal('settingsModal');
+  updateAIStatusBadge();
   toast('✅ Settings saved', 'ok');
   await refreshAll();
+}
+
+/**
+ * Show AI status in the CIO hero (badge indicator)
+ */
+function updateAIStatusBadge(){
+  const badge = document.getElementById('aiStatusBadge');
+  if(!badge) return;
+  const p = STATE.settings.aiProvider;
+  if(p === 'none' || !p){
+    badge.innerHTML = '⚙️ AI: OFF';
+    badge.style.background = 'rgba(139,151,171,.15)';
+    badge.style.color = 'var(--muted)';
+  } else {
+    const cfg = AI_PROVIDERS[p];
+    badge.innerHTML = `🤖 AI: <b>${cfg.name.split(' ')[0]}</b>`;
+    badge.style.background = 'linear-gradient(135deg,rgba(139,92,246,.2),rgba(236,72,153,.15))';
+    badge.style.color = 'var(--cio-purple)';
+  }
 }
 
 function resetAllData(){
@@ -1542,6 +1813,58 @@ function openSetupModal(){
   STATE = structuredClone(DEFAULT_STATE);
   saveState();
   location.reload();
+}
+
+/**
+ * Load a diversified sample portfolio for demo/testing.
+ * Includes 7 mega-cap positions across Tech/Financials/Healthcare/Consumer
+ * + 7 watchlist tickers · ~30% invested, ~70% cash
+ */
+function loadSamplePortfolio(){
+  if(!confirm('📊 โหลด Demo Portfolio?\n\n7 หุ้น mega-cap พร้อม stop/target/thesis:\nNVDA · AAPL · MSFT · BRK-B · LLY · V · COST\n\n+ Watchlist: AMD, GOOGL, META, TSLA, PLTR, SMCI, ARM\n\n(Positions ประมาณ 30% ของ $100K · Cash 70%)\n\n⚠️ ล้าง portfolio ปัจจุบันไหม?')){
+    return;
+  }
+
+  // Initialize fresh state
+  STATE = structuredClone(DEFAULT_STATE);
+
+  const now = new Date().toISOString().slice(0,10);
+
+  // Add sample positions
+  SAMPLE_POSITIONS.forEach((p, i) => {
+    STATE.positions.push({
+      id: 'p_demo_' + i,
+      ticker: p.ticker,
+      shares: p.shares,
+      avgCost: p.avgCost,
+      entryDate: now,
+      sector: p.sector,
+      stopLoss: p.stopLoss,
+      target: p.target,
+      thesis: p.thesis,
+    });
+
+    // Log as demo trade
+    STATE.tradeLog.push({
+      id: 't_demo_' + i,
+      date: now,
+      action: 'BUY',
+      ticker: p.ticker,
+      shares: p.shares,
+      price: p.avgCost,
+      reason: '📊 Demo portfolio load',
+      thesis: p.thesis,
+    });
+  });
+
+  // Add sample watchlist
+  SAMPLE_WATCHLIST.forEach(t => {
+    STATE.watchlist.push({ticker: t, addedAt: Date.now()});
+  });
+
+  saveState();
+  toast('✅ Demo Portfolio loaded — refresh...', 'ok');
+  setTimeout(() => location.reload(), 800);
 }
 
 /* ---------- REFRESH ---------- */
@@ -1577,7 +1900,306 @@ async function refreshPositions(){
   toast('✅ Updated', 'ok');
 }
 
-/* ---------- CIO ANALYSIS (Placeholder for Phase 2) ---------- */
+/* ============================================================
+   AI INTEGRATION (Phase 2)
+   ============================================================ */
+
+/**
+ * Universal AI API caller.
+ * Routes to correct provider (Claude / Gemini) with proper headers/body.
+ * Returns plain text response (parse JSON separately).
+ */
+async function callAI(provider, key, model, userPrompt, systemPrompt){
+  if(!provider || provider === 'none') throw new Error('No AI provider configured');
+  if(!key) throw new Error('Missing API key');
+  if(!AI_PROVIDERS[provider]) throw new Error('Unknown provider: ' + provider);
+
+  const cfg = AI_PROVIDERS[provider];
+
+  if(provider === 'claude'){
+    return callClaudeAPI(key, model || cfg.defaultModel, userPrompt, systemPrompt);
+  } else if(provider === 'gemini'){
+    return callGeminiAPI(key, model || cfg.defaultModel, userPrompt, systemPrompt);
+  } else {
+    throw new Error('Unsupported provider');
+  }
+}
+
+async function callClaudeAPI(key, model, userPrompt, systemPrompt){
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: model,
+      max_tokens: 4000,
+      system: systemPrompt || 'You are a helpful assistant.',
+      messages: [
+        {role: 'user', content: userPrompt}
+      ],
+    }),
+  });
+
+  if(!response.ok){
+    const errText = await response.text();
+    let errMsg = errText;
+    try {
+      const j = JSON.parse(errText);
+      errMsg = j?.error?.message || errText;
+    } catch {}
+    throw new Error(`Claude API error (${response.status}): ${errMsg}`);
+  }
+
+  const data = await response.json();
+  const content = data?.content?.[0]?.text;
+  if(!content) throw new Error('Empty response from Claude');
+  return content;
+}
+
+async function callGeminiAPI(key, model, userPrompt, systemPrompt){
+  // Gemini combines system prompt into the user message
+  const fullPrompt = systemPrompt ? `${systemPrompt}\n\n${userPrompt}` : userPrompt;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      contents: [{
+        parts: [{text: fullPrompt}],
+        role: 'user',
+      }],
+      generationConfig: {
+        temperature: 0.3,
+        maxOutputTokens: 4000,
+        responseMimeType: 'text/plain',
+      },
+    }),
+  });
+
+  if(!response.ok){
+    const errText = await response.text();
+    let errMsg = errText;
+    try{
+      const j = JSON.parse(errText);
+      errMsg = j?.error?.message || errText;
+    }catch{}
+    throw new Error(`Gemini API error (${response.status}): ${errMsg}`);
+  }
+
+  const data = await response.json();
+  const content = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if(!content) throw new Error('Empty response from Gemini');
+  return content;
+}
+
+/**
+ * Track AI usage stats for cost display
+ */
+function trackAICall(){
+  if(!STATE.aiStats){
+    STATE.aiStats = {totalCalls: 0, dailyCalls: {}, totalCostUSD: 0, lastCall: null};
+  }
+  const today = new Date().toISOString().slice(0,10);
+  STATE.aiStats.dailyCalls[today] = (STATE.aiStats.dailyCalls[today] || 0) + 1;
+  STATE.aiStats.totalCalls++;
+  STATE.aiStats.lastCall = Date.now();
+
+  const provider = STATE.settings.aiProvider;
+  const model = STATE.settings.aiModel;
+  const pricePerCall = (AI_PROVIDERS[provider]?.models[model]?.pricePerCall) || 0.005;
+  STATE.aiStats.totalCostUSD += pricePerCall;
+
+  saveState();
+}
+
+/**
+ * Build system prompt encoding CIO principles from user's spec.
+ * This is the "constitution" of the AI CIO.
+ */
+function buildSystemPrompt(){
+  return `You are the AI CIO for a Thai retail trader on Bullzeeker.com.
+
+ROLE: Chief Investment Officer + Quant Analyst + Risk Manager (in one)
+
+CORE PRINCIPLES (mandatory):
+1. NO TRADE is a VALID DECISION — Never force trades to have activity. If no clear edge, output HOLD.
+2. DATA INTEGRITY — Use ONLY the numbers provided. If missing, mark as "N/A". NEVER guess/fabricate numbers.
+3. Confidence must reflect signal quality. Conflicting signals = LOWER confidence, not stubborn decisions.
+4. Consider 6 signal categories: Fundamental, Technical, Momentum, Macro, News, Risk.
+5. Master Portfolio is the SOURCE OF TRUTH for allocation decisions.
+6. Risk limits are HARD CONSTRAINTS. Never recommend actions that breach them.
+7. Prefer NO ACTION when uncertain. Maximum ~5 recommendations, ranked by priority.
+
+DECISION FRAMEWORK:
+- BUY: Thesis valid + R/R passes + within max exposure + regime supportive + technical setup
+- SELL: Thesis invalidated OR stop hit OR fundamental deterioration OR risk limit breached
+- REDUCE: Overweight OR thesis weakening OR risk elevated OR correlation too high
+- WATCH: Setup forming but NOT yet execution-ready (not enough conviction)
+- HOLD: Current allocation appropriate, no change needed
+
+LANGUAGE:
+- Morning brief + reasons: Thai (ภาษาไทย)
+- Tickers, prices, technical terms: English
+- Be concise, professional, action-oriented
+
+OUTPUT FORMAT: STRICT JSON ONLY. Wrap in \`\`\`json ... \`\`\` code block. No prose before/after.
+
+Schema:
+{
+  "morningBrief": "string (Thai, 4-6 sentences summarizing market + portfolio + top priorities)",
+  "marketAssessment": {
+    "regime": "bull" | "neutral" | "bear" | "caution",
+    "regimeConfidence": number (0-100),
+    "keySignals": ["string (short bullet)"]
+  },
+  "topActions": [
+    {
+      "ticker": "string",
+      "action": "BUY" | "SELL" | "REDUCE" | "WATCH" | "HOLD",
+      "priority": number (1-5, 1 = highest urgency),
+      "confidence": number (0-100),
+      "currentWeight": number (%),
+      "targetWeight": number (%),
+      "reason": "string (Thai, why this action)",
+      "actionDetail": "string (specific: e.g., 'ขาย 5 shares @ market open')",
+      "invalidation": "string (what would invalidate this recommendation)",
+      "signals": {
+        "fundamental": "string or null",
+        "technical": "string or null",
+        "momentum": "string or null",
+        "macro": "string or null",
+        "risk": "string or null"
+      }
+    }
+  ],
+  "portfolioHealth": {
+    "score": number (0-100),
+    "concerns": ["string (Thai)"],
+    "strengths": ["string (Thai)"]
+  },
+  "riskWarnings": ["string (Thai, any breach or near-breach)"],
+  "eventDriven": {
+    "hasEvent": boolean,
+    "events": [{"type": "string", "impact": "string", "recommendation": "string"}]
+  }
+}
+
+REMEMBER: If no clear action needed, return empty topActions array + explicit HOLD in morningBrief. That is CORRECT and PROFESSIONAL.`;
+}
+
+/**
+ * Build user prompt with current portfolio + market context
+ */
+function buildUserPrompt(portfolio, regime){
+  const P = portfolio;
+  const R = regime;
+  const s = STATE.settings;
+
+  const positionsBlock = P.positions.length
+    ? P.positions.map(p => {
+        const weight = P.nav > 0 ? (p.value / P.nav * 100).toFixed(1) : '0';
+        const stopHit = p.stopLoss && p.currentPrice <= p.stopLoss;
+        return `- ${p.ticker}: ${p.shares} shares @ avg $${p.avgCost.toFixed(2)}, current $${p.currentPrice.toFixed(2)} (${p.plPct >= 0 ? '+' : ''}${p.plPct.toFixed(2)}%, weight ${weight}%)
+  Value: $${p.value.toFixed(2)} · Stop: ${p.stopLoss ? '$'+p.stopLoss.toFixed(2)+(stopHit ? ' 🚨 STOP HIT!' : '') : 'none'} · Target: ${p.target ? '$'+p.target.toFixed(2) : 'none'}
+  Thesis: "${p.thesis || 'not specified'}"
+  Sector: ${p.sector || 'unknown'} · Entered: ${p.entryDate || 'unknown'}`;
+      }).join('\n')
+    : 'No positions (100% cash)';
+
+  const watchlistBlock = STATE.watchlist.length
+    ? STATE.watchlist.map(w => `- ${w.ticker}`).join('\n')
+    : 'No watchlist';
+
+  const recentTrades = (STATE.tradeLog || [])
+    .slice(-5)
+    .reverse()
+    .map(t => `- ${t.date} ${t.action} ${t.ticker} ${t.shares} @ $${t.price?.toFixed(2)}`)
+    .join('\n') || 'No recent trades';
+
+  const now = new Date();
+  const bkkTime = now.toLocaleString('th-TH', {timeZone: 'Asia/Bangkok'});
+  const nyTime = now.toLocaleString('en-US', {timeZone: 'America/New_York'});
+
+  return `=== TIMESTAMP ===
+Bangkok: ${bkkTime}
+New York: ${nyTime}
+
+=== MASTER PORTFOLIO ===
+Capital (starting): $${STATE.capital.toLocaleString()}
+Current NAV: $${P.nav.toFixed(2)}
+Total Return: ${P.totalReturn >= 0 ? '+' : ''}${P.totalReturn.toFixed(2)}%
+Daily Return: ${P.dayReturnPct >= 0 ? '+' : ''}${P.dayReturnPct.toFixed(2)}% ($${P.dayReturnDollar >= 0 ? '+' : ''}${P.dayReturnDollar.toFixed(2)})
+Cash: $${P.cash.toFixed(2)} (${((P.cash/P.nav)*100).toFixed(1)}%)
+Invested: $${P.invested.toFixed(2)} (${((P.invested/P.nav)*100).toFixed(1)}%)
+Drawdown from peak: ${P.drawdown.toFixed(2)}%
+
+=== POSITIONS (${P.positions.length}) ===
+${positionsBlock}
+
+=== MARKET REGIME ===
+Score: ${R.score >= 0 ? '+' : ''}${R.score} / 10 (${R.label})
+Description: ${R.desc}
+Signals breakdown:
+${R.breakdown.map(b => `- ${b.lbl}: ${b.v}`).join('\n')}
+
+Current quotes:
+- SPY: $${R.quotes.spy?.price?.toFixed(2) || 'N/A'} (${R.quotes.spy?.changePct >= 0 ? '+' : ''}${R.quotes.spy?.changePct?.toFixed(2) || 'N/A'}%)
+- VIX: ${R.quotes.vix?.price?.toFixed(2) || 'N/A'} (${R.quotes.vix?.changePct >= 0 ? '+' : ''}${R.quotes.vix?.changePct?.toFixed(2) || 'N/A'}%)
+- 10Y Yield: ${R.quotes.tnx?.price?.toFixed(2) || 'N/A'}% (${R.quotes.tnx?.changePct >= 0 ? '+' : ''}${R.quotes.tnx?.changePct?.toFixed(2) || 'N/A'}%)
+- DXY: ${R.quotes.dxy?.price?.toFixed(2) || 'N/A'} (${R.quotes.dxy?.changePct >= 0 ? '+' : ''}${R.quotes.dxy?.changePct?.toFixed(2) || 'N/A'}%)
+- QQQ: $${R.quotes.qqq?.price?.toFixed(2) || 'N/A'} (${R.quotes.qqq?.changePct >= 0 ? '+' : ''}${R.quotes.qqq?.changePct?.toFixed(2) || 'N/A'}%)
+
+=== WATCHLIST ===
+${watchlistBlock}
+
+=== RISK LIMITS ===
+Max single position: ${s.maxSingleStock}%
+Max sector weight: ${s.maxSectorWeight}%
+Min cash reserve: ${s.minCashReserve}%
+Max daily loss: ${s.maxDailyLoss}%
+Max drawdown alert: ${s.maxDrawdownAlert}%
+Risk per trade: ${s.riskPerTrade}%
+
+=== RECENT TRADES (last 5) ===
+${recentTrades}
+
+=== YOUR TASK ===
+As the AI CIO:
+1. Assess current market regime
+2. Review each position — is thesis still valid?
+3. Check watchlist for buy setups
+4. Verify all recommendations pass risk limits
+5. If no clear action needed → output empty topActions + HOLD in morningBrief
+
+Return STRICT JSON per the schema. No prose outside JSON.`;
+}
+
+/**
+ * Extract JSON from AI response (handles code blocks, prose, etc.)
+ */
+function extractJSON(text){
+  if(!text) return null;
+  // Try to find JSON block ```json ... ```
+  const codeMatch = text.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+  if(codeMatch){
+    try{ return JSON.parse(codeMatch[1]); }catch{}
+  }
+  // Try to find raw JSON object
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if(jsonMatch){
+    try{ return JSON.parse(jsonMatch[0]); }catch{}
+  }
+  // Try direct parse
+  try{ return JSON.parse(text.trim()); }catch{}
+  return null;
+}
+
+/* ---------- CIO ANALYSIS (Phase 2: uses AI when configured) ---------- */
 async function runCIOAnalysis(){
   const btn = document.querySelector('.cmd-btn');
   const icon = document.getElementById('cmdIcon');
@@ -1586,6 +2208,8 @@ async function runCIOAnalysis(){
   icon.textContent = '⏳';
   lbl.textContent = 'Analyzing...';
 
+  const hasAI = STATE.settings.aiProvider && STATE.settings.aiProvider !== 'none' && STATE.settings.aiKey;
+
   try {
     // Fetch fresh data
     const [P, R] = await Promise.all([
@@ -1593,17 +2217,55 @@ async function runCIOAnalysis(){
       calculateMarketRegime(),
     ]);
 
-    // Rule-based analysis (Phase 1 — no AI yet, but structured output)
-    const analysis = generateRuleBasedAnalysis(P, R);
-    renderRecommendations(analysis, R);
+    let analysis;
+    let source = 'rule-based';
+
+    if(hasAI){
+      // === PHASE 2: Real AI Analysis ===
+      lbl.textContent = `${AI_PROVIDERS[STATE.settings.aiProvider].name.split(' ')[0]} วิเคราะห์...`;
+      try{
+        const systemPrompt = buildSystemPrompt();
+        const userPrompt = buildUserPrompt(P, R);
+        const aiResponse = await callAI(
+          STATE.settings.aiProvider,
+          STATE.settings.aiKey,
+          STATE.settings.aiModel,
+          userPrompt,
+          systemPrompt
+        );
+
+        // Track cost
+        trackAICall();
+        updateAICostDisplay();
+
+        // Parse AI JSON response
+        const aiJson = extractJSON(aiResponse);
+        if(!aiJson){
+          throw new Error('AI response ไม่ใช่ JSON valid · Response: ' + aiResponse.slice(0,200));
+        }
+        analysis = normalizeAIAnalysis(aiJson, P, R);
+        source = 'ai';
+      }catch(aiError){
+        console.warn('AI analysis failed, falling back to rules:', aiError);
+        toast('⚠️ AI error: ' + aiError.message + ' · ใช้ rule-based แทน', 'err');
+        analysis = generateRuleBasedAnalysis(P, R);
+        source = 'rule-based (AI failed)';
+      }
+    } else {
+      // === PHASE 1: Rule-based fallback ===
+      analysis = generateRuleBasedAnalysis(P, R);
+    }
+
+    renderRecommendations(analysis, R, source);
 
     STATE.lastAnalysis = Date.now();
     saveState();
 
-    document.getElementById('recTimestamp').className = 'pill pill-g';
-    document.getElementById('recTimestamp').textContent = '✓ ' + new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
+    const timestamp = document.getElementById('recTimestamp');
+    timestamp.className = 'pill ' + (source === 'ai' ? 'pill-p' : 'pill-g');
+    timestamp.textContent = (source === 'ai' ? '🤖 ' : '✓ ') + new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
 
-    toast('🤖 Analysis complete · Phase 2 will use AI', 'ok');
+    toast(source === 'ai' ? '🤖 AI analysis complete' : '✅ Analysis complete', 'ok');
   } catch (e) {
     console.error(e);
     toast('❌ Analysis failed: ' + e.message, 'err');
@@ -1612,6 +2274,59 @@ async function runCIOAnalysis(){
     icon.textContent = '🎯';
     lbl.textContent = 'UPDATE PORTFOLIO';
   }
+}
+
+/**
+ * Normalize AI JSON output to internal format (compatible with rule-based).
+ * Adds safety fallbacks for missing fields.
+ */
+function normalizeAIAnalysis(aiJson, P, R){
+  const alerts = [];
+  const actions = Array.isArray(aiJson.topActions) ? aiJson.topActions : [];
+
+  actions.forEach(a => {
+    const actionType = (a.action || 'HOLD').toUpperCase();
+    const typeMap = {
+      'BUY':'buy', 'SELL':'sell', 'REDUCE':'reduce',
+      'WATCH':'watch', 'HOLD':'hold', 'INFO':'info',
+    };
+    const type = typeMap[actionType] || 'info';
+
+    const iconMap = {sell: '🚨', buy: '🚀', reduce: '⚠️', watch: '👁️', info: 'ℹ️', hold: '😴'};
+
+    // Build signal breakdown text
+    const signals = a.signals || {};
+    const signalBits = [];
+    if(signals.fundamental) signalBits.push(`📊 ${signals.fundamental}`);
+    if(signals.technical) signalBits.push(`📈 ${signals.technical}`);
+    if(signals.momentum) signalBits.push(`⚡ ${signals.momentum}`);
+    if(signals.macro) signalBits.push(`🌍 ${signals.macro}`);
+    if(signals.risk) signalBits.push(`🛡️ ${signals.risk}`);
+
+    alerts.push({
+      type,
+      priority: a.priority || 3,
+      ticker: a.ticker || '—',
+      title: `${iconMap[type]} ${actionType} ${a.ticker || ''}`.trim(),
+      reason: a.reason || 'No reason provided',
+      action: a.actionDetail || `${actionType} · target weight ${a.targetWeight || 0}%`,
+      thesis: a.invalidation ? `❌ Invalidate: ${a.invalidation}` : 'No invalidation specified',
+      confidence: a.confidence != null ? a.confidence + '%' : 'MEDIUM',
+      rule: signalBits.length ? signalBits.join(' · ') : 'AI reasoning',
+      isAI: true,
+    });
+  });
+
+  alerts.sort((a,b) => (a.priority || 5) - (b.priority || 5));
+
+  return {
+    alerts,
+    regime: R,
+    portfolio: P,
+    timestamp: Date.now(),
+    isAI: true,
+    aiRaw: aiJson,  // preserve original for advanced rendering
+  };
 }
 
 /**
@@ -1764,34 +2479,95 @@ function generateRuleBasedAnalysis(P, R){
   };
 }
 
-function renderRecommendations(analysis, R){
+function renderRecommendations(analysis, R, source = 'rule-based'){
   const body = document.getElementById('recommendationsBody');
   const alerts = analysis.alerts;
+  const isAI = analysis.isAI || source === 'ai';
+  const aiRaw = analysis.aiRaw || {};
 
-  const morningBrief = generateMorningBrief(analysis);
+  // Morning Brief — use AI text if available, else generate
+  const morningBrief = isAI && aiRaw.morningBrief
+    ? aiRaw.morningBrief.replace(/\n/g, '<br/>')
+    : generateMorningBrief(analysis);
+
+  const sourceBadge = isAI
+    ? `<span class="pill pill-p">🤖 ${AI_PROVIDERS[STATE.settings.aiProvider]?.name?.split(' ')[0] || 'AI'} · Live</span>`
+    : `<span class="pill pill-y">📏 Rule-based · Phase 1 fallback</span>`;
 
   let html = `
     <!-- Morning Brief -->
-    <div class="card" style="background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(236,72,153,.04));border:1px dashed rgba(139,92,246,.3);margin-bottom:14px">
+    <div class="card" style="background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(236,72,153,.04));border:1px ${isAI ? 'solid rgba(139,92,246,.4)' : 'dashed rgba(139,92,246,.3)'};margin-bottom:14px">
       <div class="card-h" style="margin-bottom:8px">
         <h3>🌅 Morning Brief</h3>
-        <span class="pill pill-p">Rule-based · Phase 1</span>
+        ${sourceBadge}
       </div>
       <div style="font-size:13px;line-height:1.8;color:var(--text)">${morningBrief}</div>
     </div>
-
-    <!-- Alerts -->
   `;
+
+  // Market Assessment (AI only)
+  if(isAI && aiRaw.marketAssessment){
+    const ma = aiRaw.marketAssessment;
+    const regimeCls = ma.regime === 'bull' ? 'pill-g' : ma.regime === 'bear' ? 'pill-r' : 'pill-y';
+    html += `
+      <div class="card" style="background:var(--bg2);border:1px solid var(--line);margin-bottom:14px">
+        <div class="card-h" style="margin-bottom:8px">
+          <h3>📊 Market Assessment</h3>
+          <span class="pill ${regimeCls}">${(ma.regime || 'neutral').toUpperCase()} · ${ma.regimeConfidence || 50}% confidence</span>
+        </div>
+        ${Array.isArray(ma.keySignals) && ma.keySignals.length ? `
+          <ul style="font-size:12.5px;color:var(--muted);line-height:1.8;padding-left:20px;margin-top:6px">
+            ${ma.keySignals.map(s => `<li>${escapeHtml(s)}</li>`).join('')}
+          </ul>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  // Risk Warnings (AI only)
+  if(isAI && Array.isArray(aiRaw.riskWarnings) && aiRaw.riskWarnings.length > 0){
+    html += `
+      <div class="card" style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.3);margin-bottom:14px">
+        <div class="card-h" style="margin-bottom:8px">
+          <h3 style="color:var(--red)">🚨 Risk Warnings</h3>
+        </div>
+        <ul style="font-size:13px;color:var(--text);line-height:1.8;padding-left:20px">
+          ${aiRaw.riskWarnings.map(w => `<li>${escapeHtml(w)}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+
+  // Event-Driven
+  if(isAI && aiRaw.eventDriven?.hasEvent && Array.isArray(aiRaw.eventDriven.events)){
+    html += `
+      <div class="card" style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.3);margin-bottom:14px">
+        <div class="card-h" style="margin-bottom:8px">
+          <h3 style="color:var(--gold)">⚡ Event-Driven Alerts</h3>
+        </div>
+        ${aiRaw.eventDriven.events.map(e => `
+          <div style="margin-bottom:8px;padding:10px;background:var(--bg3);border-radius:8px">
+            <div style="font-weight:700;font-size:13px">${escapeHtml(e.type || 'Event')}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:3px">${escapeHtml(e.impact || '')}</div>
+            ${e.recommendation ? `<div style="font-size:12px;color:var(--gold);margin-top:4px">→ ${escapeHtml(e.recommendation)}</div>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  // Actions/Alerts
+  html += `<div style="margin-top:14px"><h3 style="font-size:14px;font-weight:800;margin-bottom:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">🎯 Top Actions</h3></div>`;
 
   if(alerts.length === 0){
     html += `<div class="alert hold">
       <div class="alert-ic">😴</div>
       <div class="alert-body">
         <div class="alert-head">
-          <div class="t">NO ACTION</div>
+          <div class="t">NO ACTION NEEDED</div>
           <div class="b b-hold">HOLD</div>
         </div>
-        <p>ไม่มีสัญญาณที่ต้อง action วันนี้ · HOLD · เก็บ cash · รอ setup ที่ดีกว่า</p>
+        <p>ไม่มีสัญญาณที่ต้อง action วันนี้ · HOLD · เก็บ cash · รอ setup ที่ดีกว่า · <b>NO TRADE = valid decision</b></p>
       </div>
     </div>`;
   } else {
@@ -1803,32 +2579,86 @@ function renderRecommendations(analysis, R){
         <div class="alert-ic">${iconMap[a.type]}</div>
         <div class="alert-body">
           <div class="alert-head">
-            <div class="t">${a.title}</div>
+            <div class="t">${escapeHtml(a.title)}</div>
             <div class="b ${badgeMap[a.type]}">${actionMap[a.type]}</div>
           </div>
-          <p><b>Reason:</b> ${a.reason}</p>
-          <p><b>Action:</b> ${a.action}</p>
+          <p><b>Reason:</b> ${escapeHtml(a.reason)}</p>
+          <p><b>Action:</b> ${escapeHtml(a.action)}</p>
+          ${a.thesis ? `<p style="color:var(--muted);font-size:12px"><b>Invalidation:</b> ${escapeHtml(a.thesis)}</p>` : ''}
           <div class="alert-meta">
             <span class="m">🎯 ${a.ticker}</span>
             <span class="m">💡 ${a.confidence} confidence</span>
-            <span class="m">📏 ${a.rule}</span>
+            <span class="m">📏 ${escapeHtml(a.rule)}</span>
           </div>
         </div>
       </div>`;
     }).join('');
   }
 
-  html += `
-    <!-- AI Preview (Phase 2) -->
-    <div class="ai-preview" style="margin-top:14px">
-      <div class="ic">🤖</div>
-      <h4>🚀 Phase 2 · Coming Soon</h4>
-      <p>Phase 2 จะเพิ่ม: Real AI analysis (Claude/GPT), Deep technical scan, Earnings surprise detection, Multi-signal correlation, Confidence scoring, และ event-driven overrides</p>
-      <a href="https://line.me/R/ti/p/~wisit777" target="_blank" class="cta">💬 ลงชื่อรอ Phase 2 · LINE @wisit777</a>
-    </div>
-  `;
+  // Portfolio Health (AI only)
+  if(isAI && aiRaw.portfolioHealth){
+    const ph = aiRaw.portfolioHealth;
+    const healthColor = ph.score >= 75 ? 'var(--green)' : ph.score >= 50 ? 'var(--gold)' : 'var(--red)';
+    html += `
+      <div class="card" style="margin-top:14px;background:var(--bg2);border:1px solid var(--line)">
+        <div class="card-h" style="margin-bottom:8px">
+          <h3>💚 Portfolio Health</h3>
+          <span class="pill" style="background:${healthColor};color:#fff">Score ${ph.score || 50}/100</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          ${Array.isArray(ph.strengths) && ph.strengths.length ? `
+            <div>
+              <div style="font-size:11px;color:var(--green);font-weight:700;text-transform:uppercase;margin-bottom:6px">✓ Strengths</div>
+              <ul style="font-size:12px;color:var(--muted);line-height:1.7;padding-left:16px">
+                ${ph.strengths.map(s => `<li>${escapeHtml(s)}</li>`).join('')}
+              </ul>
+            </div>
+          ` : ''}
+          ${Array.isArray(ph.concerns) && ph.concerns.length ? `
+            <div>
+              <div style="font-size:11px;color:var(--orange);font-weight:700;text-transform:uppercase;margin-bottom:6px">⚠️ Concerns</div>
+              <ul style="font-size:12px;color:var(--muted);line-height:1.7;padding-left:16px">
+                ${ph.concerns.map(s => `<li>${escapeHtml(s)}</li>`).join('')}
+              </ul>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  // Footer: Course upsell (if using rule-based, promote AI upgrade)
+  if(!isAI){
+    html += `
+      <div class="ai-preview" style="margin-top:14px">
+        <div class="ic">🤖</div>
+        <h4>🚀 Unlock Real AI Analysis</h4>
+        <p>ตั้งค่า AI provider (Claude/Gemini) ใน Settings → รับ AI reasoning จริงพร้อม signal breakdown, event-driven alerts และ confidence scoring</p>
+        <button onclick="openSettings()" class="cta" style="background:linear-gradient(135deg,var(--cio-purple),var(--cio-pink));cursor:pointer;border:none;color:#fff;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:700;margin-top:12px;display:inline-block">⚙️ Setup AI Now</button>
+      </div>
+    `;
+  } else {
+    html += `
+      <div style="margin-top:14px;padding:12px;background:var(--bg3);border:1px solid var(--line);border-radius:10px;font-size:11.5px;color:var(--muted);text-align:center;line-height:1.6">
+        🤖 Powered by <b style="color:var(--cio-purple)">${AI_PROVIDERS[STATE.settings.aiProvider]?.name || 'AI'}</b> · <span style="color:var(--muted)">Model: ${STATE.settings.aiModel}</span><br/>
+        💰 วันนี้ใช้ ~$${((STATE.aiStats?.dailyCalls?.[new Date().toISOString().slice(0,10)] || 0) * (AI_PROVIDERS[STATE.settings.aiProvider]?.models[STATE.settings.aiModel]?.pricePerCall || 0.005)).toFixed(3)} ·
+        📊 <a href="https://line.me/R/ti/p/~wisit777" target="_blank" style="color:var(--cio-purple)">คอร์สเทรดมือใหม่ · LINE @wisit777</a>
+      </div>
+    `;
+  }
 
   body.innerHTML = html;
+}
+
+/** Escape HTML to prevent XSS from AI responses */
+function escapeHtml(str){
+  if(str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 function generateMorningBrief(analysis){
@@ -1894,6 +2724,7 @@ async function init(){
   } else {
     document.getElementById('setupWizard').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
+    updateAIStatusBadge();
     await refreshAll();
     // Auto-refresh prices every 60 seconds
     setInterval(() => {
