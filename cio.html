@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>🤖 AI CIO Command Center — Powered by Claude/Gemini | Bullzeeker</title>
-<meta name="description" content="AI CIO powered by Claude/Gemini — ทำหน้าที่เหมือน Chief Investment Officer + Quant Analyst + Risk Manager · Master Portfolio $100K · Real AI reasoning · Trade log + audit · ฟรี BYO key" />
+<title>🤖 AI CIO — Multi-Portfolio 10 Strategies + Claude/Gemini | Bullzeeker</title>
+<meta name="description" content="AI CIO powered by 10 research strategies + Claude/Gemini · Chief Investment Officer + Quant Analyst + Risk Manager · Master Portfolio $100K · Multi-strategy consensus voting · ฟรี BYO key" />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>" />
 <script src="universe.js"></script>
+<script src="strategies.js"></script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-D593QC1NXE"></script>
 <script>
@@ -299,6 +300,76 @@
   .toast.err{border-color:var(--red);color:var(--red)}
   .toast.ok{border-color:var(--green);color:var(--green)}
 
+  /* ===== STRATEGIES (Phase 3) ===== */
+  .strat-hero{
+    background:linear-gradient(135deg,rgba(236,72,153,.08),rgba(139,92,246,.06));
+    border:1px solid rgba(236,72,153,.3);border-radius:14px;
+    padding:16px 20px;margin-bottom:14px;
+    display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+  }
+  .strat-hero h2{font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .strat-hero p{font-size:12px;color:var(--muted);margin-top:2px}
+  .strat-hero-cta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .strat-btn{
+    background:linear-gradient(135deg,var(--cio-purple),var(--cio-pink));color:#fff;
+    padding:10px 18px;border-radius:10px;font-weight:800;font-size:13px;
+    display:inline-flex;align-items:center;gap:8px;
+    box-shadow:0 4px 14px rgba(236,72,153,.35);transition:.15s;
+  }
+  .strat-btn:hover{transform:translateY(-1px)}
+  .strat-btn:disabled{opacity:.6;cursor:wait}
+  .strat-select{background:var(--bg3);color:var(--text);border:1px solid var(--line);
+    padding:9px 12px;border-radius:8px;font-size:12px;font-weight:600}
+
+  .strat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:14px}
+  .strat-card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;
+    transition:.15s;cursor:pointer;position:relative;overflow:hidden}
+  .strat-card:hover{transform:translateY(-2px);border-color:var(--cio-purple)}
+  .strat-card .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .strat-card .emo{font-size:22px}
+  .strat-card .toggle{width:32px;height:16px;background:var(--line);border-radius:9px;position:relative;cursor:pointer;transition:.15s}
+  .strat-card .toggle.on{background:var(--cio-purple)}
+  .strat-card .toggle::after{content:"";position:absolute;width:12px;height:12px;background:#fff;border-radius:50%;top:2px;left:2px;transition:.15s}
+  .strat-card .toggle.on::after{left:18px}
+  .strat-card .nm{font-size:13px;font-weight:800;color:#fff;line-height:1.2}
+  .strat-card .th{font-size:11px;color:var(--gold);margin-top:1px}
+  .strat-card .ds{font-size:10.5px;color:var(--muted);line-height:1.4;margin-top:5px;min-height:29px}
+  .strat-card .stat{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:11px}
+  .strat-card .stat .picks{color:var(--text);font-weight:700}
+  .strat-card .stat .conv{padding:2px 8px;border-radius:999px;font-weight:800;font-size:10px}
+  .strat-card .stat .conv.h{background:rgba(34,197,94,.2);color:var(--green)}
+  .strat-card .stat .conv.m{background:rgba(251,191,36,.15);color:var(--gold)}
+  .strat-card .stat .conv.l{background:rgba(139,151,171,.15);color:var(--muted)}
+  .strat-card.disabled{opacity:.4}
+  .strat-card.disabled:hover{transform:none;border-color:var(--line)}
+  .strat-card .conv-bar{height:3px;background:var(--bg3);border-radius:2px;margin-top:6px;overflow:hidden}
+  .strat-card .conv-bar > div{height:100%;background:var(--cio-purple);transition:.3s}
+
+  /* Consensus view */
+  .consensus-item{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px;transition:.15s}
+  .consensus-item:hover{border-color:var(--cio-purple)}
+  .consensus-item .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px;flex-wrap:wrap}
+  .consensus-item .sym{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .consensus-item .votes{display:flex;gap:2px}
+  .consensus-item .vote-dot{width:6px;height:6px;border-radius:50%;background:var(--cio-purple);box-shadow:0 0 4px rgba(139,92,246,.6)}
+  .consensus-item .meta{display:flex;gap:12px;font-size:11px;color:var(--muted);flex-wrap:wrap}
+  .consensus-item .meta .m{display:inline-flex;gap:4px;align-items:center}
+  .consensus-item .strats{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  .consensus-item .strat-chip{background:var(--bg3);border:1px solid var(--line);border-radius:6px;
+    padding:3px 8px;font-size:10.5px;font-weight:600;display:inline-flex;gap:4px;align-items:center}
+  .consensus-item .strat-chip .e{font-size:12px}
+  .consensus-item .held-badge{background:rgba(251,191,36,.15);color:var(--gold);
+    padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
+
+  .empty-strat{padding:30px;text-align:center;color:var(--muted);font-size:13px}
+  .empty-strat .ic{font-size:36px;margin-bottom:6px;opacity:.6}
+
+  /* Progress modal for scans */
+  .scan-progress{background:var(--bg3);border-radius:10px;padding:14px;margin-top:10px}
+  .scan-progress .msg{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .scan-progress .bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+  .scan-progress .bar > div{height:100%;background:linear-gradient(90deg,var(--cio-purple),var(--cio-pink));width:0%;transition:.3s}
+
   /* ===== AI PLACEHOLDER ===== */
   .ai-preview{background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(236,72,153,.05));
     border:1px dashed rgba(139,92,246,.4);border-radius:14px;padding:20px;text-align:center;margin-top:14px}
@@ -325,7 +396,7 @@
       <div class="brand-logo">🐂</div>
       <div class="brand-txt">
         <h1>Bull<span style="color:var(--gold)">zeeker</span></h1>
-        <p>🤖 AI CIO · <span class="beta">Live · Claude/Gemini</span></p>
+        <p>🤖 AI CIO · <span class="beta">10 Strategies + Claude/Gemini</span></p>
       </div>
     </a>
   </div>
@@ -415,7 +486,7 @@
         </div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <span id="aiStatusBadge" class="phase-badge" style="background:rgba(139,151,171,.15);color:var(--muted)">⚙️ AI: OFF</span>
-          <span class="phase-badge">🚀 Phase 2: AI Integration</span>
+          <span class="phase-badge">🧠 Phase 3: 10 Strategies</span>
           <button class="btn-g" onclick="openSettings()">⚙️ Settings</button>
         </div>
       </div>
@@ -580,6 +651,43 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- ============ PHASE 3: MULTI-PORTFOLIO STRATEGIES ============ -->
+    <div class="strat-hero">
+      <div>
+        <h2>🧠 Multi-Portfolio Strategies <span style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;padding:2px 8px;border-radius:6px;font-size:9px;font-weight:800;letter-spacing:.5px;margin-left:6px">Phase 3</span></h2>
+        <p>10 research engines · Each runs its own strategy · CIO layer combines into consensus</p>
+      </div>
+      <div class="strat-hero-cta">
+        <select id="stratUniSel" class="strat-select">
+          <option value="liquid_500">Liquid 500 · แนะนำ</option>
+          <option value="sp500">S&P 500</option>
+          <option value="liquid_1000">Liquid 1000 (ช้ากว่า)</option>
+          <option value="growth">High Growth</option>
+        </select>
+        <button class="strat-btn" onclick="runMultiStrategyScan()" id="stratRunBtn">
+          <span id="stratIcon">🎯</span> <span id="stratLbl">Run All 10</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Strategy Cards Grid -->
+    <div class="strat-grid" id="stratGrid"></div>
+
+    <!-- Progress -->
+    <div id="stratProgress" class="scan-progress" style="display:none">
+      <div class="msg" id="stratMsg">⏳ Preparing...</div>
+      <div class="bar"><div id="stratBar"></div></div>
+    </div>
+
+    <!-- CIO Consensus -->
+    <div class="card" id="consensusCard" style="margin-bottom:18px;display:none">
+      <div class="card-h">
+        <h3>🎯 CIO Consensus · Multi-Strategy Aggregation</h3>
+        <span class="pill pill-p" id="consensusMeta">—</span>
+      </div>
+      <div id="consensusBody"></div>
     </div>
 
     <!-- ============ TRADE LOG ============ -->
@@ -859,6 +967,14 @@ const DEFAULT_STATE = {
     dailyCalls: {},         // { 'YYYY-MM-DD': count }
     totalCostUSD: 0,
     lastCall: null,
+  },
+  // Phase 3: Multi-Portfolio Strategies
+  strategies: {
+    enabled: {},           // { strategyId: true|false }
+    lastRun: null,         // timestamp
+    universe: 'liquid_500',
+    results: {},           // { strategyId: {picks, conviction, ...} }
+    consensus: null,       // last arbitration result
   },
   createdAt: Date.now(),
 };
@@ -2168,6 +2284,8 @@ Risk per trade: ${s.riskPerTrade}%
 === RECENT TRADES (last 5) ===
 ${recentTrades}
 
+${buildStrategyConsensusBlock()}
+
 === YOUR TASK ===
 As the AI CIO:
 1. Assess current market regime
@@ -2177,6 +2295,41 @@ As the AI CIO:
 5. If no clear action needed → output empty topActions + HOLD in morningBrief
 
 Return STRICT JSON per the schema. No prose outside JSON.`;
+}
+
+/**
+ * Build strategy consensus block for AI prompt (if strategies were run).
+ * Provides AI with the multi-strategy voting context.
+ */
+function buildStrategyConsensusBlock(){
+  const consensus = STATE.strategies?.consensus;
+  if(!consensus || !consensus.consensus || consensus.consensus.length === 0){
+    return '=== STRATEGY CONSENSUS ===\n(No strategy scan run yet — user has not scanned)';
+  }
+
+  const lastRun = STATE.strategies.lastRun
+    ? new Date(STATE.strategies.lastRun).toLocaleString('th-TH')
+    : 'unknown';
+
+  const top10 = consensus.consensus.slice(0, 15);
+  const lines = top10.map((c, i) => {
+    const strats = c.strategies.map(s => s.thai || s.name).join(', ');
+    return `${i+1}. ${c.ticker} · $${c.price?.toFixed(2) || '—'} · ${c.voteCount} votes · Score ${c.consensusScore.toFixed(0)} · ${c.currentlyHeld ? '💼 HELD' : '🆕 NEW'}
+   Strategies: ${strats}`;
+  }).join('\n');
+
+  return `=== STRATEGY CONSENSUS (10 research engines · last scan: ${lastRun}) ===
+${consensus.strategyCount} strategies ran · ${consensus.totalPicks} unique picks
+
+Top 15 by consensus:
+${lines}
+
+Strategy weights by regime:
+${Object.entries(consensus.distribution).map(([sid, count]) => `- ${sid}: ${count} picks`).join('\n')}
+
+Use this consensus data as additional input for your recommendations.
+When multiple strategies agree on a ticker, that's a strong signal.
+When only 1 strategy picks it, treat with lower confidence.`;
 }
 
 /**
@@ -2715,6 +2868,326 @@ function exportTradeLog(){
   toast('📥 Downloaded', 'ok');
 }
 
+/* ============================================================
+   PHASE 3: MULTI-PORTFOLIO STRATEGIES
+   ============================================================ */
+
+/**
+ * Fetch chart data for a universe of tickers.
+ * Uses Cloudflare Worker proxy · concurrent · with cache.
+ */
+async function fetchChartsForUniverse(tickers, onProgress){
+  const cacheKey = 'strat_chart_cache_v1';
+  const CACHE_TTL = 60 * 60 * 1000;  // 1 hour
+  let cache = {};
+  try { cache = JSON.parse(localStorage.getItem(cacheKey) || '{}'); } catch {}
+
+  const now = Date.now();
+  const dataMap = {};
+  const needFetch = [];
+
+  for(const t of tickers){
+    if(cache[t] && (now - cache[t].ts) < CACHE_TTL){
+      dataMap[t] = cache[t].data;
+    } else {
+      needFetch.push(t);
+    }
+  }
+
+  let done = 0;
+  const total = needFetch.length;
+  const CONC = 20;
+
+  async function worker(){
+    while(true){
+      const sym = needFetch.shift();
+      if(!sym) break;
+      try{
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=2y&interval=1d`;
+        const txt = await tryProxies(url);
+        const j = JSON.parse(txt);
+        const res = j?.chart?.result?.[0];
+        if(res){
+          const q = res.indicators?.quote?.[0];
+          const meta = res.meta;
+          if(q && meta && q.close){
+            // Filter out null entries
+            const validIdx = [];
+            for(let i = 0; i < q.close.length; i++){
+              if(q.close[i] != null && q.high[i] != null && q.low[i] != null){
+                validIdx.push(i);
+              }
+            }
+            if(validIdx.length >= 100){
+              const data = {
+                closes: validIdx.map(i => q.close[i]),
+                highs: validIdx.map(i => q.high[i]),
+                lows: validIdx.map(i => q.low[i]),
+                vols: validIdx.map(i => q.volume[i] || 0),
+                meta: {
+                  price: meta.regularMarketPrice,
+                  name: meta.shortName || meta.longName || sym,
+                  yearHigh: meta.fiftyTwoWeekHigh,
+                  yearLow: meta.fiftyTwoWeekLow,
+                },
+              };
+              dataMap[sym] = data;
+              cache[sym] = { ts: now, data };
+            }
+          }
+        }
+      }catch{}
+      done++;
+      if(onProgress) onProgress(done, total, sym);
+    }
+  }
+
+  const workers = [];
+  for(let i = 0; i < Math.min(CONC, needFetch.length); i++){
+    workers.push(worker());
+  }
+  await Promise.all(workers);
+
+  // Save cache
+  try{
+    localStorage.setItem(cacheKey, JSON.stringify(cache));
+  }catch(e){
+    // Quota exceeded — drop oldest half
+    const entries = Object.entries(cache).sort((a,b) => a[1].ts - b[1].ts);
+    entries.slice(0, Math.floor(entries.length/2)).forEach(([k]) => delete cache[k]);
+    try { localStorage.setItem(cacheKey, JSON.stringify(cache)); } catch {}
+  }
+
+  return dataMap;
+}
+
+/**
+ * Main handler: Run all 10 strategies + arbitration + render.
+ */
+async function runMultiStrategyScan(){
+  const btn = document.getElementById('stratRunBtn');
+  const icon = document.getElementById('stratIcon');
+  const lbl = document.getElementById('stratLbl');
+  const progress = document.getElementById('stratProgress');
+  const progressBar = document.getElementById('stratBar');
+  const progressMsg = document.getElementById('stratMsg');
+
+  btn.disabled = true;
+  icon.textContent = '⏳';
+  lbl.textContent = 'Scanning...';
+  progress.style.display = 'block';
+
+  const uniKey = document.getElementById('stratUniSel').value;
+  STATE.strategies.universe = uniKey;
+  saveState();
+
+  const U = window.BULLZEEKER_UNIVERSE;
+  const universe = U?.[uniKey] || U?.liquid_500 || [];
+  if(!universe.length){
+    toast('❌ Universe empty', 'err');
+    btn.disabled = false;
+    icon.textContent = '🎯';
+    lbl.textContent = 'Run All 10';
+    progress.style.display = 'none';
+    return;
+  }
+
+  // Add sector ETFs for sector rotation strategy
+  const sectorETFs = ['XLK','XLF','XLV','XLY','XLP','XLI','XLE','XLU','XLB','XLRE','XLC'];
+  const defensiveETFs = ['BIL','SHY','IEF','TLT','GLD','IAU'];
+  const allTickers = [...new Set([...universe, ...sectorETFs, ...defensiveETFs])];
+
+  try{
+    // Step 1: Fetch chart data for all
+    const t0 = performance.now();
+    progressMsg.textContent = `📡 Fetching data for ${allTickers.length} tickers...`;
+    const dataMap = await fetchChartsForUniverse(allTickers, (done, total, sym) => {
+      const pct = (done / total) * 60;  // 60% of progress for fetching
+      progressBar.style.width = pct + '%';
+      progressMsg.textContent = `📡 Fetched ${done}/${total} · ${sym}`;
+    });
+
+    const fetchedCount = Object.keys(dataMap).length;
+    const t1 = performance.now();
+    progressMsg.textContent = `✓ Fetched ${fetchedCount} charts in ${((t1-t0)/1000).toFixed(1)}s · Running strategies...`;
+
+    // Step 2: Get current market regime
+    const regime = await calculateMarketRegime();
+
+    // Step 3: Run all strategies
+    const enabledIds = Object.keys(window.BULLZEEKER_STRATEGIES.STRATEGIES).filter(id => {
+      return STATE.strategies.enabled[id] !== false;  // default enabled
+    });
+
+    const results = await window.BULLZEEKER_STRATEGIES.runAllStrategies(
+      dataMap, regime, enabledIds,
+      (sid, done, total) => {
+        const pct = 60 + (done / total) * 30;
+        progressBar.style.width = pct + '%';
+        progressMsg.textContent = `🧠 Strategy ${done}/${total}: ${sid}`;
+      }
+    );
+
+    // Step 4: Arbitrate
+    progressMsg.textContent = '🎯 CIO arbitration...';
+    progressBar.style.width = '95%';
+    const portfolio = await calculatePortfolio();
+    const consensus = window.BULLZEEKER_STRATEGIES.arbitrate(results, portfolio, regime);
+
+    // Save
+    STATE.strategies.results = results;
+    STATE.strategies.consensus = consensus;
+    STATE.strategies.lastRun = Date.now();
+    saveState();
+
+    // Render
+    progressBar.style.width = '100%';
+    progressMsg.textContent = `✅ Done in ${((performance.now()-t0)/1000).toFixed(1)}s · ${Object.keys(results).length} strategies · ${consensus.totalPicks} consensus picks`;
+
+    renderStrategyGrid();
+    renderConsensus();
+
+    setTimeout(() => { progress.style.display = 'none'; }, 3000);
+    toast('🧠 Multi-strategy scan complete!', 'ok');
+
+  }catch(e){
+    console.error('Strategy scan failed:', e);
+    toast('❌ Scan failed: ' + e.message, 'err');
+    progressMsg.textContent = '❌ ' + e.message;
+  }finally{
+    btn.disabled = false;
+    icon.textContent = '🎯';
+    lbl.textContent = 'Run All 10';
+  }
+}
+
+/**
+ * Render 10 strategy cards (before + after scan).
+ */
+function renderStrategyGrid(){
+  const grid = document.getElementById('stratGrid');
+  if(!grid) return;
+  const strategies = window.BULLZEEKER_STRATEGIES?.STRATEGIES || {};
+  const results = STATE.strategies?.results || {};
+
+  grid.innerHTML = Object.values(strategies).map(s => {
+    const r = results[s.id];
+    const enabled = STATE.strategies.enabled[s.id] !== false;
+    const conv = r?.conviction || 0;
+    const pickCount = r?.picks?.length || 0;
+    const convCls = conv >= 70 ? 'h' : conv >= 40 ? 'm' : 'l';
+
+    return `<div class="strat-card ${enabled ? '' : 'disabled'}" onclick="toggleStrategy('${s.id}')" style="border-color:${enabled ? s.color + '40' : 'var(--line)'}">
+      <div class="top">
+        <span class="emo">${s.emoji}</span>
+        <div class="toggle ${enabled ? 'on' : ''}"></div>
+      </div>
+      <div class="nm">${s.name}</div>
+      <div class="th">${s.thai}</div>
+      <div class="ds">${s.description}</div>
+      <div class="stat">
+        <span class="picks">${pickCount} picks</span>
+        <span class="conv ${convCls}">${conv}%</span>
+      </div>
+      ${r ? `<div class="conv-bar"><div style="width:${conv}%;background:${s.color}"></div></div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+/**
+ * Toggle strategy enabled/disabled.
+ */
+function toggleStrategy(id){
+  if(STATE.strategies.enabled[id] === false){
+    STATE.strategies.enabled[id] = true;
+  } else {
+    STATE.strategies.enabled[id] = false;
+  }
+  saveState();
+  renderStrategyGrid();
+}
+
+/**
+ * Render CIO consensus view (Top picks voted by multiple strategies).
+ */
+function renderConsensus(){
+  const card = document.getElementById('consensusCard');
+  const body = document.getElementById('consensusBody');
+  const meta = document.getElementById('consensusMeta');
+  const consensus = STATE.strategies?.consensus;
+
+  if(!consensus || !consensus.consensus || consensus.consensus.length === 0){
+    card.style.display = 'none';
+    return;
+  }
+
+  card.style.display = 'block';
+  meta.textContent = `${consensus.strategyCount} strategies · ${consensus.totalPicks} unique picks`;
+
+  const renderItem = (c) => {
+    const votes = Math.min(c.voteCount, 10);
+    const voteDots = Array(votes).fill('<span class="vote-dot"></span>').join('');
+    const strats = c.strategies.slice(0, 5).map(s =>
+      `<span class="strat-chip" style="border-color:${s.color}40;color:${s.color}"><span class="e">${s.emoji}</span> ${s.thai}</span>`
+    ).join('');
+
+    return `<div class="consensus-item">
+      <div class="head">
+        <div class="sym">
+          ${c.ticker}
+          ${c.currentlyHeld ? '<span class="held-badge">💼 HELD</span>' : ''}
+        </div>
+        <div class="votes">${voteDots}</div>
+      </div>
+      <div class="meta">
+        <span class="m">💰 $${c.price?.toFixed(2) || '—'}</span>
+        <span class="m">🎯 ${c.voteCount} votes</span>
+        <span class="m">📊 Score ${c.consensusScore.toFixed(1)}</span>
+        <span class="m" style="color:var(--cio-purple);cursor:pointer" onclick="window.open('https://finance.yahoo.com/quote/${c.ticker}','_blank')">🔗 Yahoo</span>
+      </div>
+      <div class="strats">${strats}</div>
+    </div>`;
+  };
+
+  let html = '';
+
+  // Top Consensus (multi-vote)
+  const multiVote = consensus.consensus.filter(c => c.voteCount >= 2).slice(0, 10);
+  if(multiVote.length > 0){
+    html += `<h4 style="font-size:12px;color:var(--cio-purple);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;font-weight:800">⭐ Top Consensus (${multiVote.length} — voted by ≥2 strategies)</h4>`;
+    html += multiVote.map(renderItem).join('');
+  }
+
+  // Currently Held (review)
+  if(consensus.heldConsensus?.length > 0){
+    html += `<h4 style="font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px;font-weight:800">💼 Portfolio Holdings — Review (${consensus.heldConsensus.length})</h4>`;
+    html += consensus.heldConsensus.slice(0, 10).map(renderItem).join('');
+  }
+
+  // New Opportunities (not held)
+  const newOpps = consensus.newOpportunities?.filter(c => c.voteCount >= 1) || [];
+  if(newOpps.length > 0){
+    html += `<h4 style="font-size:12px;color:var(--green);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px;font-weight:800">🆕 New Opportunities (${newOpps.length})</h4>`;
+    html += newOpps.slice(0, 15).map(renderItem).join('');
+  }
+
+  // Strategy distribution
+  html += `<div style="margin-top:16px;padding:12px;background:var(--bg3);border:1px solid var(--line);border-radius:10px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:800;margin-bottom:8px">📊 Strategy Distribution</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px;font-size:12px">
+      ${Object.entries(consensus.distribution).map(([sid, count]) => {
+        const s = window.BULLZEEKER_STRATEGIES.STRATEGIES[sid];
+        return s ? `<div style="display:flex;justify-content:space-between;padding:4px 8px;background:var(--bg2);border-radius:6px">
+          <span>${s.emoji} ${s.thai}</span>
+          <b style="color:${s.color}">${count}</b>
+        </div>` : '';
+      }).join('')}
+    </div>
+  </div>`;
+
+  body.innerHTML = html;
+}
+
 /* ---------- INIT ---------- */
 async function init(){
   if(STATE === null){
@@ -2726,6 +3199,14 @@ async function init(){
     document.getElementById('dashboard').style.display = 'block';
     updateAIStatusBadge();
     await refreshAll();
+    // Phase 3: Render strategy grid + consensus (from last run if cached)
+    renderStrategyGrid();
+    renderConsensus();
+    // Restore last universe selection
+    if(STATE.strategies?.universe){
+      const sel = document.getElementById('stratUniSel');
+      if(sel) sel.value = STATE.strategies.universe;
+    }
     // Auto-refresh prices every 60 seconds
     setInterval(() => {
       Object.keys(QUOTE_CACHE).forEach(k => delete QUOTE_CACHE[k]);
