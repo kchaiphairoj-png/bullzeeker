@@ -491,7 +491,7 @@
           <p>Chief Investment Officer + Quant Analyst + Risk Manager · Master Portfolio จัดการโดยระบบที่ไม่ overtrade · ไม่ตัดสินใจจากอารมณ์</p>
         </div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <span id="aiStatusBadge" class="phase-badge" style="background:rgba(139,151,171,.15);color:var(--muted)">⚙️ AI: OFF</span>
+          <span id="aiStatusBadge" class="phase-badge" style="cursor:pointer;background:rgba(139,151,171,.15);color:var(--muted)" onclick="openSettings()" title="คลิกเพื่อ setup AI (Claude/Gemini)">⚙️ AI: OFF · คลิกเพื่อ setup</span>
           <span id="alertBadge" class="phase-badge" style="cursor:pointer;background:rgba(139,151,171,.15);color:var(--muted)" onclick="toggleAlerts()" title="Click to toggle browser notifications">🔕 Alerts: OFF</span>
           <span class="phase-badge">🚀 Phase 4</span>
           <button class="btn-g" onclick="openSettings()">⚙️ Settings</button>
@@ -2972,6 +2972,19 @@ async function fetchChartsForUniverse(tickers, onProgress){
  * Main handler: Run all 10 strategies + arbitration + render.
  */
 async function runMultiStrategyScan(){
+  console.log('🧠 runMultiStrategyScan called');
+
+  // Safety check: is strategies.js loaded?
+  if(!window.BULLZEEKER_STRATEGIES){
+    alert('❌ strategies.js ยังไม่ได้โหลด · ลอง refresh page (Ctrl+F5) · หรือ hard reload');
+    return;
+  }
+  // Safety check: is universe.js loaded?
+  if(!window.BULLZEEKER_UNIVERSE){
+    alert('❌ universe.js ยังไม่ได้โหลด · ลอง refresh page (Ctrl+F5)');
+    return;
+  }
+
   const btn = document.getElementById('stratRunBtn');
   const icon = document.getElementById('stratIcon');
   const lbl = document.getElementById('stratLbl');
@@ -2979,10 +2992,18 @@ async function runMultiStrategyScan(){
   const progressBar = document.getElementById('stratBar');
   const progressMsg = document.getElementById('stratMsg');
 
+  if(!btn || !icon || !lbl || !progress || !progressBar || !progressMsg){
+    alert('❌ Strategy UI elements missing · ลอง refresh page');
+    return;
+  }
+
   btn.disabled = true;
   icon.textContent = '⏳';
   lbl.textContent = 'Scanning...';
   progress.style.display = 'block';
+  progressMsg.textContent = '🚀 เริ่มโหลดข้อมูล... กรุณารอ 30-60 วินาที';
+  progressBar.style.width = '2%';
+  toast('🚀 เริ่มสแกน · จะใช้เวลา ~1 นาที · โปรดรอ');
 
   const uniKey = document.getElementById('stratUniSel').value;
   STATE.strategies.universe = uniKey;
@@ -3074,12 +3095,30 @@ async function runMultiStrategyScan(){
 function renderStrategyGrid(){
   const grid = document.getElementById('stratGrid');
   if(!grid) return;
-  const strategies = window.BULLZEEKER_STRATEGIES?.STRATEGIES || {};
+
+  // Safety check: is strategies.js loaded?
+  if(!window.BULLZEEKER_STRATEGIES){
+    grid.innerHTML = `<div style="grid-column:1/-1;padding:30px;text-align:center;background:var(--red-bg);border:1px solid var(--red);border-radius:12px">
+      <div style="font-size:32px;margin-bottom:8px">⚠️</div>
+      <div style="font-weight:800;color:var(--red);margin-bottom:6px">strategies.js ยังไม่ได้โหลด</div>
+      <div style="font-size:12px;color:var(--muted)">กด <b>Ctrl+F5</b> (Windows) หรือ <b>Cmd+Shift+R</b> (Mac) เพื่อ hard reload</div>
+    </div>`;
+    return;
+  }
+
+  const strategies = window.BULLZEEKER_STRATEGIES.STRATEGIES || {};
   const results = STATE.strategies?.results || {};
+
+  if(Object.keys(strategies).length === 0){
+    grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:var(--muted)">
+      ⚠️ ไม่มี strategies · ลอง refresh page
+    </div>`;
+    return;
+  }
 
   grid.innerHTML = Object.values(strategies).map(s => {
     const r = results[s.id];
-    const enabled = STATE.strategies.enabled[s.id] !== false;
+    const enabled = STATE.strategies?.enabled?.[s.id] !== false;
     const conv = r?.conviction || 0;
     const pickCount = r?.picks?.length || 0;
     const convCls = conv >= 70 ? 'h' : conv >= 40 ? 'm' : 'l';
