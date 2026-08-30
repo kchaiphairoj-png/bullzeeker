@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🎓 คอร์สเทรดหุ้น US สำหรับมือใหม่ | Bullzeeker</title>
+<meta name="description" content="คอร์สสอนเทรดหุ้นอเมริกาจากศูนย์ · เรียนกับพี่วิศิษฐ์ 1-on-1 · เข้าถึง AI CIO ครบทุก feature · ผ่านทาง LINE @wisit777" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="🎓 คอร์สเทรดหุ้น US สำหรับมือใหม่ | Bullzeeker" />
+<meta property="og:description" content="เรียน 1-on-1 กับพี่วิศิษฐ์ · เข้าถึง AI CIO + LINE alerts · Master Portfolio $100K" />
+<meta property="og:image" content="https://bullzeeker.com/og-image.svg" />
+<meta property="og:url" content="https://bullzeeker.com/course.html" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D593QC1NXE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-D593QC1NXE');
+</script>
+<style>
+  :root{
+    --bg:#050810; --bg2:#0a1220; --bg3:#111c30; --bg4:#1a2842;
+    --line:#243044; --text:#e6edf7; --muted:#8b97ab; --dim:#5a6478;
+    --accent:#3b82f6; --accent2:#60a5fa;
+    --gold:#fbbf24; --gold2:#f59e0b;
+    --green:#22c55e; --red:#ef4444; --orange:#fb923c;
+    --purple:#a855f7; --cio-purple:#8b5cf6; --cio-pink:#ec4899;
+    --line-green:#00B900;
+    --thai-red:#ED1C24;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);
+    font-family:'Inter','Noto Sans Thai',-apple-system,sans-serif;
+    font-size:15px;line-height:1.7;scroll-behavior:smooth}
+  a{color:var(--accent2);text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bg2)}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px}
+
+  /* HEADER */
+  header{background:linear-gradient(180deg,#080f1e,#050810);border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
+  .h-row{display:flex;align-items:center;gap:16px;padding:12px 22px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+  .brand-logo{width:38px;height:38px;border-radius:10px;
+    background:linear-gradient(135deg,var(--thai-red),var(--gold),var(--accent));
+    display:flex;align-items:center;justify-content:center;font-size:20px}
+  .brand-txt h1{font-size:16px;font-weight:800;color:#fff}
+  .brand-txt p{font-size:10px;color:var(--muted)}
+  .line-btn-header{
+    background:var(--line-green);color:#fff;padding:8px 16px;border-radius:8px;
+    font-size:13px;font-weight:800;text-decoration:none;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .line-btn-header:hover{background:#00a300;color:#fff}
+
+  main{max-width:1100px;margin:0 auto;padding:0 22px}
+  section{padding:70px 0;border-bottom:1px solid rgba(36,48,68,.4)}
+  section:last-child{border:none}
+  @media(max-width:780px){section{padding:44px 0}}
+
+  /* HERO */
+  .hero{
+    background:
+      radial-gradient(ellipse at top right, rgba(139,92,246,.15), transparent 60%),
+      radial-gradient(ellipse at bottom left, rgba(251,191,36,.10), transparent 60%);
+    padding:70px 0 60px;text-align:center;position:relative;overflow:hidden;
+  }
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.4);
+    padding:8px 18px;border-radius:999px;font-size:12px;font-weight:700;color:var(--cio-purple);margin-bottom:24px;
+  }
+  .hero h1{font-size:52px;font-weight:800;line-height:1.15;letter-spacing:-.8px;margin-bottom:20px;max-width:900px;margin-left:auto;margin-right:auto}
+  .hero h1 .grad{background:linear-gradient(135deg,var(--gold),var(--cio-pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+  @media(max-width:780px){.hero h1{font-size:32px}}
+  .hero-sub{font-size:19px;color:var(--muted);max-width:700px;margin:0 auto 32px;line-height:1.7}
+  .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
+  .btn-primary-big{
+    background:var(--line-green);color:#fff;padding:16px 32px;border-radius:12px;
+    font-size:17px;font-weight:800;box-shadow:0 8px 24px rgba(0,185,0,.4);
+    display:inline-flex;align-items:center;gap:10px;transition:.15s;
+  }
+  .btn-primary-big:hover{transform:translateY(-2px);color:#fff;box-shadow:0 10px 28px rgba(0,185,0,.5)}
+  .btn-secondary-big{
+    background:rgba(255,255,255,.06);color:#fff;padding:16px 28px;border-radius:12px;
+    font-size:16px;font-weight:700;border:1px solid var(--line);
+    display:inline-flex;align-items:center;gap:8px;transition:.15s;
+  }
+  .btn-secondary-big:hover{background:rgba(255,255,255,.1);color:#fff}
+  .hero-badges{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .hero-badges span{display:inline-flex;align-items:center;gap:6px}
+  .hero-badges b{color:var(--gold)}
+
+  /* SECTIONS */
+  h2.section-title{font-size:34px;font-weight:800;text-align:center;margin-bottom:16px;letter-spacing:-.4px}
+  @media(max-width:780px){h2.section-title{font-size:26px}}
+  p.section-sub{font-size:16px;color:var(--muted);text-align:center;max-width:640px;margin:0 auto 44px;line-height:1.7}
+
+  /* PROBLEM */
+  .problem-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:30px}
+  .problem-card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:20px 22px;position:relative}
+  .problem-card .ic{font-size:32px;margin-bottom:10px;display:block}
+  .problem-card h3{font-size:16px;font-weight:800;margin-bottom:8px}
+  .problem-card p{font-size:13.5px;color:var(--muted);line-height:1.7}
+
+  /* SOLUTION */
+  .solution-hero{
+    background:linear-gradient(135deg,rgba(0,185,0,.08),rgba(139,92,246,.05));
+    border:1px solid rgba(0,185,0,.3);border-radius:20px;padding:44px 40px;text-align:center;margin-top:24px;
+  }
+  .solution-hero h3{font-size:26px;font-weight:800;margin-bottom:14px}
+  .solution-hero h3 .grad{background:linear-gradient(135deg,var(--line-green),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .solution-hero p{font-size:15px;color:var(--muted);max-width:640px;margin:0 auto;line-height:1.8}
+  .solution-features{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:26px}
+  .solution-feat{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:left}
+  .solution-feat .ic{font-size:24px;margin-bottom:8px}
+  .solution-feat h4{font-size:14px;font-weight:800;margin-bottom:4px}
+  .solution-feat p{font-size:12.5px;color:var(--muted);line-height:1.6;margin:0}
+
+  /* CURRICULUM */
+  .modules{display:flex;flex-direction:column;gap:14px;margin-top:24px}
+  .module{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:22px 26px}
+  .module .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+  .module .no{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:48px;height:48px;border-radius:12px;
+    background:linear-gradient(135deg,var(--cio-purple),var(--cio-pink));color:#fff;
+    font-weight:800;font-size:18px;flex-shrink:0;
+  }
+  .module .head{display:flex;align-items:center;gap:14px;flex:1;min-width:0}
+  .module h3{font-size:19px;font-weight:800;color:#fff}
+  .module .meta{font-size:12px;color:var(--gold);margin-top:2px;font-weight:600}
+  .module .duration{background:var(--bg3);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--muted);font-weight:600}
+  .module-lessons{padding-left:60px}
+  .module-lessons li{color:var(--muted);font-size:13.5px;padding:5px 0;list-style:none;position:relative;padding-left:22px}
+  .module-lessons li::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:800}
+
+  /* INSTRUCTOR */
+  .instructor{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--line);
+    border-radius:20px;padding:44px 40px;margin-top:24px}
+  .instructor-flex{display:flex;gap:30px;align-items:center;flex-wrap:wrap}
+  .instructor-photo{flex-shrink:0;width:180px;height:180px;border-radius:50%;
+    background:linear-gradient(135deg,var(--gold),var(--thai-red),var(--cio-purple));
+    display:flex;align-items:center;justify-content:center;font-size:90px;box-shadow:0 12px 30px rgba(251,191,36,.3)}
+  .instructor-info{flex:1;min-width:280px}
+  .instructor-info h3{font-size:26px;font-weight:800;margin-bottom:4px}
+  .instructor-info .role{color:var(--gold);font-weight:700;margin-bottom:14px;font-size:14px}
+  .instructor-info p{color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:14px}
+  .instructor-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:20px}
+  .instructor-stat{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .instructor-stat .n{font-size:24px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+  .instructor-stat .l{font-size:11px;color:var(--muted);font-weight:600}
+
+  /* BONUS/INCLUDED */
+  .bonuses{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:24px}
+  .bonus-card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:20px;
+    border-left:4px solid var(--cio-purple)}
+  .bonus-card .top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .bonus-card .ic{font-size:26px}
+  .bonus-card .val{background:var(--gold);color:#0a0e16;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;margin-left:auto}
+  .bonus-card h4{font-size:15px;font-weight:800}
+  .bonus-card p{font-size:12.5px;color:var(--muted);line-height:1.7}
+
+  /* PRICING */
+  .pricing-note{
+    background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(236,72,153,.04));
+    border:1px solid rgba(251,191,36,.3);border-radius:20px;
+    padding:44px 40px;text-align:center;max-width:640px;margin:24px auto 0;
+  }
+  .pricing-tag{display:inline-block;background:var(--gold);color:#0a0e16;padding:4px 12px;border-radius:6px;font-size:11px;font-weight:800;margin-bottom:14px;letter-spacing:.5px}
+  .pricing-note h3{font-size:28px;font-weight:800;margin-bottom:12px}
+  .pricing-note p{color:var(--muted);font-size:14px;margin-bottom:20px;line-height:1.7}
+  .pricing-line-cta{margin-top:24px}
+
+  /* FAQ */
+  .faq{max-width:780px;margin:24px auto 0}
+  .faq-item{background:var(--bg2);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+  .faq-q{padding:16px 22px;font-weight:700;color:#fff;font-size:15px;cursor:pointer;
+    display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .faq-q:hover{background:rgba(255,255,255,.02)}
+  .faq-q::after{content:"+";color:var(--gold);font-size:22px;font-weight:300;transition:.2s}
+  .faq-item.open .faq-q::after{transform:rotate(45deg)}
+  .faq-a{padding:0 22px;max-height:0;overflow:hidden;transition:.3s;color:var(--muted);font-size:14px;line-height:1.8}
+  .faq-item.open .faq-a{padding:0 22px 20px;max-height:800px}
+  .faq-a b{color:var(--text)}
+
+  /* GUARANTEE */
+  .guarantee{
+    background:linear-gradient(135deg,rgba(34,197,94,.08),transparent);
+    border:2px solid rgba(34,197,94,.3);border-radius:20px;
+    padding:36px 40px;text-align:center;max-width:640px;margin:24px auto 0;
+  }
+  .guarantee .ic{font-size:48px;margin-bottom:12px}
+  .guarantee h3{font-size:22px;font-weight:800;color:var(--green);margin-bottom:10px}
+  .guarantee p{color:var(--muted);font-size:14px;line-height:1.7}
+
+  /* FINAL CTA */
+  .final-cta{text-align:center;padding:80px 22px}
+  .final-cta h2{font-size:36px;font-weight:800;margin-bottom:14px;line-height:1.3}
+  .final-cta h2 .grad{background:linear-gradient(135deg,var(--gold),var(--cio-pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .final-cta p{font-size:16px;color:var(--muted);max-width:640px;margin:0 auto 30px;line-height:1.7}
+
+  /* FLOATING LINE BUTTON */
+  .float-line{
+    position:fixed;bottom:22px;right:22px;
+    background:var(--line-green);color:#fff;padding:14px 24px;
+    border-radius:999px;font-size:15px;font-weight:800;
+    display:inline-flex;align-items:center;gap:8px;
+    box-shadow:0 8px 24px rgba(0,185,0,.5);z-index:100;
+    text-decoration:none;transition:.15s;
+  }
+  .float-line:hover{transform:scale(1.05);color:#fff;box-shadow:0 12px 30px rgba(0,185,0,.6)}
+  @media(max-width:780px){.float-line{bottom:14px;right:14px;padding:12px 18px;font-size:13px}}
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--line);padding:30px 22px;color:var(--muted);font-size:12px;text-align:center;line-height:1.7}
+  footer a{color:var(--cio-purple)}
+</style>
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#050810" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Bullzeeker" />
+</head>
+<body>
+
+<header>
+  <div class="h-row">
+    <a href="index.html" class="brand">
+      <div class="brand-logo">🐂</div>
+      <div class="brand-txt">
+        <h1>Bull<span style="color:var(--gold)">zeeker</span></h1>
+        <p>🎓 คอร์สเทรดหุ้น US</p>
+      </div>
+    </a>
+    <div style="flex:1"></div>
+    <a href="https://line.me/R/ti/p/~wisit777" target="_blank" class="line-btn-header">💬 LINE @wisit777</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============= HERO ============= -->
+  <section class="hero" style="border:none">
+    <span class="hero-badge">🎯 คอร์สเทรดสำหรับมือใหม่ · Limited seats</span>
+    <h1>จากศูนย์ → <span class="grad">เทรดหุ้น US เป็นระบบ</span><br/>ด้วยการโค้ช 1-on-1</h1>
+    <p class="hero-sub">
+      เรียนกับ<b style="color:#fff">พี่วิศิษฐ์</b> · ประสบการณ์เทรดหุ้น US มา 8+ ปี ·
+      พร้อมสิทธิ์เข้าใช้ <b style="color:var(--cio-purple)">AI CIO Full Premium</b>
+      + LINE alerts ตลอดชีพ
+    </p>
+    <div class="hero-cta">
+      <a href="https://line.me/R/ti/p/~wisit777" target="_blank" class="btn-primary-big">
+        💬 ทัก LINE ปรึกษาฟรี · @wisit777
+      </a>
+      <a href="#curriculum" class="btn-secondary-big">📚 ดูเนื้อหาคอร์ส</a>
+    </div>
+    <div class="hero-badges">
+      <span>👥 <b>100+</b> นักเรียนจบไปแล้ว</span>
+      <span>⭐ <b>4.9/5</b> จาก reviews</span>
+      <span>🎯 <b>1-on-1</b> mentorship</span>
+      <span>♾️ <b>Lifetime</b> access</span>
+    </div>
+  </section>
+
+  <!-- ============= PROBLEM ============= -->
+  <section>
+    <h2 class="section-title">คุณเคยเจอปัญหาเหล่านี้ไหม? 😰</h2>
+    <p class="section-sub">99% ของมือใหม่ที่เทรดหุ้น US เจอปัญหาเหล่านี้ทั้งหมด</p>
+
+    <div class="problem-grid">
+      <div class="problem-card">
+        <span class="ic">🤯</span>
+        <h3>ไม่รู้จะเริ่มจากไหน</h3>
+        <p>เว็บฝรั่งเยอะแยะ · Finviz, TradingView, Seeking Alpha... ราคาแพงและเป็นภาษาอังกฤษหมด · เริ่มไม่ถูก</p>
+      </div>
+      <div class="problem-card">
+        <span class="ic">💸</span>
+        <h3>ซื้อตามข่าว · ขาดทุนซ้ำ ๆ</h3>
+        <p>เห็นข่าวหุ้นวิ่ง → ซื้อทันที · ปรากฏว่าเป็น hi ตลอด · ขาดทุนหนักจนใจฝ่อ</p>
+      </div>
+      <div class="problem-card">
+        <span class="ic">😰</span>
+        <h3>ไม่มีระบบ · ตัดสินใจจากอารมณ์</h3>
+        <p>ซื้อเพราะ FOMO · ขายเพราะ panic · ไม่รู้จะ hold ต่อหรือขายทำกำไร</p>
+      </div>
+      <div class="problem-card">
+        <span class="ic">⏰</span>
+        <h3>เวลาไม่ตรง · หลงทางกลางดึก</h3>
+        <p>ตลาด US เปิดตอนนอน · ตื่นเช้ามาเห็นแดง · ไม่รู้จะทำอะไร</p>
+      </div>
+      <div class="problem-card">
+        <span class="ic">📚</span>
+        <h3>ไม่มีคนสอน · ต้องลองผิดลองถูกเอง</h3>
+        <p>YouTube ไทยสอนไม่ครบ · ฝรั่งก็ยาก · เสียเวลาลองผิดลองถูกเป็นปี · ขาดทุนเป็นแสน</p>
+      </div>
+      <div class="problem-card">
+        <span class="ic">📊</span>
+        <h3>ไม่รู้จะ scan หุ้นดี ๆ ยังไง</h3>
+        <p>หุ้น US มี 5,000+ ตัว · ไม่รู้จะเลือกอะไร · ไม่รู้จะดู technical ตัวไหน</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= SOLUTION ============= -->
+  <section>
+    <h2 class="section-title">📚 ทางแก้ที่จะพลิกคุณเป็น Trader มืออาชีพ</h2>
+    <p class="section-sub">เรียนระบบที่ใช้ได้จริง + เข้าถึง AI CIO + มีพี่เลี้ยง</p>
+
+    <div class="solution-hero">
+      <h3>🎯 <span class="grad">Bullzeeker Trading System</span></h3>
+      <p>
+        ระบบเทรดหุ้น US แบบ end-to-end · เริ่มตั้งแต่ <b style="color:#fff">"เปิดพอร์ตยังไง"</b> ไปจนถึง
+        <b style="color:#fff">"บริหารพอร์ตแบบ CIO มืออาชีพ"</b> · เน้นทำได้จริง · ไม่ต้องดูกราฟทั้งวัน · ใช้ AI CIO
+        ช่วยตัดสินใจ · เทรดกลางคืนไม่ได้ก็ไม่เป็นไร (Set & Forget)
+      </p>
+      <div class="solution-features">
+        <div class="solution-feat">
+          <span class="ic">📖</span>
+          <h4>Video On-Demand</h4>
+          <p>12 modules · 60+ lessons · ดูได้ทุกที่</p>
+        </div>
+        <div class="solution-feat">
+          <span class="ic">🎓</span>
+          <h4>1-on-1 Mentorship</h4>
+          <p>คุยกับพี่วิศิษฐ์ตลอดคอร์ส</p>
+        </div>
+        <div class="solution-feat">
+          <span class="ic">🤖</span>
+          <h4>AI CIO Premium</h4>
+          <p>Full access · unlimited AI queries</p>
+        </div>
+        <div class="solution-feat">
+          <span class="ic">💬</span>
+          <h4>LINE Alerts</h4>
+          <p>Signals ส่งเข้า LINE ทุกวัน</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= CURRICULUM ============= -->
+  <section id="curriculum">
+    <h2 class="section-title">📚 12 Modules · ครบทุกอย่างที่ต้องรู้</h2>
+    <p class="section-sub">เรียงจากง่ายไปยาก · เริ่มจาก 0 ได้เลย · เนื้อหาไทยล้วน</p>
+
+    <div class="modules">
+
+      <div class="module">
+        <div class="top">
+          <div class="head">
+            <div class="no">1</div>
+            <div>
+              <h3>🎓 Foundation — พื้นฐานที่ต้องรู้</h3>
+              <div class="meta">5 บทเรียน · 2 ชั่วโมง</div>
+            </div>
+          </div>
+          <div class="duration">Week 1</div>
+        </div>
+        <ul class="module-lessons">
+          <li>ทำไมเทรดหุ้น US เหมาะกับคนไทย</li>
+          <li>เวลาตลาดเปิด/ปิด · Pre-market · After-hours (เวลาไทย)</li>
+          <li>ประเภทหุ้น · ETFs · ADRs · Sectors</li>
+          <li>ค่าธรรมเนียม + FX spread · แต่ละโบรกเกอร์ต่างกันยังไง</li>
+          <li>ภาษี W-8BEN + capital gain สำหรับคนไทย</li>
+        </ul>
+      </div>
+
+      <div class="module">
+        <div class="top">
+          <div class="head">
+            <div class="no">2</div>
+            <div>
+              <h3>🏦 เปิดพอร์ตและเริ่มเทรด</h3>
+              <div class="meta">4 บทเรียน · 1.5 ชั่วโมง</div>
+            </div>
+          </div>
+          <div class="duration">Week 1</div>
+        </div>
+        <ul class="module-lessons">
+          <li>เปรียบเทียบโบรกเกอร์ไทย (Liberator, Pi, InnovestX, KKPS)</li>
+          <li>เปิดพอร์ต step-by-step (screen record)</li>
+          <li>โอนเงินเข้าพอร์ต · แลก USD · หลีกเลี่ยงค่าธรรมเนียมแฝง</li>
+          <li>การส่ง order · Market/Limit/Stop-Limit · Trailing Stop</li>
+        </ul>
+      </div>
+
+      <div class="module">
+        <div class="top">
+          <div class="head">
+            <div class="no">3</div>
+            <div>
+              <h3>📊 Technical Analysis — อ่านกราฟ</h3>
+              <div class="meta">6 บทเรียน · 3 ชั่วโมง</div>
+            </div>
+          </div>
+          <div class="duration">Week 2</div>
+        </div>
+        <ul class="module-lessons">
+          <li>Candlestick patterns ที่ใช้จริง (5 patterns เท่านั้น)</li>
+          <li>Moving Averages · MA20/50/200 · Golden Cross · Death Cross</li>
+          <li>RSI · MACD · Bollinger Bands (ใช้ตัวไหน · ทำไม)</li>
+          <li>Volume analysis · เห็น smart money ยังไง</li>
+          <li>Support/Resistance · Trendlines</li>
+          <li>Chart patterns · Head&Shoulders · Double Top/Bottom · Triangles</li>
+        </ul>
+      </div>
+
+      <div class="module">
+        <div class="top">
+          <div class="head">
+            <div class="no">4</div>
+            <div>
+              <h3>🚀 Breakout Trading — Minervini Method</h3>
+              <div class="meta">5 บทเรียน · 2.5 ชั่วโมง</div>
+            </div>
+          </div>
+          <div class="duration">Week 3</div>
+        </div>
+        <ul class="module-lessons">
+          <li>Trend Template — 8 เงื่อนไขที่หุ้นต้องผ่าน</li>
+          <li>VCP (Volatility Contraction Pattern) — Minervini's signature</li>
+          <li>Base identification · Stage 2 breakout detection</li>
+          <li>Entry timing · Volume confirmation · Buy zone</li>
+          <li>Live case study — วิเคราะห์หุ้นจริง 5 ตัว</li>
+        </ul>
+      </div>
+
+      <div class="module">
+        <div class="top">
+          <div class="head">
+            <div class="no">5</div>
+            <div>
+              <h3>💎 Quality Investing — Growth + Value</h3>
+              <div class="meta">4 บทเรียน · 2 ชั่วโมง</div>
+            </div>
+          </div>
+          <div class="duration">Week 3</div>
+        </div>
+        <ul class="module-lessons">
+          <li>ROE, Margin, PEG, EPS growth — ตัวไหนสำคัญ</li>
+          <li>อ่าน Earnings report แบบไทย · เน้น 5 สิ่งที่ต้องดู</li>
+          <li>Quality Screener 9 เงื่อนไข · scan หุ้นดี</li>
+          <li>Dividend growth · REITs · Recurring income</li>
+        </ul>
+      </div>
+
+      <div class="module">
+        <div class="top">
+          <div class="head">
+            <div class="no">6</div>
+            <div>
+              <h3>🌊 Long-Term Investing — 10-Bagger Hunting</h3>
+              <div class="meta">4 บทเรียน · 2 ชั่วโมง</div>
+            </div>
+          </div>
+          <div class="duration">Week 4</div>
+        </div>
+        <ul class="module-lessons">
+          <li>Multi-year base breakout · AMD 2016 · NVDA 2016 · META 2024</li>
+          <li>Stan Weinstein Stage 2 · Weekly timeframe</li>
+          <li>วิเคราะห์ industry disruption · secular trends</li>
+          <li>ถือหุ้น 3-5 ปี · จัด position size</li>
+        </ul>
+      </div>
+
+      <div class="module">
+        <div class="top">
+          <div class="head">
+            <div class="no">7</div>
+            <div>
+              <h3>💰 Risk Management — สิ่งที่สำคัญที่สุด</h3>
+              <div class="meta">5 บทเรียน · 2 ชั่วโมง</div>
+            </div>
+          </div>
+          <div class="duration">Week 4</div>
+        </div>
+        <ul class="module-lessons">
+          <li>Position sizing · 1% rule · Kelly criterion</li>
+          <li>Stop loss · ATR-based · % of capital · Support level</li>
+          <li>Risk/Reward ratio · Minimum 1:2</li>
+          <li>Portfolio construction · Diversification · Correlation</li>
+          <li>Drawdown management · เจ๊งอย่างไรให้ยังกลับมาได้</li>
+        </ul>
+      </div>
+
+      <div class="module">
+        <div class="top">
+          <div class="head">
+            <div class="no">8</div>
+            <div>
+              <h3>🧠 Trading Psychology — สงครามในใจ</h3>
+              <div class="meta">4 บทเรียน · 1.5 ชั่วโมง</div>
+            </div>
+          </div>
+          <div class="duration">Week 5</div>
+        </div>
+        <ul class="module-lessons">
+          <li>FOMO · Greed · Fear · จัดการอารมณ์ 3 ตัว</li>
+          <li>Trading journal · บันทึกทุกเทรด · เรียนจากข้อผิดพลาด</li>
+          <li>Discipline > Intelligence · กฏเหล็ก 10 ข้อ</li>
+          <li>Meditation for traders · จิตแข็งก่อนพอร์ตแข็ง</li>
+        </ul>
+      </div>
+
+      <div class="module">
+        <div class="top">
+          <div class="head">
+            <div class="no">9</div>
+            <div>
+              <h3>📊 Macro & Market Regime</h3>
+              <div class="meta">4 บทเรียน · 2 ชั่วโมง</div>
+            </div>
+          </div>
+          <div class="duration">Week 5</div>
+        </div>
+        <ul class="module-lessons">
+          <li>VIX · Fear & Greed · Regime detection</li>
+          <li>Fed rate · Yield curve · Recession signals</li>
+          <li>DXY · Currency impact · USD/THB สำคัญยังไง</li>
+          <li>Sector rotation · Bull/Bear cycles</li>
+        </ul>
+      </div>
+
+      <div class="module">
+        <div class="top">
+          <div class="head">
+            <div class="no">10</div>
+            <div>
+              <h3>🤖 AI CIO Mastery — ใช้ AI ให้เป็น</h3>
+              <div class="meta">5 บทเรียน · 2 ชั่วโมง</div>
+            </div>
+          </div>
+          <div class="duration">Week 6</div>
+        </div>
+        <ul class="module-lessons">
+          <li>Setup AI CIO (Claude vs Gemini)</li>
+          <li>Prompt engineering สำหรับ CIO</li>
+          <li>ใช้ 10 Strategies engine ให้เป็น</li>
+          <li>ตีความ AI recommendations · trust vs verify</li>
+          <li>Automate daily portfolio review</li>
+        </ul>
+      </div>
+
+      <div class="module">
+        <div class="top">
+          <div class="head">
+            <div class="no">11</div>
+            <div>
+              <h3>💼 Portfolio Management — Real Money</h3>
+              <div class="meta">5 บทเรียน · 2.5 ชั่วโมง</div>
+            </div>
+          </div>
+          <div class="duration">Week 7</div>
+        </div>
+        <ul class="module-lessons">
+          <li>Portfolio construction สำหรับคนไทย · เงินก้อน + DCA</li>
+          <li>ETFs core + stock satellite</li>
+          <li>Tax optimization · Currency hedging</li>
+          <li>Rebalancing · When to sell winners</li>
+          <li>Live portfolio review — คุยกับพี่วิศิษฐ์</li>
+        </ul>
+      </div>
+
+      <div class="module">
+        <div class="top">
+          <div class="head">
+            <div class="no">12</div>
+            <div>
+              <h3>🎯 Advanced — Options + Margin (Optional)</h3>
+              <div class="meta">4 บทเรียน · 2 ชั่วโมง</div>
+            </div>
+          </div>
+          <div class="duration">Week 8</div>
+        </div>
+        <ul class="module-lessons">
+          <li>Basic options · Covered Calls · Cash-Secured Puts</li>
+          <li>Wheel strategy · income generation</li>
+          <li>Margin · เมื่อไหร่ควร/ไม่ควรใช้</li>
+          <li>Advanced risk management</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============= INSTRUCTOR ============= -->
+  <section id="instructor">
+    <h2 class="section-title">👨‍🏫 พบกับ Instructor</h2>
+    <p class="section-sub">คนที่จะโค้ชคุณ 1-on-1 ตลอดคอร์ส</p>
+
+    <div class="instructor">
+      <div class="instructor-flex">
+        <div class="instructor-photo">🐂</div>
+        <div class="instructor-info">
+          <h3>พี่วิศิษฐ์ (Wisit)</h3>
+          <div class="role">Founder · Bullzeeker · Full-time US Stocks Trader</div>
+          <p>
+            เทรดหุ้น US มากว่า <b style="color:#fff">8 ปี</b> · พอร์ตส่วนตัวจาก ฿200K → 8 หลัก ·
+            ลาออกจากงานประจำมาเทรด full-time · เชี่ยวชาญด้าน <b style="color:#fff">Momentum + Breakout Trading</b>
+            style Minervini / O'Neil · สอนนักเรียนไทยมาแล้วมากกว่า 100 คน
+          </p>
+          <p>
+            ก่อตั้ง <b style="color:#fff">Bullzeeker.com</b> เพื่อให้คนไทยเข้าถึงเครื่องมือเทรดหุ้น US
+            ระดับมืออาชีพฟรี · เชื่อว่า <b style="color:var(--gold)">"ระบบดี + วินัย + จิตใจ = success"</b>
+          </p>
+
+          <div class="instructor-stats">
+            <div class="instructor-stat">
+              <div class="n">8+</div>
+              <div class="l">ปีเทรด US</div>
+            </div>
+            <div class="instructor-stat">
+              <div class="n">100+</div>
+              <div class="l">นักเรียนที่จบ</div>
+            </div>
+            <div class="instructor-stat">
+              <div class="n">4.9/5</div>
+              <div class="l">Rating</div>
+            </div>
+            <div class="instructor-stat">
+              <div class="n">1-on-1</div>
+              <div class="l">Coaching</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= BONUSES ============= -->
+  <section>
+    <h2 class="section-title">🎁 คอร์สนี้ได้อะไรบ้าง?</h2>
+    <p class="section-sub">ไม่ใช่แค่ video · ได้ Full ecosystem</p>
+
+    <div class="bonuses">
+      <div class="bonus-card">
+        <div class="top">
+          <span class="ic">📖</span>
+          <h4>คอร์สวิดีโอ 12 Modules</h4>
+          <span class="val">฿12,000</span>
+        </div>
+        <p>60+ lessons · 30+ ชั่วโมง · ดูได้ตลอดชีพ · อัพเดทฟรี · เนื้อหาไทยล้วน · มีสไลด์ประกอบ</p>
+      </div>
+
+      <div class="bonus-card">
+        <div class="top">
+          <span class="ic">🎓</span>
+          <h4>1-on-1 Mentorship (3 เดือน)</h4>
+          <span class="val">฿15,000</span>
+        </div>
+        <p>คุยกับพี่วิศิษฐ์ทาง LINE · ถามอะไรก็ได้ · review portfolio · แก้ปัญหาเฉพาะตัว · monthly zoom call</p>
+      </div>
+
+      <div class="bonus-card">
+        <div class="top">
+          <span class="ic">🤖</span>
+          <h4>AI CIO Premium — ตลอดชีพ</h4>
+          <span class="val">฿9,000/ปี</span>
+        </div>
+        <p>Full access · Unlimited Claude/Gemini queries · 10 strategies · Master portfolio tracking · ไม่ต้องจ่าย API เอง</p>
+      </div>
+
+      <div class="bonus-card">
+        <div class="top">
+          <span class="ic">💬</span>
+          <h4>LINE Alerts — Real-time</h4>
+          <span class="val">฿3,000/ปี</span>
+        </div>
+        <p>Signals ส่งเข้า LINE ทันที · Breakout · Stop hit · Regime change · Portfolio review daily</p>
+      </div>
+
+      <div class="bonus-card">
+        <div class="top">
+          <span class="ic">👥</span>
+          <h4>Private Community</h4>
+          <span class="val">฿2,000</span>
+        </div>
+        <p>LINE OpenChat + Discord ของนักเรียนเท่านั้น · แชร์ pick · ช่วยกันวิเคราะห์ · เจอเพื่อนเทรดจริง</p>
+      </div>
+
+      <div class="bonus-card">
+        <div class="top">
+          <span class="ic">📊</span>
+          <h4>Weekly Market Report</h4>
+          <span class="val">฿6,000/ปี</span>
+        </div>
+        <p>รายงานสัปดาห์ละครั้ง · Top picks · Sector rotation · Fed watch · โดยพี่วิศิษฐ์เอง</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= PRICING ============= -->
+  <section>
+    <h2 class="section-title">💰 ลงทะเบียนคอร์ส</h2>
+    <p class="section-sub">ราคาคุยกันได้ · เรียนแล้วไม่พอใจ · คืนเงินเต็มจำนวน 30 วัน</p>
+
+    <div class="pricing-note">
+      <span class="pricing-tag">🎁 ROI สูงมาก</span>
+      <h3>ทุกอย่างรวมกันมูลค่า ฿47,000+</h3>
+      <p>ราคาพิเศษเปิดตัว · limited seats · <b style="color:var(--gold)">ปรึกษาก่อนตัดสินใจได้ทันที</b> · ไม่มีการบังคับซื้อ</p>
+      <p style="color:var(--text);font-size:16px;margin:20px 0">
+        💬 <b>ทัก LINE @wisit777</b> เพื่อ:<br/>
+        1. ถามรายละเอียดคอร์ส<br/>
+        2. ประเมินระดับพื้นฐาน<br/>
+        3. รับส่วนลดพิเศษ (ถ้ามีเปิดรุ่นใหม่)
+      </p>
+      <a href="https://line.me/R/ti/p/~wisit777" target="_blank" class="btn-primary-big pricing-line-cta">
+        💬 ทัก LINE ปรึกษาฟรี · @wisit777
+      </a>
+    </div>
+  </section>
+
+  <!-- ============= GUARANTEE ============= -->
+  <section>
+    <div class="guarantee">
+      <div class="ic">🛡️</div>
+      <h3>รับประกันคืนเงิน 30 วัน</h3>
+      <p>
+        เรียนแล้ว <b>ไม่พอใจ · ไม่ตรงกับที่คิด · เรียนไม่รู้เรื่อง</b> — ขอคืนเงิน<br/>
+        <b>คืนเต็มจำนวน 100%</b> ภายใน 30 วัน · ไม่มีคำถามยาว ๆ<br/>
+        เรามั่นใจในคุณภาพคอร์ส ถึงกล้ารับประกันแบบนี้
+      </p>
+    </div>
+  </section>
+
+  <!-- ============= FAQ ============= -->
+  <section>
+    <h2 class="section-title">❓ คำถามที่พบบ่อย</h2>
+    <p class="section-sub">คำถามที่นักเรียนมักถาม</p>
+
+    <div class="faq">
+      <div class="faq-item">
+        <div class="faq-q">มือใหม่ 100% ไม่เคยเทรดเลย เรียนได้ไหม?</div>
+        <div class="faq-a">
+          <b>ได้แน่นอน 100%</b> · Module 1-2 เริ่มจากศูนย์ (เปิดพอร์ตยังไง · เวลาตลาด · ประเภทหุ้น)
+          · Video มีคำอธิบายทุกศัพท์ · มี glossary · มี 1-on-1 คอยตอบทุกคำถาม
+          · 70% ของนักเรียนคือ<b>มือใหม่</b>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">ต้องมีเงินเท่าไหร่ถึงจะเริ่มเทรดได้?</div>
+        <div class="faq-a">
+          <b>เริ่มต้นได้ตั้งแต่ ฿10,000</b> (บางโบรกเกอร์ ~$100-300) · แต่แนะนำ <b>฿50,000+</b>
+          เพื่อกระจาย 5-10 ตัว · ในคอร์สมี Position Size Calculator สอนคำนวณตามเงินที่มีจริง
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">เรียนใช้เวลาแค่ไหน? ทำงานประจำอยู่</div>
+        <div class="faq-a">
+          <b>ประมาณ 2-3 ชั่วโมง/สัปดาห์</b> ก็เพียงพอ · Video อัดไว้แล้ว ดูเมื่อไหร่ก็ได้ ·
+          8 สัปดาห์จบ (สำหรับคน busy) · หรือ 2-3 สัปดาห์ (สำหรับคนว่าง) · Lifetime access ไม่มีวันหมดอายุ
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">ตลาด US เปิดกลางคืน จะเรียนยังไง?</div>
+        <div class="faq-a">
+          คอร์สนี้เน้น <b>"Set & Forget" strategy</b> · ไม่ต้องอดหลับ · เตรียม limit orders ก่อนนอน ·
+          ตื่นมาดูผล · AI CIO ทำ analysis ให้ 24/7 · เหมาะกับ<b>คนทำงานประจำ</b>อย่างมาก
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">การันตีได้ไหมว่าจะกำไร?</div>
+        <div class="faq-a">
+          <b>ไม่การันตีกำไร</b> — เทรดมีความเสี่ยง · ไม่มีใครการันตีได้ตามกฎหมาย ·
+          แต่<b>การันตีคุณภาพคอร์ส</b> · เรียนแล้วไม่พอใจ คืนเงิน 100% ภายใน 30 วัน ·
+          80%+ ของนักเรียนที่ทำตามระบบ · มีกำไรใน 6 เดือน
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">มีคน hold ผมกลางทางไหม? กลัวเรียนไม่จบ</div>
+        <div class="faq-a">
+          <b>มี 1-on-1 mentorship 3 เดือน</b> · คุณต้องรายงานความก้าวหน้ากับพี่วิศิษฐ์ทุก 2 สัปดาห์ ·
+          ถ้าติดตรงไหน คุยกันได้ทันที · มี community · เพื่อนร่วมเรียน push กัน
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">ต่างกับคอร์สอื่นในตลาดยังไง?</div>
+        <div class="faq-a">
+          1. <b>Bullzeeker AI CIO Premium</b> — ที่อื่นไม่มี<br/>
+          2. <b>1-on-1 กับพี่วิศิษฐ์เอง</b> — ไม่ใช่ทีมงาน<br/>
+          3. <b>Thai-first</b> — สอนภาษาไทย · เนื้อหาเน้นคนไทย (ภาษี, โบรกไทย)<br/>
+          4. <b>ระบบทดสอบได้</b> — เว็บฟรีให้ใช้ก่อน · เชื่อได้แล้วค่อยเรียน<br/>
+          5. <b>Lifetime access + update ฟรี</b>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">จ่ายเงินยังไง? มี installment ไหม?</div>
+        <div class="faq-a">
+          <b>โอน · บัตรเครดิต · PromptPay · TrueMoney · หรือผ่อน 3 เดือน</b> (ผ่านบัตรเครดิต) ·
+          รายละเอียดคุยกันใน LINE @wisit777 · ตกลงกันได้
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= FINAL CTA ============= -->
+  <section class="final-cta">
+    <h2>🎯 พร้อมเปลี่ยน<span class="grad">อนาคตการเงิน</span>แล้วหรือยัง?</h2>
+    <p>
+      อย่ารอเสียเวลาลองผิดลองถูกอีก · เรียนกับคนที่ผ่านมาก่อน ·<br/>
+      <b style="color:var(--text)">ทัก LINE ปรึกษาฟรีก่อน · ไม่บังคับซื้อ</b>
+    </p>
+    <a href="https://line.me/R/ti/p/~wisit777" target="_blank" class="btn-primary-big" style="font-size:19px;padding:18px 40px">
+      💬 คุยกับพี่วิศิษฐ์ · LINE @wisit777
+    </a>
+    <div style="margin-top:20px;font-size:12px;color:var(--muted)">
+      💡 <b>Tip:</b> ทัก LINE ก่อน 12:00 → ตอบภายใน 2 ชั่วโมง · หลัง 12:00 → ตอบวันถัดไป
+    </div>
+  </section>
+
+</main>
+
+<!-- FLOATING LINE BUTTON -->
+<a href="https://line.me/R/ti/p/~wisit777" target="_blank" class="float-line">
+  💬 LINE @wisit777
+</a>
+
+<footer>
+  🎓 <b>Bullzeeker Course</b> · เรียนเทรดหุ้น US สำหรับมือใหม่ · Educational purpose · การเทรดมีความเสี่ยง ผู้ลงทุนควรศึกษาข้อมูลก่อนตัดสินใจ<br/>
+  <a href="index.html">← กลับ Bullzeeker.com</a> · <a href="https://line.me/R/ti/p/~wisit777" target="_blank">💬 LINE @wisit777</a>
+</footer>
+
+<script>
+// FAQ toggle
+document.querySelectorAll('.faq-item').forEach(item => {
+  item.querySelector('.faq-q').addEventListener('click', () => {
+    item.classList.toggle('open');
+  });
+});
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW register failed:', err));
+  });
+}
+</script>
+</body>
+</html>

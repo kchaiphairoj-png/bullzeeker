@@ -209,6 +209,11 @@
   gtag('js', new Date());
   gtag('config', 'G-D593QC1NXE');
 </script>
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#050810" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Bullzeeker" />
 </head>
 <body>
 
@@ -234,6 +239,7 @@
     <a href="tools.html">🛠️ เครื่องมือ</a>
     <a href="macro.html">📊 Macro</a>
     <a href="learn.html">📚 เรียนรู้</a>
+    <a href="course.html" style="color:#00B900">🎓 คอร์ส</a>
     <a href="pro/" style="color:var(--gold);font-weight:700">🏆 Pro<span style="font-size:9px;background:var(--gold);color:#000;padding:1px 5px;border-radius:3px;margin-left:5px;vertical-align:middle;letter-spacing:.5px">BETA</span></a>
   </nav>
 </header>
@@ -1441,6 +1447,13 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
 /* ---------- INIT ---------- */
 buildCriteriaUI();
 updateCacheInfo();
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW register failed:', err));
+  });
+}
 </script>
 </body>
 </html>

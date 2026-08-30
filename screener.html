@@ -274,6 +274,11 @@
   gtag('js', new Date());
   gtag('config', 'G-D593QC1NXE');
 </script>
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#050810" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Bullzeeker" />
 </head>
 <body>
 
@@ -304,6 +309,7 @@
     <a href="tools.html" style="color:var(--muted);padding:11px 16px;font-size:13px;font-weight:600;border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap">🛠️ เครื่องมือ</a>
     <a href="macro.html" style="color:var(--muted);padding:11px 16px;font-size:13px;font-weight:600;border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap">📊 Macro</a>
     <a href="learn.html" style="color:var(--muted);padding:11px 16px;font-size:13px;font-weight:600;border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap">📚 เรียนรู้</a>
+    <a href="course.html" style="color:#00B900">🎓 คอร์ส</a>
     <a href="pro/" style="color:var(--gold);padding:11px 16px;font-size:13px;font-weight:700;border-bottom:2px solid transparent;text-decoration:none;white-space:nowrap">🏆 Pro<span style="font-size:9px;background:var(--gold);color:#000;padding:1px 5px;border-radius:3px;margin-left:5px;vertical-align:middle;letter-spacing:.5px">BETA</span></a>
   </nav>
   <nav class="tabs">
@@ -1342,6 +1348,13 @@ document.querySelector('.preset-btn[data-preset="all"]').classList.add('active')
 /* ---------- INIT ---------- */
 loadAll();
 
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW register failed:', err));
+  });
+}
 </script>
 </body>
 </html>

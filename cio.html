@@ -387,6 +387,11 @@
     .nav-big{font-size:26px}
   }
 </style>
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#050810" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Bullzeeker" />
 </head>
 <body>
 
@@ -410,6 +415,7 @@
     <a href="tools.html">🛠️ เครื่องมือ</a>
     <a href="macro.html">📊 Macro</a>
     <a href="learn.html">📚 เรียนรู้</a>
+    <a href="course.html" style="color:#00B900">🎓 คอร์ส</a>
   </nav>
 </header>
 
@@ -486,7 +492,8 @@
         </div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <span id="aiStatusBadge" class="phase-badge" style="background:rgba(139,151,171,.15);color:var(--muted)">⚙️ AI: OFF</span>
-          <span class="phase-badge">🧠 Phase 3: 10 Strategies</span>
+          <span id="alertBadge" class="phase-badge" style="cursor:pointer;background:rgba(139,151,171,.15);color:var(--muted)" onclick="toggleAlerts()" title="Click to toggle browser notifications">🔕 Alerts: OFF</span>
+          <span class="phase-badge">🚀 Phase 4</span>
           <button class="btn-g" onclick="openSettings()">⚙️ Settings</button>
         </div>
       </div>
@@ -3188,6 +3195,164 @@ function renderConsensus(){
   body.innerHTML = html;
 }
 
+/* ============================================================
+   PHASE 4: SMART ALERTS (Browser Notifications)
+   ============================================================ */
+
+/**
+ * Request notification permission from user.
+ */
+async function requestNotifPermission(){
+  if(!('Notification' in window)){
+    toast('❌ Browser ไม่รองรับ notifications', 'err');
+    return 'denied';
+  }
+  if(Notification.permission === 'granted') return 'granted';
+  if(Notification.permission === 'denied'){
+    toast('⚠️ Notifications ถูก block · เปิดที่ browser settings', 'err');
+    return 'denied';
+  }
+  const result = await Notification.requestPermission();
+  if(result === 'granted'){
+    toast('✅ Notifications enabled!', 'ok');
+    sendNotif('🐂 Bullzeeker Alerts Enabled', 'พร้อมรับแจ้งเตือน stop hit · breakout · regime change');
+  }
+  return result;
+}
+
+/**
+ * Send a browser notification (uses SW if available, else raw Notification).
+ */
+async function sendNotif(title, body, opts = {}){
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+  try{
+    // Try via service worker (works when app is in background)
+    if('serviceWorker' in navigator){
+      const reg = await navigator.serviceWorker.ready;
+      await reg.showNotification(title, {
+        body,
+        icon: opts.icon || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='42' fill='%23050810'/><text y='.9em' x='50%25' font-size='150' text-anchor='middle' dominant-baseline='central'>🐂</text></svg>`,
+        tag: opts.tag || 'bullzeeker',
+        requireInteraction: opts.important || false,
+        data: {url: opts.url || '/cio.html'},
+      });
+    } else {
+      new Notification(title, {body, icon: opts.icon});
+    }
+  }catch(e){
+    console.warn('Notif failed:', e);
+  }
+}
+
+/**
+ * Scan portfolio + watchlist for alert conditions.
+ * Runs automatically every 5 minutes when tab is open.
+ */
+async function checkAlerts(){
+  if(!STATE || !STATE.positions.length) return;
+  if(Notification.permission !== 'granted') return;
+
+  const sentAlerts = STATE.sentAlerts || {};
+  const now = Date.now();
+  const DEDUPE_MS = 4 * 60 * 60 * 1000;  // Don't re-send same alert within 4 hours
+
+  // 1. Check stop losses on positions
+  for(const p of STATE.positions){
+    if(!p.stopLoss) continue;
+    const q = await fetchQuote(p.ticker);
+    if(!q) continue;
+
+    const key = `stop_${p.id}`;
+    if(sentAlerts[key] && now - sentAlerts[key] < DEDUPE_MS) continue;
+
+    if(q.price <= p.stopLoss){
+      sendNotif(
+        `🚨 STOP HIT: ${p.ticker}`,
+        `ราคา $${q.price.toFixed(2)} ≤ Stop $${p.stopLoss.toFixed(2)} · ${p.shares} shares · ควรพิจารณา SELL`,
+        {important: true, tag: `stop-${p.ticker}`}
+      );
+      sentAlerts[key] = now;
+    }
+  }
+
+  // 2. Check target hits
+  for(const p of STATE.positions){
+    if(!p.target) continue;
+    const q = await fetchQuote(p.ticker);
+    if(!q) continue;
+
+    const key = `target_${p.id}`;
+    if(sentAlerts[key] && now - sentAlerts[key] < DEDUPE_MS) continue;
+
+    if(q.price >= p.target){
+      sendNotif(
+        `🎯 TARGET HIT: ${p.ticker}`,
+        `ราคา $${q.price.toFixed(2)} ≥ Target $${p.target.toFixed(2)} · +${((q.price/p.avgCost-1)*100).toFixed(1)}% · พิจารณาทำกำไร`,
+        {important: true, tag: `target-${p.ticker}`}
+      );
+      sentAlerts[key] = now;
+    }
+  }
+
+  // 3. Check big daily moves on watchlist
+  for(const w of (STATE.watchlist || [])){
+    const q = await fetchQuote(w.ticker);
+    if(!q) continue;
+    const key = `move_${w.ticker}`;
+    if(sentAlerts[key] && now - sentAlerts[key] < DEDUPE_MS) continue;
+
+    if(Math.abs(q.changePct) >= 5){
+      const dir = q.changePct >= 0 ? '📈' : '📉';
+      sendNotif(
+        `${dir} ${w.ticker} ${q.changePct >= 0 ? '+' : ''}${q.changePct.toFixed(1)}%`,
+        `Watchlist alert · $${q.price.toFixed(2)} · Big move today`,
+        {tag: `move-${w.ticker}`}
+      );
+      sentAlerts[key] = now;
+    }
+  }
+
+  // Save dedupe state
+  STATE.sentAlerts = sentAlerts;
+  saveState();
+}
+
+/**
+ * Toggle alert monitoring on/off.
+ */
+async function toggleAlerts(){
+  if(!STATE.settings) STATE.settings = {};
+  if(STATE.settings.alertsEnabled){
+    STATE.settings.alertsEnabled = false;
+    toast('🔕 Alerts disabled', 'ok');
+  } else {
+    const perm = await requestNotifPermission();
+    if(perm === 'granted'){
+      STATE.settings.alertsEnabled = true;
+      // Run first check immediately
+      checkAlerts().catch(console.error);
+    }
+  }
+  saveState();
+  updateAlertBadge();
+}
+
+function updateAlertBadge(){
+  const badge = document.getElementById('alertBadge');
+  if(!badge) return;
+  const enabled = STATE.settings?.alertsEnabled;
+  const perm = 'Notification' in window ? Notification.permission : 'denied';
+  if(enabled && perm === 'granted'){
+    badge.innerHTML = '🔔 Alerts: ON';
+    badge.style.background = 'rgba(34,197,94,.15)';
+    badge.style.color = 'var(--green)';
+  } else {
+    badge.innerHTML = '🔕 Alerts: OFF';
+    badge.style.background = 'rgba(139,151,171,.15)';
+    badge.style.color = 'var(--muted)';
+  }
+}
+
 /* ---------- INIT ---------- */
 async function init(){
   if(STATE === null){
@@ -3198,6 +3363,7 @@ async function init(){
     document.getElementById('setupWizard').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
     updateAIStatusBadge();
+    updateAlertBadge();  // Phase 4
     await refreshAll();
     // Phase 3: Render strategy grid + consensus (from last run if cached)
     renderStrategyGrid();
@@ -3212,10 +3378,23 @@ async function init(){
       Object.keys(QUOTE_CACHE).forEach(k => delete QUOTE_CACHE[k]);
       refreshAll().catch(console.error);
     }, 60 * 1000);
+    // Phase 4: Alert monitoring every 5 minutes (if enabled)
+    setInterval(() => {
+      if(STATE.settings?.alertsEnabled && !document.hidden){
+        checkAlerts().catch(console.error);
+      }
+    }, 5 * 60 * 1000);
   }
 }
 
 document.addEventListener('DOMContentLoaded', init);
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW register failed:', err));
+  });
+}
 </script>
 </body>
 </html>

@@ -335,6 +335,11 @@
   gtag('js', new Date());
   gtag('config', 'G-D593QC1NXE');
 </script>
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#050810" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Bullzeeker" />
 </head>
 <body>
 
@@ -370,6 +375,7 @@
     <a href="tools.html">🛠️ เครื่องมือ</a>
     <a href="macro.html">📊 Macro</a>
     <a href="learn.html">📚 เรียนรู้</a>
+    <a href="course.html" style="color:#00B900">🎓 คอร์ส</a>
     <a href="pro/" style="color:var(--gold);font-weight:700">🏆 Pro<span style="font-size:9px;background:var(--gold);color:#000;padding:1px 5px;border-radius:3px;margin-left:5px;vertical-align:middle;letter-spacing:.5px">BETA</span></a>
   </nav>
 </header>
@@ -428,9 +434,15 @@
     </a>
     <a href="cio.html" class="action-card" style="border-color:rgba(139,92,246,.4);background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(236,72,153,.06))">
       <span class="ic">🤖</span>
-      <h3 style="background:linear-gradient(135deg,#8b5cf6,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent">AI CIO <span style="font-size:10px;background:rgba(251,191,36,.15);color:#fbbf24;padding:2px 8px;border-radius:6px;-webkit-text-fill-color:#fbbf24">NEW · Beta</span></h3>
-      <p>ระบบจัดพอร์ตเหมือน CIO + Quant + Risk Manager · Master Portfolio $100K · Real-time monitoring · Alerts</p>
+      <h3 style="background:linear-gradient(135deg,#8b5cf6,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent">AI CIO <span style="font-size:10px;background:rgba(251,191,36,.15);color:#fbbf24;padding:2px 8px;border-radius:6px;-webkit-text-fill-color:#fbbf24">10 Strategies</span></h3>
+      <p>10 Research Engines + Claude/Gemini AI · Master Portfolio $100K · CIO Consensus voting · Smart Alerts</p>
       <span class="go" style="color:#8b5cf6">🚀 ใช้ AI CIO ฟรี →</span>
+    </a>
+    <a href="course.html" class="action-card" style="border-color:rgba(0,185,0,.4);background:linear-gradient(135deg,rgba(0,185,0,.12),rgba(251,191,36,.06))">
+      <span class="ic">🎓</span>
+      <h3 style="color:#00B900">คอร์สเทรดมือใหม่ <span style="font-size:10px;background:var(--gold);color:#0a0e16;padding:2px 8px;border-radius:6px;font-weight:800">Limited</span></h3>
+      <p>เรียน 1-on-1 กับพี่วิศิษฐ์ · 12 modules · AI CIO Premium ตลอดชีพ · LINE alerts · Community · รับประกันคืนเงิน 30 วัน</p>
+      <span class="go" style="color:#00B900">💬 ปรึกษาฟรีที่ LINE @wisit777 →</span>
     </a>
     <a href="tools.html" class="action-card purple">
       <span class="ic">🛠️</span>
@@ -950,6 +962,13 @@ buildEvents();
 loadHome();
 // refresh every 2 min if visible
 setInterval(()=>{ if(!document.hidden) loadHome(); }, 120*1000);
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW register failed:', err));
+  });
+}
 </script>
 </body>
 </html>

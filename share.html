@@ -225,6 +225,11 @@
   gtag('js', new Date());
   gtag('config', 'G-D593QC1NXE');
 </script>
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#050810" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Bullzeeker" />
 </head>
 <body>
 
@@ -523,6 +528,13 @@ async function copyPage(url, btn){
     btn.innerHTML = '📋';
     btn.classList.remove('copied');
   }, 1500);
+}
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW register failed:', err));
+  });
 }
 </script>
 </body>
