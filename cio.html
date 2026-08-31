@@ -735,18 +735,60 @@
 
       <div class="form-grp">
         <label>📈 Ticker (US symbol)</label>
-        <input type="text" id="posTicker" placeholder="เช่น NVDA, AAPL, MSFT" style="text-transform:uppercase" />
-        <div class="form-hint">กดที่นี่แล้วผมจะ fetch ราคาปัจจุบันให้ (คลิกใน Current Price)</div>
+        <input type="text" id="posTicker" placeholder="เช่น NVDA, AAPL, MSFT" style="text-transform:uppercase" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onTickerInputChange()" onblur="fetchTickerPrice()" />
+        <div id="posPriceBox" style="margin-top:8px;padding:10px 12px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.3);border-radius:8px;font-size:13px;display:none">
+          <div id="posPriceLine">—</div>
+        </div>
+      </div>
+
+      <!-- Toggle: Amount $ vs Shares -->
+      <div class="form-grp">
+        <label>💰 วิธีกำหนดขนาด position</label>
+        <div style="display:flex;gap:6px;background:var(--bg3);padding:4px;border-radius:8px;border:1px solid var(--line)">
+          <button type="button" id="posModeAmount" class="pos-mode-btn active" onclick="setPosMode('amount')" style="flex:1;padding:8px;background:var(--cio-purple);color:#fff;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">💵 ใส่จำนวนเงิน ($)</button>
+          <button type="button" id="posModeShares" class="pos-mode-btn" onclick="setPosMode('shares')" style="flex:1;padding:8px;background:none;color:var(--muted);border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">📦 ใส่จำนวนหุ้น</button>
+        </div>
+      </div>
+
+      <div class="form-row" id="posAmountRow">
+        <div class="form-grp">
+          <label>💵 จำนวนเงินที่จะซื้อ ($)</label>
+          <input type="number" id="posAmount" placeholder="5000" step="1" min="0" inputmode="decimal" oninput="onAmountChange()" />
+          <div class="form-hint">→ auto-calc shares ตามราคาปัจจุบัน</div>
+        </div>
+        <div class="form-grp">
+          <label>📦 Shares (auto)</label>
+          <input type="number" id="posSharesCalc" placeholder="0" readonly style="opacity:.75" />
+        </div>
+      </div>
+
+      <div class="form-row" id="posSharesRow" style="display:none">
+        <div class="form-grp">
+          <label>📦 Shares</label>
+          <input type="number" id="posShares" placeholder="10" step="0.01" min="0" inputmode="decimal" oninput="onSharesChange()" />
+        </div>
+        <div class="form-grp">
+          <label>💵 Avg Cost per Share ($)</label>
+          <input type="number" id="posCost" placeholder="720.00" step=".01" min="0" inputmode="decimal" oninput="onCostChange()" />
+        </div>
+      </div>
+
+      <!-- Quick suggest for Stop/Target -->
+      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+        <button type="button" onclick="suggestStopTarget(7,15)" style="flex:1;min-width:100px;padding:8px;background:var(--emerald-bg);color:var(--emerald);border:1px solid var(--emerald);border-radius:6px;font-weight:700;font-size:12px;cursor:pointer">💡 Suggest: -7% / +15%</button>
+        <button type="button" onclick="suggestStopTarget(8,25)" style="flex:1;min-width:100px;padding:8px;background:var(--cio-purple-bg,rgba(139,92,246,.1));color:var(--cio-purple);border:1px solid var(--cio-purple);border-radius:6px;font-weight:700;font-size:12px;cursor:pointer">🚀 Aggressive: -8% / +25%</button>
+        <button type="button" onclick="suggestStopTarget(10,30)" style="flex:1;min-width:100px;padding:8px;background:rgba(251,191,36,.1);color:var(--gold);border:1px solid var(--gold);border-radius:6px;font-weight:700;font-size:12px;cursor:pointer">💎 Long-term: -10% / +30%</button>
       </div>
 
       <div class="form-row">
         <div class="form-grp">
-          <label>📦 Shares</label>
-          <input type="number" id="posShares" placeholder="10" step="0.01" min="0" />
+          <label>🛑 Stop Loss ($) <span style="color:var(--muted)">optional</span></label>
+          <input type="number" id="posStop" placeholder="—" step=".01" min="0" inputmode="decimal" />
+          <div class="form-hint">Invalidation price — ถ้าราคาลงถึงจุดนี้ = SELL</div>
         </div>
         <div class="form-grp">
-          <label>💵 Avg Cost per Share ($)</label>
-          <input type="number" id="posCost" placeholder="720.00" step=".01" min="0" />
+          <label>🎯 Target ($) <span style="color:var(--muted)">optional</span></label>
+          <input type="number" id="posTarget" placeholder="—" step=".01" min="0" inputmode="decimal" />
         </div>
       </div>
 
@@ -775,22 +817,9 @@
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-grp">
-          <label>🛑 Stop Loss ($) <span style="color:var(--red)">*แนะนำ</span></label>
-          <input type="number" id="posStop" placeholder="680.00" step=".01" min="0" />
-          <div class="form-hint">Invalidation price — ถ้าราคาลงถึงจุดนี้ = SELL</div>
-        </div>
-        <div class="form-grp">
-          <label>🎯 Target ($) <span style="color:var(--muted)">optional</span></label>
-          <input type="number" id="posTarget" placeholder="900.00" step=".01" min="0" />
-        </div>
-      </div>
-
       <div class="form-grp">
-        <label>📝 Investment Thesis (why you bought)</label>
-        <textarea id="posThesis" rows="3" placeholder="เช่น: Multi-year base breakout + AI demand tailwind + strong earnings"></textarea>
-        <div class="form-hint">สำคัญมาก — AI ใช้ตรวจ "thesis ยัง valid ไหม?"</div>
+        <label>📝 Investment Thesis <span style="color:var(--muted)">(optional — ถ้ามาจาก Screener/Strategy ไม่ต้องกรอกก็ได้)</span></label>
+        <textarea id="posThesis" rows="2" placeholder="เช่น: Multi-year base breakout + AI demand tailwind (ไม่กรอกก็ได้)"></textarea>
       </div>
 
       <div class="btn-row">
@@ -1614,17 +1643,139 @@ function renderTradeLog(){
 
 /* ---------- ACTIONS ---------- */
 
-function openAddPositionModal(){
-  document.getElementById('posModalTitle').textContent = '➕ Add Position';
-  document.getElementById('posEditId').value = '';
+/* ---------- Add Position modal helpers (Phase 5.1 UX) ---------- */
+let POS_MODE = 'amount';                 // 'amount' | 'shares'
+let POS_CURRENT_PRICE = null;            // last fetched live price
+let POS_FETCH_TIMER = null;
+
+function setPosMode(mode){
+  POS_MODE = mode;
+  const bAmount = document.getElementById('posModeAmount');
+  const bShares = document.getElementById('posModeShares');
+  const rAmount = document.getElementById('posAmountRow');
+  const rShares = document.getElementById('posSharesRow');
+  if(mode === 'amount'){
+    bAmount.style.background = 'var(--cio-purple)';
+    bAmount.style.color = '#fff';
+    bShares.style.background = 'none';
+    bShares.style.color = 'var(--muted)';
+    rAmount.style.display = '';
+    rShares.style.display = 'none';
+    recalcFromAmount();
+  } else {
+    bShares.style.background = 'var(--cio-purple)';
+    bShares.style.color = '#fff';
+    bAmount.style.background = 'none';
+    bAmount.style.color = 'var(--muted)';
+    rAmount.style.display = 'none';
+    rShares.style.display = '';
+    if(POS_CURRENT_PRICE && !document.getElementById('posCost').value){
+      document.getElementById('posCost').value = POS_CURRENT_PRICE.toFixed(2);
+    }
+  }
+}
+
+function onTickerInputChange(){
+  clearTimeout(POS_FETCH_TIMER);
+  POS_FETCH_TIMER = setTimeout(fetchTickerPrice, 700);
+}
+
+async function fetchTickerPrice(){
+  const ticker = document.getElementById('posTicker').value.trim().toUpperCase();
+  if(!ticker || ticker.length < 1) return;
+  const box = document.getElementById('posPriceBox');
+  const line = document.getElementById('posPriceLine');
+  box.style.display = 'block';
+  line.innerHTML = `⏳ กำลังโหลดราคา <b>${ticker}</b>...`;
+  try{
+    const q = await fetchQuote(ticker);
+    if(!q || q.price == null){
+      line.innerHTML = `❌ ไม่พบ <b>${ticker}</b> — เช็ค spelling หรือลอง symbol อื่น`;
+      POS_CURRENT_PRICE = null;
+      return;
+    }
+    POS_CURRENT_PRICE = q.price;
+    const chgSign = q.changePct >= 0 ? '▲' : '▼';
+    const chgCls = q.changePct >= 0 ? 'g' : 'r';
+    line.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-weight:800;font-size:16px">${ticker}</span>
+        <span style="color:var(--muted);font-size:11px">${q.name || ''}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:6px;flex-wrap:wrap">
+        <span style="font-size:20px;font-weight:800;color:var(--gold)">$${q.price.toFixed(2)}</span>
+        <span class="${chgCls==='g'?'g':'r'}" style="color:${chgCls==='g'?'var(--emerald)':'var(--red)'};font-weight:700;font-size:13px">${chgSign} ${q.changePct.toFixed(2)}%</span>
+        <button type="button" onclick="useCurrentPrice()" style="margin-left:auto;padding:6px 12px;background:var(--cio-purple);color:#fff;border:none;border-radius:6px;font-weight:700;font-size:11px;cursor:pointer">✓ ใช้ราคานี้</button>
+      </div>`;
+    // Auto-apply if avgCost empty
+    if(!document.getElementById('posCost').value){
+      document.getElementById('posCost').value = q.price.toFixed(2);
+    }
+    // Recompute
+    if(POS_MODE === 'amount') recalcFromAmount();
+    else onSharesChange();
+    // Update stop/target placeholder hints
+    document.getElementById('posStop').placeholder = (q.price * 0.93).toFixed(2);
+    document.getElementById('posTarget').placeholder = (q.price * 1.15).toFixed(2);
+  }catch(e){
+    line.innerHTML = `❌ Error: ${e.message}`;
+  }
+}
+
+function useCurrentPrice(){
+  if(POS_CURRENT_PRICE == null) return;
+  document.getElementById('posCost').value = POS_CURRENT_PRICE.toFixed(2);
+  if(POS_MODE === 'amount') recalcFromAmount();
+  toast('✓ ใช้ราคา $' + POS_CURRENT_PRICE.toFixed(2), 'ok');
+}
+
+function recalcFromAmount(){
+  const amt = parseFloat(document.getElementById('posAmount').value);
+  if(!amt || !POS_CURRENT_PRICE){
+    document.getElementById('posSharesCalc').value = '';
+    return;
+  }
+  const shares = Math.floor(amt / POS_CURRENT_PRICE);
+  document.getElementById('posSharesCalc').value = shares;
+}
+function onAmountChange(){ recalcFromAmount(); }
+function onSharesChange(){ /* no-op — free entry */ }
+function onCostChange(){ /* no-op — user editing avg cost */ }
+
+function suggestStopTarget(stopPct, targetPct){
+  const cost = parseFloat(document.getElementById('posCost').value) ||
+               (POS_MODE === 'amount' ? POS_CURRENT_PRICE : null);
+  if(!cost){
+    toast('⚠️ ใส่ราคา (fetch ticker หรือกรอก Avg Cost) ก่อน', 'err');
+    return;
+  }
+  const stop = cost * (1 - stopPct/100);
+  const target = cost * (1 + targetPct/100);
+  document.getElementById('posStop').value = stop.toFixed(2);
+  document.getElementById('posTarget').value = target.toFixed(2);
+  toast(`💡 Stop $${stop.toFixed(2)} · Target $${target.toFixed(2)}`, 'ok');
+}
+
+function resetAddPositionForm(){
   document.getElementById('posTicker').value = '';
   document.getElementById('posShares').value = '';
   document.getElementById('posCost').value = '';
+  document.getElementById('posAmount').value = '';
+  document.getElementById('posSharesCalc').value = '';
+  document.getElementById('posPriceBox').style.display = 'none';
   document.getElementById('posDate').value = new Date().toISOString().slice(0,10);
   document.getElementById('posSector').value = '';
   document.getElementById('posStop').value = '';
   document.getElementById('posTarget').value = '';
   document.getElementById('posThesis').value = '';
+  POS_CURRENT_PRICE = null;
+  setPosMode('amount');
+}
+
+function openAddPositionModal(){
+  document.getElementById('posModalTitle').textContent = '➕ Add Position';
+  document.getElementById('posEditId').value = '';
+  resetAddPositionForm();
   document.getElementById('positionModal').classList.add('show');
 }
 
@@ -1633,6 +1784,7 @@ function editPosition(id){
   if(!p) return;
   document.getElementById('posModalTitle').textContent = '✏️ Edit Position';
   document.getElementById('posEditId').value = p.id;
+  resetAddPositionForm();
   document.getElementById('posTicker').value = p.ticker;
   document.getElementById('posShares').value = p.shares;
   document.getElementById('posCost').value = p.avgCost;
@@ -1641,16 +1793,39 @@ function editPosition(id){
   document.getElementById('posStop').value = p.stopLoss || '';
   document.getElementById('posTarget').value = p.target || '';
   document.getElementById('posThesis').value = p.thesis || '';
+  setPosMode('shares');   // edit mode uses shares directly
   document.getElementById('positionModal').classList.add('show');
+  // Auto-fetch current price for reference
+  fetchTickerPrice();
 }
 
 async function savePosition(){
   const ticker = document.getElementById('posTicker').value.trim().toUpperCase();
-  const shares = parseFloat(document.getElementById('posShares').value);
-  const avgCost = parseFloat(document.getElementById('posCost').value);
-  if(!ticker || !shares || !avgCost){
-    toast('❌ กรอก Ticker + Shares + Avg Cost', 'err');
-    return;
+  let shares, avgCost;
+
+  if(POS_MODE === 'amount'){
+    const amt = parseFloat(document.getElementById('posAmount').value);
+    if(!ticker || !amt){
+      toast('❌ กรอก Ticker + จำนวนเงิน', 'err');
+      return;
+    }
+    if(!POS_CURRENT_PRICE){
+      toast('❌ ยังไม่ได้ราคา — กด "ใช้ราคานี้" หรือรอ fetch เสร็จ', 'err');
+      return;
+    }
+    shares = Math.floor(amt / POS_CURRENT_PRICE);
+    avgCost = POS_CURRENT_PRICE;
+    if(shares <= 0){
+      toast('❌ เงินไม่พอซื้อ 1 หุ้น ($' + POS_CURRENT_PRICE.toFixed(2) + ')', 'err');
+      return;
+    }
+  } else {
+    shares = parseFloat(document.getElementById('posShares').value);
+    avgCost = parseFloat(document.getElementById('posCost').value);
+    if(!ticker || !shares || !avgCost){
+      toast('❌ กรอก Ticker + Shares + Avg Cost', 'err');
+      return;
+    }
   }
 
   const editId = document.getElementById('posEditId').value;
