@@ -1061,10 +1061,17 @@ let STATE = loadState();
 function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
+<<<<<<< HEAD
     if(!raw) return null;
     const s = JSON.parse(raw);
     return deepMerge(structuredClone(DEFAULT_STATE), s);
   }catch(e){ console.error('Load state failed:', e); return null; }
+=======
+    if(!raw) return structuredClone(DEFAULT_STATE);
+    const s = JSON.parse(raw);
+    return deepMerge(structuredClone(DEFAULT_STATE), s);
+  }catch(e){ console.error('Load state failed:', e); return structuredClone(DEFAULT_STATE); }
+>>>>>>> 8ddc945 (Fix: Auto-init CIO dashboard for first-time users)
 }
 
 function saveState(){
@@ -3394,11 +3401,17 @@ function updateAlertBadge(){
 
 /* ---------- INIT ---------- */
 async function init(){
+<<<<<<< HEAD
   if(STATE === null){
     // First-time user — show setup wizard
     document.getElementById('setupWizard').style.display = 'block';
     document.getElementById('dashboard').style.display = 'none';
   } else {
+=======
+  // Always show dashboard (STATE is auto-initialized from DEFAULT_STATE)
+  // Setup wizard is now optional — accessible via "🎬 Load Sample Portfolio" button
+  {
+>>>>>>> 8ddc945 (Fix: Auto-init CIO dashboard for first-time users)
     document.getElementById('setupWizard').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
     updateAIStatusBadge();
