@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>🧪 Labs — 10 AI-Managed Portfolios | Bullzeeker</title>
+<meta name="description" content="10 พอร์ตจำลอง Auto-Trade โดยระบบ AI CIO ของ Bullzeeker — ดูผลลัพธ์จริง ตาม 10 กลยุทธ์ · Trend Following, VCP, Long-Term Base, และอื่นๆ" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>" />
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#050810" />
+<style>
+:root{
+  --bg:#050810; --bg2:#0a1220; --bg3:#0f1a2e; --bg4:#152238;
+  --line:#1e2a44; --line2:#2a3856;
+  --text:#e6edf7; --muted:#8b97ab; --dim:#5f6b82;
+  --gold:#fbbf24; --gold-bg:rgba(251,191,36,.1);
+  --accent:#3b82f6; --accent-bg:rgba(59,130,246,.1);
+  --emerald:#10b981; --emerald-bg:rgba(16,185,129,.12);
+  --red:#ef4444; --red-bg:rgba(239,68,68,.12);
+  --purple:#a855f7; --purple-bg:rgba(168,85,247,.1);
+  --thai-red:#ED1C24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  background:var(--bg);color:var(--text);
+  font-family:'Inter','Noto Sans Thai',-apple-system,sans-serif;
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse at top right, rgba(168,85,247,.08), transparent 60%),
+    radial-gradient(ellipse at bottom left, rgba(59,130,246,.06), transparent 60%),
+    var(--bg);
+}
+body{padding-bottom:60px}
+
+/* Nav */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(5,8,16,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+  padding:12px 18px;
+}
+.nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
+.brand-logo{
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--thai-red),var(--gold),var(--accent));
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 4px 12px rgba(251,191,36,.25);
+}
+.brand-name{font-weight:800;font-size:18px;letter-spacing:.5px}
+.brand-sub{font-size:11px;color:var(--muted);margin-top:-2px}
+.nav-links{display:flex;gap:6px;flex-wrap:wrap;overflow-x:auto;flex:1;justify-content:flex-end}
+.nav-a{
+  padding:6px 12px;border-radius:8px;text-decoration:none;color:var(--muted);
+  font-size:13px;font-weight:600;white-space:nowrap;
+  border:1px solid transparent;
+}
+.nav-a:hover{color:var(--text);background:var(--bg3)}
+.nav-a.active{color:var(--purple);background:var(--purple-bg);border-color:var(--purple)}
+
+/* Layout */
+main{max-width:1400px;margin:0 auto;padding:20px 18px}
+.hero{
+  background:linear-gradient(135deg,rgba(168,85,247,.12),rgba(59,130,246,.08));
+  border:1px solid var(--line2);border-radius:16px;padding:20px 22px;margin-bottom:18px;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;right:-40px;top:-40px;
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(168,85,247,.15),transparent 70%);
+  pointer-events:none;
+}
+.hero h1{font-size:26px;font-weight:800;margin-bottom:6px;position:relative}
+.hero h1 span.emoji{font-size:32px;margin-right:8px}
+.hero p{color:var(--muted);font-size:14px;line-height:1.6;max-width:800px}
+.hero-bar{
+  display:flex;gap:12px;margin-top:14px;flex-wrap:wrap;align-items:center;
+  position:relative;
+}
+.hero-stat{
+  background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;
+  padding:8px 14px;display:flex;flex-direction:column;gap:2px;min-width:120px;
+}
+.hero-stat .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.hero-stat .v{font-size:18px;font-weight:800;color:var(--text)}
+.hero-stat .v.g{color:var(--emerald)}
+.hero-stat .v.r{color:var(--red)}
+.hero-stat .v.gold{color:var(--gold)}
+.hero-btn{
+  margin-left:auto;padding:12px 22px;border-radius:10px;
+  background:linear-gradient(135deg,var(--purple),#7c3aed);color:#fff;
+  border:none;font-weight:800;font-size:14px;cursor:pointer;
+  box-shadow:0 6px 20px rgba(168,85,247,.35);transition:transform .15s;
+}
+.hero-btn:hover{transform:translateY(-1px)}
+.hero-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* Progress */
+.progress-bar{
+  height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;
+  margin-top:10px;display:none;position:relative;
+}
+.progress-bar.active{display:block}
+.progress-bar-fill{
+  height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));
+  transition:width .3s;border-radius:3px;
+}
+.progress-msg{
+  font-size:12px;color:var(--muted);margin-top:6px;position:relative;
+  display:none;
+}
+.progress-msg.active{display:block}
+
+/* Card */
+.card{
+  background:var(--bg2);border:1px solid var(--line);border-radius:14px;
+  padding:18px;margin-bottom:16px;
+}
+.card-h{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;gap:12px;flex-wrap:wrap;
+}
+.card-h h2{font-size:16px;font-weight:800}
+.card-h h3{font-size:14px;font-weight:700}
+
+/* Leaderboard */
+.lb{width:100%;border-collapse:collapse;font-size:13px}
+.lb th,.lb td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--line)}
+.lb th{
+  color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  font-size:10px;background:var(--bg3);
+}
+.lb tbody tr{cursor:pointer;transition:background .15s}
+.lb tbody tr:hover{background:var(--bg3)}
+.lb tbody tr.selected{background:var(--purple-bg);border-left:3px solid var(--purple)}
+.lb .rank{
+  width:32px;height:32px;border-radius:8px;background:var(--bg3);
+  display:inline-flex;align-items:center;justify-content:center;font-weight:800;
+}
+.lb .rank.top1{background:linear-gradient(135deg,var(--gold),#f59e0b);color:#0a0e16}
+.lb .rank.top2{background:#94a3b8;color:#0a0e16}
+.lb .rank.top3{background:linear-gradient(135deg,#cd7f32,#a0522d);color:#fff}
+.lb .strat-cell{display:flex;align-items:center;gap:10px}
+.lb .strat-cell .emo{font-size:22px}
+.lb .strat-cell .nm{font-weight:700}
+.lb .strat-cell .th{font-size:11px;color:var(--muted)}
+.lb .pct{font-weight:800;font-size:15px}
+.lb .pct.g{color:var(--emerald)}
+.lb .pct.r{color:var(--red)}
+.lb .num{text-align:right;font-variant-numeric:tabular-nums}
+.lb-mobile{display:none}
+
+/* NAV Chart */
+.chart-box{
+  background:var(--bg3);border-radius:10px;padding:12px;
+  border:1px solid var(--line);position:relative;
+}
+.chart-legend{
+  display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;
+  padding:8px;background:rgba(255,255,255,.02);border-radius:8px;
+}
+.legend-chip{
+  padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;
+  cursor:pointer;transition:.15s;border:1px solid transparent;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.legend-chip .dot{width:10px;height:10px;border-radius:50%}
+.legend-chip.hidden{opacity:.35}
+.legend-chip:hover{background:rgba(255,255,255,.05)}
+
+/* Portfolio detail */
+.pf-detail{
+  background:var(--bg2);border:1px solid var(--purple);border-radius:14px;
+  padding:20px;margin-bottom:16px;
+  box-shadow:0 8px 30px rgba(168,85,247,.15);
+}
+.pf-detail-h{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.pf-detail-h .emo{font-size:36px}
+.pf-detail-h .info{flex:1;min-width:0}
+.pf-detail-h h3{font-size:20px;font-weight:800}
+.pf-detail-h .sub{font-size:12px;color:var(--muted)}
+.pf-stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;
+  margin-bottom:16px;
+}
+.pf-stat{
+  background:var(--bg3);border:1px solid var(--line);border-radius:10px;
+  padding:10px 12px;
+}
+.pf-stat .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.pf-stat .v{font-size:16px;font-weight:800;margin-top:2px}
+.pf-stat .v.g{color:var(--emerald)}
+.pf-stat .v.r{color:var(--red)}
+.pf-stat .v.gold{color:var(--gold)}
+
+/* Sub tabs */
+.tabs{display:flex;gap:6px;margin-bottom:14px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{
+  padding:10px 16px;background:none;border:none;color:var(--muted);
+  font-weight:700;font-size:13px;cursor:pointer;
+  border-bottom:2px solid transparent;white-space:nowrap;
+}
+.tab.active{color:var(--purple);border-bottom-color:var(--purple)}
+
+.pos-row,.tx-row{
+  display:grid;padding:10px 12px;border-bottom:1px solid var(--line);
+  font-size:13px;align-items:center;gap:8px;
+}
+.pos-row{grid-template-columns:60px 1fr 90px 90px 100px}
+.tx-row{grid-template-columns:80px 80px 60px 1fr 100px 100px}
+.pos-row.head,.tx-row.head{
+  background:var(--bg3);font-size:10px;text-transform:uppercase;letter-spacing:.5px;
+  color:var(--muted);font-weight:700;border-radius:8px 8px 0 0;
+}
+.pos-row .ticker,.tx-row .ticker{font-weight:800;color:var(--gold)}
+.pos-row .g,.tx-row .g{color:var(--emerald);font-weight:700}
+.pos-row .r,.tx-row .r{color:var(--red);font-weight:700}
+.action-buy{background:var(--emerald-bg);color:var(--emerald);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700}
+.action-sell{background:var(--red-bg);color:var(--red);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700}
+.empty{text-align:center;padding:20px;color:var(--muted);font-size:13px}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--bg3);color:var(--text);
+  padding:12px 20px;border-radius:10px;font-weight:700;font-size:14px;
+  border:1px solid var(--line2);box-shadow:0 12px 40px rgba(0,0,0,.5);
+  opacity:0;pointer-events:none;transition:.3s;z-index:1000;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:var(--emerald);color:var(--emerald)}
+.toast.err{border-color:var(--red);color:var(--red)}
+
+/* Reset banner */
+.reset-warn{
+  background:var(--red-bg);border:1px solid var(--red);border-radius:10px;
+  padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--red);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.reset-warn button{
+  background:var(--red);color:#fff;border:none;padding:6px 12px;
+  border-radius:6px;font-weight:700;cursor:pointer;font-size:12px;
+}
+
+/* Responsive */
+@media (max-width:900px){
+  .lb-desktop{display:none}
+  .lb-mobile{display:block}
+  .pf-mobile-card{
+    background:var(--bg3);border:1px solid var(--line);border-radius:10px;
+    padding:12px;margin-bottom:8px;cursor:pointer;
+  }
+  .pf-mobile-card.selected{border-color:var(--purple);background:var(--purple-bg)}
+  .pf-mobile-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .pf-mobile-h .emo{font-size:26px}
+  .pf-mobile-h .nm{font-weight:800;font-size:14px}
+  .pf-mobile-h .th{font-size:11px;color:var(--muted)}
+  .pf-mobile-h .rk{
+    margin-left:auto;width:30px;height:30px;border-radius:8px;background:var(--bg2);
+    display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;
+  }
+  .pf-mobile-h .rk.top1{background:linear-gradient(135deg,var(--gold),#f59e0b);color:#0a0e16}
+  .pf-mobile-h .rk.top2{background:#94a3b8;color:#0a0e16}
+  .pf-mobile-h .rk.top3{background:linear-gradient(135deg,#cd7f32,#a0522d);color:#fff}
+  .pf-mobile-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .pf-mobile-metric .l{font-size:10px;color:var(--muted);text-transform:uppercase}
+  .pf-mobile-metric .v{font-size:14px;font-weight:800}
+  .pos-row,.tx-row{font-size:11px;padding:8px 6px}
+  .pos-row{grid-template-columns:50px 1fr 70px 80px}
+  .pos-row .col-shares{display:none}
+  .tx-row{grid-template-columns:70px 60px 50px 1fr 80px}
+  .tx-row .col-value{display:none}
+  .hero-btn{width:100%;margin-left:0;margin-top:8px}
+  .hero-stat{min-width:calc(50% - 6px)}
+}
+</style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D593QC1NXE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-D593QC1NXE');
+</script>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-inner">
+    <a href="/" class="brand">
+      <div class="brand-logo">🐂</div>
+      <div>
+        <div class="brand-name">Bullzeeker</div>
+        <div class="brand-sub">🧪 Labs · 10 AI Portfolios</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="nav-a">🏠 หน้าหลัก</a>
+      <a href="/screener.html" class="nav-a">🎯 Screener</a>
+      <a href="/breakout.html" class="nav-a">🚀 Breakout</a>
+      <a href="/longterm.html" class="nav-a">🌊 Long-Term</a>
+      <a href="/cio.html" class="nav-a">🤖 AI CIO</a>
+      <a href="/labs.html" class="nav-a active">🧪 Labs</a>
+      <a href="/course.html" class="nav-a">🎓 คอร์ส</a>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1><span class="emoji">🧪</span>Labs — 10 AI-Managed Portfolios</h1>
+    <p>
+      พอร์ตจำลอง 10 พอร์ต · แต่ละพอร์ตเริ่มด้วย <b>$100,000</b> · บริหารด้วย 1 กลยุทธ์อัตโนมัติ ·
+      ผมจะซื้อ/ขายให้ตามสัญญาณของกลยุทธ์นั้น ๆ · คุณดูผลลัพธ์ได้แบบเปิดเผยและตรวจสอบได้
+    </p>
+    <div class="hero-bar">
+      <div class="hero-stat">
+        <div class="l">📅 เริ่มเมื่อ</div>
+        <div class="v" id="statStart">—</div>
+      </div>
+      <div class="hero-stat">
+        <div class="l">⏱️ Trading Days</div>
+        <div class="v" id="statDays">0</div>
+      </div>
+      <div class="hero-stat">
+        <div class="l">🏆 พอร์ตชนะ</div>
+        <div class="v gold" id="statWinner">—</div>
+      </div>
+      <div class="hero-stat">
+        <div class="l">📊 SPY Benchmark</div>
+        <div class="v" id="statSpy">—</div>
+      </div>
+      <button class="hero-btn" id="runBtn" onclick="runDaily()">
+        <span id="runBtnLbl">🔄 รันวันนี้</span>
+      </button>
+    </div>
+    <div class="progress-bar" id="progBar"><div class="progress-bar-fill" id="progFill" style="width:0%"></div></div>
+    <div class="progress-msg" id="progMsg">—</div>
+  </div>
+
+  <!-- Reset warning (if state exists but user wants fresh start) -->
+  <div id="resetWarn"></div>
+
+  <!-- LEADERBOARD -->
+  <div class="card">
+    <div class="card-h">
+      <h2>🏁 Leaderboard · 10 Portfolios</h2>
+      <span class="hero-stat" style="min-width:0"><span class="l">📊 Ranking by</span><span class="v" style="font-size:13px">Total Return %</span></span>
+    </div>
+
+    <!-- Desktop table -->
+    <table class="lb lb-desktop">
+      <thead>
+        <tr>
+          <th style="width:60px">#</th>
+          <th>Strategy</th>
+          <th class="num">NAV</th>
+          <th class="num">Return %</th>
+          <th class="num">Positions</th>
+          <th class="num">Trades</th>
+          <th class="num">Win Rate</th>
+          <th class="num">Max DD</th>
+        </tr>
+      </thead>
+      <tbody id="lbBody">
+        <tr><td colspan="8" class="empty">ยังไม่มีข้อมูล — กด <b>🔄 รันวันนี้</b> เพื่อเริ่ม</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Mobile cards -->
+    <div class="lb-mobile" id="lbMobile"></div>
+  </div>
+
+  <!-- COMBINED CHART -->
+  <div class="card">
+    <div class="card-h">
+      <h2>📈 Combined NAV Growth · All 10 Portfolios vs SPY</h2>
+      <span id="chartMeta" style="font-size:11px;color:var(--muted)"></span>
+    </div>
+    <div class="chart-legend" id="chartLegend"></div>
+    <div class="chart-box">
+      <svg id="navChart" viewBox="0 0 800 320" style="width:100%;height:320px;display:block"></svg>
+      <div class="empty" id="chartEmpty" style="display:none">ยังไม่มีข้อมูล — รันวันแรกก่อน</div>
+    </div>
+  </div>
+
+  <!-- PORTFOLIO DETAIL -->
+  <div id="pfDetail"></div>
+
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast">—</div>
+
+<!-- Scripts -->
+<script src="/universe.js"></script>
+<script src="/strategies.js"></script>
+
+<script>
+/* ============================================================
+   BULLZEEKER LABS — 10 Autonomous Simulated Portfolios
+   ============================================================ */
+
+/* ---------- CONFIG ---------- */
+const PROXIES = [
+  url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
+  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+  url => 'https://corsproxy.io/?' + encodeURIComponent(url),
+];
+const STORAGE_KEY = 'bullzeeker_labs_state_v2';
+const INITIAL_CASH = 100000;
+const MAX_POSITIONS = 8;
+const POSITION_SIZE_PCT = 12;    // 12% of NAV per new position
+const STOP_LOSS_PCT = 8;         // -8% stop loss
+const PROFIT_TAKE_PCT = 25;      // +25% partial take profit
+const MAX_HOLD_DAYS = 60;        // sell if held > 60 days
+const UNIVERSE_KEY = 'liquid_500';
+const BENCHMARK = 'SPY';
+const FETCH_CONCURRENCY = 20;
+
+/* ---------- STATE ---------- */
+const DEFAULT_STATE = {
+  version: 2,
+  startedAt: null,
+  lastRunDate: null,
+  runCount: 0,
+  portfolios: {},   // filled with strategyId → portfolio
+  benchmark: {
+    ticker: BENCHMARK,
+    navHistory: [],   // {date, price, nav (normalized to initial cash)}
+  },
+  selectedPortfolio: null,
+  selectedTab: 'positions',   // 'positions' | 'transactions' | 'nav'
+};
+
+function emptyPortfolio(strategyId){
+  return {
+    strategyId,
+    cash: INITIAL_CASH,
+    positions: [],      // {ticker, shares, avgCost, entryDate, entryReason, stopLoss, target, highWater}
+    navHistory: [],     // {date, nav, cash, invested, positionCount}
+    transactions: [],   // {date, action:'BUY'|'SELL', ticker, shares, price, reason, pnl}
+    wins: 0,
+    losses: 0,
+    peakNav: INITIAL_CASH,
+    maxDrawdown: 0,     // %
+  };
+}
+
+let STATE = loadState();
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw){
+      const s = structuredClone(DEFAULT_STATE);
+      return s;
+    }
+    const s = JSON.parse(raw);
+    // Merge with defaults for forward compatibility
+    return deepMerge(structuredClone(DEFAULT_STATE), s);
+  }catch(e){
+    console.error('Load labs state failed:', e);
+    return structuredClone(DEFAULT_STATE);
+  }
+}
+
+function deepMerge(target, source){
+  if(!source) return target;
+  for(const k of Object.keys(source)){
+    if(source[k] && typeof source[k] === 'object' && !Array.isArray(source[k])){
+      target[k] = deepMerge(target[k] || {}, source[k]);
+    } else {
+      target[k] = source[k];
+    }
+  }
+  return target;
+}
+
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE));
+    return true;
+  }catch(e){
+    toast('❌ Save failed: ' + e.message, 'err');
+    return false;
+  }
+}
+
+function ensurePortfolios(){
+  if(!window.BULLZEEKER_STRATEGIES) return;
+  const stratIds = Object.keys(window.BULLZEEKER_STRATEGIES.STRATEGIES);
+  for(const id of stratIds){
+    if(!STATE.portfolios[id]){
+      STATE.portfolios[id] = emptyPortfolio(id);
+    }
+  }
+}
+
+/* ---------- MARKET DATA ---------- */
+async function tryProxies(url){
+  for(const p of PROXIES){
+    try{
+      const r = await fetch(p(url), {cache:'no-store'});
+      if(!r.ok) continue;
+      const t = await r.text();
+      if(t && t.length > 10) return t;
+    }catch{}
+  }
+  throw new Error('all proxies failed');
+}
+
+async function fetchChartOne(ticker){
+  try{
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?range=1y&interval=1d`;
+    const txt = await tryProxies(url);
+    const j = JSON.parse(txt);
+    const res = j?.chart?.result?.[0];
+    if(!res) return null;
+    const quote = res.indicators?.quote?.[0];
+    const closes = (quote?.close || []).filter(x => x != null);
+    const highs = (quote?.high || []).filter(x => x != null);
+    const lows = (quote?.low || []).filter(x => x != null);
+    const vols = (quote?.volume || []).filter(x => x != null);
+    if(closes.length < 20) return null;
+    const meta = res.meta || {};
+    return {
+      ticker,
+      closes, highs, lows, vols,
+      price: meta.regularMarketPrice || closes[closes.length-1],
+      currency: meta.currency || 'USD',
+    };
+  }catch(e){
+    return null;
+  }
+}
+
+async function fetchUniverse(tickers, onProgress){
+  const map = {};
+  let done = 0;
+  const chunks = [];
+  for(let i = 0; i < tickers.length; i += FETCH_CONCURRENCY){
+    chunks.push(tickers.slice(i, i + FETCH_CONCURRENCY));
+  }
+  for(const batch of chunks){
+    await Promise.all(batch.map(async t => {
+      const d = await fetchChartOne(t);
+      if(d) map[t] = d;
+      done++;
+      onProgress?.(done, tickers.length, t);
+    }));
+  }
+  return map;
+}
+
+/* ---------- MARKET REGIME (simplified) ---------- */
+async function detectRegime(dataMap){
+  const spy = dataMap['SPY'];
+  if(!spy || spy.closes.length < 200){
+    return {label:'UNKNOWN', bullScore:0, score:0};
+  }
+  const closes = spy.closes;
+  const price = closes[closes.length-1];
+  const ma50 = avg(closes.slice(-50));
+  const ma200 = avg(closes.slice(-200));
+  let score = 0;
+  if(price > ma50) score += 2;
+  if(price > ma200) score += 3;
+  if(ma50 > ma200) score += 2;
+  const ret1m = (price / closes[closes.length-21] - 1) * 100;
+  if(ret1m > 3) score += 2;
+  if(ret1m < -3) score -= 2;
+  let label = 'NEUTRAL';
+  if(score >= 6) label = 'BULL';
+  else if(score >= 3) label = 'MILD_BULL';
+  else if(score <= -1) label = 'BEAR';
+  return {label, bullScore:score, score, ret1m, price, ma50, ma200};
+}
+
+function avg(arr){
+  if(!arr || !arr.length) return 0;
+  return arr.reduce((a,b) => a+b, 0) / arr.length;
+}
+
+/* ---------- SIMULATION ENGINE ---------- */
+
+function todayISO(){
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+
+function isMarketDay(dateStr){
+  // Skip weekends. Approximate — doesn't check US holidays.
+  const d = new Date(dateStr);
+  const dow = d.getDay();
+  return dow !== 0 && dow !== 6;
+}
+
+function pfValueAt(pf, dataMap){
+  let invested = 0;
+  for(const p of pf.positions){
+    const d = dataMap[p.ticker];
+    const px = d?.price || p.avgCost;
+    invested += p.shares * px;
+  }
+  return pf.cash + invested;
+}
+
+async function runDaily(){
+  const btn = document.getElementById('runBtn');
+  const lbl = document.getElementById('runBtnLbl');
+  const bar = document.getElementById('progBar');
+  const fill = document.getElementById('progFill');
+  const msg = document.getElementById('progMsg');
+
+  // Safety
+  if(!window.BULLZEEKER_STRATEGIES){
+    toast('❌ strategies.js ยังไม่โหลด — refresh หน้า', 'err');
+    return;
+  }
+  if(!window.BULLZEEKER_UNIVERSE){
+    toast('❌ universe.js ยังไม่โหลด — refresh หน้า', 'err');
+    return;
+  }
+
+  ensurePortfolios();
+
+  const today = todayISO();
+  if(!isMarketDay(today)){
+    toast('📴 วันนี้ตลาดปิด (weekend) — ลองใหม่วันจันทร์', 'err');
+    return;
+  }
+  if(STATE.lastRunDate === today){
+    toast('⚠️ วันนี้รันไปแล้ว · ผลลัพธ์จะอัปเดตพรุ่งนี้', 'err');
+    return;
+  }
+
+  btn.disabled = true;
+  lbl.textContent = '⏳ กำลังรัน...';
+  bar.classList.add('active');
+  msg.classList.add('active');
+  fill.style.width = '2%';
+  msg.textContent = '🚀 เริ่มโหลดข้อมูลตลาด...';
+
+  try{
+    // 1. Build universe = liquid_500 + SPY benchmark + sector ETFs
+    const U = window.BULLZEEKER_UNIVERSE;
+    const universe = U[UNIVERSE_KEY] || U.liquid_500 || [];
+    const sectorETFs = ['XLK','XLF','XLV','XLY','XLP','XLI','XLE','XLU','XLB','XLRE','XLC'];
+    const tickers = [...new Set([...universe, ...sectorETFs, BENCHMARK])];
+
+    // 2. Fetch all
+    const t0 = performance.now();
+    const dataMap = await fetchUniverse(tickers, (done, total, sym) => {
+      const pct = 5 + (done/total) * 55;
+      fill.style.width = pct + '%';
+      msg.textContent = `📡 Fetched ${done}/${total} · ${sym}`;
+    });
+    const fetched = Object.keys(dataMap).length;
+    msg.textContent = `✓ Fetched ${fetched} charts in ${((performance.now()-t0)/1000).toFixed(1)}s`;
+
+    // 3. Detect market regime
+    const regime = await detectRegime(dataMap);
+    fill.style.width = '65%';
+
+    // 4. Run each strategy → get picks
+    fill.style.width = '70%';
+    msg.textContent = '🧠 Running 10 strategies...';
+    const stratIds = Object.keys(window.BULLZEEKER_STRATEGIES.STRATEGIES);
+    const results = await window.BULLZEEKER_STRATEGIES.runAllStrategies(dataMap, regime, stratIds);
+
+    fill.style.width = '80%';
+    msg.textContent = '💼 Simulating trades for 10 portfolios...';
+
+    // 5. Simulate one day per portfolio
+    for(const [sid, strat] of Object.entries(window.BULLZEEKER_STRATEGIES.STRATEGIES)){
+      const pf = STATE.portfolios[sid];
+      const picks = results[sid]?.picks || [];
+      const conviction = results[sid]?.conviction || 0;
+      simulateOneDay(pf, sid, picks, conviction, dataMap, today);
+    }
+
+    // 6. Update SPY benchmark
+    const spy = dataMap[BENCHMARK];
+    if(spy){
+      const bench = STATE.benchmark;
+      if(bench.navHistory.length === 0){
+        // First day: normalize to INITIAL_CASH
+        bench.navHistory.push({date: today, price: spy.price, nav: INITIAL_CASH});
+      } else {
+        const first = bench.navHistory[0];
+        const nav = INITIAL_CASH * (spy.price / first.price);
+        bench.navHistory.push({date: today, price: spy.price, nav});
+      }
+    }
+
+    // 7. Save state
+    STATE.lastRunDate = today;
+    STATE.runCount = (STATE.runCount || 0) + 1;
+    if(!STATE.startedAt) STATE.startedAt = today;
+    saveState();
+
+    fill.style.width = '100%';
+    msg.textContent = `✅ Done · Day ${STATE.runCount} · ${fetched} charts · Regime: ${regime.label}`;
+
+    // 8. Render
+    renderAll();
+    toast(`✅ รันวันนี้เสร็จ · Day ${STATE.runCount}`, 'ok');
+
+    setTimeout(() => {
+      bar.classList.remove('active');
+      msg.classList.remove('active');
+    }, 4000);
+
+  }catch(e){
+    console.error('Daily run failed:', e);
+    toast('❌ Run failed: ' + e.message, 'err');
+    msg.textContent = '❌ ' + e.message;
+  }finally{
+    btn.disabled = false;
+    lbl.textContent = '🔄 รันวันนี้';
+  }
+}
+
+/**
+ * Simulate one day of trading for a single portfolio.
+ * Logic:
+ *  1. Update highWater for each position (for trailing stop)
+ *  2. Check exit rules → sell
+ *  3. Check entry: strategy picks not already held → buy up to MAX_POSITIONS
+ *  4. Log NAV
+ */
+function simulateOneDay(pf, sid, picks, conviction, dataMap, date){
+  const strat = window.BULLZEEKER_STRATEGIES.STRATEGIES[sid];
+
+  // Mark-to-market: get current prices
+  const positionPrices = {};
+  for(const pos of pf.positions){
+    const d = dataMap[pos.ticker];
+    positionPrices[pos.ticker] = d?.price || pos.avgCost;
+    // update highWater
+    if(!pos.highWater || positionPrices[pos.ticker] > pos.highWater){
+      pos.highWater = positionPrices[pos.ticker];
+    }
+  }
+
+  // === EXIT LOGIC ===
+  const daysHeld = (p) => {
+    if(!p.entryDate) return 0;
+    const d1 = new Date(p.entryDate);
+    const d2 = new Date(date);
+    return Math.floor((d2 - d1) / (1000*60*60*24));
+  };
+
+  const stillPickers = new Set(picks.map(p => p.ticker));
+  const toSell = [];
+  for(const pos of pf.positions){
+    const px = positionPrices[pos.ticker];
+    const pnlPct = (px / pos.avgCost - 1) * 100;
+    const trailStop = pos.highWater * (1 - STOP_LOSS_PCT/100);
+    let sellReason = null;
+
+    // Rule 1: Trailing stop
+    if(px < trailStop) sellReason = `Trailing stop hit (${STOP_LOSS_PCT}% from high $${pos.highWater.toFixed(2)})`;
+    // Rule 2: Hard stop (initial)
+    else if(pnlPct < -STOP_LOSS_PCT * 1.5) sellReason = `Hard stop ${pnlPct.toFixed(1)}%`;
+    // Rule 3: Held too long + not in strategy picks anymore
+    else if(daysHeld(pos) > MAX_HOLD_DAYS && !stillPickers.has(pos.ticker)) sellReason = `Held ${daysHeld(pos)}d + no longer in signal`;
+    // Rule 4: Big profit take (partial)
+    else if(pnlPct > PROFIT_TAKE_PCT * 2) sellReason = `Big win ${pnlPct.toFixed(1)}% — take profit`;
+    // Rule 5: Cash defense strategy: only holds cash + defensive ETFs
+    else if(sid === 'cash_defense' && conviction >= 60 && !['BIL','SHY','TLT','GLD','IEF'].includes(pos.ticker)) {
+      sellReason = 'Cash Defense engaged — flatten risk';
+    }
+
+    if(sellReason){
+      toSell.push({pos, price: px, reason: sellReason, pnlPct});
+    }
+  }
+
+  for(const s of toSell){
+    const proceeds = s.pos.shares * s.price;
+    pf.cash += proceeds;
+    const cost = s.pos.shares * s.pos.avgCost;
+    const pnl = proceeds - cost;
+    if(pnl > 0) pf.wins++; else pf.losses++;
+    pf.transactions.push({
+      date,
+      action: 'SELL',
+      ticker: s.pos.ticker,
+      shares: s.pos.shares,
+      price: s.price,
+      value: proceeds,
+      pnl,
+      pnlPct: s.pnlPct,
+      reason: s.reason,
+    });
+    pf.positions = pf.positions.filter(p => p !== s.pos);
+  }
+
+  // === ENTRY LOGIC ===
+  // Only enter if conviction ≥ 40 (avoid trading in bad regimes for the strategy)
+  const currentNav = pfValueAt(pf, dataMap);
+  const heldTickers = new Set(pf.positions.map(p => p.ticker));
+  const openSlots = MAX_POSITIONS - pf.positions.length;
+
+  // Cash Defense special: only hold BIL if conviction high
+  if(sid === 'cash_defense'){
+    if(conviction >= 60 && !heldTickers.has('BIL') && openSlots > 0){
+      const d = dataMap['BIL'];
+      if(d){
+        // Buy BIL with 90% of cash
+        const alloc = pf.cash * 0.9;
+        const shares = Math.floor(alloc / d.price);
+        if(shares > 0){
+          pf.cash -= shares * d.price;
+          pf.positions.push({
+            ticker:'BIL', shares, avgCost:d.price,
+            entryDate:date, entryReason:'Cash Defense engaged',
+            stopLoss: d.price * 0.98, target: d.price * 1.05,
+            highWater: d.price,
+          });
+          pf.transactions.push({
+            date, action:'BUY', ticker:'BIL', shares, price:d.price,
+            value:shares*d.price, reason:'Cash Defense: park in short-term T-bill',
+          });
+        }
+      }
+    }
+  } else if(conviction >= 40 && openSlots > 0){
+    // Buy top picks not already held
+    let bought = 0;
+    for(const pick of picks){
+      if(bought >= openSlots) break;
+      if(heldTickers.has(pick.ticker)) continue;
+      const d = dataMap[pick.ticker];
+      if(!d) continue;
+      const px = d.price;
+      const targetAlloc = currentNav * (POSITION_SIZE_PCT / 100);
+      if(pf.cash < targetAlloc * 0.5) continue;    // not enough cash left
+      const shares = Math.floor(Math.min(targetAlloc, pf.cash * 0.9) / px);
+      if(shares <= 0) continue;
+      const cost = shares * px;
+      pf.cash -= cost;
+      pf.positions.push({
+        ticker: pick.ticker,
+        shares,
+        avgCost: px,
+        entryDate: date,
+        entryReason: pick.reason || strat.description,
+        stopLoss: px * (1 - STOP_LOSS_PCT/100),
+        target: px * (1 + PROFIT_TAKE_PCT/100),
+        highWater: px,
+        entryScore: pick.score,
+      });
+      pf.transactions.push({
+        date,
+        action:'BUY',
+        ticker: pick.ticker,
+        shares,
+        price: px,
+        value: cost,
+        reason: pick.reason || `${strat.name} signal (score ${pick.score?.toFixed?.(0)})`,
+      });
+      bought++;
+      heldTickers.add(pick.ticker);
+    }
+  }
+
+  // === UPDATE NAV HISTORY ===
+  const finalNav = pfValueAt(pf, dataMap);
+  const invested = finalNav - pf.cash;
+  pf.navHistory.push({
+    date,
+    nav: finalNav,
+    cash: pf.cash,
+    invested,
+    positionCount: pf.positions.length,
+  });
+
+  // Update peak + drawdown
+  if(finalNav > pf.peakNav) pf.peakNav = finalNav;
+  const dd = ((pf.peakNav - finalNav) / pf.peakNav) * 100;
+  if(dd > pf.maxDrawdown) pf.maxDrawdown = dd;
+}
+
+/* ---------- RENDERING ---------- */
+
+const STRAT_COLORS = {
+  trend_following:  '#22c55e',
+  momentum_leaders: '#a855f7',
+  stage2_breakout:  '#3b82f6',
+  vcp:              '#f59e0b',
+  longterm_base:    '#8b5cf6',
+  pullback_dip:     '#06b6d4',
+  turnaround:       '#ec4899',
+  low_volatility:   '#14b8a6',
+  sector_rotation:  '#eab308',
+  cash_defense:     '#94a3b8',
+};
+
+function fmtMoney(v){
+  if(v == null || !isFinite(v)) return '—';
+  const s = v < 0 ? '-' : '';
+  v = Math.abs(v);
+  if(v >= 1e6) return s + '$' + (v/1e6).toFixed(2) + 'M';
+  if(v >= 1e3) return s + '$' + (v/1e3).toFixed(1) + 'k';
+  return s + '$' + v.toFixed(0);
+}
+
+function fmtPct(v){
+  if(v == null || !isFinite(v)) return '—';
+  return (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
+}
+
+function renderAll(){
+  renderHeroStats();
+  renderLeaderboard();
+  renderChart();
+  renderPfDetail();
+  renderResetWarn();
+}
+
+function renderResetWarn(){
+  const el = document.getElementById('resetWarn');
+  if(STATE.runCount === 0){
+    el.innerHTML = '';
+    return;
+  }
+  el.innerHTML = `<div class="reset-warn">
+    <span>💾 มีข้อมูล ${STATE.runCount} วัน · ตั้งแต่ ${STATE.startedAt} · เก็บใน localStorage เครื่องนี้เท่านั้น</span>
+    <button onclick="resetLabs()">🗑️ Reset ทั้งหมด</button>
+  </div>`;
+}
+
+function resetLabs(){
+  if(!confirm('⚠️ ล้างข้อมูลทั้งหมด?\n\nจะลบประวัติการซื้อขาย NAV และ positions ของทั้ง 10 พอร์ต — ทำใหม่ตั้งแต่ต้น\n\n(ไม่สามารถกู้คืนได้)')){
+    return;
+  }
+  STATE = structuredClone(DEFAULT_STATE);
+  saveState();
+  renderAll();
+  toast('🗑️ Reset สำเร็จ — กด "รันวันนี้" เพื่อเริ่มใหม่', 'ok');
+}
+
+function renderHeroStats(){
+  document.getElementById('statStart').textContent = STATE.startedAt || '—';
+  document.getElementById('statDays').textContent = STATE.runCount || 0;
+
+  const rows = getLeaderRows();
+  if(rows.length && rows[0].nav > 0){
+    const w = rows[0];
+    document.getElementById('statWinner').textContent = w.strat.emoji + ' ' + w.strat.name;
+  } else {
+    document.getElementById('statWinner').textContent = '—';
+  }
+
+  const bench = STATE.benchmark.navHistory;
+  if(bench.length > 0){
+    const first = bench[0];
+    const last = bench[bench.length-1];
+    const ret = (last.nav / INITIAL_CASH - 1) * 100;
+    const el = document.getElementById('statSpy');
+    el.textContent = fmtPct(ret);
+    el.className = 'v ' + (ret >= 0 ? 'g' : 'r');
+  }
+}
+
+function getLeaderRows(){
+  if(!window.BULLZEEKER_STRATEGIES) return [];
+  const rows = [];
+  for(const [sid, pf] of Object.entries(STATE.portfolios)){
+    const strat = window.BULLZEEKER_STRATEGIES.STRATEGIES[sid];
+    if(!strat) continue;
+    const lastNav = pf.navHistory.length ? pf.navHistory[pf.navHistory.length-1].nav : INITIAL_CASH;
+    const ret = (lastNav / INITIAL_CASH - 1) * 100;
+    const total = pf.wins + pf.losses;
+    const winRate = total > 0 ? (pf.wins / total) * 100 : 0;
+    rows.push({
+      sid, strat, pf,
+      nav: lastNav,
+      ret,
+      positions: pf.positions.length,
+      trades: pf.transactions.length,
+      winRate,
+      maxDD: pf.maxDrawdown || 0,
+    });
+  }
+  rows.sort((a,b) => b.ret - a.ret);
+  return rows;
+}
+
+function renderLeaderboard(){
+  const rows = getLeaderRows();
+  const body = document.getElementById('lbBody');
+  const mobile = document.getElementById('lbMobile');
+
+  if(rows.length === 0){
+    body.innerHTML = '<tr><td colspan="8" class="empty">ยังไม่มีข้อมูล — กด <b>🔄 รันวันนี้</b> เพื่อเริ่ม</td></tr>';
+    mobile.innerHTML = '<div class="empty">ยังไม่มีข้อมูล — กด <b>🔄 รันวันนี้</b> เพื่อเริ่ม</div>';
+    return;
+  }
+
+  // Desktop table
+  body.innerHTML = rows.map((r, i) => {
+    const rank = i + 1;
+    const rankCls = rank === 1 ? 'top1' : rank === 2 ? 'top2' : rank === 3 ? 'top3' : '';
+    const retCls = r.ret >= 0 ? 'g' : 'r';
+    const selected = STATE.selectedPortfolio === r.sid ? 'selected' : '';
+    return `<tr class="${selected}" onclick="selectPortfolio('${r.sid}')">
+      <td><span class="rank ${rankCls}">${rank}</span></td>
+      <td><div class="strat-cell">
+        <span class="emo">${r.strat.emoji}</span>
+        <div>
+          <div class="nm">${r.strat.name}</div>
+          <div class="th">${r.strat.thai}</div>
+        </div>
+      </div></td>
+      <td class="num">${fmtMoney(r.nav)}</td>
+      <td class="num pct ${retCls}">${fmtPct(r.ret)}</td>
+      <td class="num">${r.positions}</td>
+      <td class="num">${r.trades}</td>
+      <td class="num">${r.winRate.toFixed(0)}%</td>
+      <td class="num">${r.maxDD.toFixed(1)}%</td>
+    </tr>`;
+  }).join('');
+
+  // Mobile cards
+  mobile.innerHTML = rows.map((r, i) => {
+    const rank = i + 1;
+    const rankCls = rank === 1 ? 'top1' : rank === 2 ? 'top2' : rank === 3 ? 'top3' : '';
+    const retCls = r.ret >= 0 ? 'g' : 'r';
+    const selected = STATE.selectedPortfolio === r.sid ? 'selected' : '';
+    return `<div class="pf-mobile-card ${selected}" onclick="selectPortfolio('${r.sid}')">
+      <div class="pf-mobile-h">
+        <span class="emo">${r.strat.emoji}</span>
+        <div>
+          <div class="nm">${r.strat.name}</div>
+          <div class="th">${r.strat.thai}</div>
+        </div>
+        <span class="rk ${rankCls}">${rank}</span>
+      </div>
+      <div class="pf-mobile-metrics">
+        <div class="pf-mobile-metric"><div class="l">Return</div><div class="v ${retCls}">${fmtPct(r.ret)}</div></div>
+        <div class="pf-mobile-metric"><div class="l">NAV</div><div class="v">${fmtMoney(r.nav)}</div></div>
+        <div class="pf-mobile-metric"><div class="l">Pos/Trd</div><div class="v">${r.positions}/${r.trades}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectPortfolio(sid){
+  if(STATE.selectedPortfolio === sid){
+    STATE.selectedPortfolio = null;   // toggle off
+  } else {
+    STATE.selectedPortfolio = sid;
+  }
+  saveState();
+  renderLeaderboard();
+  renderPfDetail();
+  // Scroll to detail
+  const el = document.getElementById('pfDetail');
+  if(STATE.selectedPortfolio && el){
+    setTimeout(() => el.scrollIntoView({behavior:'smooth', block:'start'}), 100);
+  }
+}
+
+function renderChart(){
+  const svg = document.getElementById('navChart');
+  const empty = document.getElementById('chartEmpty');
+  const legendEl = document.getElementById('chartLegend');
+
+  // Collect all series
+  const series = [];
+  for(const [sid, pf] of Object.entries(STATE.portfolios)){
+    if(!pf.navHistory.length) continue;
+    const strat = window.BULLZEEKER_STRATEGIES?.STRATEGIES?.[sid];
+    if(!strat) continue;
+    series.push({
+      key: sid,
+      label: strat.name,
+      emoji: strat.emoji,
+      color: STRAT_COLORS[sid] || '#888',
+      points: pf.navHistory.map(h => ({date: h.date, value: h.nav})),
+    });
+  }
+  // Benchmark
+  if(STATE.benchmark.navHistory.length){
+    series.push({
+      key: 'spy',
+      label: 'SPY',
+      emoji: '📊',
+      color: '#e6edf7',
+      dashed: true,
+      points: STATE.benchmark.navHistory.map(h => ({date: h.date, value: h.nav})),
+    });
+  }
+
+  if(series.length === 0 || series[0].points.length < 1){
+    svg.style.display = 'none';
+    empty.style.display = 'block';
+    legendEl.innerHTML = '';
+    document.getElementById('chartMeta').textContent = '';
+    return;
+  }
+  svg.style.display = 'block';
+  empty.style.display = 'none';
+
+  // Legend
+  const hiddenSet = new Set(JSON.parse(localStorage.getItem('labs_hidden_series') || '[]'));
+  legendEl.innerHTML = series.map(s => {
+    const h = hiddenSet.has(s.key) ? 'hidden' : '';
+    return `<span class="legend-chip ${h}" onclick="toggleSeries('${s.key}')">
+      <span class="dot" style="background:${s.color}"></span>
+      <span>${s.emoji}</span>
+      <span>${s.label}</span>
+    </span>`;
+  }).join('');
+
+  // Filter hidden
+  const visSeries = series.filter(s => !hiddenSet.has(s.key));
+  if(!visSeries.length){
+    svg.innerHTML = '';
+    return;
+  }
+
+  // Determine y range
+  let yMin = Infinity, yMax = -Infinity;
+  for(const s of visSeries){
+    for(const p of s.points){
+      if(p.value < yMin) yMin = p.value;
+      if(p.value > yMax) yMax = p.value;
+    }
+  }
+  if(yMin === yMax){ yMin -= 100; yMax += 100; }
+  const yRange = yMax - yMin;
+  yMin -= yRange * 0.05;
+  yMax += yRange * 0.05;
+
+  // Determine x range (by index — all series aligned to trading day count)
+  const maxLen = Math.max(...visSeries.map(s => s.points.length));
+
+  const W = 800, H = 320;
+  const padL = 60, padR = 20, padT = 20, padB = 30;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+
+  const xForIdx = i => padL + (maxLen === 1 ? plotW/2 : (i / (maxLen-1)) * plotW);
+  const yForVal = v => padT + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
+
+  // Grid
+  const gridLines = 5;
+  let svgHtml = '';
+  for(let i = 0; i <= gridLines; i++){
+    const y = padT + (i/gridLines) * plotH;
+    const val = yMax - (i/gridLines) * (yMax - yMin);
+    svgHtml += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#1e2a44" stroke-width="1"/>`;
+    svgHtml += `<text x="${padL-6}" y="${y+3}" text-anchor="end" fill="#8b97ab" font-size="10" font-family="monospace">${fmtMoney(val)}</text>`;
+  }
+
+  // Initial cash reference line
+  const yZero = yForVal(INITIAL_CASH);
+  if(yZero >= padT && yZero <= H - padB){
+    svgHtml += `<line x1="${padL}" y1="${yZero}" x2="${W-padR}" y2="${yZero}" stroke="#fbbf24" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>`;
+    svgHtml += `<text x="${W-padR+2}" y="${yZero+3}" fill="#fbbf24" font-size="9">Start</text>`;
+  }
+
+  // Lines
+  for(const s of visSeries){
+    let path = '';
+    s.points.forEach((p, i) => {
+      const x = xForIdx(i);
+      const y = yForVal(p.value);
+      path += (i === 0 ? 'M' : ' L') + x + ',' + y;
+    });
+    const dashAttr = s.dashed ? 'stroke-dasharray="6,4"' : '';
+    const w = s.dashed ? 2 : 2.2;
+    svgHtml += `<path d="${path}" fill="none" stroke="${s.color}" stroke-width="${w}" ${dashAttr} stroke-linejoin="round" stroke-linecap="round" opacity="0.95"/>`;
+    // Endpoint dot
+    if(s.points.length){
+      const last = s.points[s.points.length-1];
+      svgHtml += `<circle cx="${xForIdx(s.points.length-1)}" cy="${yForVal(last.value)}" r="3" fill="${s.color}"/>`;
+    }
+  }
+
+  // X-axis: show first and last date
+  const firstSeries = visSeries[0];
+  if(firstSeries.points.length){
+    svgHtml += `<text x="${padL}" y="${H-8}" fill="#8b97ab" font-size="10">${firstSeries.points[0].date}</text>`;
+    svgHtml += `<text x="${W-padR}" y="${H-8}" text-anchor="end" fill="#8b97ab" font-size="10">${firstSeries.points[firstSeries.points.length-1].date}</text>`;
+  }
+
+  svg.innerHTML = svgHtml;
+  document.getElementById('chartMeta').textContent = `${series.length} series · ${maxLen} trading days`;
+}
+
+function toggleSeries(key){
+  const hiddenSet = new Set(JSON.parse(localStorage.getItem('labs_hidden_series') || '[]'));
+  if(hiddenSet.has(key)) hiddenSet.delete(key);
+  else hiddenSet.add(key);
+  localStorage.setItem('labs_hidden_series', JSON.stringify([...hiddenSet]));
+  renderChart();
+}
+
+function renderPfDetail(){
+  const el = document.getElementById('pfDetail');
+  const sid = STATE.selectedPortfolio;
+  if(!sid){
+    el.innerHTML = `<div class="card" style="text-align:center;padding:24px;color:var(--muted);font-size:13px">
+      👆 คลิกที่พอร์ตใน Leaderboard ด้านบน · เพื่อดูรายละเอียด (positions, transactions, NAV curve)
+    </div>`;
+    return;
+  }
+
+  const pf = STATE.portfolios[sid];
+  const strat = window.BULLZEEKER_STRATEGIES?.STRATEGIES?.[sid];
+  if(!pf || !strat){
+    el.innerHTML = '';
+    return;
+  }
+
+  const lastNav = pf.navHistory.length ? pf.navHistory[pf.navHistory.length-1].nav : INITIAL_CASH;
+  const ret = (lastNav / INITIAL_CASH - 1) * 100;
+  const invested = lastNav - pf.cash;
+  const total = pf.wins + pf.losses;
+  const winRate = total > 0 ? (pf.wins/total) * 100 : 0;
+  const tab = STATE.selectedTab || 'positions';
+
+  el.innerHTML = `<div class="pf-detail">
+    <div class="pf-detail-h">
+      <span class="emo">${strat.emoji}</span>
+      <div class="info">
+        <h3>${strat.name} · ${strat.thai}</h3>
+        <div class="sub">${strat.description}</div>
+      </div>
+      <button onclick="selectPortfolio(null); event.stopPropagation()" style="background:none;border:1px solid var(--line2);color:var(--muted);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px">✕ ปิด</button>
+    </div>
+
+    <div class="pf-stats">
+      <div class="pf-stat"><div class="l">NAV ปัจจุบัน</div><div class="v ${ret>=0?'g':'r'}">${fmtMoney(lastNav)}</div></div>
+      <div class="pf-stat"><div class="l">Total Return</div><div class="v ${ret>=0?'g':'r'}">${fmtPct(ret)}</div></div>
+      <div class="pf-stat"><div class="l">💵 Cash</div><div class="v">${fmtMoney(pf.cash)}</div></div>
+      <div class="pf-stat"><div class="l">💼 Invested</div><div class="v">${fmtMoney(invested)}</div></div>
+      <div class="pf-stat"><div class="l">📊 Positions</div><div class="v">${pf.positions.length}</div></div>
+      <div class="pf-stat"><div class="l">🎯 Win Rate</div><div class="v gold">${winRate.toFixed(0)}%</div></div>
+      <div class="pf-stat"><div class="l">📉 Max DD</div><div class="v r">${pf.maxDrawdown.toFixed(1)}%</div></div>
+      <div class="pf-stat"><div class="l">💱 Trades</div><div class="v">${pf.transactions.length}</div></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab ${tab==='positions'?'active':''}" onclick="setTab('positions')">📊 Positions (${pf.positions.length})</button>
+      <button class="tab ${tab==='transactions'?'active':''}" onclick="setTab('transactions')">📝 Transactions (${pf.transactions.length})</button>
+      <button class="tab ${tab==='nav'?'active':''}" onclick="setTab('nav')">📈 NAV Curve</button>
+    </div>
+
+    <div id="pfTabContent"></div>
+  </div>`;
+
+  renderPfTabContent();
+}
+
+function setTab(t){
+  STATE.selectedTab = t;
+  saveState();
+  renderPfTabContent();
+  // Update tab active state
+  document.querySelectorAll('.tab').forEach(el => {
+    el.classList.toggle('active', el.textContent.toLowerCase().includes(t));
+  });
+}
+
+function renderPfTabContent(){
+  const el = document.getElementById('pfTabContent');
+  if(!el) return;
+  const sid = STATE.selectedPortfolio;
+  const pf = STATE.portfolios[sid];
+  if(!pf) return;
+  const tab = STATE.selectedTab || 'positions';
+
+  if(tab === 'positions'){
+    if(pf.positions.length === 0){
+      el.innerHTML = `<div class="empty">ยังไม่มี positions · พอร์ตยังเป็น 100% cash</div>`;
+      return;
+    }
+    // Sort by unrealized pnl%
+    const positions = pf.positions.slice().sort((a,b) => {
+      const paPnl = (a.highWater/a.avgCost - 1) * 100;
+      const pbPnl = (b.highWater/b.avgCost - 1) * 100;
+      return pbPnl - paPnl;
+    });
+    let html = `<div class="pos-row head">
+      <div>Ticker</div>
+      <div>Entry Reason</div>
+      <div class="col-shares">Shares</div>
+      <div>Avg Cost</div>
+      <div>Current PnL</div>
+    </div>`;
+    for(const p of positions){
+      const px = p.highWater || p.avgCost;
+      const pnl = (px - p.avgCost) * p.shares;
+      const pnlPct = (px/p.avgCost - 1) * 100;
+      const cls = pnlPct >= 0 ? 'g' : 'r';
+      html += `<div class="pos-row">
+        <div class="ticker">${p.ticker}</div>
+        <div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.entryReason || '—'}</div>
+        <div class="col-shares">${p.shares}</div>
+        <div>$${p.avgCost.toFixed(2)}</div>
+        <div class="${cls}">${fmtPct(pnlPct)} <span style="color:var(--muted);font-size:11px">(${fmtMoney(pnl)})</span></div>
+      </div>`;
+    }
+    el.innerHTML = html;
+  }
+  else if(tab === 'transactions'){
+    if(pf.transactions.length === 0){
+      el.innerHTML = `<div class="empty">ยังไม่มี transactions · รอ signal จากกลยุทธ์</div>`;
+      return;
+    }
+    // Newest first
+    const txs = pf.transactions.slice().reverse().slice(0, 100);
+    let html = `<div class="tx-row head">
+      <div>Date</div>
+      <div>Action</div>
+      <div>Ticker</div>
+      <div>Reason</div>
+      <div>Shares × Px</div>
+      <div class="col-value">Value / PnL</div>
+    </div>`;
+    for(const t of txs){
+      const actCls = t.action === 'BUY' ? 'action-buy' : 'action-sell';
+      const pnlHtml = t.pnl != null ?
+        `<span class="${t.pnl >= 0 ? 'g' : 'r'}">${fmtMoney(t.pnl)} (${fmtPct(t.pnlPct)})</span>` :
+        fmtMoney(t.value);
+      html += `<div class="tx-row">
+        <div style="font-size:11px">${t.date}</div>
+        <div><span class="${actCls}">${t.action}</span></div>
+        <div class="ticker">${t.ticker}</div>
+        <div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.reason || '—'}</div>
+        <div>${t.shares} × $${t.price?.toFixed(2)}</div>
+        <div class="col-value">${pnlHtml}</div>
+      </div>`;
+    }
+    if(pf.transactions.length > 100){
+      html += `<div class="empty">แสดง 100 รายการล่าสุด (จากทั้งหมด ${pf.transactions.length})</div>`;
+    }
+    el.innerHTML = html;
+  }
+  else if(tab === 'nav'){
+    if(pf.navHistory.length < 1){
+      el.innerHTML = `<div class="empty">ยังไม่มีประวัติ NAV</div>`;
+      return;
+    }
+    // Simple NAV chart just for this portfolio + SPY overlay
+    const W = 800, H = 260;
+    const padL = 60, padR = 20, padT = 20, padB = 30;
+    const plotW = W - padL - padR, plotH = H - padT - padB;
+
+    const nav = pf.navHistory.map(h => ({date: h.date, value: h.nav}));
+    const spy = STATE.benchmark.navHistory.map(h => ({date: h.date, value: h.nav}));
+    const allVals = [...nav.map(p=>p.value), ...spy.map(p=>p.value), INITIAL_CASH];
+    let yMin = Math.min(...allVals), yMax = Math.max(...allVals);
+    if(yMin === yMax){ yMin -= 100; yMax += 100; }
+    const yr = yMax - yMin;
+    yMin -= yr*0.05; yMax += yr*0.05;
+    const maxLen = Math.max(nav.length, spy.length);
+    const xForIdx = i => padL + (maxLen === 1 ? plotW/2 : (i/(maxLen-1))*plotW);
+    const yForVal = v => padT + plotH - ((v-yMin)/(yMax-yMin))*plotH;
+
+    let svgH = '';
+    for(let i = 0; i <= 5; i++){
+      const y = padT + (i/5)*plotH;
+      const val = yMax - (i/5)*(yMax-yMin);
+      svgH += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#1e2a44"/>`;
+      svgH += `<text x="${padL-6}" y="${y+3}" text-anchor="end" fill="#8b97ab" font-size="10" font-family="monospace">${fmtMoney(val)}</text>`;
+    }
+    const yStart = yForVal(INITIAL_CASH);
+    svgH += `<line x1="${padL}" y1="${yStart}" x2="${W-padR}" y2="${yStart}" stroke="#fbbf24" stroke-dasharray="4,4" opacity="0.5"/>`;
+
+    // SPY line
+    if(spy.length){
+      let path = '';
+      spy.forEach((p,i) => path += (i===0?'M':' L') + xForIdx(i) + ',' + yForVal(p.value));
+      svgH += `<path d="${path}" fill="none" stroke="#e6edf7" stroke-width="2" stroke-dasharray="6,4" opacity="0.7"/>`;
+    }
+    // Portfolio line
+    const color = STRAT_COLORS[sid] || '#a855f7';
+    let path = '';
+    nav.forEach((p,i) => path += (i===0?'M':' L') + xForIdx(i) + ',' + yForVal(p.value));
+    svgH += `<path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    if(nav.length) svgH += `<circle cx="${xForIdx(nav.length-1)}" cy="${yForVal(nav[nav.length-1].value)}" r="4" fill="${color}"/>`;
+
+    el.innerHTML = `<div style="display:flex;gap:10px;margin-bottom:8px;font-size:11px">
+      <span><span style="display:inline-block;width:12px;height:2px;background:${color};vertical-align:middle;margin-right:4px"></span>${window.BULLZEEKER_STRATEGIES.STRATEGIES[sid].name}</span>
+      <span><span style="display:inline-block;width:12px;height:2px;background:#e6edf7;vertical-align:middle;margin-right:4px;border-top:1px dashed"></span>SPY</span>
+      <span><span style="display:inline-block;width:12px;height:2px;background:#fbbf24;vertical-align:middle;margin-right:4px;border-top:1px dashed"></span>Start (${fmtMoney(INITIAL_CASH)})</span>
+    </div>
+    <div class="chart-box"><svg viewBox="0 0 800 260" style="width:100%;height:260px;display:block">${svgH}</svg></div>`;
+  }
+}
+
+/* ---------- TOAST ---------- */
+function toast(msg, type=''){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { el.className = 'toast ' + type; }, 3500);
+}
+
+/* ---------- INIT ---------- */
+function init(){
+  if(!window.BULLZEEKER_STRATEGIES || !window.BULLZEEKER_UNIVERSE){
+    setTimeout(init, 200);
+    return;
+  }
+  ensurePortfolios();
+  renderAll();
+
+  // Show a friendly note if user hasn't run yet
+  if(STATE.runCount === 0){
+    toast('👋 กด "🔄 รันวันนี้" เพื่อเริ่ม simulation แรก', '');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW register failed:', err));
+  });
+}
+</script>
+</body>
+</html>
