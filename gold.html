@@ -156,6 +156,44 @@ main{max-width:1400px;margin:0 auto;padding:20px 18px}
 .set label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
 .set input,.set select{width:100%;background:var(--bg2);border:1px solid var(--line);color:var(--text);padding:6px 8px;border-radius:6px;font-family:var(--mono);font-size:13px}
 
+/* Quick Bias card (BIG buy/sell/wait) */
+.bias-card{border:2px solid;border-radius:16px;padding:22px;margin-bottom:14px;position:relative;overflow:hidden}
+.bias-card.buy{border-color:var(--emerald);background:linear-gradient(135deg,rgba(16,185,129,.18),rgba(5,150,105,.05))}
+.bias-card.sell{border-color:var(--red);background:linear-gradient(135deg,rgba(239,68,68,.18),rgba(220,38,38,.05))}
+.bias-card.wait{border-color:var(--gold);background:linear-gradient(135deg,rgba(251,191,36,.14),rgba(245,158,11,.03))}
+.bias-card::before{content:'';position:absolute;right:-30px;top:-30px;width:180px;height:180px;border-radius:50%;pointer-events:none}
+.bias-card.buy::before{background:radial-gradient(circle,rgba(16,185,129,.15),transparent 70%)}
+.bias-card.sell::before{background:radial-gradient(circle,rgba(239,68,68,.15),transparent 70%)}
+.bias-card.wait::before{background:radial-gradient(circle,rgba(251,191,36,.12),transparent 70%)}
+.bias-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative}
+.bias-badge{font-size:44px;font-weight:800;letter-spacing:-1px;padding:10px 24px;border-radius:14px;line-height:1;font-family:'Inter',sans-serif}
+.bias-badge.buy{background:var(--emerald);color:#062516;box-shadow:0 6px 20px rgba(16,185,129,.5)}
+.bias-badge.sell{background:var(--red);color:#fff;box-shadow:0 6px 20px rgba(239,68,68,.5)}
+.bias-badge.wait{background:var(--gold);color:#0a0e16;box-shadow:0 6px 20px rgba(251,191,36,.4)}
+.bias-info{flex:1;min-width:200px}
+.bias-info h2{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px}
+.bias-info .price{font-size:22px;font-weight:800;font-family:var(--mono);color:var(--gold);letter-spacing:-.5px}
+.bias-info .rr{font-size:12px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+.bias-conf{display:flex;align-items:center;gap:10px;margin-top:14px;position:relative}
+.bias-meter{flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;position:relative}
+.bias-meter-fill{height:100%;border-radius:4px;transition:width .5s}
+.bias-meter-fill.buy{background:linear-gradient(90deg,var(--emerald),#059669)}
+.bias-meter-fill.sell{background:linear-gradient(90deg,var(--red),#dc2626)}
+.bias-meter-fill.wait{background:linear-gradient(90deg,var(--gold),var(--gold-strong))}
+.bias-meter-label{font-family:var(--mono);font-weight:800;font-size:14px;color:var(--text);min-width:56px;text-align:right}
+.bias-reasons{margin-top:14px;padding:12px 14px;background:rgba(0,0,0,.2);border-radius:10px;position:relative}
+.bias-reasons .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.bias-tag{display:inline-block;padding:3px 10px;margin:2px 4px 2px 0;border-radius:6px;font-size:11px;font-weight:700;font-family:var(--mono)}
+.bias-tag.b{background:var(--emerald-bg);color:var(--emerald);border:1px solid var(--emerald)}
+.bias-tag.s{background:var(--red-bg);color:var(--red);border:1px solid var(--red)}
+.bias-tag.n{background:var(--bg3);color:var(--muted);border:1px solid var(--line2)}
+.bias-vs{display:flex;align-items:center;gap:12px;margin-top:10px;position:relative;font-family:var(--mono);font-size:12px}
+.bias-vs .b{color:var(--emerald);font-weight:800}
+.bias-vs .s{color:var(--red);font-weight:800}
+.bias-vs .bar{flex:1;height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;display:flex}
+.bias-vs .bar .bp{background:var(--emerald)}
+.bias-vs .bar .sp{background:var(--red)}
+
 .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:14px}
 .stat{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .stat .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
@@ -245,6 +283,32 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
       <button class="btn btn-t" id="notifyBtn" onclick="requestNotify()">🔔 แจ้งเตือน: OFF</button>
       <button class="btn btn-t" id="soundBtn" onclick="toggleSound()">🔊 Sound: OFF</button>
       <button class="btn btn-t" onclick="runBacktest()">📊 Backtest 30d</button>
+    </div>
+  </div>
+
+  <!-- QUICK BIAS (always shows BUY / SELL / WAIT) -->
+  <div class="bias-card wait" id="biasCard">
+    <div class="bias-head">
+      <div class="bias-badge wait" id="biasBadge">⏸️ WAIT</div>
+      <div class="bias-info">
+        <h2 id="biasTitle">Quick Bias · XAUUSD</h2>
+        <div class="price" id="biasPrice">—</div>
+        <div class="rr" id="biasRR">— · Loading market context...</div>
+      </div>
+    </div>
+    <div class="bias-conf">
+      <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Confidence</span>
+      <div class="bias-meter"><div class="bias-meter-fill wait" id="biasMeter" style="width:0%"></div></div>
+      <span class="bias-meter-label" id="biasConf">—</span>
+    </div>
+    <div class="bias-vs">
+      <span class="b">BUY <b id="biasBuyPts">0</b></span>
+      <div class="bar"><div class="bp" id="biasBuyBar" style="width:0%"></div><div class="sp" id="biasSellBar" style="width:0%"></div></div>
+      <span class="s"><b id="biasSellPts">0</b> SELL</span>
+    </div>
+    <div class="bias-reasons">
+      <div class="l">📋 Reasons (real-time)</div>
+      <div id="biasReasons">—</div>
     </div>
   </div>
 
@@ -541,6 +605,7 @@ async function pollBiquote(){
   if(q){
     LAST_QUOTE = q;
     renderHero();
+    renderQuickBias();   // update bias whenever price refreshes
   }
 }
 
@@ -1134,6 +1199,199 @@ function renderKillzone(){
   document.getElementById('kzMeta').className = 'pill ' + (sess.ok ? 'g' : 'r');
 }
 
+/* ---------- QUICK BIAS (always-on BUY/SELL/WAIT indicator) ---------- */
+function computeQuickBias(){
+  if(!CANDLES.h1 || !CANDLES.m15 || CANDLES.h1.length<30 || CANDLES.m15.length<30) return null;
+  const h4Bias = getH4Bias(CANDLES.h4);
+  const h1Closes = CANDLES.h1.map(c=>c.close);
+  const h1Rsi = rsi(h1Closes, RSI_PERIOD);
+  const h1RsiSeries = computeRsiSeries(h1Closes, RSI_PERIOD);
+  const m15Closes = CANDLES.m15.map(c=>c.close);
+  const m15Ema9 = ema(m15Closes, 9);
+  const m15Ema21 = ema(m15Closes, 21);
+  const m15Atr = atr(CANDLES.m15, ATR_PERIOD);
+  const price = LAST_QUOTE?.mid || m15Closes[m15Closes.length-1];
+  const asia = asiaSessionHL(CANDLES.m15);
+  const prior = priorSessionHL(CANDLES.h1);
+  const bosLong = detectBOS(CANDLES.h1, 'long');
+  const bosShort = detectBOS(CANDLES.h1, 'short');
+
+  let buyPts = 0, sellPts = 0;
+  const buyReasons = [], sellReasons = [], neutralReasons = [];
+
+  // === H4 Trend (weight 30) ===
+  if(h4Bias === 'bullish'){ buyPts += 30; buyReasons.push({t:'H4 bullish trend', w:30}); }
+  else if(h4Bias === 'bearish'){ sellPts += 30; sellReasons.push({t:'H4 bearish trend', w:30}); }
+  else{ neutralReasons.push({t:'H4 neutral', w:0}); }
+
+  // === H1 RSI position (weight 20-25) ===
+  if(h1Rsi < 30){ buyPts += 25; buyReasons.push({t:`RSI ${h1Rsi.toFixed(0)} oversold`, w:25}); }
+  else if(h1Rsi < 40){ buyPts += 15; buyReasons.push({t:`RSI ${h1Rsi.toFixed(0)} weak zone`, w:15}); }
+  else if(h1Rsi > 70){ sellPts += 25; sellReasons.push({t:`RSI ${h1Rsi.toFixed(0)} overbought`, w:25}); }
+  else if(h1Rsi > 60){ sellPts += 15; sellReasons.push({t:`RSI ${h1Rsi.toFixed(0)} strong zone`, w:15}); }
+  else{ neutralReasons.push({t:`RSI ${h1Rsi.toFixed(0)} neutral`, w:0}); }
+
+  // === RSI Turn ===
+  const rsiTurnUp = detectRsiTurn(h1RsiSeries, 'long');
+  const rsiTurnDown = detectRsiTurn(h1RsiSeries, 'short');
+  if(rsiTurnUp){ buyPts += 15; buyReasons.push({t:`RSI turning up (${rsiTurnUp.before.toFixed(1)}→${rsiTurnUp.now.toFixed(1)})`, w:15}); }
+  if(rsiTurnDown){ sellPts += 15; sellReasons.push({t:`RSI turning down (${rsiTurnDown.before.toFixed(1)}→${rsiTurnDown.now.toFixed(1)})`, w:15}); }
+
+  // === RSI Divergence (strong signal) ===
+  const divBull = detectRsiDivergence(CANDLES.h1, h1RsiSeries, 'long');
+  const divBear = detectRsiDivergence(CANDLES.h1, h1RsiSeries, 'short');
+  if(divBull){ buyPts += 20; buyReasons.push({t:'RSI bullish divergence', w:20}); }
+  if(divBear){ sellPts += 20; sellReasons.push({t:'RSI bearish divergence', w:20}); }
+
+  // === M15 EMA momentum (weight 10) ===
+  if(m15Ema9 && m15Ema21){
+    if(m15Ema9 > m15Ema21 && price > m15Ema9){ buyPts += 10; buyReasons.push({t:'M15 EMA9>EMA21 up', w:10}); }
+    else if(m15Ema9 < m15Ema21 && price < m15Ema9){ sellPts += 10; sellReasons.push({t:'M15 EMA9<EMA21 down', w:10}); }
+  }
+
+  // === Position vs key levels (weight 10-20) ===
+  if(asia){
+    const nearAsiaLow = Math.abs(price - asia.low) < m15Atr * 0.8;
+    const nearAsiaHigh = Math.abs(price - asia.high) < m15Atr * 0.8;
+    if(nearAsiaLow && price >= asia.low){ buyPts += 15; buyReasons.push({t:`At Asia Low support ($${asia.low.toFixed(2)})`, w:15}); }
+    if(nearAsiaHigh && price <= asia.high){ sellPts += 15; sellReasons.push({t:`At Asia High resistance ($${asia.high.toFixed(2)})`, w:15}); }
+    if(price < asia.low){ buyPts += 10; buyReasons.push({t:`Below Asia Low (sweep setup)`, w:10}); }
+    if(price > asia.high){ sellPts += 10; sellReasons.push({t:`Above Asia High (sweep setup)`, w:10}); }
+  }
+  if(prior){
+    const nearPriorLow = Math.abs(price - prior.low) < m15Atr * 1.2;
+    const nearPriorHigh = Math.abs(price - prior.high) < m15Atr * 1.2;
+    if(nearPriorLow){ buyPts += 20; buyReasons.push({t:`At Prev Day Low support ($${prior.low.toFixed(2)})`, w:20}); }
+    if(nearPriorHigh){ sellPts += 20; sellReasons.push({t:`At Prev Day High resistance ($${prior.high.toFixed(2)})`, w:20}); }
+  }
+
+  // === BOS ===
+  if(bosLong){ buyPts += 10; buyReasons.push({t:'H1 BOS bullish (break)', w:10}); }
+  if(bosShort){ sellPts += 10; sellReasons.push({t:'H1 BOS bearish (break)', w:10}); }
+
+  // === FVG presence ===
+  const fvgs = detectFVG(CANDLES.m15, 15).filter(f => !f.mitigated);
+  const bullishFvg = fvgs.filter(f => f.type==='bullish' && Math.abs(price-f.mid) < m15Atr*2);
+  const bearishFvg = fvgs.filter(f => f.type==='bearish' && Math.abs(price-f.mid) < m15Atr*2);
+  if(bullishFvg.length){ buyPts += 8; buyReasons.push({t:`${bullishFvg.length} unmitigated bullish FVG nearby`, w:8}); }
+  if(bearishFvg.length){ sellPts += 8; sellReasons.push({t:`${bearishFvg.length} unmitigated bearish FVG nearby`, w:8}); }
+
+  // === Kill-zone quality ===
+  const kz = currentKillzone();
+  if(kz.grade === 'A+' || kz.grade === 'A'){
+    // High-quality session — increases confidence in whichever side is stronger
+    if(buyPts > sellPts) buyPts += 8;
+    else if(sellPts > buyPts) sellPts += 8;
+  } else if(kz.grade === 'C'){
+    // Low-quality — reduce confidence
+    buyPts = Math.max(0, buyPts - 10);
+    sellPts = Math.max(0, sellPts - 10);
+  }
+
+  // === Decide action ===
+  const diff = buyPts - sellPts;
+  const total = buyPts + sellPts;
+  let action = 'WAIT', confidence = 0, actionPrice = null, note = '';
+
+  if(diff >= 35){
+    action = 'BUY';
+    confidence = Math.min(95, 45 + Math.round(diff * 0.6));
+    // Suggest entry: current price or nearest bullish FVG mid
+    if(bullishFvg.length){ actionPrice = bullishFvg[bullishFvg.length-1].mid; note = `LIMIT @ FVG mid $${actionPrice.toFixed(2)}`; }
+    else if(prior && Math.abs(price - prior.low) < m15Atr*1.5){ actionPrice = prior.low; note = `LIMIT @ Prev Day Low $${prior.low.toFixed(2)}`; }
+    else if(asia && Math.abs(price - asia.low) < m15Atr*1.5){ actionPrice = asia.low; note = `LIMIT @ Asia Low $${asia.low.toFixed(2)}`; }
+    else{ actionPrice = price; note = `MARKET @ $${price.toFixed(2)}`; }
+  } else if(diff <= -35){
+    action = 'SELL';
+    confidence = Math.min(95, 45 + Math.round(-diff * 0.6));
+    if(bearishFvg.length){ actionPrice = bearishFvg[bearishFvg.length-1].mid; note = `LIMIT @ FVG mid $${actionPrice.toFixed(2)}`; }
+    else if(prior && Math.abs(price - prior.high) < m15Atr*1.5){ actionPrice = prior.high; note = `LIMIT @ Prev Day High $${prior.high.toFixed(2)}`; }
+    else if(asia && Math.abs(price - asia.high) < m15Atr*1.5){ actionPrice = asia.high; note = `LIMIT @ Asia High $${asia.high.toFixed(2)}`; }
+    else{ actionPrice = price; note = `MARKET @ $${price.toFixed(2)}`; }
+  } else {
+    action = 'WAIT';
+    confidence = Math.min(100, 100 - Math.abs(diff)*2);
+    // Explain why waiting
+    if(total < 20) note = 'ยังไม่มี confluence — ราคาลอยกลาง';
+    else if(Math.abs(diff) < 15) note = `ทั้งสองฝั่งพอกัน (${buyPts} vs ${sellPts}) — รอ direction ชัด`;
+    else note = `ฝั่ง ${diff>0?'BUY':'SELL'} นำเล็กน้อย (${Math.abs(diff)} pts) — รอ confluence เพิ่ม`;
+  }
+
+  // Suggest stop and target if BUY/SELL
+  let stop = null, tp = null;
+  if(action==='BUY' && actionPrice){
+    stop = (asia?.low || actionPrice - m15Atr*2) - Math.max(3, m15Atr*0.5);
+    tp = actionPrice + (actionPrice - stop) * 2;
+  } else if(action==='SELL' && actionPrice){
+    stop = (asia?.high || actionPrice + m15Atr*2) + Math.max(3, m15Atr*0.5);
+    tp = actionPrice - (stop - actionPrice) * 2;
+  }
+
+  return {
+    action, confidence, actionPrice, note,
+    stop, tp,
+    buyPts: Math.round(buyPts), sellPts: Math.round(sellPts),
+    buyReasons, sellReasons, neutralReasons,
+    price, h4Bias, h1Rsi, kz,
+  };
+}
+
+function renderQuickBias(){
+  const bias = computeQuickBias();
+  const card = document.getElementById('biasCard');
+  const badge = document.getElementById('biasBadge');
+  const title = document.getElementById('biasTitle');
+  const priceEl = document.getElementById('biasPrice');
+  const rrEl = document.getElementById('biasRR');
+  const meter = document.getElementById('biasMeter');
+  const confEl = document.getElementById('biasConf');
+  const buyBar = document.getElementById('biasBuyBar');
+  const sellBar = document.getElementById('biasSellBar');
+  const buyPtsEl = document.getElementById('biasBuyPts');
+  const sellPtsEl = document.getElementById('biasSellPts');
+  const reasons = document.getElementById('biasReasons');
+
+  if(!bias){
+    card.className = 'bias-card wait';
+    badge.className = 'bias-badge wait';
+    badge.textContent = '⏳ LOADING';
+    title.textContent = 'Loading market data...';
+    rrEl.textContent = 'Waiting for candles + real-time spot';
+    return;
+  }
+
+  const emo = bias.action==='BUY'?'🟢':bias.action==='SELL'?'🔴':'⏸️';
+  const cls = bias.action.toLowerCase();
+  card.className = 'bias-card ' + cls;
+  badge.className = 'bias-badge ' + cls;
+  badge.textContent = emo + ' ' + bias.action;
+  title.textContent = `Quick Bias · ${bias.action==='WAIT'?'No clear signal':'Enter ' + bias.action + ' at:'}`;
+  priceEl.textContent = bias.actionPrice ? '$' + bias.actionPrice.toFixed(2) : '$' + bias.price.toFixed(2);
+  if(bias.action !== 'WAIT' && bias.stop && bias.tp){
+    const risk = Math.abs(bias.actionPrice - bias.stop);
+    const reward = Math.abs(bias.tp - bias.actionPrice);
+    const rr = (reward/risk).toFixed(2);
+    rrEl.innerHTML = `${bias.note} · SL <b>$${bias.stop.toFixed(2)}</b> · TP <b>$${bias.tp.toFixed(2)}</b> (1:${rr})`;
+  } else {
+    rrEl.textContent = bias.note;
+  }
+  meter.className = 'bias-meter-fill ' + cls;
+  meter.style.width = bias.confidence + '%';
+  confEl.textContent = bias.confidence + '%';
+
+  const total = Math.max(1, bias.buyPts + bias.sellPts);
+  buyBar.style.width = (bias.buyPts/total*100).toFixed(1) + '%';
+  sellBar.style.width = (bias.sellPts/total*100).toFixed(1) + '%';
+  buyPtsEl.textContent = bias.buyPts;
+  sellPtsEl.textContent = bias.sellPts;
+
+  // Reasons
+  const tagsBuy = bias.buyReasons.map(r => `<span class="bias-tag b">🟢 ${r.t} +${r.w}</span>`).join('');
+  const tagsSell = bias.sellReasons.map(r => `<span class="bias-tag s">🔴 ${r.t} +${r.w}</span>`).join('');
+  const tagsNeutral = bias.neutralReasons.map(r => `<span class="bias-tag n">⚪ ${r.t}</span>`).join('');
+  reasons.innerHTML = (tagsBuy || tagsSell || tagsNeutral) || '<span style="color:var(--muted);font-size:12px">ยังไม่มี factor เพียงพอ — รอ market เคลื่อน</span>';
+}
+
 /* ---------- RENDER: TF grid ---------- */
 function renderTfGrid(){
   const grid = document.getElementById('tfGrid');
@@ -1200,7 +1458,7 @@ function renderSignal(sig){
   const now = new Date();
   const utcStr = now.toISOString().slice(0,16).replace('T',' ');
   const dirEmoji = sig.direction==='long' ? '🟢' : '🔴';
-  const dirText = sig.direction==='long' ? 'LONG' : 'SHORT';
+  const dirText = sig.direction==='long' ? 'BUY (LONG)' : 'SELL (SHORT)';
   const gradeCls = 'grade-' + sig.grade;
 
   const checkHtml = sig.checklist.map(n => {
@@ -1328,6 +1586,7 @@ async function runScan(){
       refreshCandlesIfNeeded(),
     ]);
     renderTfGrid();
+    renderQuickBias();
     const sess = sessionAllowsSignal();
     if(!sess.ok){
       renderSignal(null);
@@ -1490,6 +1749,7 @@ async function init(){
   // First data fetch
   await Promise.all([pollBiquote(), refreshCandlesIfNeeded()]);
   renderTfGrid();
+  renderQuickBias();
   runScan();
   // Clock ticks every second
   setInterval(renderClocks, 1000);
