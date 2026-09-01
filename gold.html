@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>🥇 Gold Signal Center — XAUUSD Liquidity Sweep + FVG | Bullzeeker</title>
-<meta name="description" content="XAUUSD (Gold) real-time signal center · Liquidity Sweep + FVG + RSI reversal · Multi-timeframe H4/H1/M15 · Auto-refresh · Session filter London-NY overlap" />
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+<title>🥇 Gold Signal Center — XAUUSD Real-Time (Liquidity Sweep + FVG + BOS) | Bullzeeker</title>
+<meta name="description" content="XAUUSD (Gold) real-time signal center · biquote spot + Yahoo candles · Liquidity Sweep + FVG + BOS + RSI divergence · Multi-TF H4/H1/M15 · Web Notifications · Kill-zones · Confluence scoring" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥇</text></svg>" />
 <link rel="manifest" href="/manifest.json" />
 <meta name="theme-color" content="#050810" />
@@ -14,8 +14,7 @@
   --bg:#050810; --bg2:#0a1220; --bg3:#0f1a2e; --bg4:#152238;
   --line:#1e2a44; --line2:#2a3856;
   --text:#e6edf7; --muted:#8b97ab; --dim:#5f6b82;
-  --gold:#fbbf24; --gold-bg:rgba(251,191,36,.1);
-  --gold-strong:#f59e0b;
+  --gold:#fbbf24; --gold-bg:rgba(251,191,36,.1); --gold-strong:#f59e0b;
   --accent:#3b82f6; --accent-bg:rgba(59,130,246,.1);
   --emerald:#10b981; --emerald-bg:rgba(16,185,129,.12);
   --red:#ef4444; --red-bg:rgba(239,68,68,.12);
@@ -24,18 +23,9 @@
   --mono:'JetBrains Mono','SF Mono',monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{
-  background:var(--bg);color:var(--text);
-  font-family:'Inter','Noto Sans Thai',-apple-system,sans-serif;
-  min-height:100vh;
-  background:
-    radial-gradient(ellipse at top right, rgba(251,191,36,.10), transparent 60%),
-    radial-gradient(ellipse at bottom left, rgba(59,130,246,.06), transparent 60%),
-    var(--bg);
-}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter','Noto Sans Thai',-apple-system,sans-serif;min-height:100vh;background:radial-gradient(ellipse at top right,rgba(251,191,36,.10),transparent 60%),radial-gradient(ellipse at bottom left,rgba(59,130,246,.06),transparent 60%),var(--bg)}
 body{padding-bottom:60px}
 
-/* Nav (matches other pages) */
 .nav{position:sticky;top:0;z-index:100;background:rgba(5,8,16,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:12px 18px}
 .nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
@@ -49,57 +39,72 @@ body{padding-bottom:60px}
 
 main{max-width:1400px;margin:0 auto;padding:20px 18px}
 
-/* Hero */
-.hero{
-  background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(245,158,11,.06));
-  border:1px solid var(--line2);border-radius:16px;padding:22px;margin-bottom:18px;
-  position:relative;overflow:hidden;
-}
+.hero{background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(245,158,11,.06));border:1px solid var(--line2);border-radius:16px;padding:22px;margin-bottom:14px;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;right:-40px;top:-40px;width:220px;height:220px;background:radial-gradient(circle,rgba(251,191,36,.18),transparent 70%);pointer-events:none}
 .hero-h{display:flex;align-items:center;gap:12px;margin-bottom:12px;position:relative;flex-wrap:wrap}
 .hero-h .emo{font-size:44px;filter:drop-shadow(0 0 12px rgba(251,191,36,.6))}
-.hero-h h1{font-size:24px;font-weight:800}
+.hero-h h1{font-size:22px;font-weight:800}
 .hero-h .sym{font-size:12px;color:var(--muted);font-family:var(--mono)}
-.hero-price{display:flex;align-items:baseline;gap:14px;margin:14px 0;flex-wrap:wrap;position:relative}
-.hero-price .p{font-size:44px;font-weight:800;color:var(--gold);letter-spacing:-1px;font-family:var(--mono)}
-.hero-price .chg{font-size:16px;font-weight:700}
-.hero-price .chg.g{color:var(--emerald)}
-.hero-price .chg.r{color:var(--red)}
-.hero-price .stale{background:var(--red-bg);color:var(--red);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700}
-.hero-meta{display:flex;gap:12px;flex-wrap:wrap;position:relative;color:var(--muted);font-size:12px}
-.hero-meta span{display:inline-flex;align-items:center;gap:4px}
-.session-live{background:var(--emerald-bg);color:var(--emerald);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;border:1px solid var(--emerald);animation:pulse 2s infinite}
-.session-closed{background:rgba(255,255,255,.05);color:var(--muted);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
+.hero-price-row{display:flex;align-items:baseline;gap:14px;margin:14px 0;flex-wrap:wrap;position:relative}
+.hero-price-row .p{font-size:48px;font-weight:800;color:var(--gold);letter-spacing:-1.5px;font-family:var(--mono);text-shadow:0 0 30px rgba(251,191,36,.35)}
+.hero-price-row .chg{font-size:16px;font-weight:700}
+.hero-price-row .chg.g{color:var(--emerald)}
+.hero-price-row .chg.r{color:var(--red)}
+.bidask{display:flex;gap:14px;font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:12px;flex-wrap:wrap;position:relative}
+.bidask b{color:var(--text)}
+.bidask .spread{color:var(--gold)}
+.freshness-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;font-family:var(--mono);border:1px solid}
+.freshness-pill.live{background:var(--emerald-bg);color:var(--emerald);border-color:var(--emerald);animation:pulse 1.5s infinite}
+.freshness-pill.stale{background:var(--red-bg);color:var(--red);border-color:var(--red)}
+.freshness-pill.warm{background:var(--gold-bg);color:var(--gold);border-color:var(--gold)}
+.freshness-pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+.hero-meta{display:flex;gap:12px;flex-wrap:wrap;position:relative;color:var(--muted);font-size:12px;align-items:center}
+.hero-meta .clock{font-family:var(--mono);font-weight:700;color:var(--gold);font-size:14px}
 
 .hero-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;position:relative}
 .btn{padding:10px 18px;border-radius:10px;border:none;font-weight:700;font-size:13px;cursor:pointer;transition:.15s;color:#fff}
 .btn-p{background:linear-gradient(135deg,var(--gold),var(--gold-strong));color:#0a0e16;box-shadow:0 4px 12px rgba(251,191,36,.35)}
 .btn-p:hover{transform:translateY(-1px)}
-.btn-p:disabled{opacity:.5;cursor:not-allowed}
+.btn-p:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .btn-g{background:var(--bg3);border:1px solid var(--line2);color:var(--text)}
 .btn-g:hover{background:var(--bg4)}
 .btn-t{background:none;border:1px solid var(--line2);color:var(--muted)}
 .btn-t:hover{color:var(--text);border-color:var(--gold)}
+.btn-t.on{color:var(--emerald);border-color:var(--emerald)}
 
-/* Cards */
-.card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+/* Kill-zone timeline */
+.kz-bar{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.kz-bar-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.kz-bar-h h3{font-size:13px;font-weight:800;display:flex;align-items:center;gap:6px}
+.kz-timeline{display:flex;height:36px;border-radius:8px;overflow:hidden;border:1px solid var(--line2);position:relative}
+.kz-seg{flex:1;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;position:relative;transition:.2s}
+.kz-seg.grade-Ap{background:linear-gradient(135deg,var(--emerald),#059669)}
+.kz-seg.grade-A{background:linear-gradient(135deg,var(--emerald),#0e9f6e);opacity:.85}
+.kz-seg.grade-B{background:linear-gradient(135deg,var(--gold-strong),#d97706);opacity:.8}
+.kz-seg.grade-C{background:#334155}
+.kz-seg.now{outline:3px solid var(--gold);z-index:2;transform:scaleY(1.15)}
+.kz-seg .lbl{font-size:9px;letter-spacing:.3px;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.kz-marker{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--gold);box-shadow:0 0 8px var(--gold);z-index:3;transition:left .5s}
+.kz-info{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+.kz-info b{color:var(--text)}
+.kz-info .countdown{color:var(--gold);font-family:var(--mono);font-weight:700}
+
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
 .card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px;flex-wrap:wrap}
 .card-h h2{font-size:16px;font-weight:800}
-.card-h h3{font-size:14px;font-weight:700}
 .pill{padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:var(--bg3);color:var(--muted);border:1px solid var(--line)}
 .pill.g{background:var(--emerald-bg);color:var(--emerald);border-color:var(--emerald)}
 .pill.r{background:var(--red-bg);color:var(--red);border-color:var(--red)}
 .pill.gold{background:var(--gold-bg);color:var(--gold);border-color:var(--gold)}
 
-/* Timeframe grid */
 .tf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
 .tf-card{background:var(--bg3);border:1px solid var(--line);border-radius:12px;padding:14px}
-.tf-card.bullish{border-color:var(--emerald);box-shadow:0 0 20px rgba(16,185,129,.15)}
-.tf-card.bearish{border-color:var(--red);box-shadow:0 0 20px rgba(239,68,68,.15)}
+.tf-card.bullish{border-color:var(--emerald);box-shadow:0 0 20px rgba(16,185,129,.13)}
+.tf-card.bearish{border-color:var(--red);box-shadow:0 0 20px rgba(239,68,68,.13)}
 .tf-card.neutral{border-color:var(--line2)}
 .tf-card h3{font-size:13px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.tf-card .label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.tf-card .label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
 .tf-card .metric-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px dashed var(--line)}
 .tf-card .metric-row:last-child{border:none}
 .tf-card .metric-row .l{color:var(--muted)}
@@ -108,53 +113,71 @@ main{max-width:1400px;margin:0 auto;padding:20px 18px}
 .tf-card .metric-row .v.r{color:var(--red)}
 .tf-card .metric-row .v.gold{color:var(--gold)}
 
-/* Signal card (like Telegram message) */
-.sig-panel{position:relative}
 .sig-empty{padding:30px;text-align:center;color:var(--muted)}
 .sig-empty .emo{font-size:48px;margin-bottom:10px;display:block;opacity:.5}
-.sig-card{
-  padding:16px;border-radius:12px;font-family:var(--mono);font-size:12px;line-height:1.7;
-  border:2px solid;position:relative;
-}
+
+.sig-card{padding:16px;border-radius:12px;font-family:var(--mono);font-size:12px;line-height:1.7;border:2px solid;position:relative}
 .sig-card.long{background:linear-gradient(135deg,rgba(16,185,129,.14),rgba(5,150,105,.06));border-color:var(--emerald)}
 .sig-card.short{background:linear-gradient(135deg,rgba(239,68,68,.14),rgba(220,38,38,.06));border-color:var(--red)}
 .sig-card h3{font-size:16px;font-weight:800;margin-bottom:8px;font-family:'Inter',sans-serif}
 .sig-card h3.long{color:var(--emerald)}
 .sig-card h3.short{color:var(--red)}
 .sig-card .sep{border-top:1px dashed rgba(255,255,255,.15);margin:8px 0}
-.sig-card .reasons{padding-left:14px}
-.sig-card .reasons li{margin:2px 0;color:var(--muted);font-family:'Inter',sans-serif;font-size:12px;list-style:'·  '}
-.sig-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.grade-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-family:'Inter',sans-serif;font-weight:800;font-size:11px;margin-left:6px}
+.grade-A{background:var(--emerald);color:#062516}
+.grade-B{background:var(--gold);color:#0a0e16}
+.grade-C{background:#64748b;color:#fff}
+
+.check-list{margin-top:8px;padding:10px;background:rgba(0,0,0,.15);border-radius:8px;font-family:'Inter',sans-serif}
+.check-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px}
+.check-item .ic{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+.check-item .ic.pass{background:var(--emerald);color:#062516}
+.check-item .ic.fail{background:var(--red);color:#fff}
+.check-item .ic.skip{background:#475569;color:#cbd5e1}
+.check-item .txt{color:var(--muted)}
+.check-item.pass .txt{color:var(--text)}
+
+.sig-actions{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
 .sig-actions .btn{padding:6px 12px;font-size:11px}
 
-/* Table (signals log) */
-.log-h{display:grid;grid-template-columns:110px 60px 90px 90px 90px 60px 1fr;padding:10px 8px;background:var(--bg3);border-radius:8px 8px 0 0;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700}
-.log-row{display:grid;grid-template-columns:110px 60px 90px 90px 90px 60px 1fr;padding:10px 8px;border-bottom:1px solid var(--line);font-size:12px;align-items:center;font-family:var(--mono)}
+.log-h{display:grid;grid-template-columns:110px 60px 60px 90px 90px 90px 1fr;padding:10px 8px;background:var(--bg3);border-radius:8px 8px 0 0;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700}
+.log-row{display:grid;grid-template-columns:110px 60px 60px 90px 90px 90px 1fr;padding:10px 8px;border-bottom:1px solid var(--line);font-size:12px;align-items:center;font-family:var(--mono)}
 .log-row .dir-long{color:var(--emerald);font-weight:800}
 .log-row .dir-short{color:var(--red);font-weight:800}
 .log-row .conf.h{color:var(--emerald)}
 .log-row .conf.m{color:var(--gold)}
 .log-row .conf.l{color:var(--muted)}
+.log-row .gr-A{color:var(--emerald);font-weight:800}
+.log-row .gr-B{color:var(--gold);font-weight:800}
+.log-row .gr-C{color:var(--muted);font-weight:700}
 
-/* Settings row */
-.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
-.settings-grid .set{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
-.settings-grid .set label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
-.settings-grid .set input{width:100%;background:var(--bg2);border:1px solid var(--line);color:var(--text);padding:6px 8px;border-radius:6px;font-family:var(--mono);font-size:13px}
+.set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.set{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.set label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+.set input,.set select{width:100%;background:var(--bg2);border:1px solid var(--line);color:var(--text);padding:6px 8px;border-radius:6px;font-family:var(--mono);font-size:13px}
 
-/* Toast */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.stat .v{font-size:18px;font-weight:800;font-family:var(--mono);margin-top:2px}
+.stat .v.g{color:var(--emerald)}
+.stat .v.r{color:var(--red)}
+.stat .v.gold{color:var(--gold)}
+
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);color:var(--text);padding:12px 20px;border-radius:10px;font-weight:700;font-size:14px;border:1px solid var(--line2);box-shadow:0 12px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.3s;z-index:1000}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.ok{border-color:var(--emerald);color:var(--emerald)}
 .toast.err{border-color:var(--red);color:var(--red)}
 
 @media (max-width:900px){
-  .hero-price .p{font-size:36px}
-  .log-h,.log-row{grid-template-columns:70px 50px 70px 70px 70px 1fr;font-size:10px;padding:6px 4px}
+  .hero-price-row .p{font-size:36px}
+  .log-h,.log-row{grid-template-columns:70px 50px 40px 60px 60px 60px;font-size:10px;padding:6px 4px}
   .log-row .col-hide-mobile,.log-h .col-hide-mobile{display:none}
   .btn{width:100%}
   .hero-actions{flex-direction:column}
   .hero-actions .btn{width:100%}
+  .kz-timeline{height:28px}
+  .kz-seg .lbl{font-size:8px}
 }
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-D593QC1NXE"></script>
@@ -171,7 +194,7 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
       <div class="brand-logo">🐂</div>
       <div>
         <div class="brand-name">Bullzeeker</div>
-        <div class="brand-sub">🥇 Gold · XAUUSD Signal</div>
+        <div class="brand-sub">🥇 Gold Real-Time Signal</div>
       </div>
     </a>
     <div class="nav-links">
@@ -194,25 +217,65 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
     <div class="hero-h">
       <span class="emo">🥇</span>
       <div>
-        <h1>Gold Signal Center — XAUUSD</h1>
-        <div class="sym">Yahoo Finance <b>GC=F</b> · Liquidity Sweep + FVG + RSI Reversal · 3-TF (H4/H1/M15)</div>
+        <h1>Gold Signal Center — XAUUSD <span style="font-size:11px;background:var(--emerald);color:#062516;padding:2px 6px;border-radius:4px;margin-left:6px">REAL-TIME</span></h1>
+        <div class="sym">Spot: <b>biquote.io</b> · Candles: <b>Yahoo GC=F</b> · Strategy: Liquidity Sweep + BOS + FVG + RSI Div</div>
       </div>
     </div>
-    <div class="hero-price">
+    <div class="hero-price-row">
       <span class="p" id="heroPrice">—</span>
       <span class="chg" id="heroChg">—</span>
-      <span id="heroStale"></span>
+      <span id="heroFresh"></span>
+    </div>
+    <div class="bidask">
+      <span>Bid: <b id="heroBid">—</b></span>
+      <span>Ask: <b id="heroAsk">—</b></span>
+      <span>Spread: <b class="spread" id="heroSpread">—</b></span>
+      <span>Day: <b id="heroDayHL">—</b></span>
+      <span>Src: <b id="heroSource">—</b></span>
     </div>
     <div class="hero-meta">
-      <span>📅 Last update: <b id="heroUpdated">—</b></span>
-      <span>🌍 UTC: <b id="heroUtc">—</b></span>
-      <span id="heroSession">—</span>
-      <span>🕒 Session filter: 13:00-17:00 UTC (London-NY Overlap)</span>
+      <span>🌍 UTC: <span class="clock" id="clockUtc">—</span></span>
+      <span>🇹🇭 Local: <span class="clock" id="clockLocal">—</span></span>
+      <span id="heroKz">—</span>
+      <span>⏳ M15 close in: <b id="m15Countdown" style="font-family:var(--mono);color:var(--gold)">—</b></span>
     </div>
     <div class="hero-actions">
       <button class="btn btn-p" id="scanBtn" onclick="runScan()">🔍 สแกน Setup ตอนนี้</button>
-      <button class="btn btn-g" id="autoBtn" onclick="toggleAuto()">⏱️ Auto-refresh: OFF</button>
+      <button class="btn btn-g" id="autoBtn" onclick="toggleAuto()">⏱️ Auto: OFF</button>
+      <button class="btn btn-t" id="notifyBtn" onclick="requestNotify()">🔔 แจ้งเตือน: OFF</button>
+      <button class="btn btn-t" id="soundBtn" onclick="toggleSound()">🔊 Sound: OFF</button>
       <button class="btn btn-t" onclick="runBacktest()">📊 Backtest 30d</button>
+    </div>
+  </div>
+
+  <!-- KILL-ZONE TIMELINE -->
+  <div class="kz-bar">
+    <div class="kz-bar-h">
+      <h3>🎯 Kill-Zone Timeline (UTC) — Gold liquidity peaks</h3>
+      <span class="pill" id="kzMeta">—</span>
+    </div>
+    <div class="kz-timeline" id="kzTimeline">
+      <!-- generated by JS -->
+    </div>
+    <div class="kz-info">
+      <span>Now: <b id="kzNowLabel">—</b></span>
+      <span class="countdown">Session change in: <b id="kzCountdown">—</b></span>
+      <span>Legend: <b style="color:var(--emerald)">A+ Overlap</b> · <b style="color:var(--emerald);opacity:.85">A Open</b> · <b style="color:var(--gold)">B Gap</b> · <b style="color:#64748b">C Off</b></span>
+    </div>
+  </div>
+
+  <!-- DAILY STATS -->
+  <div class="card">
+    <div class="card-h">
+      <h2>📊 Today's Stats</h2>
+      <span class="pill" id="dailyDate">—</span>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="l">🟢 Longs Fired</div><div class="v g" id="dLongs">0/3</div></div>
+      <div class="stat"><div class="l">🔴 Shorts Fired</div><div class="v r" id="dShorts">0/3</div></div>
+      <div class="stat"><div class="l">💵 Sim P/L (1R)</div><div class="v" id="dPnl">0.00R</div></div>
+      <div class="stat"><div class="l">✅ Win Rate</div><div class="v gold" id="dWinRate">—</div></div>
+      <div class="stat"><div class="l">📈 Best Grade</div><div class="v gold" id="dBestGrade">—</div></div>
     </div>
   </div>
 
@@ -222,10 +285,10 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
       <h2>🚨 Latest Signal</h2>
       <span class="pill" id="setupStatus">Idle</span>
     </div>
-    <div class="sig-panel" id="latestSignal">
+    <div id="latestSignal">
       <div class="sig-empty">
         <span class="emo">🔍</span>
-        <div>ยังไม่มี Setup — กด "สแกน" เพื่อตรวจสอบเงื่อนไข</div>
+        <div><b>ยังไม่ได้สแกน</b><br/><span style="font-size:12px">กด "สแกน" หรือเปิด Auto-refresh</span></div>
       </div>
     </div>
   </div>
@@ -237,10 +300,7 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
       <span class="pill" id="regimeMeta">—</span>
     </div>
     <div class="tf-grid" id="tfGrid">
-      <div class="tf-card neutral">
-        <h3>⏳ Loading...</h3>
-        <div class="label">รอข้อมูลจาก Yahoo Finance</div>
-      </div>
+      <div class="tf-card neutral"><h3>⏳ Loading...</h3></div>
     </div>
   </div>
 
@@ -248,63 +308,51 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
   <div class="card">
     <div class="card-h">
       <h2>📝 Signals Log</h2>
-      <div style="display:flex;gap:6px">
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
         <button class="btn btn-t" onclick="exportSignalsCsv()">📥 Export CSV</button>
         <button class="btn btn-t" onclick="clearSignalsLog()">🗑️ Clear</button>
       </div>
     </div>
     <div class="log-h">
-      <div>Time</div>
+      <div>Time (UTC)</div>
       <div>Side</div>
+      <div>Grade</div>
       <div>Entry</div>
       <div>Stop</div>
       <div>TP2</div>
-      <div>Conf</div>
-      <div class="col-hide-mobile">Reasons</div>
+      <div class="col-hide-mobile">Confluence · Reasons</div>
     </div>
-    <div id="logBody"><div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">ยังไม่มี Signals — เริ่มโดยกด "สแกน" หรือรอ Auto-refresh</div></div>
+    <div id="logBody"><div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">ยังไม่มี Signals</div></div>
   </div>
 
   <!-- SETTINGS -->
   <div class="card">
     <div class="card-h"><h2>⚙️ Settings</h2><span class="pill" id="settingsSaved">Auto-saved</span></div>
-    <div class="settings-grid">
-      <div class="set">
-        <label>💰 Account Balance (USD)</label>
-        <input type="number" id="cfgBalance" step="100" min="100" value="10000" oninput="saveSettings()" />
-      </div>
-      <div class="set">
-        <label>⚠️ Risk % / Trade</label>
-        <input type="number" id="cfgRisk" step="0.1" min="0.1" max="5" value="1" oninput="saveSettings()" />
-      </div>
-      <div class="set">
-        <label>📦 Contract Size (oz)</label>
-        <input type="number" id="cfgContract" step="1" min="1" value="100" oninput="saveSettings()" />
-      </div>
-      <div class="set">
-        <label>🕒 Session Start (UTC)</label>
-        <input type="number" id="cfgSessionStart" step="1" min="0" max="23" value="13" oninput="saveSettings()" />
-      </div>
-      <div class="set">
-        <label>🕒 Session End (UTC)</label>
-        <input type="number" id="cfgSessionEnd" step="1" min="0" max="23" value="17" oninput="saveSettings()" />
-      </div>
-      <div class="set">
-        <label>📊 Min R:R</label>
-        <input type="number" id="cfgMinRR" step="0.1" min="1" value="2" oninput="saveSettings()" />
-      </div>
-      <div class="set">
-        <label>🔒 Ignore Session Filter</label>
-        <select id="cfgIgnoreSession" onchange="saveSettings()" style="width:100%;background:var(--bg2);border:1px solid var(--line);color:var(--text);padding:6px 8px;border-radius:6px;font-size:13px">
-          <option value="0">No (respect session)</option>
-          <option value="1">Yes (scan 24/7)</option>
-        </select>
-      </div>
+    <div class="set-grid">
+      <div class="set"><label>💰 Balance ($)</label><input type="number" id="cfgBalance" step="100" min="100" value="10000" oninput="saveSettings()" /></div>
+      <div class="set"><label>⚠️ Risk % / Trade</label><input type="number" id="cfgRisk" step="0.1" min="0.1" max="5" value="1" oninput="saveSettings()" /></div>
+      <div class="set"><label>📦 Contract (oz)</label><input type="number" id="cfgContract" step="1" min="1" value="100" oninput="saveSettings()" /></div>
+      <div class="set"><label>📊 Min R:R</label><input type="number" id="cfgMinRR" step="0.1" min="1" value="2" oninput="saveSettings()" /></div>
+      <div class="set"><label>🎯 Min Grade</label><select id="cfgMinGrade" onchange="saveSettings()">
+        <option value="A">A only (strict)</option>
+        <option value="B" selected>B or better (recommended)</option>
+        <option value="C">C or better (aggressive)</option>
+      </select></div>
+      <div class="set"><label>🧭 H4 Alignment</label><select id="cfgAlign" onchange="saveSettings()">
+        <option value="strict">Strict (must align)</option>
+        <option value="moderate" selected>Moderate (aligned OR neutral)</option>
+        <option value="off">Off (ignore H4)</option>
+      </select></div>
+      <div class="set"><label>🕒 Session Filter</label><select id="cfgSession" onchange="saveSettings()">
+        <option value="killzone" selected>Kill-zones only (A+/A)</option>
+        <option value="overlap">Overlap only (13-16 UTC)</option>
+        <option value="all">24/7 (no filter)</option>
+      </select></div>
+      <div class="set"><label>🔢 Max signals/day</label><input type="number" id="cfgMaxDaily" step="1" min="1" max="10" value="3" oninput="saveSettings()" /></div>
     </div>
     <div style="margin-top:14px;padding:10px 14px;background:var(--gold-bg);border:1px solid var(--gold);border-radius:8px;font-size:12px;color:var(--muted);line-height:1.6">
-      💡 <b style="color:var(--gold)">หมายเหตุ:</b>
-      หน้านี้ใช้ Yahoo Finance <code style="font-family:var(--mono);color:var(--gold)">GC=F</code> (Gold Futures) เป็นข้อมูล — ใกล้เคียง XAUUSD spot มาก
-      · เว็บเป็น static site ไม่มี backend → ต้องเปิดหน้าอยู่ให้ Auto-refresh ทำงาน · Telegram alerts ทำใน browser ไม่ได้ (ต้อง Python bot แยก — บอกได้ครับสร้างให้)
+      💡 <b style="color:var(--gold)">Real-time notes:</b>
+      Spot price ใช้ <code style="font-family:var(--mono);color:var(--gold)">biquote.io</code> real-time (0s lag) · Historical candles ใช้ Yahoo <code style="font-family:var(--mono);color:var(--gold)">GC=F</code> (~10min delay for indicator calc) · เปิด browser Notification + Sound → เตือนทันทีเมื่อมี Grade A/B signal · Auto-refresh smart: pause เมื่อ tab hidden (ประหยัด API)
     </div>
   </div>
 
@@ -314,29 +362,49 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
 
 <script>
 /* ============================================================
-   BULLZEEKER GOLD SIGNAL CENTER — XAUUSD
-   Strategy: Liquidity Sweep + Displacement + FVG + RSI reversal
+   BULLZEEKER GOLD SIGNAL CENTER v2 — Real-Time XAUUSD
+   Strategy: Liquidity Sweep + BOS + FVG + RSI (with divergence + H4 gate + kill-zone)
    ============================================================ */
 
-const PROXIES = [
+/* ---------- CONFIG ---------- */
+const YAHOO_PROXIES = [
   url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
   url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
   url => 'https://corsproxy.io/?' + encodeURIComponent(url),
 ];
-
-const SYMBOL = 'GC=F';        // Gold Futures (near-XAUUSD spot)
-const STORAGE_KEY = 'bullzeeker_gold_state_v1';
-const SETTINGS_KEY = 'bullzeeker_gold_settings_v1';
-const AUTO_INTERVAL_MS = 60000;
+const BIQUOTE_URL = 'https://biquote.io/api/XAUUSD';
+const SYMBOL_YAHOO = 'GC=F';
+const STORAGE_KEY = 'bullzeeker_gold_state_v2';
+const SETTINGS_KEY = 'bullzeeker_gold_settings_v2';
+const DAILY_KEY = 'bullzeeker_gold_daily_v2';
+const BIQUOTE_POLL_MS = 5000;      // 5s spot polling (real-time)
+const CANDLES_POLL_MS = 60000;     // 60s candles refresh
 const RSI_PERIOD = 14;
 const ATR_PERIOD = 14;
 const EMA_FAST = 9, EMA_SLOW = 21;
 
+/* Kill-zone definitions (UTC hours) with quality grade */
+const KILLZONES = [
+  {name:'Off', from:20, to:24, grade:'C'},
+  {name:'Off', from:0, to:6, grade:'C'},
+  {name:'London Open', from:6, to:10, grade:'A'},
+  {name:'Gap', from:10, to:12, grade:'B'},
+  {name:'NY Open', from:12, to:13, grade:'A'},
+  {name:'Overlap', from:13, to:16, grade:'A+'},
+  {name:'NY Late', from:16, to:20, grade:'B'},
+];
+
 let SETTINGS = loadSettings();
 let SIGNALS_LOG = loadLog();
 let AUTO_TIMER = null;
+let BIQUOTE_TIMER = null;
 let LAST_QUOTE = null;
 let CANDLES = {m15:null, h1:null, h4:null};
+let CANDLES_UPDATED_AT = 0;
+let AUDIO_CTX = null;
+let SOUND_ON = false;
+let NOTIFY_ON = false;
+let DAILY = loadDaily();
 
 function loadSettings(){
   try{
@@ -348,8 +416,8 @@ function loadSettings(){
 function defaultSettings(){
   return {
     balance:10000, risk:1, contract:100,
-    sessionStart:13, sessionEnd:17,
-    minRR:2, ignoreSession:0,
+    minRR:2, minGrade:'B', align:'moderate', session:'killzone',
+    maxDaily:3,
   };
 }
 function saveSettings(){
@@ -357,42 +425,53 @@ function saveSettings(){
     balance: parseFloat(document.getElementById('cfgBalance').value) || 10000,
     risk: parseFloat(document.getElementById('cfgRisk').value) || 1,
     contract: parseFloat(document.getElementById('cfgContract').value) || 100,
-    sessionStart: parseInt(document.getElementById('cfgSessionStart').value) || 13,
-    sessionEnd: parseInt(document.getElementById('cfgSessionEnd').value) || 17,
     minRR: parseFloat(document.getElementById('cfgMinRR').value) || 2,
-    ignoreSession: parseInt(document.getElementById('cfgIgnoreSession').value) || 0,
+    minGrade: document.getElementById('cfgMinGrade').value,
+    align: document.getElementById('cfgAlign').value,
+    session: document.getElementById('cfgSession').value,
+    maxDaily: parseInt(document.getElementById('cfgMaxDaily').value) || 3,
   };
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(SETTINGS));
-  renderSession();
+  renderKillzone();
 }
 function applySettingsToInputs(){
   document.getElementById('cfgBalance').value = SETTINGS.balance;
   document.getElementById('cfgRisk').value = SETTINGS.risk;
   document.getElementById('cfgContract').value = SETTINGS.contract;
-  document.getElementById('cfgSessionStart').value = SETTINGS.sessionStart;
-  document.getElementById('cfgSessionEnd').value = SETTINGS.sessionEnd;
   document.getElementById('cfgMinRR').value = SETTINGS.minRR;
-  document.getElementById('cfgIgnoreSession').value = SETTINGS.ignoreSession;
+  document.getElementById('cfgMinGrade').value = SETTINGS.minGrade;
+  document.getElementById('cfgAlign').value = SETTINGS.align;
+  document.getElementById('cfgSession').value = SETTINGS.session;
+  document.getElementById('cfgMaxDaily').value = SETTINGS.maxDaily;
 }
 function loadLog(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return [];
-    return JSON.parse(raw);
-  }catch{ return []; }
+  try{ const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : []; }catch{ return []; }
 }
 function saveLog(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(SIGNALS_LOG.slice(-200))); }catch{}
 }
+function loadDaily(){
+  try{
+    const r = localStorage.getItem(DAILY_KEY);
+    if(!r) return newDailyRecord();
+    const d = JSON.parse(r);
+    if(d.date !== todayISO()) return newDailyRecord();
+    return d;
+  }catch{ return newDailyRecord(); }
+}
+function newDailyRecord(){ return {date: todayISO(), longs:0, shorts:0, wins:0, losses:0, pending:[], bestGrade:null, pnlR:0}; }
+function saveDaily(){ try{ localStorage.setItem(DAILY_KEY, JSON.stringify(DAILY)); }catch{} }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+
 function toast(msg, type=''){
   const el = document.getElementById('toast');
   el.textContent = msg; el.className = 'toast show ' + type;
   clearTimeout(toast._t); toast._t = setTimeout(() => { el.className = 'toast ' + type; }, 3500);
 }
 
-/* ---------- DATA FETCH ---------- */
-async function tryProxies(url){
-  for(const p of PROXIES){
+/* ---------- DATA: Yahoo (candles) ---------- */
+async function tryYahooProxies(url){
+  for(const p of YAHOO_PROXIES){
     try{
       const r = await fetch(p(url), {cache:'no-store'});
       if(!r.ok) continue;
@@ -400,35 +479,27 @@ async function tryProxies(url){
       if(t && t.length > 10) return t;
     }catch{}
   }
-  throw new Error('all proxies failed');
+  throw new Error('all Yahoo proxies failed');
 }
-
 async function fetchYahoo(interval, range){
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(SYMBOL)}?range=${range}&interval=${interval}`;
-  const txt = await tryProxies(url);
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(SYMBOL_YAHOO)}?range=${range}&interval=${interval}`;
+  const txt = await tryYahooProxies(url);
   const j = JSON.parse(txt);
   const res = j?.chart?.result?.[0];
-  if(!res) throw new Error('Yahoo empty result');
-  const meta = res.meta;
+  if(!res) throw new Error('Yahoo empty');
   const q = res.indicators?.quote?.[0];
   const ts = res.timestamp || [];
-  const closes = q?.close || [];
-  const highs = q?.high || [];
-  const lows = q?.low || [];
-  const opens = q?.open || [];
-  const vols = q?.volume || [];
   const candles = [];
   for(let i = 0; i < ts.length; i++){
-    if(closes[i] == null) continue;
+    if(q?.close?.[i] == null) continue;
     candles.push({
       time: ts[i]*1000,
-      open: opens[i], high: highs[i], low: lows[i], close: closes[i], vol: vols[i]||0
+      open: q.open[i], high: q.high[i], low: q.low[i], close: q.close[i],
+      vol: q.volume?.[i] || 0,
     });
   }
-  return {meta, candles};
+  return {meta: res.meta, candles};
 }
-
-/* Resample H1 → H4 (group 4 H1 candles) */
 function resampleH1toH4(h1){
   const h4 = [];
   for(let i = 0; i < h1.length; i += 4){
@@ -446,567 +517,858 @@ function resampleH1toH4(h1){
   return h4;
 }
 
+/* ---------- DATA: biquote.io (spot, real-time, direct CORS) ---------- */
+async function fetchBiquoteSpot(){
+  try{
+    const r = await fetch(BIQUOTE_URL, {cache:'no-store'});
+    if(!r.ok) return null;
+    const d = await r.json();
+    if(d.stale === true) return {...d, _stale:true};
+    return {
+      bid: d.bid, ask: d.ask, mid: d.mid || (d.bid+d.ask)/2,
+      spread: d.spread, high: d.high, low: d.low,
+      dayDiffPct: d.dayDiffPercent, marketState: d.marketState,
+      lastQuoteAt: d.lastQuoteAt, quoteAge: d.quoteAgeSeconds,
+      source: 'biquote', direction: d.direction,
+      updatedAt: Date.now(),
+    };
+  }catch(e){
+    return null;
+  }
+}
+async function pollBiquote(){
+  const q = await fetchBiquoteSpot();
+  if(q){
+    LAST_QUOTE = q;
+    renderHero();
+  }
+}
+
 /* ---------- INDICATORS ---------- */
 function rsi(closes, period=14){
-  if(closes.length < period + 1) return null;
-  let gains = 0, losses = 0;
-  for(let i = 1; i <= period; i++){
-    const d = closes[i] - closes[i-1];
-    if(d > 0) gains += d; else losses -= d;
+  if(closes.length < period+1) return null;
+  let gains=0, losses=0;
+  for(let i=1;i<=period;i++){
+    const d=closes[i]-closes[i-1];
+    if(d>0) gains+=d; else losses-=d;
   }
-  let avgG = gains/period, avgL = losses/period;
-  for(let i = period+1; i < closes.length; i++){
-    const d = closes[i] - closes[i-1];
-    const g = d > 0 ? d : 0, l = d < 0 ? -d : 0;
-    avgG = (avgG*(period-1) + g)/period;
-    avgL = (avgL*(period-1) + l)/period;
+  let g=gains/period, l=losses/period;
+  for(let i=period+1;i<closes.length;i++){
+    const d=closes[i]-closes[i-1];
+    const gd=d>0?d:0, ld=d<0?-d:0;
+    g=(g*(period-1)+gd)/period;
+    l=(l*(period-1)+ld)/period;
   }
-  if(avgL === 0) return 100;
-  return 100 - 100/(1 + avgG/avgL);
+  if(l===0) return 100;
+  return 100-100/(1+g/l);
 }
-
-function ema(values, period){
-  if(values.length < period) return null;
-  const k = 2/(period+1);
-  let e = values.slice(0, period).reduce((a,b) => a+b, 0)/period;
-  for(let i = period; i < values.length; i++){
-    e = values[i]*k + e*(1-k);
-  }
-  return e;
-}
-
-function atr(candles, period=14){
-  if(candles.length < period+1) return null;
-  const trs = [];
-  for(let i = 1; i < candles.length; i++){
-    trs.push(Math.max(
-      candles[i].high - candles[i].low,
-      Math.abs(candles[i].high - candles[i-1].close),
-      Math.abs(candles[i].low - candles[i-1].close)
-    ));
-  }
-  let a = trs.slice(0, period).reduce((s,x) => s+x, 0)/period;
-  for(let i = period; i < trs.length; i++){
-    a = (a*(period-1) + trs[i])/period;
-  }
-  return a;
-}
-
-/* ---------- SETUP DETECTION ---------- */
-
-/* Bullish FVG: candle[i-1].high < candle[i+1].low (gap up) */
-function detectFVG(candles, lookback=10){
-  const fvgs = [];
-  const start = Math.max(2, candles.length - lookback);
-  for(let i = start; i < candles.length - 1; i++){
-    const c0 = candles[i-1], c2 = candles[i+1];
-    // Bullish FVG
-    if(c0.high < c2.low){
-      fvgs.push({idx:i, type:'bullish', low:c0.high, high:c2.low, mid:(c0.high+c2.low)/2});
-    }
-    // Bearish FVG
-    if(c0.low > c2.high){
-      fvgs.push({idx:i, type:'bearish', low:c2.high, high:c0.low, mid:(c2.high+c0.low)/2});
-    }
-  }
-  return fvgs;
-}
-
-/* Detect displacement: current candle body > 1.5 × ATR14 */
-function isDisplacementCandle(c, atrVal, direction){
-  if(!atrVal) return false;
-  const body = Math.abs(c.close - c.open);
-  const bullish = c.close > c.open;
-  if(direction === 'long' && !bullish) return false;
-  if(direction === 'short' && bullish) return false;
-  return body > atrVal * 1.5;
-}
-
-/* Prior day high/low from H1 (previous 24 candles ~ yesterday) */
-function priorSessionHL(h1){
-  if(h1.length < 48) return null;
-  const yesterdaySlice = h1.slice(-48, -24);
-  if(!yesterdaySlice.length) return null;
-  return {
-    high: Math.max(...yesterdaySlice.map(c => c.high)),
-    low: Math.min(...yesterdaySlice.map(c => c.low)),
-  };
-}
-
-/* Asia session (00:00-08:00 UTC) high/low from M15 */
-function asiaSessionHL(m15){
-  if(!m15 || m15.length < 32) return null;
-  const nowMs = m15[m15.length-1].time;
-  const nowDate = new Date(nowMs);
-  const asiaStart = Date.UTC(nowDate.getUTCFullYear(), nowDate.getUTCMonth(), nowDate.getUTCDate(), 0, 0, 0);
-  const asiaEnd = asiaStart + 8*60*60*1000;
-  const asiaCandles = m15.filter(c => c.time >= asiaStart && c.time <= asiaEnd);
-  if(asiaCandles.length < 4) return null;
-  return {
-    high: Math.max(...asiaCandles.map(c => c.high)),
-    low: Math.min(...asiaCandles.map(c => c.low)),
-    startMs: asiaStart, endMs: asiaEnd,
-  };
-}
-
-/* Detect liquidity sweep: latest candle wicked past level and closed back */
-function detectLiquiditySweep(candles, level, direction){
-  if(candles.length < 2) return null;
-  const last = candles[candles.length-1];
-  const prev = candles[candles.length-2];
-  if(direction === 'long'){
-    // sweep = broke below level then closed above
-    const swept = (last.low < level && last.close > level) ||
-                  (prev.low < level && last.close > level && Math.abs(last.close-prev.close) > 0);
-    return swept ? {level, sweepLow: Math.min(last.low, prev.low)} : null;
-  }
-  if(direction === 'short'){
-    const swept = (last.high > level && last.close < level) ||
-                  (prev.high > level && last.close < level);
-    return swept ? {level, sweepHigh: Math.max(last.high, prev.high)} : null;
-  }
-  return null;
-}
-
-/* RSI turn: previous RSI < threshold, current RSI > previous (turning up) */
-function detectRsiTurn(rsiSeries, direction){
-  if(!rsiSeries || rsiSeries.length < 3) return null;
-  const [r_2, r_1, r_0] = rsiSeries.slice(-3);
-  if(direction === 'long'){
-    // was oversold, now turning up
-    if(r_2 < 40 && r_1 <= r_2 && r_0 > r_1) return {before:r_1, now:r_0};
-    if(r_1 < 40 && r_0 > r_1) return {before:r_1, now:r_0};
-  }
-  if(direction === 'short'){
-    if(r_2 > 60 && r_1 >= r_2 && r_0 < r_1) return {before:r_1, now:r_0};
-    if(r_1 > 60 && r_0 < r_1) return {before:r_1, now:r_0};
-  }
-  return null;
-}
-
 function computeRsiSeries(closes, period=14){
-  // Return array of RSI values (rolling)
   const rs = [];
-  for(let i = period; i < closes.length; i++){
+  for(let i=period; i<closes.length; i++){
     rs.push(rsi(closes.slice(0, i+1), period));
   }
   return rs;
 }
+function ema(values, period){
+  if(values.length<period) return null;
+  const k=2/(period+1);
+  let e=values.slice(0,period).reduce((a,b)=>a+b,0)/period;
+  for(let i=period;i<values.length;i++) e=values[i]*k+e*(1-k);
+  return e;
+}
+function atr(candles, period=14){
+  if(candles.length<period+1) return null;
+  const trs=[];
+  for(let i=1;i<candles.length;i++){
+    trs.push(Math.max(candles[i].high-candles[i].low, Math.abs(candles[i].high-candles[i-1].close), Math.abs(candles[i].low-candles[i-1].close)));
+  }
+  let a=trs.slice(0,period).reduce((s,x)=>s+x,0)/period;
+  for(let i=period;i<trs.length;i++) a=(a*(period-1)+trs[i])/period;
+  return a;
+}
+
+/* ---------- MARKET STRUCTURE ---------- */
+/* Detect swings using pivot method (N candles either side) */
+function detectSwings(candles, lookback=3){
+  const swings = [];
+  for(let i=lookback; i<candles.length-lookback; i++){
+    const win = candles.slice(i-lookback, i+lookback+1);
+    const highs = win.map(c=>c.high), lows = win.map(c=>c.low);
+    const isHigh = candles[i].high === Math.max(...highs);
+    const isLow  = candles[i].low === Math.min(...lows);
+    if(isHigh) swings.push({idx:i, price:candles[i].high, type:'high', time:candles[i].time});
+    if(isLow)  swings.push({idx:i, price:candles[i].low,  type:'low',  time:candles[i].time});
+  }
+  return swings;
+}
+/* BOS: latest close breaks the last recorded swing (in direction) */
+function detectBOS(candles, direction){
+  const swings = detectSwings(candles, 3);
+  const last = candles[candles.length-1];
+  if(direction==='long'){
+    // find last swing high before current
+    for(let i=swings.length-1; i>=0; i--){
+      const s = swings[i];
+      if(s.type!=='high') continue;
+      if(s.idx >= candles.length-3) continue;
+      if(last.close > s.price) return {level:s.price, atIdx:s.idx};
+      break;
+    }
+  } else {
+    for(let i=swings.length-1; i>=0; i--){
+      const s = swings[i];
+      if(s.type!=='low') continue;
+      if(s.idx >= candles.length-3) continue;
+      if(last.close < s.price) return {level:s.price, atIdx:s.idx};
+      break;
+    }
+  }
+  return null;
+}
+
+/* ---------- LIQUIDITY POOL ---------- */
+/* Look for levels touched by 2+ wicks within tolerance */
+function findLiquidityPool(candles, level, direction, tolerancePct=0.05){
+  const tol = level * (tolerancePct/100);
+  let touches = 0;
+  for(const c of candles){
+    if(direction==='low' && Math.abs(c.low - level) <= tol) touches++;
+    if(direction==='high' && Math.abs(c.high - level) <= tol) touches++;
+  }
+  return touches;
+}
+
+/* Asia H/L from M15 */
+function asiaSessionHL(m15){
+  if(!m15 || m15.length<24) return null;
+  const last = m15[m15.length-1];
+  const d = new Date(last.time);
+  const asiaStart = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0);
+  const asiaEnd = asiaStart + 8*3600*1000;
+  const asiaCandles = m15.filter(c => c.time >= asiaStart && c.time <= asiaEnd);
+  if(asiaCandles.length<4) return null;
+  return {high: Math.max(...asiaCandles.map(c=>c.high)), low: Math.min(...asiaCandles.map(c=>c.low)), count: asiaCandles.length};
+}
+/* Prev Day H/L (previous 24h) from H1 */
+function priorSessionHL(h1){
+  if(!h1 || h1.length<48) return null;
+  const yesterday = h1.slice(-48, -24);
+  if(!yesterday.length) return null;
+  return {high: Math.max(...yesterday.map(c=>c.high)), low: Math.min(...yesterday.map(c=>c.low))};
+}
+
+/* Enhanced sweep: last 3 M15 candles wicked past level + closed back */
+function detectSweep(candles, level, direction){
+  if(candles.length<3) return null;
+  const last3 = candles.slice(-3);
+  const lastClose = candles[candles.length-1].close;
+  if(direction==='long'){
+    // Any of last 3 dipped below level, and current close is above
+    const swept = last3.some(c => c.low < level);
+    if(swept && lastClose > level){
+      const sweepLow = Math.min(...last3.map(c=>c.low));
+      return {level, sweepLow, atIdx: candles.length-1-last3.findIndex(c=>c.low === sweepLow)};
+    }
+  } else {
+    const swept = last3.some(c => c.high > level);
+    if(swept && lastClose < level){
+      const sweepHigh = Math.max(...last3.map(c=>c.high));
+      return {level, sweepHigh, atIdx: candles.length-1-last3.findIndex(c=>c.high === sweepHigh)};
+    }
+  }
+  return null;
+}
+
+/* ---------- FVG detection + mitigation ---------- */
+/* FVG (3-candle imbalance): candle[i-1].high < candle[i+1].low = bullish gap */
+function detectFVG(candles, lookback=15){
+  const fvgs = [];
+  const start = Math.max(2, candles.length-lookback);
+  for(let i=start; i<candles.length-1; i++){
+    const c0 = candles[i-1], c1 = candles[i], c2 = candles[i+1];
+    if(c0.high < c2.low){
+      // Bullish FVG
+      const fvg = {idx:i, type:'bullish', low:c0.high, high:c2.low, mid:(c0.high+c2.low)/2, createdBy:i, size:c2.low-c0.high, createdCandle:c1};
+      fvg.mitigated = isFvgMitigated(candles, fvg);
+      fvgs.push(fvg);
+    }
+    if(c0.low > c2.high){
+      // Bearish FVG
+      const fvg = {idx:i, type:'bearish', low:c2.high, high:c0.low, mid:(c2.high+c0.low)/2, createdBy:i, size:c0.low-c2.high, createdCandle:c1};
+      fvg.mitigated = isFvgMitigated(candles, fvg);
+      fvgs.push(fvg);
+    }
+  }
+  return fvgs;
+}
+function isFvgMitigated(candles, fvg){
+  // Any candle after fvg.idx+1 entered the FVG price range?
+  for(let j = fvg.idx+2; j < candles.length; j++){
+    const c = candles[j];
+    if(fvg.type==='bullish'){
+      // Mitigated if price re-entered from above going down
+      if(c.low <= fvg.mid) return true;
+    } else {
+      if(c.high >= fvg.mid) return true;
+    }
+  }
+  return false;
+}
+
+/* Displacement candle: body > 1.5 × ATR, in given direction */
+function isDisplacement(c, atrVal, dir){
+  if(!atrVal) return false;
+  const body = Math.abs(c.close - c.open);
+  if(body < atrVal*1.5) return false;
+  if(dir==='long'  && c.close <= c.open) return false;
+  if(dir==='short' && c.close >= c.open) return false;
+  return true;
+}
+
+/* RSI turn: was oversold/overbought + reversing */
+function detectRsiTurn(rsiSeries, direction){
+  if(!rsiSeries || rsiSeries.length<3) return null;
+  const [r2, r1, r0] = rsiSeries.slice(-3);
+  if(direction==='long'){
+    if(r1 < 40 && r0 > r1 && r0 > 32) return {before:r1, now:r0, oversold: r1<30};
+  } else {
+    if(r1 > 60 && r0 < r1 && r0 < 68) return {before:r1, now:r0, overbought: r1>70};
+  }
+  return null;
+}
+
+/* RSI divergence: price makes LL/HH while RSI makes HL/LH */
+function detectRsiDivergence(candles, rsiSeries, direction){
+  // Look for divergence in last 20 candles vs previous 20
+  const alignLen = rsiSeries.length;
+  const cAlign = candles.slice(-alignLen);
+  if(cAlign.length<20 || rsiSeries.length<20) return null;
+  const recent = cAlign.slice(-8);
+  const prior = cAlign.slice(-20, -12);
+  if(recent.length<4 || prior.length<4) return null;
+  const priceRecentLow = Math.min(...recent.map(c=>c.low));
+  const priceRecentHigh = Math.max(...recent.map(c=>c.high));
+  const pricePriorLow = Math.min(...prior.map(c=>c.low));
+  const pricePriorHigh = Math.max(...prior.map(c=>c.high));
+  const rsiRecent = rsiSeries.slice(-8);
+  const rsiPrior = rsiSeries.slice(-20, -12);
+  const rsiRecentLow = Math.min(...rsiRecent);
+  const rsiRecentHigh = Math.max(...rsiRecent);
+  const rsiPriorLow = Math.min(...rsiPrior);
+  const rsiPriorHigh = Math.max(...rsiPrior);
+  if(direction==='long'){
+    if(priceRecentLow < pricePriorLow && rsiRecentLow > rsiPriorLow){
+      return {type:'regular-bullish', priceLow:priceRecentLow, rsiFrom:rsiPriorLow, rsiTo:rsiRecentLow};
+    }
+  } else {
+    if(priceRecentHigh > pricePriorHigh && rsiRecentHigh < rsiPriorHigh){
+      return {type:'regular-bearish', priceHigh:priceRecentHigh, rsiFrom:rsiPriorHigh, rsiTo:rsiRecentHigh};
+    }
+  }
+  return null;
+}
+
+/* ---------- H4 TREND BIAS ---------- */
+function getH4Bias(h4){
+  if(!h4 || h4.length<21) return 'unknown';
+  const closes = h4.map(c=>c.close);
+  const emaF = ema(closes, EMA_FAST);
+  const emaS = ema(closes, EMA_SLOW);
+  if(!emaF || !emaS) return 'unknown';
+  const price = closes[closes.length-1];
+  const closesRecent = closes.slice(-8);
+  const trendSlope = (closesRecent[closesRecent.length-1] - closesRecent[0]) / closesRecent[0] * 100;
+  if(emaF > emaS && price > emaF && trendSlope > 0.3) return 'bullish';
+  if(emaF < emaS && price < emaF && trendSlope < -0.3) return 'bearish';
+  return 'neutral';
+}
+
+/* ---------- KILL-ZONE ---------- */
+function currentKillzone(){
+  const h = new Date().getUTCHours();
+  for(const kz of KILLZONES){
+    if(h >= kz.from && h < kz.to) return kz;
+  }
+  return KILLZONES[0];
+}
+function nextKillzoneChange(){
+  const now = new Date();
+  const h = now.getUTCHours(), m = now.getUTCMinutes(), s = now.getUTCSeconds();
+  const currentH = h + m/60 + s/3600;
+  const kz = currentKillzone();
+  const endH = kz.to;
+  const remainingH = endH - currentH;
+  const totalSec = Math.round(remainingH * 3600);
+  const min = Math.floor(totalSec/60);
+  const sec = totalSec % 60;
+  const hrs = Math.floor(min/60);
+  const minR = min % 60;
+  if(hrs>0) return `${hrs}h ${minR}m`;
+  return `${min}m ${sec}s`;
+}
+function sessionAllowsSignal(){
+  const kz = currentKillzone();
+  if(SETTINGS.session==='all') return {ok:true, kz};
+  if(SETTINGS.session==='overlap') return {ok: kz.name==='Overlap', kz};
+  if(SETTINGS.session==='killzone') return {ok: kz.grade==='A+' || kz.grade==='A', kz};
+  return {ok:true, kz};
+}
+
+/* ---------- CONFLUENCE SCORING ---------- */
+function scoreConfluence({kz, h4Bias, direction, hasBOS, hasSweep, sweepPoolTouches, hasFvgFresh, displacedCreatedFvg, rsiTurn, rsiDivergence, distToEntry, atrM15}){
+  let score = 0;
+  const notes = [];
+  // Kill-zone
+  const kzMap = {'A+':25,'A':20,'B':10,'C':0};
+  score += kzMap[kz.grade] || 0;
+  notes.push({label:`Kill-zone: ${kz.name} (${kz.grade})`, pass: (kz.grade==='A+'||kz.grade==='A'), pts: kzMap[kz.grade]||0});
+  // H4 alignment
+  const bullishOk = direction==='long' && h4Bias==='bullish';
+  const bearishOk = direction==='short' && h4Bias==='bearish';
+  const neutral = h4Bias==='neutral';
+  if(bullishOk || bearishOk){ score += 15; notes.push({label:`H4 bias ${h4Bias} (aligned)`, pass:true, pts:15}); }
+  else if(neutral){ score += 5; notes.push({label:`H4 bias neutral`, pass:true, pts:5}); }
+  else{ score -= 20; notes.push({label:`H4 bias ${h4Bias} (OPPOSING!)`, pass:false, pts:-20}); }
+  // BOS
+  if(hasBOS){ score += 15; notes.push({label:'H1 BOS (structure break)', pass:true, pts:15}); }
+  else{ notes.push({label:'H1 BOS', pass:false, pts:0}); }
+  // Sweep
+  if(hasSweep){ score += 10; notes.push({label:'Liquidity sweep on M15', pass:true, pts:10}); }
+  else{ notes.push({label:'Liquidity sweep', pass:false, pts:0}); }
+  // Pool quality
+  if(sweepPoolTouches>=3){ score+=5; notes.push({label:`Pool: ${sweepPoolTouches} touches`, pass:true, pts:5}); }
+  else if(sweepPoolTouches>=2){ score+=3; notes.push({label:`Pool: ${sweepPoolTouches} touches`, pass:true, pts:3}); }
+  else{ notes.push({label:`Pool: ${sweepPoolTouches||0} touches`, pass:false, pts:0}); }
+  // FVG fresh
+  if(hasFvgFresh){ score += 10; notes.push({label:'FVG unmitigated', pass:true, pts:10}); }
+  else{ notes.push({label:'FVG unmitigated', pass:false, pts:0}); }
+  // Displacement→FVG alignment
+  if(displacedCreatedFvg){ score += 5; notes.push({label:'Displacement created FVG', pass:true, pts:5}); }
+  else{ notes.push({label:'Displacement→FVG link', pass:false, pts:0}); }
+  // RSI turn
+  if(rsiTurn){ score += 10; notes.push({label:`RSI turn from ${rsiTurn.before.toFixed(1)} → ${rsiTurn.now.toFixed(1)}`, pass:true, pts:10}); }
+  else{ notes.push({label:'RSI H1 turn', pass:false, pts:0}); }
+  // RSI divergence
+  if(rsiDivergence){ score += 15; notes.push({label:`RSI ${rsiDivergence.type}`, pass:true, pts:15}); }
+  else{ notes.push({label:'RSI divergence', pass:false, pts:0}); }
+  // Distance to entry (should not be too far)
+  if(distToEntry && atrM15){
+    const distAtr = distToEntry / atrM15;
+    if(distAtr < 1){ score += 5; notes.push({label:`Entry ${distAtr.toFixed(2)}× ATR away`, pass:true, pts:5}); }
+    else if(distAtr < 2){ notes.push({label:`Entry ${distAtr.toFixed(2)}× ATR away`, pass:true, pts:0, skip:true}); }
+    else{ score -= 5; notes.push({label:`Entry ${distAtr.toFixed(2)}× ATR away (FAR)`, pass:false, pts:-5}); }
+  }
+  score = Math.max(0, Math.min(100, Math.round(score)));
+  let grade = 'C';
+  if(score>=75) grade='A';
+  else if(score>=55) grade='B';
+  return {score, grade, notes};
+}
+function gradeGE(a, b){ const o={A:3,B:2,C:1}; return o[a] >= o[b]; }
 
 /* ---------- MAIN SETUP CHECK ---------- */
-function checkLongSetup(m15, h1, h4){
-  if(!m15?.length || !h1?.length) return null;
-
-  const h1Closes = h1.map(c => c.close);
-  const rsiSeries = computeRsiSeries(h1Closes, RSI_PERIOD);
-  const rsiTurn = detectRsiTurn(rsiSeries, 'long');
-  if(!rsiTurn) return null;
-
+function checkSetup(direction, m15, h1, h4){
+  if(!m15?.length || !h1?.length || !h4?.length) return null;
   const atr15 = atr(m15, ATR_PERIOD);
-  const last15 = m15[m15.length-1];
-  const displaced = isDisplacementCandle(last15, atr15, 'long') ||
-                    isDisplacementCandle(m15[m15.length-2], atr15, 'long');
-  if(!displaced) return null;
+  const h1Closes = h1.map(c=>c.close);
+  const rsiSeries = computeRsiSeries(h1Closes, RSI_PERIOD);
 
-  // Level = min of asia low, prev day low
+  // H4 bias
+  const h4Bias = getH4Bias(h4);
+  // H4 alignment gate
+  if(SETTINGS.align==='strict'){
+    if(direction==='long' && h4Bias!=='bullish') return null;
+    if(direction==='short' && h4Bias!=='bearish') return null;
+  } else if(SETTINGS.align==='moderate'){
+    if(direction==='long' && h4Bias==='bearish') return null;
+    if(direction==='short' && h4Bias==='bullish') return null;
+  }
+
+  // Kill-zone
+  const kz = currentKillzone();
+
+  // Liquidity pool candidates
   const asia = asiaSessionHL(m15);
   const prior = priorSessionHL(h1);
-  const candidates = [];
-  if(asia) candidates.push({name:'Asia Low', level: asia.low});
-  if(prior) candidates.push({name:'Prev Day Low', level: prior.low});
-  if(!candidates.length) return null;
-
-  let sweptLevel = null, sweepInfo = null;
-  for(const c of candidates){
-    const sw = detectLiquiditySweep(m15, c.level, 'long');
-    if(sw){ sweptLevel = c; sweepInfo = sw; break; }
-  }
-  if(!sweptLevel) return null;
-
-  // FVG check on m15
-  const fvgs = detectFVG(m15, 10).filter(f => f.type === 'bullish');
-  const activeFvg = fvgs.length ? fvgs[fvgs.length-1] : null;
-  if(!activeFvg) return null;
-
-  const entry = activeFvg.mid;
-  const stopBuffer = Math.max(3, atr15 * 0.5);
-  const stop = sweepInfo.sweepLow - stopBuffer;
-  const risk = entry - stop;
-  if(risk <= 0) return null;
-  const tp1 = entry + risk*2;
-  const tp2 = entry + risk*3;
-  const rr = (tp1-entry)/risk;
-  if(rr < SETTINGS.minRR) return null;
-
-  return {
-    direction: 'long',
-    entry, stop, tp1, tp2,
-    sweptLevel: sweptLevel.level, sweptName: sweptLevel.name,
-    rsiFrom: rsiTurn.before, rsiNow: rsiTurn.now,
-    fvg: activeFvg,
-    atr: atr15,
-    confidence: computeConfidence({rsi:rsiTurn.now, displaced:true, hasSweep:true, hasFvg:true}),
-  };
-}
-
-function checkShortSetup(m15, h1, h4){
-  if(!m15?.length || !h1?.length) return null;
-
-  const h1Closes = h1.map(c => c.close);
-  const rsiSeries = computeRsiSeries(h1Closes, RSI_PERIOD);
-  const rsiTurn = detectRsiTurn(rsiSeries, 'short');
-  if(!rsiTurn) return null;
-
-  const atr15 = atr(m15, ATR_PERIOD);
-  const last15 = m15[m15.length-1];
-  const displaced = isDisplacementCandle(last15, atr15, 'short') ||
-                    isDisplacementCandle(m15[m15.length-2], atr15, 'short');
-  if(!displaced) return null;
-
-  const asia = asiaSessionHL(m15);
-  const prior = priorSessionHL(h1);
-  const candidates = [];
-  if(asia) candidates.push({name:'Asia High', level: asia.high});
-  if(prior) candidates.push({name:'Prev Day High', level: prior.high});
-  if(!candidates.length) return null;
-
-  let sweptLevel = null, sweepInfo = null;
-  for(const c of candidates){
-    const sw = detectLiquiditySweep(m15, c.level, 'short');
-    if(sw){ sweptLevel = c; sweepInfo = sw; break; }
-  }
-  if(!sweptLevel) return null;
-
-  const fvgs = detectFVG(m15, 10).filter(f => f.type === 'bearish');
-  const activeFvg = fvgs.length ? fvgs[fvgs.length-1] : null;
-  if(!activeFvg) return null;
-
-  const entry = activeFvg.mid;
-  const stopBuffer = Math.max(3, atr15 * 0.5);
-  const stop = sweepInfo.sweepHigh + stopBuffer;
-  const risk = stop - entry;
-  if(risk <= 0) return null;
-  const tp1 = entry - risk*2;
-  const tp2 = entry - risk*3;
-  const rr = (entry-tp1)/risk;
-  if(rr < SETTINGS.minRR) return null;
-
-  return {
-    direction: 'short',
-    entry, stop, tp1, tp2,
-    sweptLevel: sweptLevel.level, sweptName: sweptLevel.name,
-    rsiFrom: rsiTurn.before, rsiNow: rsiTurn.now,
-    fvg: activeFvg, atr: atr15,
-    confidence: computeConfidence({rsi:rsiTurn.now, displaced:true, hasSweep:true, hasFvg:true}),
-  };
-}
-
-function computeConfidence({rsi, displaced, hasSweep, hasFvg}){
-  let score = 50;
-  if(hasSweep) score += 12;
-  if(hasFvg) score += 10;
-  if(displaced) score += 8;
-  if(rsi <= 30 || rsi >= 70) score += 8;
-  return Math.min(95, Math.max(30, Math.round(score)));
-}
-
-/* ---------- SESSION ---------- */
-function isInSession(){
-  if(SETTINGS.ignoreSession) return true;
-  const h = new Date().getUTCHours();
-  return h >= SETTINGS.sessionStart && h < SETTINGS.sessionEnd;
-}
-function renderSession(){
-  const el = document.getElementById('heroSession');
-  const inSession = isInSession();
-  if(SETTINGS.ignoreSession){
-    el.innerHTML = '<span class="session-live">🔓 24/7 mode</span>';
-  } else if(inSession){
-    el.innerHTML = '<span class="session-live">🟢 LONDON-NY OVERLAP</span>';
+  const poolLevels = [];
+  if(direction==='long'){
+    if(asia) poolLevels.push({name:'Asia Low', level:asia.low, type:'low'});
+    if(prior) poolLevels.push({name:'Prev Day Low', level:prior.low, type:'low'});
   } else {
-    el.innerHTML = '<span class="session-closed">🔴 Outside session · Filter active</span>';
+    if(asia) poolLevels.push({name:'Asia High', level:asia.high, type:'high'});
+    if(prior) poolLevels.push({name:'Prev Day High', level:prior.high, type:'high'});
   }
+
+  // Find sweep among pool levels
+  let sweep = null, poolName = null, poolTouches = 0, poolLevel = null;
+  for(const p of poolLevels){
+    const sw = detectSweep(m15, p.level, direction);
+    if(sw){
+      sweep = sw; poolName = p.name; poolLevel = p.level;
+      poolTouches = findLiquidityPool(m15.slice(-96), p.level, p.type);
+      break;
+    }
+  }
+
+  // BOS (H1)
+  const bos = detectBOS(h1, direction);
+
+  // Displacement candle (in last 3 M15)
+  let displaced = null;
+  for(let i=m15.length-3; i<m15.length; i++){
+    if(isDisplacement(m15[i], atr15, direction)){ displaced = {idx:i, candle:m15[i]}; break; }
+  }
+
+  // FVG (M15, unmitigated, aligned direction)
+  const wantFvgType = direction==='long' ? 'bullish' : 'bearish';
+  const fvgs = detectFVG(m15, 15).filter(f => f.type===wantFvgType && !f.mitigated);
+  const activeFvg = fvgs.length ? fvgs[fvgs.length-1] : null;
+
+  // Displacement created FVG?
+  const displacedCreatedFvg = !!(displaced && activeFvg && Math.abs(displaced.idx - activeFvg.idx) <= 1);
+
+  // RSI turn (H1)
+  const rsiTurn = detectRsiTurn(rsiSeries, direction);
+  const rsiDivergence = detectRsiDivergence(h1, rsiSeries, direction);
+
+  // Required minimum conditions:
+  // - Must have SOME entry (FVG or fallback to current price near swept level)
+  // - Must have sweep OR strong RSI turn+divergence
+  if(!sweep && !rsiDivergence) return null;
+  if(!activeFvg) return null;   // strict: FVG required for structured entry
+
+  // Compute entry / stop / TPs
+  const entry = activeFvg.mid;
+  const currentPx = m15[m15.length-1].close;
+  const stopBuffer = Math.max(3, atr15*0.5);
+  let stop, tp1, tp2, risk;
+  if(direction==='long'){
+    stop = (sweep?.sweepLow || activeFvg.low) - stopBuffer;
+    risk = entry - stop;
+    tp1 = entry + risk*2;
+    tp2 = entry + risk*3;
+  } else {
+    stop = (sweep?.sweepHigh || activeFvg.high) + stopBuffer;
+    risk = stop - entry;
+    tp1 = entry - risk*2;
+    tp2 = entry - risk*3;
+  }
+  if(risk <= 0) return null;
+  const rr2 = Math.abs(tp2-entry)/Math.abs(risk);
+  const rrTp1 = Math.abs(tp1-entry)/Math.abs(risk);
+  if(rrTp1 < SETTINGS.minRR) return null;
+
+  const distToEntry = Math.abs(currentPx - entry);
+
+  // Confluence scoring
+  const conf = scoreConfluence({
+    kz, h4Bias, direction,
+    hasBOS: !!bos, hasSweep: !!sweep, sweepPoolTouches: poolTouches,
+    hasFvgFresh: !!activeFvg, displacedCreatedFvg,
+    rsiTurn, rsiDivergence,
+    distToEntry, atrM15: atr15,
+  });
+
+  return {
+    direction, entry, stop, tp1, tp2, rr2, rrTp1,
+    sweptLevel: poolLevel, sweptName: poolName, poolTouches,
+    rsiFrom: rsiTurn?.before, rsiNow: rsiTurn?.now,
+    rsiDivergence: rsiDivergence?.type,
+    hasBOS: !!bos, bosLevel: bos?.level,
+    fvg: activeFvg, displaced: displaced?.candle, displacedCreatedFvg,
+    atr: atr15, h4Bias, kz,
+    grade: conf.grade, confidence: conf.score, checklist: conf.notes,
+    generatedAt: Date.now(), currentPx,
+  };
 }
 
 /* ---------- POSITION SIZE ---------- */
 function calculatePositionSize(entry, stop){
-  const riskUsd = SETTINGS.balance * (SETTINGS.risk / 100);
+  const riskUsd = SETTINGS.balance * (SETTINGS.risk/100);
   const perOzRisk = Math.abs(entry - stop);
   if(perOzRisk <= 0) return {lotSize:0, riskUsd, oz:0};
-  // Standard XAUUSD lot = 100 oz. Lot size = riskUsd / (perOzRisk * 100)
   const oz = riskUsd / perOzRisk;
   const lotSize = oz / SETTINGS.contract;
   return {lotSize, riskUsd, oz};
 }
 
-/* ---------- RENDER SIGNAL ---------- */
-function renderSignal(sig){
-  const el = document.getElementById('latestSignal');
-  const status = document.getElementById('setupStatus');
-  if(!sig){
-    el.innerHTML = `<div class="sig-empty">
-      <span class="emo">🔍</span>
-      <div><b>No Setup ตอนนี้</b><br/><span style="font-size:12px">รอเงื่อนไข: Liquidity Sweep + Displacement + FVG + RSI turn</span></div>
-    </div>`;
-    status.className = 'pill'; status.textContent = 'No Setup';
-    return;
+/* ---------- WEB NOTIFICATIONS + AUDIO ---------- */
+async function requestNotify(){
+  if(!('Notification' in window)){ toast('❌ Browser ไม่รองรับ notifications', 'err'); return; }
+  const perm = await Notification.requestPermission();
+  if(perm === 'granted'){
+    NOTIFY_ON = true;
+    document.getElementById('notifyBtn').textContent = '🔔 แจ้งเตือน: ON';
+    document.getElementById('notifyBtn').classList.add('on');
+    localStorage.setItem('gold_notify_on','1');
+    new Notification('🥇 Bullzeeker Gold', {body:'Notifications enabled — will alert on Grade A/B setups', icon:'/manifest.json'});
+    toast('🔔 Notifications enabled', 'ok');
+  } else {
+    toast('⚠️ Permission denied', 'err');
   }
+}
+function fireDesktopNotification(sig){
+  if(!NOTIFY_ON || Notification.permission !== 'granted') return;
+  const dirEmo = sig.direction==='long' ? '🟢' : '🔴';
+  const body = `${dirEmo} ${sig.direction.toUpperCase()} · Grade ${sig.grade} (${sig.confidence}%)\nEntry $${sig.entry.toFixed(2)} · Stop $${sig.stop.toFixed(2)} · TP2 $${sig.tp2.toFixed(2)}`;
+  new Notification('🥇 XAUUSD Signal', {body, icon:'/manifest.json', requireInteraction:true, tag:'gold-signal'});
+}
+function toggleSound(){
+  SOUND_ON = !SOUND_ON;
+  const btn = document.getElementById('soundBtn');
+  btn.textContent = SOUND_ON ? '🔊 Sound: ON' : '🔊 Sound: OFF';
+  btn.classList.toggle('on', SOUND_ON);
+  localStorage.setItem('gold_sound_on', SOUND_ON ? '1' : '0');
+  if(SOUND_ON){ initAudio(); beep(880, 0.1); }
+}
+function initAudio(){
+  if(!AUDIO_CTX){ AUDIO_CTX = new (window.AudioContext||window.webkitAudioContext)(); }
+}
+function beep(freq=880, duration=0.15, type='sine'){
+  if(!SOUND_ON || !AUDIO_CTX) return;
+  const o = AUDIO_CTX.createOscillator();
+  const g = AUDIO_CTX.createGain();
+  o.type = type; o.frequency.value = freq;
+  g.gain.value = 0.15;
+  o.connect(g); g.connect(AUDIO_CTX.destination);
+  o.start(); o.stop(AUDIO_CTX.currentTime + duration);
+}
+function beepSignal(direction){
+  if(!SOUND_ON) return;
+  initAudio();
+  if(direction==='long'){ beep(660,0.1); setTimeout(()=>beep(880,0.15), 150); }
+  else{ beep(880,0.1); setTimeout(()=>beep(440,0.2), 150); }
+}
 
-  const {lotSize, riskUsd, oz} = calculatePositionSize(sig.entry, sig.stop);
-  const rewardUsd = Math.abs(sig.tp2 - sig.entry) * oz;
-  const rr2 = Math.abs(sig.tp2 - sig.entry) / Math.abs(sig.entry - sig.stop);
+/* ---------- RENDER: HERO ---------- */
+function renderHero(){
+  if(!LAST_QUOTE) return;
+  const p = LAST_QUOTE.mid || LAST_QUOTE.bid || 0;
+  document.getElementById('heroPrice').textContent = '$' + p.toFixed(2);
+  const chg = LAST_QUOTE.dayDiffPct ?? 0;
+  const chgAbs = ((LAST_QUOTE.high + LAST_QUOTE.low)/2) * (chg/100);
+  const chgEl = document.getElementById('heroChg');
+  const sign = chg>=0 ? '▲' : '▼';
+  chgEl.textContent = `${sign} ${chg.toFixed(2)}%`;
+  chgEl.className = 'chg ' + (chg>=0 ? 'g' : 'r');
+  document.getElementById('heroBid').textContent = '$' + (LAST_QUOTE.bid||0).toFixed(2);
+  document.getElementById('heroAsk').textContent = '$' + (LAST_QUOTE.ask||0).toFixed(2);
+  document.getElementById('heroSpread').textContent = '$' + (LAST_QUOTE.spread||0).toFixed(3);
+  document.getElementById('heroDayHL').textContent = `$${LAST_QUOTE.low?.toFixed(2)} / $${LAST_QUOTE.high?.toFixed(2)}`;
+  document.getElementById('heroSource').textContent = LAST_QUOTE.source + (LAST_QUOTE.marketState==='open' ? ' (open)' : ' ('+LAST_QUOTE.marketState+')');
+  // Freshness
+  const ageS = Math.round((Date.now() - LAST_QUOTE.updatedAt)/1000);
+  const fresh = document.getElementById('heroFresh');
+  if(LAST_QUOTE._stale || ageS>30){
+    fresh.className = 'freshness-pill stale';
+    fresh.innerHTML = '<span class="dot"></span>STALE ' + ageS + 's';
+  } else if(ageS>10){
+    fresh.className = 'freshness-pill warm';
+    fresh.innerHTML = '<span class="dot"></span>' + ageS + 's ago';
+  } else {
+    fresh.className = 'freshness-pill live';
+    fresh.innerHTML = '<span class="dot"></span>LIVE ' + ageS + 's';
+  }
+}
+
+/* ---------- RENDER: CLOCK + COUNTDOWNS ---------- */
+function renderClocks(){
   const now = new Date();
-  const utcStr = now.toISOString().slice(0,16).replace('T',' ');
-  const dirEmoji = sig.direction === 'long' ? '🟢' : '🔴';
-  const dirText = sig.direction === 'long' ? 'LONG' : 'SHORT';
-  const dirClass = sig.direction;
-
-  const reasonsLong = [
-    `Swept ${sig.sweptName} at $${sig.sweptLevel.toFixed(2)}`,
-    `Bullish Displacement on M15 (ATR ${sig.atr.toFixed(2)})`,
-    `Bullish FVG at $${sig.fvg.low.toFixed(2)}-$${sig.fvg.high.toFixed(2)}`,
-    `RSI(14) H1 turned up from ${sig.rsiFrom.toFixed(1)} → ${sig.rsiNow.toFixed(1)}`,
-  ];
-  const reasonsShort = [
-    `Swept ${sig.sweptName} at $${sig.sweptLevel.toFixed(2)}`,
-    `Bearish Displacement on M15 (ATR ${sig.atr.toFixed(2)})`,
-    `Bearish FVG at $${sig.fvg.low.toFixed(2)}-$${sig.fvg.high.toFixed(2)}`,
-    `RSI(14) H1 turned down from ${sig.rsiFrom.toFixed(1)} → ${sig.rsiNow.toFixed(1)}`,
-  ];
-  const reasons = sig.direction === 'long' ? reasonsLong : reasonsShort;
-
-  el.innerHTML = `<div class="sig-card ${dirClass}">
-    <h3 class="${dirClass}">${dirEmoji} ${dirText} SIGNAL — XAUUSD</h3>
-    <div class="sep"></div>
-    <div>📊 Entry: <b>$${sig.entry.toFixed(2)}</b></div>
-    <div>🛑 Stop Loss: <b>$${sig.stop.toFixed(2)}</b></div>
-    <div>🎯 TP1: <b>$${sig.tp1.toFixed(2)}</b> (1:2)</div>
-    <div>🎯 TP2: <b>$${sig.tp2.toFixed(2)}</b> (1:${rr2.toFixed(1)})</div>
-    <div>📦 Lot Size: <b>${lotSize.toFixed(2)}</b> · ≈ ${oz.toFixed(1)} oz</div>
-    <div>💰 Risk: <b>$${riskUsd.toFixed(2)}</b> (${SETTINGS.risk}%)</div>
-    <div>💵 Reward (TP2): <b>$${rewardUsd.toFixed(2)}</b> (${rr2.toFixed(1)}R)</div>
-    <div>⏰ Time: <b>${utcStr} UTC</b></div>
-    <div>📈 Confidence: <b>${sig.confidence}%</b></div>
-    <div class="sep"></div>
-    <div>📝 Reason:</div>
-    <ul class="reasons">${reasons.map(r => `<li>${r}</li>`).join('')}</ul>
-    <div class="sig-actions">
-      <button class="btn btn-p" onclick="copySignal(${JSON.stringify(sig).replace(/"/g,'&quot;')})">📋 Copy to clipboard</button>
-      <button class="btn btn-t" onclick="shareTelegram()">💬 Share (open Telegram)</button>
-    </div>
-  </div>`;
-  status.className = 'pill ' + (sig.direction === 'long' ? 'g' : 'r');
-  status.textContent = dirText + ' Setup · ' + sig.confidence + '%';
+  const utc = now.toISOString().slice(11,19);
+  const local = now.toLocaleTimeString('en-GB');
+  document.getElementById('clockUtc').textContent = utc;
+  document.getElementById('clockLocal').textContent = local;
+  // M15 countdown
+  const utcMin = now.getUTCMinutes();
+  const utcSec = now.getUTCSeconds();
+  const nextM15 = 15 - (utcMin % 15);
+  const secsLeft = nextM15*60 - utcSec;
+  const m = Math.floor(secsLeft/60), s = secsLeft%60;
+  document.getElementById('m15Countdown').textContent = `${m}:${String(s).padStart(2,'0')}`;
+  // Kill-zone
+  const kz = currentKillzone();
+  document.getElementById('kzNowLabel').innerHTML = `<b>${kz.name}</b> · Grade <span class="pill ${kz.grade==='A+'||kz.grade==='A'?'g':kz.grade==='B'?'gold':''}">${kz.grade}</span>`;
+  document.getElementById('kzCountdown').textContent = nextKillzoneChange();
+  document.getElementById('heroKz').innerHTML = `Kill-zone: <b>${kz.name} (${kz.grade})</b>`;
+  // Marker position
+  const totalHours = now.getUTCHours() + now.getUTCMinutes()/60;
+  const marker = document.getElementById('kzMarker');
+  if(marker) marker.style.left = (totalHours/24 * 100).toFixed(2) + '%';
 }
 
-function copySignal(sig){
-  const el = document.querySelector('.sig-card');
-  if(!el) return;
-  const txt = el.innerText;
-  navigator.clipboard.writeText(txt).then(() => toast('📋 Copied to clipboard', 'ok'));
+/* ---------- RENDER: KILLZONE TIMELINE ---------- */
+function renderKillzone(){
+  const el = document.getElementById('kzTimeline');
+  // Build 24h timeline with segments from KILLZONES
+  const totalHours = 24;
+  let html = '';
+  const kzSorted = [...KILLZONES].sort((a,b) => a.from - b.from);
+  // Fill gaps
+  const segs = [];
+  let cursor = 0;
+  for(const kz of kzSorted){
+    if(kz.from > cursor){ segs.push({name:'Off', from:cursor, to:kz.from, grade:'C'}); }
+    segs.push(kz);
+    cursor = kz.to;
+  }
+  if(cursor < 24) segs.push({name:'Off', from:cursor, to:24, grade:'C'});
+  const now = new Date();
+  const nowH = now.getUTCHours();
+  const cls = {'A+':'grade-Ap','A':'grade-A','B':'grade-B','C':'grade-C'};
+  for(const s of segs){
+    const width = ((s.to - s.from)/24 * 100).toFixed(2);
+    const isNow = nowH >= s.from && nowH < s.to;
+    const label = `${s.from.toString().padStart(2,'0')}-${s.to.toString().padStart(2,'0')} ${s.name}`;
+    html += `<div class="kz-seg ${cls[s.grade]||''} ${isNow?'now':''}" style="flex:${(s.to-s.from)}"><span class="lbl">${s.grade}</span></div>`;
+  }
+  html += `<div class="kz-marker" id="kzMarker"></div>`;
+  el.innerHTML = html;
+  // Set marker to now
+  const totalH = now.getUTCHours() + now.getUTCMinutes()/60;
+  const marker = document.getElementById('kzMarker');
+  if(marker) marker.style.left = (totalH/24 * 100).toFixed(2) + '%';
+  // KZ meta
+  const kz = currentKillzone();
+  const sess = sessionAllowsSignal();
+  document.getElementById('kzMeta').innerHTML = sess.ok ? `✅ Session allows signals` : `⛔ Session filter blocks signals`;
+  document.getElementById('kzMeta').className = 'pill ' + (sess.ok ? 'g' : 'r');
 }
 
-function shareTelegram(){
-  const el = document.querySelector('.sig-card');
-  if(!el) return;
-  const txt = encodeURIComponent(el.innerText);
-  window.open('https://t.me/share/url?url=&text=' + txt, '_blank');
-}
-
-/* ---------- RENDER TF GRID ---------- */
+/* ---------- RENDER: TF grid ---------- */
 function renderTfGrid(){
   const grid = document.getElementById('tfGrid');
-  if(!CANDLES.h1 || !CANDLES.m15){
-    grid.innerHTML = '<div class="tf-card neutral"><h3>⏳ Loading data...</h3></div>';
-    return;
-  }
+  if(!CANDLES.h1 || !CANDLES.m15){ grid.innerHTML = '<div class="tf-card neutral"><h3>⏳ Loading...</h3></div>'; return; }
   const rows = [];
-
-  // H4 trend
-  const h4Closes = CANDLES.h4.map(c => c.close);
-  const h4EmaFast = ema(h4Closes, EMA_FAST);
-  const h4EmaSlow = ema(h4Closes, EMA_SLOW);
-  const h4Price = h4Closes[h4Closes.length-1];
-  const h4Bias = h4EmaFast > h4EmaSlow ? 'BULLISH' : 'BEARISH';
-  const h4Class = h4Bias === 'BULLISH' ? 'bullish' : 'bearish';
-  rows.push(`<div class="tf-card ${h4Class}">
-    <h3>🕓 H4 Trend</h3>
-    <div class="label">Bias · EMA${EMA_FAST}/EMA${EMA_SLOW}</div>
-    <div class="metric-row"><span class="l">Bias</span><span class="v ${h4Bias==='BULLISH'?'g':'r'}">${h4Bias}</span></div>
-    <div class="metric-row"><span class="l">Price</span><span class="v gold">$${h4Price?.toFixed(2)}</span></div>
-    <div class="metric-row"><span class="l">EMA${EMA_FAST}</span><span class="v">$${h4EmaFast?.toFixed(2)}</span></div>
-    <div class="metric-row"><span class="l">EMA${EMA_SLOW}</span><span class="v">$${h4EmaSlow?.toFixed(2)}</span></div>
+  // H4
+  const h4Bias = getH4Bias(CANDLES.h4);
+  const h4Closes = CANDLES.h4.map(c=>c.close);
+  const h4EF = ema(h4Closes, EMA_FAST), h4ES = ema(h4Closes, EMA_SLOW);
+  const h4Cls = h4Bias==='bullish' ? 'bullish' : h4Bias==='bearish' ? 'bearish' : 'neutral';
+  rows.push(`<div class="tf-card ${h4Cls}">
+    <h3>🕓 H4 Trend</h3><div class="label">Bias · EMA${EMA_FAST}/EMA${EMA_SLOW}</div>
+    <div class="metric-row"><span class="l">Bias</span><span class="v ${h4Bias==='bullish'?'g':h4Bias==='bearish'?'r':''}">${h4Bias.toUpperCase()}</span></div>
+    <div class="metric-row"><span class="l">Price</span><span class="v gold">$${h4Closes[h4Closes.length-1]?.toFixed(2)}</span></div>
+    <div class="metric-row"><span class="l">EMA${EMA_FAST}</span><span class="v">$${h4EF?.toFixed(2)}</span></div>
+    <div class="metric-row"><span class="l">EMA${EMA_SLOW}</span><span class="v">$${h4ES?.toFixed(2)}</span></div>
   </div>`);
-
-  // H1 structure + RSI
-  const h1Closes = CANDLES.h1.map(c => c.close);
+  // H1
+  const h1Closes = CANDLES.h1.map(c=>c.close);
   const h1Rsi = rsi(h1Closes, RSI_PERIOD);
   const h1Atr = atr(CANDLES.h1, ATR_PERIOD);
-  const rsiCls = h1Rsi < 30 ? 'g' : h1Rsi > 70 ? 'r' : '';
-  const rsiLabel = h1Rsi < 30 ? 'Oversold' : h1Rsi > 70 ? 'Overbought' : h1Rsi < 40 ? 'Weak' : h1Rsi > 60 ? 'Strong' : 'Neutral';
+  const bosLong = detectBOS(CANDLES.h1, 'long');
+  const bosShort = detectBOS(CANDLES.h1, 'short');
+  const rsiCls = h1Rsi<30 ? 'g' : h1Rsi>70 ? 'r' : '';
+  const rsiLbl = h1Rsi<30 ? 'Oversold' : h1Rsi>70 ? 'Overbought' : h1Rsi<40 ? 'Weak' : h1Rsi>60 ? 'Strong' : 'Neutral';
   rows.push(`<div class="tf-card neutral">
-    <h3>🕐 H1 Structure</h3>
-    <div class="label">RSI(14) · ATR(14) · Setup gate</div>
-    <div class="metric-row"><span class="l">RSI(14)</span><span class="v ${rsiCls}">${h1Rsi?.toFixed(1)} · ${rsiLabel}</span></div>
+    <h3>🕐 H1 Structure</h3><div class="label">RSI · ATR · BOS</div>
+    <div class="metric-row"><span class="l">RSI(14)</span><span class="v ${rsiCls}">${h1Rsi?.toFixed(1)} · ${rsiLbl}</span></div>
     <div class="metric-row"><span class="l">ATR(14)</span><span class="v">$${h1Atr?.toFixed(2)}</span></div>
-    <div class="metric-row"><span class="l">Last close</span><span class="v gold">$${h1Closes[h1Closes.length-1]?.toFixed(2)}</span></div>
-    <div class="metric-row"><span class="l">Last 5 candles Δ</span><span class="v">$${(h1Closes[h1Closes.length-1] - h1Closes[h1Closes.length-6])?.toFixed(2)}</span></div>
+    <div class="metric-row"><span class="l">BOS Long</span><span class="v ${bosLong?'g':''}">${bosLong ? '✓ @ $'+bosLong.level.toFixed(2) : '—'}</span></div>
+    <div class="metric-row"><span class="l">BOS Short</span><span class="v ${bosShort?'r':''}">${bosShort ? '✓ @ $'+bosShort.level.toFixed(2) : '—'}</span></div>
   </div>`);
-
-  // M15 entry
-  const m15Closes = CANDLES.m15.map(c => c.close);
+  // M15
+  const m15Closes = CANDLES.m15.map(c=>c.close);
   const m15Atr = atr(CANDLES.m15, ATR_PERIOD);
   const asia = asiaSessionHL(CANDLES.m15);
   const prior = priorSessionHL(CANDLES.h1);
   const fvgs = detectFVG(CANDLES.m15, 20);
-  const lastPrice = m15Closes[m15Closes.length-1];
+  const unmit = fvgs.filter(f => !f.mitigated);
   rows.push(`<div class="tf-card neutral">
-    <h3>🕒 M15 Entry Zone</h3>
-    <div class="label">FVG · Liquidity levels</div>
-    <div class="metric-row"><span class="l">Price</span><span class="v gold">$${lastPrice?.toFixed(2)}</span></div>
+    <h3>🕒 M15 Entry Zone</h3><div class="label">Liquidity · FVG · ATR</div>
+    <div class="metric-row"><span class="l">Price</span><span class="v gold">$${m15Closes[m15Closes.length-1]?.toFixed(2)}</span></div>
     <div class="metric-row"><span class="l">ATR(14)</span><span class="v">$${m15Atr?.toFixed(2)}</span></div>
-    <div class="metric-row"><span class="l">Asia High/Low</span><span class="v">${asia ? '$'+asia.high.toFixed(2)+' / $'+asia.low.toFixed(2) : '—'}</span></div>
+    <div class="metric-row"><span class="l">Asia H/L</span><span class="v">${asia ? '$'+asia.high.toFixed(2)+' / $'+asia.low.toFixed(2) : '—'}</span></div>
     <div class="metric-row"><span class="l">Prev Day H/L</span><span class="v">${prior ? '$'+prior.high.toFixed(2)+' / $'+prior.low.toFixed(2) : '—'}</span></div>
-    <div class="metric-row"><span class="l">Active FVGs</span><span class="v">${fvgs.length} (${fvgs.filter(f=>f.type==='bullish').length}↑/${fvgs.filter(f=>f.type==='bearish').length}↓)</span></div>
+    <div class="metric-row"><span class="l">FVGs (unmitigated)</span><span class="v">${unmit.length}/${fvgs.length} (${unmit.filter(f=>f.type==='bullish').length}↑/${unmit.filter(f=>f.type==='bearish').length}↓)</span></div>
   </div>`);
-
   grid.innerHTML = rows.join('');
-  document.getElementById('regimeMeta').textContent = `Regime: ${h4Bias} · Data: ${CANDLES.m15.length} M15 · ${CANDLES.h1.length} H1 · ${CANDLES.h4.length} H4`;
+  const ageMin = CANDLES_UPDATED_AT ? Math.round((Date.now()-CANDLES_UPDATED_AT)/60000) : 0;
+  document.getElementById('regimeMeta').textContent = `H4: ${h4Bias.toUpperCase()} · ${CANDLES.m15.length} M15 · ${CANDLES.h1.length} H1 · ${CANDLES.h4.length} H4 · candles ${ageMin}m ago`;
 }
 
-/* ---------- RENDER LOG ---------- */
-function renderLog(){
-  const body = document.getElementById('logBody');
-  if(!SIGNALS_LOG.length){
-    body.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">ยังไม่มี Signals — กด "สแกน" หรือรอ Auto-refresh</div>`;
+/* ---------- RENDER: SIGNAL ---------- */
+function renderSignal(sig){
+  const el = document.getElementById('latestSignal');
+  const status = document.getElementById('setupStatus');
+  if(!sig){
+    el.innerHTML = `<div class="sig-empty"><span class="emo">🔍</span><div><b>No Setup ตอนนี้</b><br/><span style="font-size:12px">รอเงื่อนไข: sweep + FVG + RSI turn · ตรวจสอบ H4 alignment</span></div></div>`;
+    status.className = 'pill'; status.textContent = 'No Setup';
     return;
   }
+  const {lotSize, riskUsd, oz} = calculatePositionSize(sig.entry, sig.stop);
+  const rewardUsd = Math.abs(sig.tp2 - sig.entry) * oz;
+  const now = new Date();
+  const utcStr = now.toISOString().slice(0,16).replace('T',' ');
+  const dirEmoji = sig.direction==='long' ? '🟢' : '🔴';
+  const dirText = sig.direction==='long' ? 'LONG' : 'SHORT';
+  const gradeCls = 'grade-' + sig.grade;
+
+  const checkHtml = sig.checklist.map(n => {
+    const cls = n.skip ? 'skip' : n.pass ? 'pass' : 'fail';
+    const ic = n.skip ? '·' : n.pass ? '✓' : '×';
+    const ptsTxt = n.pts !== 0 ? ` <span style="color:var(--muted);font-size:10px">${n.pts>0?'+':''}${n.pts}</span>` : '';
+    return `<div class="check-item ${n.pass?'pass':''}"><span class="ic ${cls}">${ic}</span><span class="txt">${n.label}${ptsTxt}</span></div>`;
+  }).join('');
+
+  el.innerHTML = `<div class="sig-card ${sig.direction}">
+    <h3 class="${sig.direction}">${dirEmoji} ${dirText} SIGNAL — XAUUSD <span class="grade-badge ${gradeCls}">Grade ${sig.grade}</span> <span class="grade-badge" style="background:var(--bg3);color:var(--muted)">Confluence ${sig.confidence}/100</span></h3>
+    <div class="sep"></div>
+    <div>📊 Entry (FVG mid): <b>$${sig.entry.toFixed(2)}</b></div>
+    <div>🛑 Stop Loss: <b>$${sig.stop.toFixed(2)}</b> (${(Math.abs(sig.entry-sig.stop)).toFixed(2)} away)</div>
+    <div>🎯 TP1: <b>$${sig.tp1.toFixed(2)}</b> (1:${sig.rrTp1.toFixed(1)})</div>
+    <div>🎯 TP2: <b>$${sig.tp2.toFixed(2)}</b> (1:${sig.rr2.toFixed(1)})</div>
+    <div>📦 Lot Size: <b>${lotSize.toFixed(2)}</b> · ${oz.toFixed(1)} oz</div>
+    <div>💰 Risk: <b>$${riskUsd.toFixed(2)}</b> (${SETTINGS.risk}%)</div>
+    <div>💵 Reward (TP2): <b>$${rewardUsd.toFixed(2)}</b> (${sig.rr2.toFixed(1)}R)</div>
+    <div>⏰ Time: <b>${utcStr} UTC</b></div>
+    <div>🎯 Kill-zone: <b>${sig.kz.name} (${sig.kz.grade})</b></div>
+    <div>🧭 H4 Bias: <b>${sig.h4Bias.toUpperCase()}</b></div>
+    <div class="sep"></div>
+    <div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:${sig.direction==='long'?'var(--emerald)':'var(--red)'};margin-bottom:4px">✓ Confluence Checklist</div>
+    <div class="check-list">${checkHtml}</div>
+    <div class="sig-actions">
+      <button class="btn btn-p" onclick="copySignalText()">📋 Copy</button>
+      <button class="btn btn-t" onclick="shareTelegram()">💬 Share</button>
+    </div>
+  </div>`;
+  status.className = 'pill ' + (sig.direction==='long' ? 'g' : 'r');
+  status.textContent = dirText + ' · Grade ' + sig.grade + ' · ' + sig.confidence + '%';
+}
+function copySignalText(){
+  const el = document.querySelector('.sig-card');
+  if(!el){ return; }
+  navigator.clipboard.writeText(el.innerText).then(()=>toast('📋 Copied', 'ok'));
+}
+function shareTelegram(){
+  const el = document.querySelector('.sig-card');
+  if(!el) return;
+  window.open('https://t.me/share/url?url=&text=' + encodeURIComponent(el.innerText), '_blank');
+}
+
+/* ---------- RENDER: LOG + DAILY ---------- */
+function renderLog(){
+  const body = document.getElementById('logBody');
+  if(!SIGNALS_LOG.length){ body.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">ยังไม่มี Signals</div>`; return; }
   const recent = SIGNALS_LOG.slice().reverse().slice(0, 50);
   body.innerHTML = recent.map(s => {
-    const dt = new Date(s.time);
+    const dt = new Date(s.time || s.generatedAt);
     const t = dt.toISOString().slice(5,16).replace('T',' ');
-    const dirCls = s.direction === 'long' ? 'dir-long' : 'dir-short';
-    const dirTxt = s.direction === 'long' ? '🟢 LONG' : '🔴 SHORT';
-    const confCls = s.confidence >= 70 ? 'h' : s.confidence >= 55 ? 'm' : 'l';
+    const dirCls = s.direction==='long' ? 'dir-long' : 'dir-short';
+    const dirTxt = s.direction==='long' ? '🟢 L' : '🔴 S';
+    const grCls = 'gr-' + s.grade;
+    const reasons = (s.checklist||[]).filter(n=>n.pass && !n.skip).map(n=>n.label).slice(0,3).join(' · ');
     return `<div class="log-row">
       <div>${t}</div>
       <div class="${dirCls}">${dirTxt}</div>
+      <div class="${grCls}">${s.grade}</div>
       <div>$${s.entry.toFixed(2)}</div>
       <div>$${s.stop.toFixed(2)}</div>
       <div>$${s.tp2.toFixed(2)}</div>
-      <div class="conf ${confCls}">${s.confidence}%</div>
-      <div class="col-hide-mobile" style="color:var(--muted);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.sweptName || ''} · RSI ${s.rsiNow?.toFixed(1)}</div>
+      <div class="col-hide-mobile" style="color:var(--muted);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.confidence}% · ${reasons}</div>
     </div>`;
   }).join('');
 }
-
-function clearSignalsLog(){
-  if(!confirm('ล้าง Signals Log ทั้งหมด?')) return;
-  SIGNALS_LOG = [];
-  saveLog();
-  renderLog();
-  toast('🗑️ Log cleared', 'ok');
+function renderDaily(){
+  if(DAILY.date !== todayISO()){ DAILY = newDailyRecord(); saveDaily(); }
+  document.getElementById('dailyDate').textContent = DAILY.date;
+  document.getElementById('dLongs').textContent = DAILY.longs + '/' + SETTINGS.maxDaily;
+  document.getElementById('dShorts').textContent = DAILY.shorts + '/' + SETTINGS.maxDaily;
+  const total = DAILY.wins + DAILY.losses;
+  document.getElementById('dPnl').textContent = (DAILY.pnlR>=0?'+':'') + DAILY.pnlR.toFixed(2) + 'R';
+  document.getElementById('dPnl').className = 'v ' + (DAILY.pnlR>=0 ? 'g' : 'r');
+  document.getElementById('dWinRate').textContent = total>0 ? (DAILY.wins/total*100).toFixed(0) + '%' : '—';
+  document.getElementById('dBestGrade').textContent = DAILY.bestGrade || '—';
 }
 
+/* ---------- CSV export ---------- */
+function clearSignalsLog(){
+  if(!confirm('ล้าง Signals Log?')) return;
+  SIGNALS_LOG = []; saveLog(); renderLog();
+  toast('🗑️ Cleared', 'ok');
+}
 function exportSignalsCsv(){
-  if(!SIGNALS_LOG.length){ toast('ยังไม่มี signals', 'err'); return; }
-  const header = 'timestamp,direction,entry,stop,tp1,tp2,confidence,swept_level,swept_name,rsi_before,rsi_now,atr';
+  if(!SIGNALS_LOG.length){ toast('ยังไม่มี signals','err'); return; }
+  const header = 'timestamp_utc,direction,grade,confidence,entry,stop,tp1,tp2,rr2,swept_level,swept_name,pool_touches,rsi_now,rsi_from,rsi_div,bos_level,h4_bias,killzone';
   const rows = SIGNALS_LOG.map(s => [
-    new Date(s.time).toISOString(),
-    s.direction, s.entry, s.stop, s.tp1, s.tp2, s.confidence,
-    s.sweptLevel, s.sweptName, s.rsiFrom, s.rsiNow, s.atr
+    new Date(s.time||s.generatedAt).toISOString(),
+    s.direction, s.grade, s.confidence, s.entry, s.stop, s.tp1, s.tp2, s.rr2,
+    s.sweptLevel, s.sweptName, s.poolTouches, s.rsiNow, s.rsiFrom,
+    s.rsiDivergence||'', s.bosLevel||'', s.h4Bias, s.kz?.name+'/'+s.kz?.grade
   ].join(','));
   const csv = header + '\n' + rows.join('\n');
   const blob = new Blob([csv], {type:'text/csv'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = `bullzeeker_xauusd_signals_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+  a.href = url; a.download = `bullzeeker_xauusd_signals_${todayISO()}.csv`;
+  a.click(); URL.revokeObjectURL(url);
   toast('📥 CSV downloaded', 'ok');
 }
 
-/* ---------- HERO UPDATE ---------- */
-function renderHero(){
-  if(!LAST_QUOTE){
-    return;
-  }
-  const p = LAST_QUOTE.price;
-  const chg = LAST_QUOTE.chgPct;
-  document.getElementById('heroPrice').textContent = '$' + p.toFixed(2);
-  const chgEl = document.getElementById('heroChg');
-  const sign = chg >= 0 ? '▲' : '▼';
-  chgEl.textContent = `${sign} $${Math.abs(LAST_QUOTE.chg).toFixed(2)} (${chg.toFixed(2)}%)`;
-  chgEl.className = 'chg ' + (chg >= 0 ? 'g' : 'r');
-  document.getElementById('heroUpdated').textContent = new Date(LAST_QUOTE.updatedAt).toLocaleTimeString();
-  document.getElementById('heroUtc').textContent = new Date().toISOString().slice(11,16);
-  // Stale check
-  const stale = document.getElementById('heroStale');
-  const ageSec = (Date.now() - LAST_QUOTE.updatedAt)/1000;
-  if(ageSec > 300){
-    stale.className = 'stale';
-    stale.textContent = `⚠️ Stale ${Math.floor(ageSec/60)}m`;
-  } else {
-    stale.className = '';
-    stale.textContent = '';
-  }
+/* ---------- MAIN SCAN ---------- */
+async function refreshCandlesIfNeeded(){
+  const ageMs = Date.now() - CANDLES_UPDATED_AT;
+  if(CANDLES.m15 && ageMs < CANDLES_POLL_MS) return;
+  const [m15D, h1D] = await Promise.all([
+    fetchYahoo('15m', '5d'),
+    fetchYahoo('60m', '1mo'),
+  ]);
+  CANDLES.m15 = m15D.candles;
+  CANDLES.h1 = h1D.candles;
+  CANDLES.h4 = resampleH1toH4(h1D.candles);
+  CANDLES_UPDATED_AT = Date.now();
 }
 
-/* ---------- MAIN SCAN ---------- */
 async function runScan(){
   const btn = document.getElementById('scanBtn');
   btn.disabled = true;
   btn.textContent = '⏳ Fetching…';
-
   try{
-    const [m15Data, h1Data] = await Promise.all([
-      fetchYahoo('15m', '5d'),
-      fetchYahoo('60m', '1mo'),
+    await Promise.all([
+      pollBiquote(),
+      refreshCandlesIfNeeded(),
     ]);
-    CANDLES.m15 = m15Data.candles;
-    CANDLES.h1 = h1Data.candles;
-    CANDLES.h4 = resampleH1toH4(h1Data.candles);
-
-    // Update quote
-    const lastM15 = m15Data.candles[m15Data.candles.length-1];
-    const firstToday = m15Data.candles.find(c => {
-      const d = new Date(c.time);
-      return d.getUTCHours() === 0 && d.getUTCMinutes() < 15;
-    }) || m15Data.candles[m15Data.candles.length-96] || m15Data.candles[0];
-    LAST_QUOTE = {
-      price: lastM15.close,
-      chg: lastM15.close - firstToday.open,
-      chgPct: (lastM15.close/firstToday.open - 1)*100,
-      updatedAt: Date.now(),
-    };
-    renderHero();
     renderTfGrid();
-
-    // Session filter
-    if(!isInSession()){
+    const sess = sessionAllowsSignal();
+    if(!sess.ok){
       renderSignal(null);
-      toast('🕒 Outside London-NY overlap · scan performed but signal muted', 'err');
-      // Still show TF grid; just no signal
-    } else {
-      const longSig = checkLongSetup(CANDLES.m15, CANDLES.h1, CANDLES.h4);
-      const shortSig = checkShortSetup(CANDLES.m15, CANDLES.h1, CANDLES.h4);
-      const sig = (longSig?.confidence || 0) >= (shortSig?.confidence || 0) ? longSig : shortSig;
-      renderSignal(sig);
-      if(sig){
-        // Dedupe: don't log if same direction + within 15 min of last
-        const lastLog = SIGNALS_LOG[SIGNALS_LOG.length-1];
-        const isDup = lastLog && lastLog.direction === sig.direction &&
-                     (Date.now() - lastLog.time) < 15*60*1000;
-        if(!isDup){
-          SIGNALS_LOG.push({
-            time: Date.now(), ...sig,
-          });
-          saveLog();
-          renderLog();
-          toast(`✅ ${sig.direction.toUpperCase()} signal generated (${sig.confidence}%)`, 'ok');
-        }
-      }
+      document.getElementById('setupStatus').textContent = 'Blocked: session (' + sess.kz.name + ' ' + sess.kz.grade + ')';
+      return;
+    }
+    // Daily limits
+    if(DAILY.longs >= SETTINGS.maxDaily && DAILY.shorts >= SETTINGS.maxDaily){
+      renderSignal(null);
+      document.getElementById('setupStatus').textContent = 'Daily cap reached';
+      return;
+    }
+    const longSig = (DAILY.longs < SETTINGS.maxDaily) ? checkSetup('long', CANDLES.m15, CANDLES.h1, CANDLES.h4) : null;
+    const shortSig = (DAILY.shorts < SETTINGS.maxDaily) ? checkSetup('short', CANDLES.m15, CANDLES.h1, CANDLES.h4) : null;
+    const sig = (longSig?.confidence||0) >= (shortSig?.confidence||0) ? longSig : shortSig;
+    if(!sig){ renderSignal(null); return; }
+    // Grade filter
+    if(!gradeGE(sig.grade, SETTINGS.minGrade)){
+      renderSignal(sig);   // still show the setup
+      document.getElementById('setupStatus').textContent = `${sig.direction.toUpperCase()} Grade ${sig.grade} (below min ${SETTINGS.minGrade})`;
+      return;
+    }
+    renderSignal(sig);
+    // Dedup + log
+    const lastLog = SIGNALS_LOG[SIGNALS_LOG.length-1];
+    const isDup = lastLog && lastLog.direction === sig.direction && (Date.now()-lastLog.time) < 15*60*1000;
+    if(!isDup){
+      const rec = {time: Date.now(), ...sig};
+      SIGNALS_LOG.push(rec);
+      saveLog();
+      renderLog();
+      // Daily counts
+      if(sig.direction==='long') DAILY.longs++;
+      else DAILY.shorts++;
+      if(!DAILY.bestGrade || gradeGE(sig.grade, DAILY.bestGrade)) DAILY.bestGrade = sig.grade;
+      saveDaily();
+      renderDaily();
+      // Alerts
+      fireDesktopNotification(sig);
+      beepSignal(sig.direction);
+      toast(`✅ ${sig.direction.toUpperCase()} Grade ${sig.grade} · ${sig.confidence}%`, 'ok');
     }
   }catch(e){
     console.error(e);
@@ -1020,98 +1382,124 @@ async function runScan(){
 /* ---------- BACKTEST ---------- */
 async function runBacktest(){
   const btn = event.target;
-  btn.disabled = true;
-  btn.textContent = '⏳ Loading 30d…';
+  btn.disabled = true; btn.textContent = '⏳ Loading 30d…';
   try{
-    const [m15Data, h1Data] = await Promise.all([
-      fetchYahoo('15m', '1mo'),
-      fetchYahoo('60m', '3mo'),
-    ]);
-    const m15 = m15Data.candles;
-    const h1 = h1Data.candles;
-
-    let hits = 0, wins = 0, losses = 0;
-    const hitsList = [];
-    // Iterate over m15 windows
-    for(let i = 100; i < m15.length; i++){
+    const [m15D, h1D] = await Promise.all([fetchYahoo('15m','1mo'), fetchYahoo('60m','3mo')]);
+    const m15 = m15D.candles, h1 = h1D.candles;
+    let setups = 0, wins = 0, losses = 0, gradesA = 0, gradesB = 0, gradesC = 0;
+    for(let i=200; i<m15.length; i++){
       const m15Slice = m15.slice(0, i+1);
-      // Get corresponding h1 slice
-      const lastTime = m15Slice[m15Slice.length-1].time;
-      const h1Slice = h1.filter(c => c.time <= lastTime);
-      if(h1Slice.length < 30) continue;
-
-      const longSig = checkLongSetup(m15Slice, h1Slice, resampleH1toH4(h1Slice));
-      const shortSig = checkShortSetup(m15Slice, h1Slice, resampleH1toH4(h1Slice));
-      const sig = (longSig?.confidence || 0) >= (shortSig?.confidence || 0) ? longSig : shortSig;
-      if(sig){
-        // Simulate: scan forward — hit stop or tp2 first?
-        let outcome = null;
-        for(let j = i+1; j < Math.min(m15.length, i+96); j++){
-          const c = m15[j];
-          if(sig.direction === 'long'){
-            if(c.low <= sig.stop){ outcome = 'loss'; break; }
-            if(c.high >= sig.tp2){ outcome = 'win'; break; }
-          } else {
-            if(c.high >= sig.stop){ outcome = 'loss'; break; }
-            if(c.low <= sig.tp2){ outcome = 'win'; break; }
-          }
-        }
-        if(outcome){
-          hits++;
-          if(outcome === 'win') wins++; else losses++;
-          hitsList.push({time:m15Slice[m15Slice.length-1].time, sig, outcome});
+      const lastT = m15Slice[m15Slice.length-1].time;
+      const h1Slice = h1.filter(c => c.time <= lastT);
+      if(h1Slice.length<30) continue;
+      const h4Slice = resampleH1toH4(h1Slice);
+      const l = checkSetup('long', m15Slice, h1Slice, h4Slice);
+      const s = checkSetup('short', m15Slice, h1Slice, h4Slice);
+      const sig = (l?.confidence||0) >= (s?.confidence||0) ? l : s;
+      if(!sig || !gradeGE(sig.grade, SETTINGS.minGrade)) continue;
+      setups++;
+      if(sig.grade==='A') gradesA++;
+      else if(sig.grade==='B') gradesB++;
+      else gradesC++;
+      // Simulate: forward scan up to 96 M15 (24h)
+      let outcome = null;
+      for(let j = i+1; j < Math.min(m15.length, i+96); j++){
+        const c = m15[j];
+        if(sig.direction==='long'){
+          if(c.low <= sig.stop){ outcome='loss'; break; }
+          if(c.high >= sig.tp2){ outcome='win'; break; }
+        } else {
+          if(c.high >= sig.stop){ outcome='loss'; break; }
+          if(c.low <= sig.tp2){ outcome='win'; break; }
         }
       }
+      if(outcome==='win') wins++;
+      else if(outcome==='loss') losses++;
     }
-    const rate = hits > 0 ? (wins/hits*100).toFixed(1) : '—';
+    const closed = wins + losses;
+    const rate = closed>0 ? (wins/closed*100).toFixed(1) : '—';
     const rr = 3;
-    const expectedR = hits > 0 ? ((wins*rr - losses)/hits).toFixed(2) : '—';
-    toast(`📊 Backtest: ${hits} setups · ${wins}W / ${losses}L (${rate}%) · ${expectedR}R expected`, 'ok');
-    document.getElementById('regimeMeta').textContent = `Backtest 30d: ${hits} setups · ${rate}% win rate · ${expectedR}R avg`;
+    const expR = closed>0 ? ((wins*rr - losses)/closed).toFixed(2) : '—';
+    toast(`📊 Backtest: ${setups} setups (A:${gradesA}/B:${gradesB}/C:${gradesC}) · ${wins}W/${losses}L (${rate}%) · ${expR}R avg`, 'ok');
+    document.getElementById('regimeMeta').textContent = `Backtest 30d: ${setups} setups · Grade A:${gradesA}/B:${gradesB}/C:${gradesC} · ${rate}% win · ${expR}R avg`;
   }catch(e){
     console.error(e);
     toast('❌ Backtest failed: ' + e.message, 'err');
   }finally{
-    btn.disabled = false;
-    btn.textContent = '📊 Backtest 30d';
+    btn.disabled = false; btn.textContent = '📊 Backtest 30d';
   }
 }
 
-/* ---------- AUTO-REFRESH ---------- */
+/* ---------- AUTO REFRESH + VISIBILITY ---------- */
 function toggleAuto(){
   const btn = document.getElementById('autoBtn');
-  if(AUTO_TIMER){
-    clearInterval(AUTO_TIMER);
-    AUTO_TIMER = null;
-    btn.textContent = '⏱️ Auto-refresh: OFF';
-    btn.className = 'btn btn-g';
-    toast('⏸️ Auto-refresh disabled', '');
+  if(AUTO_TIMER || BIQUOTE_TIMER){
+    stopAuto();
   } else {
-    AUTO_TIMER = setInterval(runScan, AUTO_INTERVAL_MS);
-    btn.textContent = '⏱️ Auto-refresh: ON (60s)';
-    btn.className = 'btn btn-p';
-    toast('▶️ Auto-refresh every 60s', 'ok');
-    runScan();
+    startAuto();
   }
 }
+function startAuto(){
+  BIQUOTE_TIMER = setInterval(pollBiquote, BIQUOTE_POLL_MS);
+  AUTO_TIMER = setInterval(runScan, CANDLES_POLL_MS);
+  const btn = document.getElementById('autoBtn');
+  btn.textContent = '⏱️ Auto: ON (5s/60s)';
+  btn.className = 'btn btn-p';
+  toast('▶️ Auto-refresh: biquote 5s · full scan 60s', 'ok');
+  runScan();
+}
+function stopAuto(){
+  clearInterval(AUTO_TIMER); clearInterval(BIQUOTE_TIMER);
+  AUTO_TIMER = null; BIQUOTE_TIMER = null;
+  const btn = document.getElementById('autoBtn');
+  btn.textContent = '⏱️ Auto: OFF';
+  btn.className = 'btn btn-g';
+}
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden){
+    // Pause polling to save API + battery
+    if(BIQUOTE_TIMER){ clearInterval(BIQUOTE_TIMER); BIQUOTE_TIMER = null; }
+  } else {
+    // Resume if auto was on
+    if(AUTO_TIMER && !BIQUOTE_TIMER){
+      BIQUOTE_TIMER = setInterval(pollBiquote, BIQUOTE_POLL_MS);
+      pollBiquote();
+    }
+  }
+});
 
 /* ---------- INIT ---------- */
-function init(){
+async function init(){
   applySettingsToInputs();
-  renderSession();
+  renderKillzone();
+  renderClocks();
   renderLog();
+  renderDaily();
+  renderTfGrid();
+  // Restore notify + sound preferences
+  if(localStorage.getItem('gold_notify_on')==='1' && Notification?.permission==='granted'){
+    NOTIFY_ON = true;
+    document.getElementById('notifyBtn').textContent = '🔔 แจ้งเตือน: ON';
+    document.getElementById('notifyBtn').classList.add('on');
+  }
+  if(localStorage.getItem('gold_sound_on')==='1'){
+    SOUND_ON = true;
+    document.getElementById('soundBtn').textContent = '🔊 Sound: ON';
+    document.getElementById('soundBtn').classList.add('on');
+  }
+  // First data fetch
+  await Promise.all([pollBiquote(), refreshCandlesIfNeeded()]);
   renderTfGrid();
   runScan();
-  // Update UTC clock every 30s
-  setInterval(() => {
-    document.getElementById('heroUtc').textContent = new Date().toISOString().slice(11,16);
-    renderSession();
-    if(LAST_QUOTE) renderHero();
-  }, 30000);
+  // Clock ticks every second
+  setInterval(renderClocks, 1000);
+  // Killzone re-render every minute
+  setInterval(renderKillzone, 60000);
+  // Hero freshness refresh
+  setInterval(() => LAST_QUOTE && renderHero(), 1000);
 }
 document.addEventListener('DOMContentLoaded', init);
 </script>
-
 <script>
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
