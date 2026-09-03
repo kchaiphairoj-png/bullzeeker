@@ -833,19 +833,117 @@ function detectRsiDivergence(candles, rsiSeries, direction){
   return null;
 }
 
-/* ---------- H4 TREND BIAS ---------- */
+/* ---------- H4 TREND BIAS (upgraded — catches transitions) ---------- */
 function getH4Bias(h4){
   if(!h4 || h4.length<21) return 'unknown';
   const closes = h4.map(c=>c.close);
-  const emaF = ema(closes, EMA_FAST);
-  const emaS = ema(closes, EMA_SLOW);
+  const emaF = ema(closes, EMA_FAST);       // 9
+  const emaS = ema(closes, EMA_SLOW);       // 21
+  const ema50 = closes.length>=50 ? ema(closes, 50) : null;
+  const ema200 = closes.length>=200 ? ema(closes, 200) : null;
   if(!emaF || !emaS) return 'unknown';
   const price = closes[closes.length-1];
-  const closesRecent = closes.slice(-8);
-  const trendSlope = (closesRecent[closesRecent.length-1] - closesRecent[0]) / closesRecent[0] * 100;
-  if(emaF > emaS && price > emaF && trendSlope > 0.3) return 'bullish';
-  if(emaF < emaS && price < emaF && trendSlope < -0.3) return 'bearish';
+  const atrH4 = atr(h4, ATR_PERIOD) || 1;
+
+  // 1. Strong momentum burst (2+ big candles same direction)
+  const last3 = h4.slice(-3);
+  const bigGreen = last3.filter(c => c.close > c.open && (c.close-c.open) > atrH4*0.6).length;
+  const bigRed = last3.filter(c => c.close < c.open && (c.open-c.close) > atrH4*0.6).length;
+
+  // 2. Reversal via EMA200 cross (last 4 candles)
+  let crossedAboveEma200 = false, crossedBelowEma200 = false;
+  if(ema200){
+    const closes3ago = closes.slice(0, -3);
+    const ema200_3ago = closes3ago.length>=200 ? ema(closes3ago, 200) : ema200;
+    crossedAboveEma200 = price > ema200 && h4[h4.length-4]?.close < ema200_3ago;
+    crossedBelowEma200 = price < ema200 && h4[h4.length-4]?.close > ema200_3ago;
+  }
+
+  // 3. Recovery from recent extreme (last 15 candles)
+  const recent15 = h4.slice(-15);
+  const lowIdx = recent15.reduce((m,c,i,arr) => c.low < arr[m].low ? i : m, 0);
+  const highIdx = recent15.reduce((m,c,i,arr) => c.high > arr[m].high ? i : m, 0);
+  const bouncePct = (price - recent15[lowIdx].low) / recent15[lowIdx].low * 100;
+  const dropPct = (recent15[highIdx].high - price) / recent15[highIdx].high * 100;
+  const recentBounce = bouncePct > 1.5 && lowIdx < recent15.length-2 && bigGreen >= 1;
+  const recentDrop = dropPct > 1.5 && highIdx < recent15.length-2 && bigRed >= 1;
+
+  // Priority order:
+  // (a) Fresh EMA200 cross + confirmation → reversal
+  if(crossedAboveEma200 && bigGreen >= 1) return 'bullish_reversal';
+  if(crossedBelowEma200 && bigRed >= 1) return 'bearish_reversal';
+
+  // (b) Strong momentum burst (regardless of EMA)
+  if(bigGreen >= 2 && price > (ema200 || 0)) return 'bullish';
+  if(bigRed >= 2 && price < (ema200 || 1e9)) return 'bearish';
+
+  // (c) Recovery bounce from recent low with green candles = reversal
+  if(recentBounce && (price > (ema200 || 0) * 0.998)) return 'bullish_reversal';
+  if(recentDrop && (price < (ema200 || 1e9) * 1.002)) return 'bearish_reversal';
+
+  // (d) Traditional EMA9/21 alignment
+  if(emaF > emaS && price > emaF) return 'bullish';
+  if(emaF < emaS && price < emaF) return 'bearish';
+
+  // (e) EMA200 side even if EMAs mixed
+  if(ema200 && price > ema200 * 1.005) return 'bullish';
+  if(ema200 && price < ema200 * 0.995) return 'bearish';
+
   return 'neutral';
+}
+
+/* Momentum burst: N consecutive candles same direction with body > k×ATR */
+function detectMomentumBurst(candles, direction, count=3, minBodyAtr=0.5){
+  if(candles.length < count) return null;
+  const atrVal = atr(candles, ATR_PERIOD) || 1;
+  const last = candles.slice(-count);
+  if(direction==='up'){
+    const greens = last.filter(c => c.close > c.open);
+    if(greens.length < count) return null;
+    const bodies = last.map(c => c.close - c.open);
+    const avg = bodies.reduce((a,b)=>a+b,0)/count;
+    if(avg > atrVal * minBodyAtr) return {strength: avg/atrVal, count, totalMove: last[count-1].close - last[0].open};
+  } else {
+    const reds = last.filter(c => c.close < c.open);
+    if(reds.length < count) return null;
+    const bodies = last.map(c => c.open - c.close);
+    const avg = bodies.reduce((a,b)=>a+b,0)/count;
+    if(avg > atrVal * minBodyAtr) return {strength: avg/atrVal, count, totalMove: last[0].open - last[count-1].close};
+  }
+  return null;
+}
+
+/* Bounce from recent low (bullish) or high (bearish) */
+function detectRecovery(candles, direction, lookback=20, minPct=1.0){
+  const recent = candles.slice(-lookback);
+  if(recent.length < 5) return null;
+  const price = recent[recent.length-1].close;
+  if(direction==='up'){
+    const lowIdx = recent.reduce((m,c,i,arr) => c.low < arr[m].low ? i : m, 0);
+    if(lowIdx >= recent.length-2) return null;
+    const bouncePct = (price - recent[lowIdx].low) / recent[lowIdx].low * 100;
+    if(bouncePct >= minPct) return {fromPrice: recent[lowIdx].low, bouncePct, sinceCandles: recent.length-1-lowIdx};
+  } else {
+    const highIdx = recent.reduce((m,c,i,arr) => c.high > arr[m].high ? i : m, 0);
+    if(highIdx >= recent.length-2) return null;
+    const dropPct = (recent[highIdx].high - price) / recent[highIdx].high * 100;
+    if(dropPct >= minPct) return {fromPrice: recent[highIdx].high, dropPct, sinceCandles: recent.length-1-highIdx};
+  }
+  return null;
+}
+
+/* Check if price is above/below H4 EMA200 (structural bias) */
+function ema200Info(h4){
+  if(!h4 || h4.length<200) return null;
+  const closes = h4.map(c=>c.close);
+  const e200 = ema(closes, 200);
+  const price = closes[closes.length-1];
+  const distPct = (price - e200) / e200 * 100;
+  const closes3ago = closes.slice(0, -3);
+  const e200_3ago = closes3ago.length>=200 ? ema(closes3ago, 200) : e200;
+  const crossAbove = price > e200 && h4[h4.length-4]?.close < e200_3ago;
+  const crossBelow = price < e200 && h4[h4.length-4]?.close > e200_3ago;
+  return {price, ema200:e200, distPct, crossAbove, crossBelow, above: price>e200};
 }
 
 /* ---------- KILL-ZONE ---------- */
@@ -887,13 +985,18 @@ function scoreConfluence({kz, h4Bias, direction, hasBOS, hasSweep, sweepPoolTouc
   const kzMap = {'A+':25,'A':20,'B':10,'C':0};
   score += kzMap[kz.grade] || 0;
   notes.push({label:`Kill-zone: ${kz.name} (${kz.grade})`, pass: (kz.grade==='A+'||kz.grade==='A'), pts: kzMap[kz.grade]||0});
-  // H4 alignment
-  const bullishOk = direction==='long' && h4Bias==='bullish';
-  const bearishOk = direction==='short' && h4Bias==='bearish';
+  // H4 alignment (reversal counts as aligned)
+  const isBull = h4Bias==='bullish' || h4Bias==='bullish_reversal';
+  const isBear = h4Bias==='bearish' || h4Bias==='bearish_reversal';
+  const bullishOk = direction==='long' && isBull;
+  const bearishOk = direction==='short' && isBear;
   const neutral = h4Bias==='neutral';
-  if(bullishOk || bearishOk){ score += 15; notes.push({label:`H4 bias ${h4Bias} (aligned)`, pass:true, pts:15}); }
-  else if(neutral){ score += 5; notes.push({label:`H4 bias neutral`, pass:true, pts:5}); }
-  else{ score -= 20; notes.push({label:`H4 bias ${h4Bias} (OPPOSING!)`, pass:false, pts:-20}); }
+  if(bullishOk || bearishOk){
+    const bonus = h4Bias.includes('reversal') ? 18 : 15;
+    score += bonus; notes.push({label:`H4 ${h4Bias.replace('_',' ')} (aligned)`, pass:true, pts:bonus});
+  }
+  else if(neutral){ score += 5; notes.push({label:`H4 neutral`, pass:true, pts:5}); }
+  else{ score -= 20; notes.push({label:`H4 ${h4Bias} (OPPOSING!)`, pass:false, pts:-20}); }
   // BOS
   if(hasBOS){ score += 15; notes.push({label:'H1 BOS (structure break)', pass:true, pts:15}); }
   else{ notes.push({label:'H1 BOS', pass:false, pts:0}); }
@@ -940,13 +1043,15 @@ function checkSetup(direction, m15, h1, h4){
 
   // H4 bias
   const h4Bias = getH4Bias(h4);
-  // H4 alignment gate
+  // H4 alignment gate — treats reversal same as trend
+  const h4Bull = (h4Bias==='bullish' || h4Bias==='bullish_reversal');
+  const h4Bear = (h4Bias==='bearish' || h4Bias==='bearish_reversal');
   if(SETTINGS.align==='strict'){
-    if(direction==='long' && h4Bias!=='bullish') return null;
-    if(direction==='short' && h4Bias!=='bearish') return null;
+    if(direction==='long' && !h4Bull) return null;
+    if(direction==='short' && !h4Bear) return null;
   } else if(SETTINGS.align==='moderate'){
-    if(direction==='long' && h4Bias==='bearish') return null;
-    if(direction==='short' && h4Bias==='bullish') return null;
+    if(direction==='long' && h4Bear) return null;
+    if(direction==='short' && h4Bull) return null;
   }
 
   // Kill-zone
@@ -1219,10 +1324,43 @@ function computeQuickBias(){
   let buyPts = 0, sellPts = 0;
   const buyReasons = [], sellReasons = [], neutralReasons = [];
 
-  // === H4 Trend (weight 30) ===
+  // === H4 Trend (weight 30) — treats reversal same as trend ===
   if(h4Bias === 'bullish'){ buyPts += 30; buyReasons.push({t:'H4 bullish trend', w:30}); }
+  else if(h4Bias === 'bullish_reversal'){ buyPts += 35; buyReasons.push({t:'H4 BULLISH REVERSAL (fresh)', w:35}); }
   else if(h4Bias === 'bearish'){ sellPts += 30; sellReasons.push({t:'H4 bearish trend', w:30}); }
+  else if(h4Bias === 'bearish_reversal'){ sellPts += 35; sellReasons.push({t:'H4 BEARISH REVERSAL (fresh)', w:35}); }
   else{ neutralReasons.push({t:'H4 neutral', w:0}); }
+
+  // === H4 EMA200 structural bias ===
+  const e200H4 = ema200Info(CANDLES.h4);
+  if(e200H4){
+    if(e200H4.crossAbove){ buyPts += 25; buyReasons.push({t:`H4 CROSSED above EMA200 ($${e200H4.ema200.toFixed(2)})`, w:25}); }
+    else if(e200H4.crossBelow){ sellPts += 25; sellReasons.push({t:`H4 CROSSED below EMA200 ($${e200H4.ema200.toFixed(2)})`, w:25}); }
+    else if(e200H4.above && e200H4.distPct > 0.5){ buyPts += 10; buyReasons.push({t:`Above H4 EMA200 (+${e200H4.distPct.toFixed(1)}%)`, w:10}); }
+    else if(!e200H4.above && e200H4.distPct < -0.5){ sellPts += 10; sellReasons.push({t:`Below H4 EMA200 (${e200H4.distPct.toFixed(1)}%)`, w:10}); }
+  }
+
+  // === Momentum burst on H4 (3 big candles) ===
+  const burstUpH4 = detectMomentumBurst(CANDLES.h4, 'up', 3, 0.5);
+  const burstDnH4 = detectMomentumBurst(CANDLES.h4, 'down', 3, 0.5);
+  if(burstUpH4){ buyPts += 20; buyReasons.push({t:`H4 momentum burst (3 green, ${burstUpH4.strength.toFixed(1)}× ATR)`, w:20}); }
+  if(burstDnH4){ sellPts += 20; sellReasons.push({t:`H4 momentum burst (3 red, ${burstDnH4.strength.toFixed(1)}× ATR)`, w:20}); }
+
+  // === Momentum burst on H1 (3 big candles) ===
+  const burstUpH1 = detectMomentumBurst(CANDLES.h1, 'up', 3, 0.4);
+  const burstDnH1 = detectMomentumBurst(CANDLES.h1, 'down', 3, 0.4);
+  if(burstUpH1){ buyPts += 12; buyReasons.push({t:`H1 momentum burst (3 green)`, w:12}); }
+  if(burstDnH1){ sellPts += 12; sellReasons.push({t:`H1 momentum burst (3 red)`, w:12}); }
+
+  // === Recovery / bounce ===
+  const bounceUp = detectRecovery(CANDLES.h4, 'up', 15, 1.5);
+  const bounceDn = detectRecovery(CANDLES.h4, 'down', 15, 1.5);
+  if(bounceUp && (h4Bias==='bullish'||h4Bias==='bullish_reversal'||h4Bias==='neutral')){
+    buyPts += 15; buyReasons.push({t:`H4 bounce from $${bounceUp.fromPrice.toFixed(2)} (+${bounceUp.bouncePct.toFixed(1)}%)`, w:15});
+  }
+  if(bounceDn && (h4Bias==='bearish'||h4Bias==='bearish_reversal'||h4Bias==='neutral')){
+    sellPts += 15; sellReasons.push({t:`H4 pullback from $${bounceDn.fromPrice.toFixed(2)} (-${bounceDn.dropPct.toFixed(1)}%)`, w:15});
+  }
 
   // === H1 RSI position (weight 20-25) ===
   if(h1Rsi < 30){ buyPts += 25; buyReasons.push({t:`RSI ${h1Rsi.toFixed(0)} oversold`, w:25}); }
@@ -1293,17 +1431,17 @@ function computeQuickBias(){
   const total = buyPts + sellPts;
   let action = 'WAIT', confidence = 0, actionPrice = null, note = '';
 
-  if(diff >= 35){
+  if(diff >= 25){
     action = 'BUY';
-    confidence = Math.min(95, 45 + Math.round(diff * 0.6));
+    confidence = Math.min(95, 45 + Math.round(diff * 0.7));
     // Suggest entry: current price or nearest bullish FVG mid
     if(bullishFvg.length){ actionPrice = bullishFvg[bullishFvg.length-1].mid; note = `LIMIT @ FVG mid $${actionPrice.toFixed(2)}`; }
     else if(prior && Math.abs(price - prior.low) < m15Atr*1.5){ actionPrice = prior.low; note = `LIMIT @ Prev Day Low $${prior.low.toFixed(2)}`; }
     else if(asia && Math.abs(price - asia.low) < m15Atr*1.5){ actionPrice = asia.low; note = `LIMIT @ Asia Low $${asia.low.toFixed(2)}`; }
     else{ actionPrice = price; note = `MARKET @ $${price.toFixed(2)}`; }
-  } else if(diff <= -35){
+  } else if(diff <= -25){
     action = 'SELL';
-    confidence = Math.min(95, 45 + Math.round(-diff * 0.6));
+    confidence = Math.min(95, 45 + Math.round(-diff * 0.7));
     if(bearishFvg.length){ actionPrice = bearishFvg[bearishFvg.length-1].mid; note = `LIMIT @ FVG mid $${actionPrice.toFixed(2)}`; }
     else if(prior && Math.abs(price - prior.high) < m15Atr*1.5){ actionPrice = prior.high; note = `LIMIT @ Prev Day High $${prior.high.toFixed(2)}`; }
     else if(asia && Math.abs(price - asia.high) < m15Atr*1.5){ actionPrice = asia.high; note = `LIMIT @ Asia High $${asia.high.toFixed(2)}`; }
@@ -1401,13 +1539,21 @@ function renderTfGrid(){
   const h4Bias = getH4Bias(CANDLES.h4);
   const h4Closes = CANDLES.h4.map(c=>c.close);
   const h4EF = ema(h4Closes, EMA_FAST), h4ES = ema(h4Closes, EMA_SLOW);
-  const h4Cls = h4Bias==='bullish' ? 'bullish' : h4Bias==='bearish' ? 'bearish' : 'neutral';
+  const e200H4 = ema200Info(CANDLES.h4);
+  const isBull = h4Bias==='bullish' || h4Bias==='bullish_reversal';
+  const isBear = h4Bias==='bearish' || h4Bias==='bearish_reversal';
+  const h4Cls = isBull ? 'bullish' : isBear ? 'bearish' : 'neutral';
+  const biasLbl = h4Bias.replace('_reversal',' REV').toUpperCase();
+  const burstUpH4 = detectMomentumBurst(CANDLES.h4, 'up', 3, 0.5);
+  const burstDnH4 = detectMomentumBurst(CANDLES.h4, 'down', 3, 0.5);
+  const burstLbl = burstUpH4 ? `🔥 ${burstUpH4.strength.toFixed(1)}× ATR up` : burstDnH4 ? `🔥 ${burstDnH4.strength.toFixed(1)}× ATR down` : '—';
   rows.push(`<div class="tf-card ${h4Cls}">
-    <h3>🕓 H4 Trend</h3><div class="label">Bias · EMA${EMA_FAST}/EMA${EMA_SLOW}</div>
-    <div class="metric-row"><span class="l">Bias</span><span class="v ${h4Bias==='bullish'?'g':h4Bias==='bearish'?'r':''}">${h4Bias.toUpperCase()}</span></div>
+    <h3>🕓 H4 Trend</h3><div class="label">Bias · EMAs · Reversal · Momentum</div>
+    <div class="metric-row"><span class="l">Bias</span><span class="v ${isBull?'g':isBear?'r':''}">${biasLbl}</span></div>
     <div class="metric-row"><span class="l">Price</span><span class="v gold">$${h4Closes[h4Closes.length-1]?.toFixed(2)}</span></div>
-    <div class="metric-row"><span class="l">EMA${EMA_FAST}</span><span class="v">$${h4EF?.toFixed(2)}</span></div>
-    <div class="metric-row"><span class="l">EMA${EMA_SLOW}</span><span class="v">$${h4ES?.toFixed(2)}</span></div>
+    <div class="metric-row"><span class="l">EMA${EMA_FAST}/${EMA_SLOW}</span><span class="v">$${h4EF?.toFixed(2)} / $${h4ES?.toFixed(2)}</span></div>
+    ${e200H4 ? `<div class="metric-row"><span class="l">EMA200</span><span class="v ${e200H4.above?'g':'r'}">$${e200H4.ema200.toFixed(2)} · ${e200H4.above?'above':'below'} (${e200H4.distPct>=0?'+':''}${e200H4.distPct.toFixed(2)}%)${e200H4.crossAbove?' ⬆CROSS':''}${e200H4.crossBelow?' ⬇CROSS':''}</span></div>` : ''}
+    <div class="metric-row"><span class="l">Burst 3H4</span><span class="v ${burstUpH4?'g':burstDnH4?'r':''}">${burstLbl}</span></div>
   </div>`);
   // H1
   const h1Closes = CANDLES.h1.map(c=>c.close);
