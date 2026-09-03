@@ -1491,13 +1491,31 @@ function computeQuickBias(){
     else note = `ฝั่ง ${diff>0?'BUY':'SELL'} นำเล็กน้อย (${Math.abs(diff)} pts) — รอ confluence เพิ่ม`;
   }
 
-  // Suggest stop and target if BUY/SELL
+  // Suggest stop and target if BUY/SELL — always ensure stop is on correct side
   let stop = null, tp = null;
   if(action==='BUY' && actionPrice){
-    stop = (asia?.low || actionPrice - m15Atr*2) - Math.max(3, m15Atr*0.5);
+    // Stop must be BELOW entry — use lowest of (Asia low, Prev day low, recent M15 low)
+    const buffer = Math.max(3, m15Atr*0.5);
+    const candidates = [actionPrice - m15Atr*2];
+    if(asia?.low && asia.low < actionPrice) candidates.push(asia.low - buffer);
+    if(prior?.low && prior.low < actionPrice) candidates.push(prior.low - buffer);
+    // Also consider recent M15 swing low (last 20)
+    const recentLow = Math.min(...CANDLES.m15.slice(-20).map(c=>c.low));
+    if(recentLow < actionPrice) candidates.push(recentLow - buffer);
+    stop = Math.min(...candidates);
+    // Cap the risk: don't let stop be more than 3 ATR away
+    if((actionPrice - stop) > m15Atr*3) stop = actionPrice - m15Atr*3;
     tp = actionPrice + (actionPrice - stop) * 2;
   } else if(action==='SELL' && actionPrice){
-    stop = (asia?.high || actionPrice + m15Atr*2) + Math.max(3, m15Atr*0.5);
+    // Stop must be ABOVE entry
+    const buffer = Math.max(3, m15Atr*0.5);
+    const candidates = [actionPrice + m15Atr*2];
+    if(asia?.high && asia.high > actionPrice) candidates.push(asia.high + buffer);
+    if(prior?.high && prior.high > actionPrice) candidates.push(prior.high + buffer);
+    const recentHigh = Math.max(...CANDLES.m15.slice(-20).map(c=>c.high));
+    if(recentHigh > actionPrice) candidates.push(recentHigh + buffer);
+    stop = Math.max(...candidates);
+    if((stop - actionPrice) > m15Atr*3) stop = actionPrice + m15Atr*3;
     tp = actionPrice - (stop - actionPrice) * 2;
   }
 
