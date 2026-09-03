@@ -194,6 +194,43 @@ main{max-width:1400px;margin:0 auto;padding:20px 18px}
 .bias-vs .bar .bp{background:var(--emerald)}
 .bias-vs .bar .sp{background:var(--red)}
 
+/* Macro Overlay */
+.macro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.macro-factor{background:var(--bg3);border:1px solid var(--line);border-radius:12px;padding:14px;position:relative;overflow:hidden}
+.macro-factor.bull{border-color:var(--emerald);background:linear-gradient(135deg,rgba(16,185,129,.10),var(--bg3))}
+.macro-factor.bear{border-color:var(--red);background:linear-gradient(135deg,rgba(239,68,68,.10),var(--bg3))}
+.macro-factor.neut{border-color:var(--line2)}
+.macro-factor .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
+.macro-factor .name{font-size:13px;font-weight:800;display:flex;align-items:center;gap:6px}
+.macro-factor .verdict{padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:.5px}
+.macro-factor .verdict.b{background:var(--emerald);color:#062516}
+.macro-factor .verdict.s{background:var(--red);color:#fff}
+.macro-factor .verdict.n{background:#475569;color:#fff}
+.macro-factor .val{font-size:20px;font-weight:800;font-family:var(--mono);color:var(--gold);margin-bottom:4px}
+.macro-factor .val small{font-size:11px;color:var(--muted);font-weight:600;margin-left:6px}
+.macro-factor .trend-row{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:8px}
+.macro-factor .trend-row .up{color:var(--emerald)}
+.macro-factor .trend-row .dn{color:var(--red)}
+.macro-factor .exp{font-size:11px;color:var(--muted);line-height:1.5;padding-top:8px;border-top:1px dashed var(--line)}
+.macro-factor .weight{position:absolute;top:8px;right:8px;font-size:9px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+
+.macro-verdict{background:linear-gradient(135deg,var(--bg3),var(--bg2));border:2px solid var(--line2);border-radius:12px;padding:16px;margin-top:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.macro-verdict.bull{border-color:var(--emerald)}
+.macro-verdict.bear{border-color:var(--red)}
+.macro-verdict .m-badge{font-size:28px;font-weight:800;padding:8px 18px;border-radius:12px;line-height:1;font-family:'Inter',sans-serif}
+.macro-verdict .m-badge.bull{background:var(--emerald);color:#062516}
+.macro-verdict .m-badge.bear{background:var(--red);color:#fff}
+.macro-verdict .m-badge.neut{background:var(--gold);color:#0a0e16}
+.macro-verdict .m-info{flex:1;min-width:200px}
+.macro-verdict .m-info .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.macro-verdict .m-info .v{font-size:16px;font-weight:800;margin-top:2px}
+.macro-verdict .m-info .r{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
+.macro-verdict .m-score{text-align:right;font-family:var(--mono)}
+.macro-verdict .m-score .g{color:var(--emerald);font-weight:800;font-size:14px}
+.macro-verdict .m-score .r{color:var(--red);font-weight:800;font-size:14px}
+.macro-conflict-warn{background:var(--red-bg);border:1px solid var(--red);color:var(--red);padding:10px 14px;border-radius:10px;margin-top:12px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+.macro-agree-note{background:var(--emerald-bg);border:1px solid var(--emerald);color:var(--emerald);padding:10px 14px;border-radius:10px;margin-top:12px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+
 .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:14px}
 .stat{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .stat .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
@@ -326,6 +363,22 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
       <span class="countdown">Session change in: <b id="kzCountdown">—</b></span>
       <span>Legend: <b style="color:var(--emerald)">A+ Overlap</b> · <b style="color:var(--emerald);opacity:.85">A Open</b> · <b style="color:var(--gold)">B Gap</b> · <b style="color:#64748b">C Off</b></span>
     </div>
+  </div>
+
+  <!-- MACRO OVERLAY (4-factor analysis: DXY, Real Yields, Inflation, Risk) -->
+  <div class="card">
+    <div class="card-h">
+      <h2>🌍 Macro Overlay · 4-Factor Analysis</h2>
+      <span class="pill" id="macroMeta">Loading...</span>
+    </div>
+    <div class="macro-grid" id="macroGrid">
+      <div class="macro-factor neut"><div class="head"><span class="name">⏳ Loading DXY...</span></div></div>
+      <div class="macro-factor neut"><div class="head"><span class="name">⏳ Loading Yields...</span></div></div>
+      <div class="macro-factor neut"><div class="head"><span class="name">⏳ Loading Inflation...</span></div></div>
+      <div class="macro-factor neut"><div class="head"><span class="name">⏳ Loading Risk...</span></div></div>
+    </div>
+    <div id="macroVerdict"></div>
+    <div id="macroTechAlignment"></div>
   </div>
 
   <!-- DAILY STATS -->
@@ -606,6 +659,7 @@ async function pollBiquote(){
     LAST_QUOTE = q;
     renderHero();
     renderQuickBias();   // update bias whenever price refreshes
+    renderMacroAlignment();   // sync macro-alignment note with current bias
   }
 }
 
@@ -1311,6 +1365,305 @@ function renderKillzone(){
   document.getElementById('kzMeta').className = 'pill ' + (sess.ok ? 'g' : 'r');
 }
 
+/* ============================================================
+   MACRO OVERLAY — DXY / Real Yields / Inflation / Risk
+   ============================================================ */
+const MACRO_SYMBOLS = {
+  dxy:     'DX-Y.NYB',    // US Dollar Index
+  y10:     '^TNX',        // 10-Year Treasury Yield (nominal)
+  tip:     'TIP',         // TIPS ETF (proxy for real yields — inverse)
+  spx:     '^GSPC',       // S&P 500
+  vix:     '^VIX',        // Volatility Index
+};
+const MACRO_CACHE_KEY = 'bullzeeker_gold_macro_v1';
+const MACRO_TTL_MS = 5 * 60 * 1000;   // 5 min
+let MACRO_DATA = null;
+let MACRO_TIMER = null;
+
+async function fetchOneSymbol(sym){
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=6mo&interval=1d`;
+  try{
+    const txt = await tryYahooProxies(url);
+    const j = JSON.parse(txt);
+    const r = j?.chart?.result?.[0];
+    if(!r) return null;
+    const closes = (r.indicators?.quote?.[0]?.close || []).filter(x => x != null);
+    if(closes.length < 5) return null;
+    return {
+      now: closes[closes.length-1],
+      d5:  closes[closes.length-6] ?? closes[0],
+      d20: closes[Math.max(0, closes.length-21)] ?? closes[0],
+      d50: closes[Math.max(0, closes.length-51)] ?? closes[0],
+      d200: closes[Math.max(0, closes.length-201)] ?? closes[0],
+      ma50: closes.length>=50 ? closes.slice(-50).reduce((a,b)=>a+b,0)/50 : null,
+      ma200: closes.length>=200 ? closes.slice(-200).reduce((a,b)=>a+b,0)/200 : null,
+      count: closes.length,
+    };
+  }catch(e){ return null; }
+}
+
+async function fetchMacroData(force=false){
+  // Cache
+  if(!force){
+    try{
+      const cached = localStorage.getItem(MACRO_CACHE_KEY);
+      if(cached){
+        const c = JSON.parse(cached);
+        if(Date.now() - c.ts < MACRO_TTL_MS){
+          MACRO_DATA = c.data;
+          return MACRO_DATA;
+        }
+      }
+    }catch{}
+  }
+  const results = {};
+  await Promise.all(Object.entries(MACRO_SYMBOLS).map(async ([k, sym]) => {
+    results[k] = await fetchOneSymbol(sym);
+  }));
+  MACRO_DATA = {...results, fetchedAt: Date.now()};
+  try{ localStorage.setItem(MACRO_CACHE_KEY, JSON.stringify({ts: Date.now(), data: MACRO_DATA})); }catch{}
+  return MACRO_DATA;
+}
+
+function pctChg(cur, prev){ return ((cur - prev) / prev) * 100; }
+
+function scoreMacro(d){
+  if(!d) return null;
+  const factors = {};
+
+  // === 1. DXY (inverse for gold) ===
+  if(d.dxy){
+    const dxy = d.dxy;
+    const chg50 = pctChg(dxy.now, dxy.d50);
+    const chg20 = pctChg(dxy.now, dxy.d20);
+    const chg5 = pctChg(dxy.now, dxy.d5);
+    const vsMa50 = dxy.ma50 ? pctChg(dxy.now, dxy.ma50) : 0;
+    // DXY down = bullish for gold
+    let score = 0, verdict = 'neut', trendTxt;
+    if(chg50 < -1.5) { score = 25; verdict = 'bull'; trendTxt = 'ลงชัด (50d)'; }
+    else if(chg50 < -0.5) { score = 15; verdict = 'bull'; trendTxt = 'ลงเบา (50d)'; }
+    else if(chg50 > 1.5) { score = -25; verdict = 'bear'; trendTxt = 'ขึ้นแรง (50d)'; }
+    else if(chg50 > 0.5) { score = -15; verdict = 'bear'; trendTxt = 'ขึ้นเบา (50d)'; }
+    else { score = 0; verdict = 'neut'; trendTxt = 'Sideways'; }
+    // Short-term counter-adjust
+    if(chg5 > 0.5 && score > 0){ score -= 5; trendTxt += ' · แต่ 5d bounce'; }
+    factors.dxy = {
+      name: '💵 US Dollar Index (DXY)',
+      value: dxy.now.toFixed(2),
+      value_suffix: '',
+      chg5, chg20, chg50, vsMa50,
+      score, verdict, weight: 'สูง',
+      trend: trendTxt,
+      exp: verdict==='bull' ? 'DXY อ่อน → ทองใน USD "ถูก" → demand เพิ่ม' :
+           verdict==='bear' ? 'DXY แข็ง → ทองใน USD "แพง" → demand ลด' :
+           'DXY sideways → ผลกระทบเบา',
+    };
+  }
+
+  // === 2. Real Yields (via TIP inverse + ^TNX nominal) ===
+  if(d.tip && d.y10){
+    const tip = d.tip, y10 = d.y10;
+    // TIP down = real yields UP = bearish for gold
+    const tipChg50 = pctChg(tip.now, tip.d50);
+    const y10Chg50 = pctChg(y10.now, y10.d50);
+    const y10Level = y10.now;
+    let score = 0, verdict = 'neut', trendTxt;
+    // Real yields rising = TIP falling + nominal yields rising
+    if(tipChg50 < -1.5 && y10Chg50 > 3){ score = -35; verdict = 'bear'; trendTxt = 'Real yields ขึ้นแรง'; }
+    else if(tipChg50 < -0.5 || y10Chg50 > 3){ score = -20; verdict = 'bear'; trendTxt = 'Real yields ขึ้น'; }
+    else if(tipChg50 > 1.5 && y10Chg50 < -3){ score = 35; verdict = 'bull'; trendTxt = 'Real yields ลงแรง'; }
+    else if(tipChg50 > 0.5 || y10Chg50 < -3){ score = 20; verdict = 'bull'; trendTxt = 'Real yields ลง'; }
+    else { score = 0; verdict = 'neut'; trendTxt = 'Real yields ทรง'; }
+    // Level check: 10Y > 4.5% is high
+    if(y10Level > 4.5 && score >= 0) score -= 8;
+    factors.yields = {
+      name: '📈 US 10Y Real Yields',
+      value: `10Y ${y10.now.toFixed(2)}%`,
+      value_suffix: ` · TIP ${tip.now.toFixed(2)}`,
+      chg5: y10Chg50, chg20: pctChg(y10.now, y10.d20), chg50: y10Chg50, vsMa50: 0,
+      score, verdict, weight: 'สูงสุด',
+      trend: `${trendTxt} · 10Y ${y10Chg50>=0?'+':''}${y10Chg50.toFixed(1)}% · TIP ${tipChg50.toFixed(1)}%`,
+      exp: verdict==='bear' ? `Real yields สูง = opportunity cost ถือทองแพง (Treasury ให้ 4.8%+)` :
+           verdict==='bull' ? `Real yields ลง = ทองแข่งขันได้ดีขึ้น` :
+           `Real yields ทรง → ไม่มีทิศทางชัด`,
+    };
+  }
+
+  // === 3. Inflation expectations (nominal ^TNX minus est. real yield from TIP trend) ===
+  if(d.tip && d.y10){
+    const tip = d.tip, y10 = d.y10;
+    // TIP price relative to 6mo baseline
+    const tipRelChg = pctChg(tip.now, tip.d200);
+    // Higher TIP price = expected inflation UP; lower = inflation UP but real yields dominant
+    // Estimate breakeven = 10Y nominal - est. real yield (~2-2.5%)
+    const estBreakeven = y10.now - 2.3;    // rough estimate
+    let score = 0, verdict = 'neut', trendTxt;
+    // Bullish for gold when: inflation running hot AND Fed unlikely to hike
+    // Bearish: inflation cooling OR high inflation with hawkish Fed
+    if(estBreakeven > 2.8 && pctChg(y10.now, y10.d50) < 2){ score = 15; verdict = 'bull'; trendTxt = 'Inflation สูง · Fed ไม่ hawkish'; }
+    else if(estBreakeven > 2.5){ score = 5; verdict = 'neut'; trendTxt = 'Inflation ใกล้ Fed target'; }
+    else if(estBreakeven < 2.0){ score = -10; verdict = 'bear'; trendTxt = 'Inflation ต่ำ · เงินไม่หนี'; }
+    else { score = -5; verdict = 'bear'; trendTxt = 'Inflation ชะลอ'; }
+    // If yields rising sharply = Fed likely hawkish = bearish
+    if(pctChg(y10.now, y10.d50) > 5) { score -= 10; verdict = 'bear'; trendTxt += ' · Fed hawkish tone'; }
+    factors.inflation = {
+      name: '📊 Inflation Expectations',
+      value: `Est. ${estBreakeven.toFixed(1)}%`,
+      value_suffix: ' Breakeven',
+      chg5: 0, chg20: 0, chg50: 0, vsMa50: 0,
+      score, verdict, weight: 'กลาง',
+      trend: trendTxt,
+      exp: score>0 ? 'เงินเฟ้อสูง + Fed ไม่ hike → ทองป้องกัน mất mua' :
+           score<0 ? 'เงินเฟ้อชะลอ + Fed อาจคง/ขึ้น → real yields สูง → ทองแพ้' :
+           'Inflation ใกล้ target · ผลกลาง ๆ',
+    };
+  }
+
+  // === 4. Risk Sentiment (SPX + VIX) ===
+  if(d.spx && d.vix){
+    const spx = d.spx, vix = d.vix;
+    const spxChg50 = pctChg(spx.now, spx.d50);
+    const spxChg20 = pctChg(spx.now, spx.d20);
+    const vixLevel = vix.now;
+    const vixChg50 = pctChg(vix.now, vix.d50);
+    let score = 0, verdict = 'neut', trendTxt;
+    // Risk-off = bullish for gold; Risk-on = bearish
+    if(vixLevel > 25 && spxChg20 < -3){ score = 25; verdict = 'bull'; trendTxt = 'Risk-OFF strong (fear)'; }
+    else if(vixLevel > 20 || spxChg20 < -2){ score = 15; verdict = 'bull'; trendTxt = 'Risk-OFF mild'; }
+    else if(vixLevel < 15 && spxChg50 > 3){ score = -20; verdict = 'bear'; trendTxt = 'Risk-ON strong'; }
+    else if(vixLevel < 18 && spxChg50 > 0){ score = -12; verdict = 'bear'; trendTxt = 'Risk-ON mild'; }
+    else { score = 0; verdict = 'neut'; trendTxt = 'Mixed sentiment'; }
+    factors.risk = {
+      name: '⚠️ Risk Sentiment (SPX+VIX)',
+      value: `VIX ${vix.now.toFixed(1)}`,
+      value_suffix: ` · SPX ${(spx.now/1000).toFixed(2)}k`,
+      chg5: 0, chg20: spxChg20, chg50: spxChg50, vsMa50: 0,
+      score, verdict, weight: 'กลาง-สูง',
+      trend: `${trendTxt} · SPX 50d ${spxChg50>=0?'+':''}${spxChg50.toFixed(1)}% · VIX ${vixChg50>=0?'+':''}${vixChg50.toFixed(0)}%`,
+      exp: verdict==='bull' ? 'Fear ↑ · เงินไหลเข้าทอง safe haven' :
+           verdict==='bear' ? 'ไม่มี fear · เงินไหลเข้าหุ้น · ทองไม่มี bid' :
+           'Sentiment กลาง ๆ · ไม่มี catalyst',
+    };
+  }
+
+  // Composite score (sum of factors)
+  let totalScore = 0;
+  let bullCount = 0, bearCount = 0, neutCount = 0;
+  for(const f of Object.values(factors)){
+    totalScore += f.score;
+    if(f.verdict === 'bull') bullCount++;
+    else if(f.verdict === 'bear') bearCount++;
+    else neutCount++;
+  }
+
+  let bias = 'NEUTRAL', biasConfidence = 50;
+  if(bullCount >= 3){ bias = 'BULLISH'; biasConfidence = 70 + (bullCount - 3)*10; }
+  else if(bearCount >= 3){ bias = 'BEARISH'; biasConfidence = 70 + (bearCount - 3)*10; }
+  else if(bullCount === 2 && bearCount === 2){ bias = 'NEUTRAL'; biasConfidence = 50; }
+  else if(bullCount > bearCount){ bias = 'BULLISH'; biasConfidence = 55; }
+  else if(bearCount > bullCount){ bias = 'BEARISH'; biasConfidence = 55; }
+  // Adjust by absolute score
+  if(Math.abs(totalScore) > 40) biasConfidence = Math.min(90, biasConfidence + 10);
+  biasConfidence = Math.max(30, Math.min(95, biasConfidence));
+
+  return {factors, totalScore, bias, biasConfidence, bullCount, bearCount, neutCount};
+}
+
+function renderMacroOverlay(){
+  const grid = document.getElementById('macroGrid');
+  const meta = document.getElementById('macroMeta');
+  const verd = document.getElementById('macroVerdict');
+  const align = document.getElementById('macroTechAlignment');
+
+  if(!MACRO_DATA){
+    meta.textContent = 'Loading...';
+    return;
+  }
+  const scored = scoreMacro(MACRO_DATA);
+  if(!scored || !scored.factors){
+    meta.textContent = 'Data unavailable';
+    return;
+  }
+  const ageMin = Math.round((Date.now() - MACRO_DATA.fetchedAt)/60000);
+  meta.textContent = `Data ${ageMin}m ago · refresh 5m`;
+
+  // Render 4 factor cards in fixed order: dxy, yields, inflation, risk
+  const order = ['dxy','yields','inflation','risk'];
+  grid.innerHTML = order.map(k => {
+    const f = scored.factors[k];
+    if(!f) return '<div class="macro-factor neut"><div class="head"><span class="name">— No data —</span></div></div>';
+    const vCls = f.verdict==='bull'?'bull':f.verdict==='bear'?'bear':'neut';
+    const vTxt = f.verdict==='bull'?'BULL':f.verdict==='bear'?'BEAR':'NEUT';
+    return `<div class="macro-factor ${vCls}">
+      <div class="weight">น้ำหนัก ${f.weight}</div>
+      <div class="head">
+        <span class="name">${f.name}</span>
+      </div>
+      <div class="val">${f.value}<small>${f.value_suffix||''}</small></div>
+      <div class="trend-row">
+        <span>${f.trend}</span>
+      </div>
+      <div class="exp">${f.exp}</div>
+      <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:11px;color:var(--muted)">Score: <b style="color:${f.score>0?'var(--emerald)':f.score<0?'var(--red)':'var(--muted)'};font-family:var(--mono)">${f.score>0?'+':''}${f.score}</b></span>
+        <span class="verdict ${vCls==='bull'?'b':vCls==='bear'?'s':'n'}">${vTxt} for GOLD</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Composite verdict
+  const biasCls = scored.bias==='BULLISH'?'bull':scored.bias==='BEARISH'?'bear':'neut';
+  const biasEmo = scored.bias==='BULLISH'?'🟢':scored.bias==='BEARISH'?'🔴':'⏸️';
+  verd.innerHTML = `<div class="macro-verdict ${biasCls}">
+    <div class="m-badge ${biasCls}">${biasEmo} ${scored.bias}</div>
+    <div class="m-info">
+      <div class="l">Composite Macro Bias (Long-term)</div>
+      <div class="v">${scored.bullCount} Bullish · ${scored.bearCount} Bearish · ${scored.neutCount} Neutral</div>
+      <div class="r">Rule: ≥3 of 4 same direction = high conviction · Real Yields + DXY = highest weight</div>
+    </div>
+    <div class="m-score">
+      <div style="font-size:11px;color:var(--muted)">Score</div>
+      <div class="${scored.totalScore>=0?'g':'r'}">${scored.totalScore>=0?'+':''}${scored.totalScore}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">Confidence <b style="color:var(--gold)">${scored.biasConfidence}%</b></div>
+    </div>
+  </div>`;
+
+  renderMacroAlignment(scored);
+}
+
+function renderMacroAlignment(scored){
+  const align = document.getElementById('macroTechAlignment');
+  if(!align) return;
+  if(!scored && MACRO_DATA) scored = scoreMacro(MACRO_DATA);
+  if(!scored){ align.innerHTML = ''; return; }
+  const bias = computeQuickBias();
+  if(!bias){ align.innerHTML = ''; return; }
+  const techBias = bias.action;   // BUY/SELL/WAIT
+  const macroBias = scored.bias;  // BULLISH/BEARISH/NEUTRAL
+  const conflict =
+    (techBias==='BUY' && macroBias==='BEARISH') ||
+    (techBias==='SELL' && macroBias==='BULLISH');
+  const agree =
+    (techBias==='BUY' && macroBias==='BULLISH') ||
+    (techBias==='SELL' && macroBias==='BEARISH');
+  if(conflict){
+    align.innerHTML = `<div class="macro-conflict-warn">
+      ⚠️ <span><b>Conflict:</b> Technical = ${techBias}, Macro = ${macroBias} · แนะนำ trade size เล็กลง (25-50%) หรือรอ macro confirm · Technical BUY สู้ macro bearish จะยาก scale profit</span>
+    </div>`;
+  } else if(agree){
+    align.innerHTML = `<div class="macro-agree-note">
+      ✅ <span><b>Confluence:</b> Technical + Macro agree = ${techBias} / ${macroBias} · เป็น setup คุณภาพสูง trade size ปกติหรือเพิ่ม</span>
+    </div>`;
+  } else {
+    align.innerHTML = '';
+  }
+}
+
+async function pollMacro(force=false){
+  await fetchMacroData(force);
+  renderMacroOverlay();
+}
+
 /* ---------- QUICK BIAS (always-on BUY/SELL/WAIT indicator) ---------- */
 function computeQuickBias(){
   if(!CANDLES.h1 || !CANDLES.m15 || CANDLES.h1.length<30 || CANDLES.m15.length<30) return null;
@@ -1449,6 +1802,16 @@ function computeQuickBias(){
   const bearishFvg = fvgs.filter(f => f.type==='bearish' && Math.abs(price-f.mid) < m15Atr*2);
   if(bullishFvg.length){ buyPts += 8; buyReasons.push({t:`${bullishFvg.length} unmitigated bullish FVG nearby`, w:8}); }
   if(bearishFvg.length){ sellPts += 8; sellReasons.push({t:`${bearishFvg.length} unmitigated bearish FVG nearby`, w:8}); }
+
+  // === Macro Overlay (long-term bias) — light influence on short-term Quick Bias ===
+  if(MACRO_DATA){
+    const macroScored = scoreMacro(MACRO_DATA);
+    if(macroScored){
+      const w = Math.round(macroScored.totalScore / 3);  // scale down to short-term impact
+      if(w > 0){ buyPts += Math.min(20, w); buyReasons.push({t:`🌍 Macro ${macroScored.bias} (${macroScored.bullCount}B/${macroScored.bearCount}Br)`, w:Math.min(20,w)}); }
+      else if(w < 0){ sellPts += Math.min(20, -w); sellReasons.push({t:`🌍 Macro ${macroScored.bias} (${macroScored.bullCount}B/${macroScored.bearCount}Br)`, w:Math.min(20,-w)}); }
+    }
+  }
 
   // === Kill-zone quality ===
   const kz = currentKillzone();
@@ -1946,11 +2309,14 @@ async function init(){
     document.getElementById('soundBtn').textContent = '🔊 Sound: ON';
     document.getElementById('soundBtn').classList.add('on');
   }
-  // First data fetch
-  await Promise.all([pollBiquote(), refreshCandlesIfNeeded()]);
+  // First data fetch — including macro
+  await Promise.all([pollBiquote(), refreshCandlesIfNeeded(), pollMacro()]);
   renderTfGrid();
+  renderMacroOverlay();
   renderQuickBias();
   runScan();
+  // Macro refresh every 5 minutes
+  MACRO_TIMER = setInterval(() => pollMacro(), MACRO_TTL_MS);
   // Clock ticks every second
   setInterval(renderClocks, 1000);
   // Killzone re-render every minute
