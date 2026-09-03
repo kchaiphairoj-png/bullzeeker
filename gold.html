@@ -231,6 +231,52 @@ main{max-width:1400px;margin:0 auto;padding:20px 18px}
 .macro-conflict-warn{background:var(--red-bg);border:1px solid var(--red);color:var(--red);padding:10px 14px;border-radius:10px;margin-top:12px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
 .macro-agree-note{background:var(--emerald-bg);border:1px solid var(--emerald);color:var(--emerald);padding:10px 14px;border-radius:10px;margin-top:12px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
 
+/* Levels + Catalysts + Risks card */
+.lcr-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.lcr-col h3{font-size:13px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:6px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.lcr-col.res h3{color:var(--red)}
+.lcr-col.sup h3{color:var(--emerald)}
+.sr-level{background:var(--bg3);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:13px;position:relative}
+.sr-level.strong{border-color:var(--gold);background:var(--gold-bg)}
+.sr-level.current{border-color:var(--accent);background:var(--accent-bg)}
+.sr-level .px{font-weight:800;color:var(--gold);flex-shrink:0}
+.sr-level.sup .px{color:var(--emerald)}
+.sr-level.res .px{color:var(--red)}
+.sr-level .meta{font-size:10px;color:var(--muted);flex:1;letter-spacing:.3px}
+.sr-level .strength{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:.5px;background:var(--bg2);color:var(--muted)}
+.sr-level .strength.hi{background:var(--gold);color:#0a0e16}
+.sr-level .strength.mid{background:var(--bg4);color:var(--gold)}
+.sr-current-marker{background:var(--accent);color:#fff;padding:6px 12px;border-radius:8px;margin:6px 0;font-family:var(--mono);font-size:12px;font-weight:800;text-align:center;letter-spacing:.5px}
+
+.cat-item{background:var(--bg3);border-left:3px solid;border-radius:6px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;font-size:13px}
+.cat-item.critical{border-color:var(--red);background:linear-gradient(90deg,rgba(239,68,68,.08),var(--bg3))}
+.cat-item.high{border-color:var(--gold);background:linear-gradient(90deg,rgba(251,191,36,.06),var(--bg3))}
+.cat-item.medium{border-color:var(--accent)}
+.cat-item .days{font-family:var(--mono);font-weight:800;font-size:14px;min-width:60px;text-align:center;padding:6px 10px;border-radius:6px;background:var(--bg2)}
+.cat-item .days.urgent{background:var(--red);color:#fff;animation:pulse 2s infinite}
+.cat-item .days.soon{background:var(--gold);color:#0a0e16}
+.cat-item .info{flex:1;min-width:0}
+.cat-item .info .name{font-weight:800}
+.cat-item .info .date{font-size:11px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+.cat-item .impact-badge{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
+.cat-item .impact-badge.critical{background:var(--red);color:#fff}
+.cat-item .impact-badge.high{background:var(--gold);color:#0a0e16}
+.cat-item .impact-badge.medium{background:var(--accent);color:#fff}
+
+.risk-item{background:var(--bg3);border-left:3px solid var(--gold);border-radius:6px;padding:10px 14px;margin-bottom:6px;font-size:12px;line-height:1.6;color:var(--text);display:flex;align-items:flex-start;gap:10px}
+.risk-item .r-icon{font-size:16px;flex-shrink:0;line-height:1.4}
+.risk-item .r-txt b{color:var(--gold);font-family:var(--mono)}
+.risk-item.high{border-color:var(--red)}
+.risk-item.high .r-txt b{color:var(--red)}
+.risk-item.opp{border-color:var(--emerald)}
+.risk-item.opp .r-txt b{color:var(--emerald)}
+
+.section-h{font-size:14px;font-weight:800;margin:16px 0 10px;display:flex;align-items:center;gap:6px}
+
+@media (max-width:900px){
+  .lcr-grid{grid-template-columns:1fr}
+}
+
 .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:14px}
 .stat{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .stat .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
@@ -379,6 +425,28 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
     </div>
     <div id="macroVerdict"></div>
     <div id="macroTechAlignment"></div>
+  </div>
+
+  <!-- LEVELS + CATALYSTS + RISKS (auto-generated) -->
+  <div class="card">
+    <div class="card-h">
+      <h2>📊 Levels · Catalysts · Risks</h2>
+      <span class="pill" id="lcrMeta">Auto-detected</span>
+    </div>
+
+    <!-- Support / Resistance -->
+    <div class="lcr-grid" id="srGrid">
+      <div class="lcr-col res"><h3>🔴 Resistance (Above)</h3><div id="srRes">Loading...</div></div>
+      <div class="lcr-col sup"><h3>🟢 Support (Below)</h3><div id="srSup">Loading...</div></div>
+    </div>
+
+    <!-- Upcoming Catalysts -->
+    <div class="section-h">🗓️ Upcoming Catalysts (2 สัปดาห์ข้างหน้า)</div>
+    <div id="catalystsList">Loading...</div>
+
+    <!-- Auto Risks -->
+    <div class="section-h">⚠️ Auto-Detected Risks & Invalidation Scenarios</div>
+    <div id="risksList">Loading...</div>
   </div>
 
   <!-- DAILY STATS -->
@@ -1366,6 +1434,316 @@ function renderKillzone(){
 }
 
 /* ============================================================
+   LEVELS · CATALYSTS · RISKS
+   ============================================================ */
+
+/* ---------- 1. AUTO SUPPORT/RESISTANCE DETECTION ---------- */
+/* Find pivot highs/lows and cluster nearby levels */
+function detectPivots(candles, leftBars=3, rightBars=3){
+  const pivots = [];
+  for(let i=leftBars; i<candles.length-rightBars; i++){
+    const window = candles.slice(i-leftBars, i+rightBars+1);
+    const highs = window.map(c=>c.high);
+    const lows = window.map(c=>c.low);
+    if(candles[i].high === Math.max(...highs)) pivots.push({idx:i, price:candles[i].high, type:'high', time:candles[i].time});
+    if(candles[i].low === Math.min(...lows)) pivots.push({idx:i, price:candles[i].low, type:'low', time:candles[i].time});
+  }
+  return pivots;
+}
+/* Cluster levels within tolerance to find major S/R */
+function clusterLevels(pivots, tolerancePct=0.3){
+  const clusters = [];
+  for(const p of pivots){
+    const tol = p.price * tolerancePct/100;
+    let assigned = false;
+    for(const cl of clusters){
+      if(Math.abs(cl.price - p.price) <= tol && cl.type === p.type){
+        cl.touches++;
+        cl.pivots.push(p);
+        cl.price = (cl.price * (cl.touches-1) + p.price) / cl.touches;  // running avg
+        if(!cl.lastTouch || p.time > cl.lastTouch) cl.lastTouch = p.time;
+        assigned = true; break;
+      }
+    }
+    if(!assigned) clusters.push({price:p.price, type:p.type, touches:1, pivots:[p], lastTouch:p.time});
+  }
+  return clusters;
+}
+function detectSupportResistance(currentPrice){
+  const levels = [];
+  // H1 pivots (recent, more granular)
+  if(CANDLES.h1){
+    const h1Pivots = detectPivots(CANDLES.h1.slice(-200), 3, 3);
+    const h1Clusters = clusterLevels(h1Pivots, 0.25);
+    for(const c of h1Clusters) levels.push({...c, tf:'H1'});
+  }
+  // H4 pivots (major structural)
+  if(CANDLES.h4){
+    const h4Pivots = detectPivots(CANDLES.h4.slice(-100), 3, 3);
+    const h4Clusters = clusterLevels(h4Pivots, 0.4);
+    for(const c of h4Clusters){
+      // Merge with existing H1 cluster if close
+      const nearby = levels.find(l => Math.abs(l.price - c.price)/c.price*100 < 0.3);
+      if(nearby){
+        nearby.touches += c.touches * 2;  // H4 counts double
+        nearby.tf = nearby.tf + '+H4';
+      } else {
+        levels.push({...c, tf:'H4', touches: c.touches*2});   // H4 weighted
+      }
+    }
+  }
+  // Add key macro levels
+  const e200Info = ema200Info(CANDLES.h4);
+  if(e200Info){
+    const existing = levels.find(l => Math.abs(l.price - e200Info.ema200)/e200Info.ema200*100 < 0.3);
+    if(existing){ existing.touches += 3; existing.tf += '+EMA200'; }
+    else levels.push({price:e200Info.ema200, type:e200Info.above?'low':'high', touches:5, tf:'H4-EMA200', lastTouch:Date.now(), pivots:[]});
+  }
+  // Round numbers ($50 increments) near price
+  const roundNear = Math.round(currentPrice / 50) * 50;
+  for(let mult of [-2,-1,0,1,2]){
+    const rl = roundNear + mult*50;
+    if(Math.abs(rl - currentPrice)/currentPrice*100 < 3){
+      const existing = levels.find(l => Math.abs(l.price - rl)/rl*100 < 0.3);
+      if(existing){ existing.touches += 1; existing.tf += '+Round'; }
+      else levels.push({price:rl, type:rl<currentPrice?'low':'high', touches:2, tf:'Round', lastTouch:Date.now(), pivots:[]});
+    }
+  }
+  // Split into support (below) and resistance (above)
+  const support = levels.filter(l => l.price < currentPrice * 0.999).sort((a,b) => {
+    // Sort: closer + more touches = higher priority
+    const scoreA = a.touches * 100 - Math.abs(currentPrice - a.price);
+    const scoreB = b.touches * 100 - Math.abs(currentPrice - b.price);
+    return scoreB - scoreA;
+  }).slice(0, 4);
+  const resistance = levels.filter(l => l.price > currentPrice * 1.001).sort((a,b) => {
+    const scoreA = a.touches * 100 - Math.abs(currentPrice - a.price);
+    const scoreB = b.touches * 100 - Math.abs(currentPrice - b.price);
+    return scoreB - scoreA;
+  }).slice(0, 4);
+  // Sort each list by price for display (nearest first)
+  support.sort((a,b) => b.price - a.price);   // support: highest (nearest) first
+  resistance.sort((a,b) => a.price - b.price); // resistance: lowest (nearest) first
+  return {support, resistance};
+}
+
+/* ---------- 2. CATALYSTS CALENDAR ---------- */
+/* Hardcoded major upcoming US economic events (auto-adjusts for current date) */
+function getCatalysts(){
+  // Approximate schedule of major US catalysts
+  // Updated periodically; adjust dates as needed
+  const events = [
+    // FOMC (approx every 6-8 weeks, 2-day meetings)
+    {name:'FOMC Rate Decision', date:'2026-09-17', impact:'critical', desc:'Fed meeting · rate decision + dot plot'},
+    {name:'FOMC Rate Decision', date:'2026-10-29', impact:'critical', desc:'Fed meeting'},
+    {name:'FOMC Rate Decision', date:'2026-12-10', impact:'critical', desc:'Fed meeting · summary of projections'},
+    // CPI (usually 2nd or 3rd Tue-Wed of month, ~13:30 UTC)
+    {name:'US CPI (August)', date:'2026-09-11', impact:'critical', desc:'Consumer Price Index · Inflation gauge'},
+    {name:'US CPI (September)', date:'2026-10-15', impact:'critical', desc:'CPI'},
+    {name:'US CPI (October)', date:'2026-11-13', impact:'critical', desc:'CPI'},
+    // Core PCE (last Fri of month)
+    {name:'US Core PCE', date:'2026-09-25', impact:'high', desc:'Fed preferred inflation gauge'},
+    {name:'US Core PCE', date:'2026-10-30', impact:'high', desc:'Core PCE'},
+    // NFP (first Fri of month)
+    {name:'US NFP Jobs', date:'2026-09-05', impact:'high', desc:'Non-Farm Payrolls · Labor market'},
+    {name:'US NFP Jobs', date:'2026-10-02', impact:'high', desc:'NFP'},
+    {name:'US NFP Jobs', date:'2026-11-06', impact:'high', desc:'NFP'},
+    // Retail Sales, PPI, etc (medium)
+    {name:'US PPI', date:'2026-09-12', impact:'medium', desc:'Producer Price Index'},
+    {name:'US Retail Sales', date:'2026-09-16', impact:'medium', desc:'Consumer spending'},
+    // Powell / Fed speakers (add as needed)
+    {name:'Jackson Hole Symposium', date:'2026-08-21', impact:'critical', desc:'Annual Fed symposium'},
+  ];
+  const now = new Date();
+  const twoWeeksAhead = new Date(now.getTime() + 14*24*3600*1000);
+  return events
+    .map(e => ({...e, dateObj:new Date(e.date + 'T13:30:00Z')}))
+    .filter(e => e.dateObj > now && e.dateObj < twoWeeksAhead)
+    .sort((a,b) => a.dateObj - b.dateObj);
+}
+function daysUntil(dateObj){
+  const diff = dateObj - new Date();
+  const days = Math.floor(diff/(24*3600*1000));
+  const hours = Math.floor((diff%(24*3600*1000))/(3600*1000));
+  if(days === 0) return `${hours}h`;
+  if(days === 1) return `1d`;
+  return `${days}d`;
+}
+
+/* ---------- 3. AUTO-GENERATED RISKS ---------- */
+function generateRisks(){
+  const risks = [];
+  const price = LAST_QUOTE?.mid || (CANDLES.m15?.[CANDLES.m15.length-1]?.close);
+  if(!price) return risks;
+  const bias = computeQuickBias();
+  const macro = MACRO_DATA ? scoreMacro(MACRO_DATA) : null;
+
+  // === Macro-driven risks ===
+  if(macro?.factors?.dxy){
+    const dxy = MACRO_DATA.dxy;
+    // Next round level above and below
+    const nextUp = Math.ceil(dxy.now / 0.5) * 0.5;
+    const nextDown = Math.floor(dxy.now / 0.5) * 0.5;
+    risks.push({
+      icon:'💵', severity: macro.factors.dxy.verdict==='bull'?'high':'medium',
+      text: `หาก DXY ทะลุ <b>${nextUp}</b> (ตอนนี้ ${dxy.now.toFixed(2)}) → USD แข็ง → gold ${macro.factors.dxy.verdict==='bull'?'พลิก bullish thesis':'ยิ่งเสียเปรียบ'}`,
+    });
+    if(dxy.now - nextDown > 0.2){
+      risks.push({
+        icon:'💵', severity:'opp',
+        text: `หาก DXY หลุด <b>${nextDown}</b> → USD อ่อน → gold ${macro.factors.dxy.verdict==='bull'?'พุ่งต่อ':'พลิก bullish'}`,
+      });
+    }
+  }
+  if(macro?.factors?.yields){
+    const y10 = MACRO_DATA.y10;
+    const nextUp = (Math.ceil(y10.now/0.25)*0.25).toFixed(2);
+    const nextDown = (Math.floor(y10.now/0.25)*0.25).toFixed(2);
+    risks.push({
+      icon:'📈', severity:'high',
+      text: `หาก 10Y yield ทะลุ <b>${nextUp}%</b> (ตอนนี้ ${y10.now.toFixed(2)}%) → real yields spike → gold ${macro.factors.yields.verdict==='bear'?'ลงแรง':'พลิก'}`,
+    });
+    risks.push({
+      icon:'📈', severity:'opp',
+      text: `หาก 10Y yield หลุด <b>${nextDown}%</b> → real yields ลด → gold ${macro.factors.yields.verdict==='bear'?'reversal bullish':'ยิ่งขึ้น'}`,
+    });
+  }
+  if(macro?.factors?.risk){
+    const vix = MACRO_DATA.vix.now;
+    if(vix < 20){
+      risks.push({
+        icon:'⚠️', severity:'opp',
+        text: `หาก VIX ทะลุ <b>22</b> (ตอนนี้ ${vix.toFixed(1)}) → fear return → safe haven bid กลับ gold`,
+      });
+    } else {
+      risks.push({
+        icon:'⚠️', severity:'high',
+        text: `หาก VIX หลุด <b>15</b> (ตอนนี้ ${vix.toFixed(1)}) → risk-on กลับ → gold lose bid`,
+      });
+    }
+  }
+
+  // === Technical / structural risks ===
+  const e200Info = ema200Info(CANDLES.h4);
+  if(e200Info){
+    if(e200Info.above){
+      risks.push({
+        icon:'📊', severity:'high',
+        text: `หาก gold หลุด H4 EMA200 <b>$${e200Info.ema200.toFixed(2)}</b> → technical breakdown → bearish thesis เริ่ม`,
+      });
+    } else {
+      risks.push({
+        icon:'📊', severity:'opp',
+        text: `หาก gold ยืนเหนือ H4 EMA200 <b>$${e200Info.ema200.toFixed(2)}</b> → bullish reversal confirmed`,
+      });
+    }
+  }
+  // S/R breakouts
+  const sr = detectSupportResistance(price);
+  if(sr.support.length){
+    const nearestSup = sr.support[0];
+    if(nearestSup.touches >= 3){
+      risks.push({
+        icon:'🛡️', severity:'high',
+        text: `หาก gold หลุดแนวรับสำคัญ <b>$${nearestSup.price.toFixed(2)}</b> (${nearestSup.touches} touches ${nearestSup.tf}) → target ลง $${(nearestSup.price - Math.max(30, price*0.015)).toFixed(2)}`,
+      });
+    }
+  }
+  if(sr.resistance.length){
+    const nearestRes = sr.resistance[0];
+    if(nearestRes.touches >= 3){
+      risks.push({
+        icon:'🎯', severity:'opp',
+        text: `หาก gold ทะลุแนวต้านสำคัญ <b>$${nearestRes.price.toFixed(2)}</b> (${nearestRes.touches} touches ${nearestRes.tf}) → target ขึ้น $${(nearestRes.price + Math.max(30, price*0.015)).toFixed(2)}`,
+      });
+    }
+  }
+  // Conflict warning
+  if(bias && macro){
+    const conflict = (bias.action==='BUY' && macro.bias==='BEARISH') || (bias.action==='SELL' && macro.bias==='BULLISH');
+    if(conflict){
+      risks.push({
+        icon:'🔀', severity:'high',
+        text: `Technical (${bias.action}) และ Macro (${macro.bias}) <b>ขัดกัน</b> → ลด size 25-50% · take profit เร็ว TP1 · อย่ารอ TP2 เต็ม`,
+      });
+    }
+  }
+  // Session risk
+  const kz = currentKillzone();
+  if(kz.grade === 'C'){
+    risks.push({
+      icon:'🕒', severity:'medium',
+      text: `ตอนนี้อยู่ใน <b>${kz.name} (Grade C)</b> · liquidity ต่ำ · signal คุณภาพต่ำกว่าปกติ · รอ London/NY open (07-15 UTC) จะดีกว่า`,
+    });
+  }
+  return risks.slice(0, 8);   // cap at 8
+}
+
+/* ---------- RENDER: Levels + Catalysts + Risks ---------- */
+function renderLCR(){
+  const price = LAST_QUOTE?.mid || (CANDLES.m15?.[CANDLES.m15.length-1]?.close);
+  if(!price){ document.getElementById('lcrMeta').textContent = 'Waiting for data...'; return; }
+
+  // Support / Resistance
+  const sr = detectSupportResistance(price);
+  const resEl = document.getElementById('srRes');
+  const supEl = document.getElementById('srSup');
+  const renderLevel = (l, kind) => {
+    const distPct = ((l.price - price)/price*100);
+    const distTxt = (distPct>=0?'+':'') + distPct.toFixed(2) + '%';
+    const isStrong = l.touches >= 5;
+    const strengthCls = l.touches >= 5 ? 'hi' : l.touches >= 3 ? 'mid' : '';
+    const strengthTxt = l.touches >= 5 ? 'STRONG' : l.touches >= 3 ? 'MED' : 'WEAK';
+    return `<div class="sr-level ${kind} ${isStrong?'strong':''}">
+      <span class="px">$${l.price.toFixed(2)}</span>
+      <span class="meta">${distTxt} · ${l.touches} touches · ${l.tf}</span>
+      <span class="strength ${strengthCls}">${strengthTxt}</span>
+    </div>`;
+  };
+  resEl.innerHTML = sr.resistance.length
+    ? sr.resistance.map(l => renderLevel(l, 'res')).join('')
+    : '<div style="padding:10px;color:var(--muted);font-size:12px">ไม่พบแนวต้านใกล้เคียง</div>';
+  supEl.innerHTML = sr.support.length
+    ? sr.support.map(l => renderLevel(l, 'sup')).join('')
+    : '<div style="padding:10px;color:var(--muted);font-size:12px">ไม่พบแนวรับใกล้เคียง</div>';
+
+  // Catalysts
+  const catEl = document.getElementById('catalystsList');
+  const catalysts = getCatalysts();
+  if(!catalysts.length){
+    catEl.innerHTML = '<div style="padding:10px;color:var(--muted);font-size:12px">ไม่มี event สำคัญใน 14 วันข้างหน้า</div>';
+  } else {
+    catEl.innerHTML = catalysts.map(c => {
+      const dLeft = daysUntil(c.dateObj);
+      const daysCls = c.dateObj - new Date() < 24*3600*1000 ? 'urgent' : c.dateObj - new Date() < 3*24*3600*1000 ? 'soon' : '';
+      const dateStr = c.dateObj.toISOString().slice(0,10);
+      return `<div class="cat-item ${c.impact}">
+        <div class="days ${daysCls}">${dLeft}</div>
+        <div class="info">
+          <div class="name">${c.name}</div>
+          <div class="date">${dateStr} · ${c.desc}</div>
+        </div>
+        <span class="impact-badge ${c.impact}">${c.impact}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // Risks
+  const riskEl = document.getElementById('risksList');
+  const risks = generateRisks();
+  if(!risks.length){
+    riskEl.innerHTML = '<div style="padding:10px;color:var(--muted);font-size:12px">ยังไม่มีความเสี่ยงเด่น</div>';
+  } else {
+    riskEl.innerHTML = risks.map(r => `<div class="risk-item ${r.severity}">
+      <span class="r-icon">${r.icon}</span>
+      <span class="r-txt">${r.text}</span>
+    </div>`).join('');
+  }
+
+  document.getElementById('lcrMeta').textContent = `${sr.support.length + sr.resistance.length} levels · ${catalysts.length} events · ${risks.length} risks`;
+}
+
+/* ============================================================
    MACRO OVERLAY — DXY / Real Yields / Inflation / Risk
    ============================================================ */
 const MACRO_SYMBOLS = {
@@ -2150,6 +2528,7 @@ async function runScan(){
     ]);
     renderTfGrid();
     renderQuickBias();
+    renderLCR();
     const sess = sessionAllowsSignal();
     if(!sess.ok){
       renderSignal(null);
@@ -2314,9 +2693,12 @@ async function init(){
   renderTfGrid();
   renderMacroOverlay();
   renderQuickBias();
+  renderLCR();
   runScan();
   // Macro refresh every 5 minutes
-  MACRO_TIMER = setInterval(() => pollMacro(), MACRO_TTL_MS);
+  MACRO_TIMER = setInterval(() => { pollMacro(); renderLCR(); }, MACRO_TTL_MS);
+  // LCR refresh every 60s (levels + risks depend on latest data)
+  setInterval(renderLCR, 60000);
   // Clock ticks every second
   setInterval(renderClocks, 1000);
   // Killzone re-render every minute
