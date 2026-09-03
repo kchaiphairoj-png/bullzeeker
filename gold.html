@@ -794,10 +794,17 @@ function isDisplacement(c, atrVal, dir){
 function detectRsiTurn(rsiSeries, direction){
   if(!rsiSeries || rsiSeries.length<3) return null;
   const [r2, r1, r0] = rsiSeries.slice(-3);
+  // Require MEANINGFUL move (>1.5 pts) + starting from extreme
   if(direction==='long'){
-    if(r1 < 40 && r0 > r1 && r0 > 32) return {before:r1, now:r0, oversold: r1<30};
+    // Was oversold-ish (<40) and now clearly rising
+    if(r1 < 40 && (r0 - r1) > 1.5 && r0 > 30){
+      return {before:r1, now:r0, oversold: r1<30};
+    }
   } else {
-    if(r1 > 60 && r0 < r1 && r0 < 68) return {before:r1, now:r0, overbought: r1>70};
+    // Was overbought-ish (>60) and now clearly falling
+    if(r1 > 60 && (r1 - r0) > 1.5 && r0 < 70){
+      return {before:r1, now:r0, overbought: r1>70};
+    }
   }
   return null;
 }
@@ -1362,18 +1369,47 @@ function computeQuickBias(){
     sellPts += 15; sellReasons.push({t:`H4 pullback from $${bounceDn.fromPrice.toFixed(2)} (-${bounceDn.dropPct.toFixed(1)}%)`, w:15});
   }
 
-  // === H1 RSI position (weight 20-25) ===
-  if(h1Rsi < 30){ buyPts += 25; buyReasons.push({t:`RSI ${h1Rsi.toFixed(0)} oversold`, w:25}); }
-  else if(h1Rsi < 40){ buyPts += 15; buyReasons.push({t:`RSI ${h1Rsi.toFixed(0)} weak zone`, w:15}); }
-  else if(h1Rsi > 70){ sellPts += 25; sellReasons.push({t:`RSI ${h1Rsi.toFixed(0)} overbought`, w:25}); }
-  else if(h1Rsi > 60){ sellPts += 15; sellReasons.push({t:`RSI ${h1Rsi.toFixed(0)} strong zone`, w:15}); }
-  else{ neutralReasons.push({t:`RSI ${h1Rsi.toFixed(0)} neutral`, w:0}); }
+  // === H1 RSI position (context-aware — direction matters) ===
+  // RSI trend over last 5 bars
+  const rsiRecent = h1RsiSeries.slice(-5);
+  const rsiSlope = rsiRecent.length>=2 ? rsiRecent[rsiRecent.length-1] - rsiRecent[0] : 0;
+  const rsiRising = rsiSlope > 2;
+  const rsiFalling = rsiSlope < -2;
 
-  // === RSI Turn ===
+  if(h1Rsi < 30){
+    // Deep oversold → reversal potential
+    buyPts += 25; buyReasons.push({t:`RSI ${h1Rsi.toFixed(0)} oversold (reversal)`, w:25});
+  } else if(h1Rsi < 40){
+    buyPts += 15; buyReasons.push({t:`RSI ${h1Rsi.toFixed(0)} weak zone`, w:15});
+  } else if(h1Rsi >= 40 && h1Rsi <= 60){
+    // Neutral zone: direction dominates
+    if(rsiRising){ buyPts += 8; buyReasons.push({t:`RSI ${h1Rsi.toFixed(0)} rising (momentum)`, w:8}); }
+    else if(rsiFalling){ sellPts += 8; sellReasons.push({t:`RSI ${h1Rsi.toFixed(0)} falling (momentum)`, w:8}); }
+    else neutralReasons.push({t:`RSI ${h1Rsi.toFixed(0)} neutral`, w:0});
+  } else if(h1Rsi > 60 && h1Rsi <= 70){
+    // Bullish momentum zone — RISING = trend continuation (BUY), FALLING = potential reversal (SELL)
+    if(rsiRising){
+      buyPts += 15; buyReasons.push({t:`RSI ${h1Rsi.toFixed(0)} rising in strong zone (bullish momentum)`, w:15});
+    } else if(rsiFalling){
+      sellPts += 10; sellReasons.push({t:`RSI ${h1Rsi.toFixed(0)} losing steam`, w:10});
+    } else {
+      buyPts += 5; buyReasons.push({t:`RSI ${h1Rsi.toFixed(0)} elevated (holding)`, w:5});
+    }
+  } else if(h1Rsi > 70){
+    // Overbought — usually SELL, unless very strong trend
+    if(rsiRising){
+      // Rising into overbought — momentum but risky
+      sellPts += 15; sellReasons.push({t:`RSI ${h1Rsi.toFixed(0)} overbought (risk of reversal)`, w:15});
+    } else {
+      sellPts += 25; sellReasons.push({t:`RSI ${h1Rsi.toFixed(0)} overbought + falling (reversal)`, w:25});
+    }
+  }
+
+  // === RSI Turn (strict — only real oversold/overbought turns) ===
   const rsiTurnUp = detectRsiTurn(h1RsiSeries, 'long');
   const rsiTurnDown = detectRsiTurn(h1RsiSeries, 'short');
-  if(rsiTurnUp){ buyPts += 15; buyReasons.push({t:`RSI turning up (${rsiTurnUp.before.toFixed(1)}→${rsiTurnUp.now.toFixed(1)})`, w:15}); }
-  if(rsiTurnDown){ sellPts += 15; sellReasons.push({t:`RSI turning down (${rsiTurnDown.before.toFixed(1)}→${rsiTurnDown.now.toFixed(1)})`, w:15}); }
+  if(rsiTurnUp){ buyPts += 15; buyReasons.push({t:`RSI turning up from ${rsiTurnUp.before.toFixed(1)}`, w:15}); }
+  if(rsiTurnDown){ sellPts += 15; sellReasons.push({t:`RSI turning down from ${rsiTurnDown.before.toFixed(1)}`, w:15}); }
 
   // === RSI Divergence (strong signal) ===
   const divBull = detectRsiDivergence(CANDLES.h1, h1RsiSeries, 'long');
@@ -1714,7 +1750,7 @@ async function refreshCandlesIfNeeded(){
   if(CANDLES.m15 && ageMs < CANDLES_POLL_MS) return;
   const [m15D, h1D] = await Promise.all([
     fetchYahoo('15m', '5d'),
-    fetchYahoo('60m', '1mo'),
+    fetchYahoo('60m', '3mo'),   // 3mo → ~2000 H1 → ~500 H4 (enough for EMA200)
   ]);
   CANDLES.m15 = m15D.candles;
   CANDLES.h1 = h1D.candles;
