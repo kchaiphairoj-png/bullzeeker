@@ -335,7 +335,8 @@
       <div class="ctrl">
         <label>โหมดการคัด</label>
         <select id="modeSel">
-          <option value="fresh" selected>⚡ Fresh Breakout (1-8 สัปดาห์)</option>
+          <option value="pullback" selected>🏄 Pullback หลังเบรก (ย่อ 50%+ จาก post-breakout high · พร้อมเด้ง)</option>
+          <option value="fresh">⚡ Fresh Breakout (1-8 สัปดาห์)</option>
           <option value="setup">🎯 Setup ใกล้ Pivot (พร้อมเบรก)</option>
           <option value="all">📊 ทั้งหมด</option>
         </select>
@@ -378,9 +379,9 @@
   <div class="stats-bar" id="statsBar" style="display:none">
     <div class="stat ocean"><label>🌊 Tier A (Score ≥80)</label><div class="v" id="sA">—</div></div>
     <div class="stat"><label>🥈 Tier B (65-79)</label><div class="v" id="sB">—</div></div>
-    <div class="stat green"><label>⚡ Fresh Breakout</label><div class="v" id="sFresh">—</div></div>
-    <div class="stat purple"><label>🎯 Setup (ใกล้ Pivot)</label><div class="v" id="sSetup">—</div></div>
-    <div class="stat gold"><label>📊 ผ่าน Trend Filter</label><div class="v" id="sTrend">—</div></div>
+    <div class="stat green"><label>🏄 Pullback (≥50%)</label><div class="v" id="sPullback">—</div></div>
+    <div class="stat gold"><label>⚡ Fresh Breakout</label><div class="v" id="sFresh">—</div></div>
+    <div class="stat purple"><label>🎯 Setup ใกล้ Pivot</label><div class="v" id="sSetup">—</div></div>
     <div class="stat"><label>🔢 Scan ทั้งหมด</label><div class="v" id="sTotal">—</div></div>
   </div>
 
@@ -714,6 +715,24 @@ function fmtPct(v,sign=true){if(v==null||!isFinite(v))return'—';return (sign&&
 function fmtN(v){if(v==null||!isFinite(v))return'—';if(v>=1e9)return(v/1e9).toFixed(2)+'B';if(v>=1e6)return(v/1e6).toFixed(2)+'M';if(v>=1e3)return(v/1e3).toFixed(1)+'K';return v.toFixed(0)}
 
 /* ---------- INDICATORS ---------- */
+function rsi(arr, p=14){
+  if(!arr || arr.length < p+1) return null;
+  let g=0, l=0;
+  for(let i=1; i<=p; i++){
+    const d = arr[i] - arr[i-1];
+    if(d > 0) g += d; else l -= d;
+  }
+  let avgG = g/p, avgL = l/p;
+  for(let i=p+1; i<arr.length; i++){
+    const d = arr[i] - arr[i-1];
+    const gd = d>0?d:0, ld = d<0?-d:0;
+    avgG = (avgG*(p-1) + gd)/p;
+    avgL = (avgL*(p-1) + ld)/p;
+  }
+  if(avgL === 0) return 100;
+  return 100 - 100/(1 + avgG/avgL);
+}
+
 function sma(arr, p){
   const out = new Array(arr.length).fill(null);
   let s = 0;
@@ -880,34 +899,65 @@ function analyzeWeekly(symbol, data, cfg){
   if(baseRange > 0.95) return null;
 
   // === BREAKOUT DETECTION ===
-  // Did we close above pivot in last 1-8 weeks?
+  // Primary (recent 1-8w breakout for FRESH/RECENT)
   let breakoutWeek = -1;
   let breakoutPrice = null;
   for(let i = Math.max(0, n-9); i < n; i++){
     if(closes[i] > pivot * 1.005){
       breakoutWeek = i;
       breakoutPrice = closes[i];
-      break;  // first occurrence
+      break;
     }
   }
 
-  // Distance from pivot
+  // Extended lookback (last 60w) for PULLBACK detection
+  // Looks for historical breakout BEFORE the recent 8w window
+  let histBreakoutWeek = -1;
+  let histPivot = null;
+  // Use an older base (ending at least 10w ago) for pullback base reference
+  const histBaseEnd = Math.max(0, n - 10);
+  const histBaseLookback = Math.min(histBaseEnd, baseMinWeeks);
+  const histBaseStart = Math.max(0, histBaseEnd - histBaseLookback);
+  if(histBaseEnd - histBaseStart >= baseMinWeeks * 0.6){
+    const histBaseCloses = closes.slice(histBaseStart, histBaseEnd);
+    histPivot = Math.max(...histBaseCloses);
+    for(let i = histBaseEnd; i < n - 2; i++){
+      if(closes[i] > histPivot * 1.005){
+        histBreakoutWeek = i;
+        break;
+      }
+    }
+  }
+
+  // Compute post-breakout rally + current retracement (if historical breakout exists)
+  let postBreakoutHigh = null;
+  let postBreakoutHighWeek = -1;
+  let rallyPct = 0;
+  let retracePct = 0;
+  let weeksSinceBreakout = 0;
+  let weeksSincePeak = 0;
+  if(histBreakoutWeek > -1){
+    const postSlice = highs.slice(histBreakoutWeek, n);
+    postBreakoutHigh = Math.max(...postSlice);
+    postBreakoutHighWeek = histBreakoutWeek + postSlice.indexOf(postBreakoutHigh);
+    rallyPct = (postBreakoutHigh / histPivot - 1) * 100;
+    const pullback = postBreakoutHigh - price;
+    const rally = postBreakoutHigh - histPivot;
+    retracePct = rally > 0 ? (pullback / rally * 100) : 0;
+    weeksSinceBreakout = n - 1 - histBreakoutWeek;
+    weeksSincePeak = n - 1 - postBreakoutHighWeek;
+  }
+
+  // Distance from pivot (standard: recent-base pivot)
   const distance = (price - pivot) / pivot * 100;
+  // Distance from historical pivot (used when PULLBACK applies)
+  const histDistance = histPivot ? (price / histPivot - 1) * 100 : null;
 
   let status;
   let statusLabel;
-  if(breakoutWeek === -1){
-    // not broken yet
-    if(distance >= -5 && distance < 0){
-      status = 'SETUP';
-      statusLabel = '🎯 Setup (ใกล้ Pivot)';
-    } else if(distance >= -15 && distance < -5){
-      status = 'BUILDING';
-      statusLabel = '⏳ Building';
-    } else {
-      return null;  // too far below pivot, not interesting
-    }
-  } else {
+
+  if(breakoutWeek !== -1){
+    // Recent breakout detected (last 1-8w)
     const weeksSince = n - 1 - breakoutWeek;
     if(weeksSince <= 2) {
       status = 'FRESH';
@@ -915,12 +965,65 @@ function analyzeWeekly(symbol, data, cfg){
     } else if(weeksSince <= 8) {
       status = 'RECENT';
       statusLabel = '🚀 Breakout (' + weeksSince + 'w ago)';
-    } else {
-      status = 'EXTENDED';
-      statusLabel = '⚠️ Extended';
-      return null;  // too late
+    }
+  } else if(histBreakoutWeek > -1 && histPivot !== null && rallyPct > 15){
+    // Historical breakout: check PULLBACK criteria
+    // Required: still above or near historical pivot (not full breakdown)
+    //          rally was significant (>15% up from pivot)
+    //          current price pulled back from post-breakout high
+    const stillAbovePivot = price > histPivot * 0.90;
+    const peakHappenedAgo = weeksSincePeak >= 2;
+    if(stillAbovePivot && peakHappenedAgo){
+      if(retracePct >= 61.8 && retracePct <= 95){
+        status = 'DEEP_PULLBACK';
+        statusLabel = '🏄 Deep Pullback ' + retracePct.toFixed(0) + '% · premium buy';
+      } else if(retracePct >= 50){
+        status = 'PULLBACK';
+        statusLabel = '🏄 Pullback ' + retracePct.toFixed(0) + '% · buy zone';
+      } else if(retracePct >= 30){
+        status = 'MILD_PULLBACK';
+        statusLabel = '🌊 Mild Pullback ' + retracePct.toFixed(0) + '% · early';
+      }
     }
   }
+
+  // Still unclassified — try SETUP/BUILDING on recent base pivot
+  if(!status){
+    if(distance >= -5 && distance < 0){
+      status = 'SETUP';
+      statusLabel = '🎯 Setup (ใกล้ Pivot)';
+    } else if(distance >= -15 && distance < -5){
+      status = 'BUILDING';
+      statusLabel = '⏳ Building';
+    } else {
+      return null;  // not in any valid state
+    }
+  }
+
+  // === RESUMPTION SIGNALS (relevant for PULLBACK statuses) ===
+  // 1. Higher-low formation on weekly (last 5w)
+  let isHigherLow = false;
+  if(n >= 5){
+    const latestMin = Math.min(lows[n-2], lows[n-1]);
+    const earlierMin = Math.min(lows[n-5], lows[n-4], lows[n-3]);
+    isHigherLow = latestMin > earlierMin;
+  }
+  // 2. RSI(14w) — want 35-55 range (recovering from pullback)
+  const rsi14w = rsi(closes, 14);
+  const rsiTurning = rsi14w != null && rsi14w >= 35 && rsi14w <= 55;
+  // 3. Volume dry-up during pullback (recent 4w vol < rally vol * 0.8)
+  let volDryUp = false;
+  if(histBreakoutWeek > -1 && histBreakoutWeek < n-5){
+    const recentVols4 = vols.slice(n-4);
+    const recentVolAvg4 = recentVols4.reduce((a,b)=>a+b,0)/recentVols4.length;
+    const rallyVols = vols.slice(histBreakoutWeek, Math.max(histBreakoutWeek+1, n-4));
+    const rallyVolAvg = rallyVols.length ? rallyVols.reduce((a,b)=>a+b,0)/rallyVols.length : 0;
+    volDryUp = rallyVolAvg > 0 && recentVolAvg4 < rallyVolAvg * 0.85;
+  }
+  // 4. Reversal attempt — last green after red
+  const lastGreen = n>=2 && closes[n-1] > closes[n-2];
+  const prevRed = n>=3 && closes[n-2] < closes[n-3];
+  const reversalCandle = lastGreen && prevRed;
 
   // === DRAWDOWN ANALYSIS ===
   const drawdownFromATH = (price - ath) / ath * 100;  // negative
@@ -973,10 +1076,13 @@ function analyzeWeekly(symbol, data, cfg){
     trendScore = 15;
   }
 
-  // 4. Breakout quality (max 20)
+  // 4. Breakout / Status quality (max 20)
   let breakoutScore = 0;
   if(status === 'FRESH') breakoutScore = 20;
   else if(status === 'RECENT') breakoutScore = 18;
+  else if(status === 'DEEP_PULLBACK') breakoutScore = 20;  // premium buy
+  else if(status === 'PULLBACK') breakoutScore = 17;
+  else if(status === 'MILD_PULLBACK') breakoutScore = 10;
   else if(status === 'SETUP') breakoutScore = 12;
   else if(status === 'BUILDING') breakoutScore = 5;
 
@@ -991,8 +1097,17 @@ function analyzeWeekly(symbol, data, cfg){
     volScore = 5;
   }
 
+  // 6. Resumption signals (max 15) — bonus for pullback setups
+  let resumeScore = 0;
+  if(status === 'PULLBACK' || status === 'DEEP_PULLBACK' || status === 'MILD_PULLBACK'){
+    if(isHigherLow) resumeScore += 5;
+    if(rsiTurning) resumeScore += 4;
+    if(volDryUp) resumeScore += 3;
+    if(reversalCandle) resumeScore += 3;
+  }
+
   const score = Math.round(Math.max(0, Math.min(100,
-    baseLenScore + depthScore + trendScore + breakoutScore + volScore
+    baseLenScore + depthScore + trendScore + breakoutScore + volScore + resumeScore
   )));
 
   let tier;
@@ -1014,6 +1129,10 @@ function analyzeWeekly(symbol, data, cfg){
     ma30Now, ma40Now, ma30Dist,
     aboveMA30, aboveMA40, ma30Rising, ma40Rising,
     volSurge, breakoutWeek,
+    // Pullback-specific fields (null when not applicable)
+    histPivot, histBreakoutWeek, postBreakoutHigh, postBreakoutHighWeek,
+    rallyPct, retracePct, weeksSinceBreakout, weeksSincePeak,
+    histDistance, isHigherLow, rsi14w, volDryUp, reversalCandle, resumeScore,
     data
   };
 }
@@ -1223,6 +1342,8 @@ function filterResults(rs, cfg){
     arr = arr.filter(r => r.status === 'FRESH' || r.status === 'RECENT');
   } else if(cfg.mode === 'setup'){
     arr = arr.filter(r => r.status === 'SETUP' || r.status === 'FRESH' || r.status === 'RECENT');
+  } else if(cfg.mode === 'pullback'){
+    arr = arr.filter(r => r.status === 'PULLBACK' || r.status === 'DEEP_PULLBACK' || r.status === 'MILD_PULLBACK');
   }
   arr = arr.filter(r => r.score >= cfg.scoreMin);
   return arr;
@@ -1251,11 +1372,12 @@ function renderResults(){
   $('#sB').textContent = all.filter(r=>r.tier==='B').length;
   $('#sFresh').textContent = all.filter(r=>r.status==='FRESH'||r.status==='RECENT').length;
   $('#sSetup').textContent = all.filter(r=>r.status==='SETUP').length;
-  $('#sTrend').textContent = all.filter(r=>r.aboveMA30 && r.ma30Rising).length;
+  const pbEl = $('#sPullback');
+  if(pbEl) pbEl.textContent = all.filter(r=>r.status==='PULLBACK'||r.status==='DEEP_PULLBACK'||r.status==='MILD_PULLBACK').length;
   $('#sTotal').textContent = all.length;
 
   $('#resultsWrap').style.display='block';
-  const modeLabel = {fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',all:'📊 ทั้งหมด'}[cfg.mode];
+  const modeLabel = {fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',pullback:'🏄 Pullback หลังเบรก',all:'📊 ทั้งหมด'}[cfg.mode];
   $('#resHead').textContent = `🌊 ${modeLabel}`;
   $('#resMeta').textContent = `${filtered.length} / ${all.length} หุ้น · เรียงตาม ${state.sort.key} ${state.sort.dir<0?'↓':'↑'}`;
 
@@ -1274,6 +1396,9 @@ function renderResults(){
     let statusBadge;
     if(r.status==='FRESH') statusBadge = '<span class="badge-fresh">⚡ FRESH</span>';
     else if(r.status==='RECENT') statusBadge = '<span class="badge-bo">🚀 BREAKOUT</span>';
+    else if(r.status==='DEEP_PULLBACK') statusBadge = `<span class="badge-deeppb" style="background:linear-gradient(135deg,#10b981,#059669);color:#062516;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="ย่อ ${r.retracePct.toFixed(0)}% จาก post-breakout high — premium buy zone">🏄 DEEP −${r.retracePct.toFixed(0)}%</span>`;
+    else if(r.status==='PULLBACK') statusBadge = `<span class="badge-pb" style="background:rgba(16,185,129,.2);color:#10b981;border:1px solid #10b981;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="ย่อ ${r.retracePct.toFixed(0)}% จาก post-breakout high">🏄 PB −${r.retracePct.toFixed(0)}%</span>`;
+    else if(r.status==='MILD_PULLBACK') statusBadge = `<span class="badge-mpb" style="background:rgba(96,165,250,.15);color:#60a5fa;border:1px solid rgba(96,165,250,.4);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="ย่อเพียง ${r.retracePct.toFixed(0)}% — เพิ่งเริ่มย่อ">🌊 MILD −${r.retracePct.toFixed(0)}%</span>`;
     else if(r.status==='SETUP') statusBadge = '<span class="badge-setup">🎯 SETUP</span>';
     else statusBadge = '<span style="color:var(--muted);font-size:11px">⏳ Building</span>';
 
