@@ -1133,13 +1133,19 @@ function analyzeWeekly(symbol, data, cfg){
   else if(score >= 50) tier = 'C';
   else tier = 'D';
 
+  // For PULLBACK statuses, use historical pivot in display (correct breakout reference)
+  // instead of recent-base pivot (which may be contaminated by post-breakout highs).
+  const isPullback = status === 'PULLBACK' || status === 'DEEP_PULLBACK' || status === 'MILD_PULLBACK';
+  const displayPivot = isPullback && histPivot ? histPivot : pivot;
+  const displayDistance = isPullback && histDistance != null ? histDistance : distance;
+
   return {
     symbol, name: NAMES[symbol] || symbol,
     price, changePct,
     status, statusLabel,
     score, tier,
-    pivot, baseHigh, baseLow, baseRange,
-    distance,
+    pivot: displayPivot, baseHigh, baseLow, baseRange,
+    distance: displayDistance,
     yearsInBase, baseStart, baseEnd,
     ath, athIdx, drawdownFromATH, upsideToATH,
     ma10w, ma30w, ma40w,
