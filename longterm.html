@@ -747,11 +747,21 @@ const PROXIES = [
 ];
 async function tryProxies(url){
   let lastErr;
-  for(const p of PROXIES){
+  for(let i = 0; i < PROXIES.length; i++){
     try{
-      const r = await fetch(p(url),{cache:'no-store'});
-      if(!r.ok) throw new Error('HTTP '+r.status);
+      const r = await fetch(PROXIES[i](url),{cache:'no-store'});
       const txt = await r.text();
+      // For our own Cloudflare proxy (index 0): accept any response with valid-looking JSON body.
+      // Yahoo returns 404 for delisted symbols but with a valid JSON body
+      // ({chart:{result:null,error:{...}}}) — we want to pass this back so the
+      // caller can detect "no data" and skip the symbol gracefully, instead of
+      // cascading to broken fallback proxies (allorigins is CORS-blocked now).
+      if(i === 0){
+        if(txt && txt.length >= 10) return txt;
+        throw new Error('empty body');
+      }
+      // Fallback proxies: require 2xx
+      if(!r.ok) throw new Error('HTTP '+r.status);
       if(!txt || txt.length < 10) throw new Error('empty');
       return txt;
     }catch(e){ lastErr = e; }
@@ -789,13 +799,17 @@ async function fetchWeekly(symbol, useCache=true){
   // 5y weekly
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=5y&interval=1wk`;
   let lastErr;
-  for(const px of PROXIES){
+  for(let i = 0; i < PROXIES.length; i++){
     try{
-      const r = await fetch(px(url), {cache:'no-store'});
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      const j = JSON.parse(await r.text());
+      const r = await fetch(PROXIES[i](url), {cache:'no-store'});
+      // For our Cloudflare proxy (index 0): parse body even on non-2xx — Yahoo returns 404 for delisted
+      // symbols with a valid JSON error body; let us detect "no data" and skip gracefully.
+      if(i !== 0 && !r.ok) throw new Error('HTTP '+r.status);
+      const txt = await r.text();
+      if(!txt || txt.length < 10) throw new Error('empty');
+      const j = JSON.parse(txt);
       const res = j?.chart?.result?.[0];
-      if(!res) throw new Error('no chart');
+      if(!res) throw new Error('no chart (delisted?)');
       const ts = res.timestamp || [];
       const q = res.indicators?.quote?.[0] || {};
       const data = ts.map((t,i)=>({
