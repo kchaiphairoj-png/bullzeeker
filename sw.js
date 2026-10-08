@@ -7,40 +7,58 @@
  * - Skip caching for API calls
  */
 
-const CACHE_VERSION = 'bullzeeker-v1';
+const CACHE_VERSION = 'bullzeeker-v2';
 const SHELL_CACHE = 'shell-' + CACHE_VERSION;
 
+// Clean URLs only — Vercel cleanUrls 308-redirects *.html, and a redirected
+// response served to a navigation makes Chrome fail with ERR_FAILED.
 const SHELL_FILES = [
   '/',
-  '/index.html',
-  '/cio.html',
-  '/screener.html',
-  '/breakout.html',
-  '/quality.html',
-  '/longterm.html',
-  '/macro.html',
-  '/tools.html',
-  '/learn.html',
-  '/course.html',
-  '/share.html',
+  '/cio',
+  '/screener',
+  '/breakout',
+  '/quality',
+  '/longterm',
+  '/macro',
+  '/tools',
+  '/learn',
+  '/course',
+  '/share',
   '/universe.js',
   '/strategies.js',
   '/manifest.json',
 ];
 
+// /longterm.html -> /longterm, /index.html -> /
+function cleanPath(pathname){
+  const p = pathname.replace(/\.html$/, '');
+  return (p === '/index' || p === '') ? '/' : p;
+}
+
+// Strip the "redirected" flag so a cached copy is always safe to serve
+async function sanitize(response){
+  if(!response.redirected) return response;
+  const body = await response.blob();
+  return new Response(body, {status: response.status, statusText: response.statusText, headers: response.headers});
+}
+
+async function cachePut(key, response){
+  if(!response || !response.ok || response.type !== 'basic') return;
+  const clean = await sanitize(response);
+  const cache = await caches.open(SHELL_CACHE);
+  await cache.put(key, clean);
+}
+
 // Install: pre-cache shell
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(SHELL_CACHE).then(cache => {
-      // Cache one by one to avoid failure on any single 404
-      return Promise.all(
-        SHELL_FILES.map(url => cache.add(url).catch(err => console.warn('Cache miss:', url)))
-      );
-    }).then(() => self.skipWaiting())
+    Promise.all(
+      SHELL_FILES.map(url => fetch(url).then(r => cachePut(url, r)).catch(() => console.warn('Cache miss:', url)))
+    ).then(() => self.skipWaiting())
   );
 });
 
-// Activate: clean old caches
+// Activate: clean old caches (drops the v1 cache full of redirected responses)
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
@@ -51,48 +69,44 @@ self.addEventListener('activate', event => {
 
 // Fetch strategy
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
+  const req = event.request;
+  const url = new URL(req.url);
 
   // Don't cache POST or non-GET
-  if(event.request.method !== 'GET') return;
+  if(req.method !== 'GET') return;
 
-  // Never cache API/market data (always fresh)
-  if(
-    url.hostname.includes('yahoo.com') ||
-    url.hostname.includes('workers.dev') ||
-    url.hostname.includes('googletagmanager') ||
-    url.hostname.includes('google-analytics') ||
-    url.hostname.includes('allorigins.win') ||
-    url.hostname.includes('corsproxy.io') ||
-    url.hostname.includes('googleapis.com') ||
-    url.hostname.includes('anthropic.com')
-  ){
-    return; // Let network handle
-  }
+  // Only handle same-origin; API/market data/analytics go straight to network
+  if(url.origin !== self.location.origin) return;
 
-  // Cache-first for shell files, network fallback
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      if(cached){
-        // Async revalidate in background
-        fetch(event.request).then(fresh => {
-          if(fresh && fresh.ok){
-            caches.open(SHELL_CACHE).then(c => c.put(event.request, fresh));
-          }
-        }).catch(() => {});
-        return cached;
-      }
-      // Not in cache: fetch + cache
-      return fetch(event.request).then(response => {
-        if(response && response.ok && response.type === 'basic'){
-          const clone = response.clone();
-          caches.open(SHELL_CACHE).then(c => c.put(event.request, clone));
+  // Page navigations: network-first (browser follows redirects itself),
+  // cached copy only as offline fallback
+  if(req.mode === 'navigate'){
+    const key = cleanPath(url.pathname);
+    event.respondWith(
+      fetch(req).then(response => {
+        if(response.ok && !response.redirected){
+          cachePut(key, response.clone()).catch(() => {});
         }
         return response;
-      }).catch(() => {
-        // Offline fallback: return index
-        return caches.match('/index.html');
+      }).catch(async () => {
+        return (await caches.match(key)) || (await caches.match('/')) || Response.error();
+      })
+    );
+    return;
+  }
+
+  // Static assets: cache-first, revalidate in background
+  event.respondWith(
+    caches.match(req).then(cached => {
+      const network = fetch(req).then(response => {
+        cachePut(req, response.clone()).catch(() => {});
+        return sanitize(response);
       });
+      if(cached){
+        network.catch(() => {});
+        return cached;
+      }
+      return network;
     })
   );
 });
