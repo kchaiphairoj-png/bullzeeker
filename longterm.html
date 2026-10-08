@@ -959,19 +959,24 @@ function analyzeWeekly(symbol, data, cfg){
   // Unified classification: use histBreakoutWeek (deeper lookback) as primary.
   // This way we also catch stocks that broke out recently (e.g. 5w ago) AND pulled back.
   if(histBreakoutWeek > -1 && histPivot !== null && rallyPct > 10){
-    const stillAbovePivot = price > histPivot * 0.90;
+    // Strict: price must still be ABOVE (or within 3% of) the base pivot.
+    // If price broke back below pivot, breakout is invalidated (failed setup).
+    const stillAbovePivot = price > histPivot * 0.97;
     if(!stillAbovePivot){
-      // Price broke down below pivot — invalidated setup, skip
+      return null;   // breakdown — not a pullback-to-resume setup
+    }
+    // Full giveback (>90% retrace) also disqualifies — momentum broken
+    if(retracePct > 90){
       return null;
     }
     // Prefer PULLBACK classification when there's a meaningful retracement
-    if(retracePct >= 61.8 && retracePct <= 95 && weeksSincePeak >= 2 && rallyPct > 15){
+    if(retracePct >= 61.8 && retracePct <= 90 && weeksSincePeak >= 2 && rallyPct > 15){
       status = 'DEEP_PULLBACK';
       statusLabel = '🏄 Deep Pullback ' + retracePct.toFixed(0) + '% · premium buy';
-    } else if(retracePct >= 50 && weeksSincePeak >= 2 && rallyPct > 15){
+    } else if(retracePct >= 50 && retracePct <= 90 && weeksSincePeak >= 1 && rallyPct > 15){
       status = 'PULLBACK';
       statusLabel = '🏄 Pullback ' + retracePct.toFixed(0) + '% · buy zone';
-    } else if(retracePct >= 30 && weeksSincePeak >= 1){
+    } else if(retracePct >= 30 && retracePct < 50 && weeksSincePeak >= 1){
       status = 'MILD_PULLBACK';
       statusLabel = '🌊 Mild Pullback ' + retracePct.toFixed(0) + '%';
     } else {
