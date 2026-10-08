@@ -956,8 +956,39 @@ function analyzeWeekly(symbol, data, cfg){
   let status;
   let statusLabel;
 
-  if(breakoutWeek !== -1){
-    // Recent breakout detected (last 1-8w)
+  // Unified classification: use histBreakoutWeek (deeper lookback) as primary.
+  // This way we also catch stocks that broke out recently (e.g. 5w ago) AND pulled back.
+  if(histBreakoutWeek > -1 && histPivot !== null && rallyPct > 10){
+    const stillAbovePivot = price > histPivot * 0.90;
+    if(!stillAbovePivot){
+      // Price broke down below pivot — invalidated setup, skip
+      return null;
+    }
+    // Prefer PULLBACK classification when there's a meaningful retracement
+    if(retracePct >= 61.8 && retracePct <= 95 && weeksSincePeak >= 2 && rallyPct > 15){
+      status = 'DEEP_PULLBACK';
+      statusLabel = '🏄 Deep Pullback ' + retracePct.toFixed(0) + '% · premium buy';
+    } else if(retracePct >= 50 && weeksSincePeak >= 2 && rallyPct > 15){
+      status = 'PULLBACK';
+      statusLabel = '🏄 Pullback ' + retracePct.toFixed(0) + '% · buy zone';
+    } else if(retracePct >= 30 && weeksSincePeak >= 1){
+      status = 'MILD_PULLBACK';
+      statusLabel = '🌊 Mild Pullback ' + retracePct.toFixed(0) + '%';
+    } else {
+      // No significant pullback — classify by breakout recency
+      if(weeksSinceBreakout <= 2){
+        status = 'FRESH';
+        statusLabel = '⚡ Fresh Breakout';
+      } else if(weeksSinceBreakout <= 8){
+        status = 'RECENT';
+        statusLabel = '🚀 Breakout (' + weeksSinceBreakout + 'w ago)';
+      } else {
+        // Extended rally without pullback — too late to chase
+        return null;
+      }
+    }
+  } else if(breakoutWeek !== -1){
+    // Fallback: recent breakout but no historical pivot (shouldn't normally hit)
     const weeksSince = n - 1 - breakoutWeek;
     if(weeksSince <= 2) {
       status = 'FRESH';
@@ -965,25 +996,6 @@ function analyzeWeekly(symbol, data, cfg){
     } else if(weeksSince <= 8) {
       status = 'RECENT';
       statusLabel = '🚀 Breakout (' + weeksSince + 'w ago)';
-    }
-  } else if(histBreakoutWeek > -1 && histPivot !== null && rallyPct > 15){
-    // Historical breakout: check PULLBACK criteria
-    // Required: still above or near historical pivot (not full breakdown)
-    //          rally was significant (>15% up from pivot)
-    //          current price pulled back from post-breakout high
-    const stillAbovePivot = price > histPivot * 0.90;
-    const peakHappenedAgo = weeksSincePeak >= 2;
-    if(stillAbovePivot && peakHappenedAgo){
-      if(retracePct >= 61.8 && retracePct <= 95){
-        status = 'DEEP_PULLBACK';
-        statusLabel = '🏄 Deep Pullback ' + retracePct.toFixed(0) + '% · premium buy';
-      } else if(retracePct >= 50){
-        status = 'PULLBACK';
-        statusLabel = '🏄 Pullback ' + retracePct.toFixed(0) + '% · buy zone';
-      } else if(retracePct >= 30){
-        status = 'MILD_PULLBACK';
-        statusLabel = '🌊 Mild Pullback ' + retracePct.toFixed(0) + '% · early';
-      }
     }
   }
 
