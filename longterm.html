@@ -335,7 +335,7 @@
       <div class="ctrl">
         <label>โหมดการคัด</label>
         <select id="modeSel">
-          <option value="pullback" selected>🏄 Pullback หลังเบรก (ย่อ 50%+ จาก post-breakout high · พร้อมเด้ง)</option>
+          <option value="pullback" selected>🎯 Fib Retracement 61.8% / 78.6% (classic reversal zones)</option>
           <option value="fresh">⚡ Fresh Breakout (1-8 สัปดาห์)</option>
           <option value="setup">🎯 Setup ใกล้ Pivot (พร้อมเบรก)</option>
           <option value="all">📊 ทั้งหมด</option>
@@ -379,7 +379,7 @@
   <div class="stats-bar" id="statsBar" style="display:none">
     <div class="stat ocean"><label>🌊 Tier A (Score ≥80)</label><div class="v" id="sA">—</div></div>
     <div class="stat"><label>🥈 Tier B (65-79)</label><div class="v" id="sB">—</div></div>
-    <div class="stat green"><label>🏄 Pullback (≥50%)</label><div class="v" id="sPullback">—</div></div>
+    <div class="stat green"><label>🎯 Fib 61.8% / 78.6%</label><div class="v" id="sPullback">—</div></div>
     <div class="stat gold"><label>⚡ Fresh Breakout</label><div class="v" id="sFresh">—</div></div>
     <div class="stat purple"><label>🎯 Setup ใกล้ Pivot</label><div class="v" id="sSetup">—</div></div>
     <div class="stat"><label>🔢 Scan ทั้งหมด</label><div class="v" id="sTotal">—</div></div>
@@ -969,16 +969,16 @@ function analyzeWeekly(symbol, data, cfg){
     if(retracePct > 90){
       return null;
     }
-    // Prefer PULLBACK classification when there's a meaningful retracement
-    if(retracePct >= 61.8 && retracePct <= 90 && weeksSincePeak >= 2 && rallyPct > 15){
-      status = 'DEEP_PULLBACK';
-      statusLabel = '🏄 Deep Pullback ' + retracePct.toFixed(0) + '% · premium buy';
-    } else if(retracePct >= 50 && retracePct <= 90 && weeksSincePeak >= 1 && rallyPct > 15){
-      status = 'PULLBACK';
-      statusLabel = '🏄 Pullback ' + retracePct.toFixed(0) + '% · buy zone';
-    } else if(retracePct >= 30 && retracePct < 50 && weeksSincePeak >= 1){
-      status = 'MILD_PULLBACK';
-      statusLabel = '🌊 Mild Pullback ' + retracePct.toFixed(0) + '%';
+    // Target specific Fibonacci retracement zones only: 61.8% and 78.6%
+    // (user-requested: focus on classic Fib reversal zones, skip other depths)
+    const isFib618 = retracePct >= 55 && retracePct <= 68;  // 61.8% ± ~7%
+    const isFib786 = retracePct >= 72 && retracePct <= 83;  // 78.6% ± ~5%
+    if(isFib786 && weeksSincePeak >= 2 && rallyPct > 15){
+      status = 'FIB_786';
+      statusLabel = '🎯 Fib 78.6% · retrace ' + retracePct.toFixed(0) + '% · deep reversal zone';
+    } else if(isFib618 && weeksSincePeak >= 1 && rallyPct > 15){
+      status = 'FIB_618';
+      statusLabel = '🎯 Fib 61.8% · retrace ' + retracePct.toFixed(0) + '% · golden pocket';
     } else {
       // No significant pullback — classify by breakout recency
       if(weeksSinceBreakout <= 2){
@@ -1097,9 +1097,8 @@ function analyzeWeekly(symbol, data, cfg){
   let breakoutScore = 0;
   if(status === 'FRESH') breakoutScore = 20;
   else if(status === 'RECENT') breakoutScore = 18;
-  else if(status === 'DEEP_PULLBACK') breakoutScore = 20;  // premium buy
-  else if(status === 'PULLBACK') breakoutScore = 17;
-  else if(status === 'MILD_PULLBACK') breakoutScore = 10;
+  else if(status === 'FIB_786') breakoutScore = 20;   // deep Fib reversal — premium buy
+  else if(status === 'FIB_618') breakoutScore = 18;   // golden pocket
   else if(status === 'SETUP') breakoutScore = 12;
   else if(status === 'BUILDING') breakoutScore = 5;
 
@@ -1114,9 +1113,9 @@ function analyzeWeekly(symbol, data, cfg){
     volScore = 5;
   }
 
-  // 6. Resumption signals (max 15) — bonus for pullback setups
+  // 6. Resumption signals (max 15) — bonus for Fib retracement setups
   let resumeScore = 0;
-  if(status === 'PULLBACK' || status === 'DEEP_PULLBACK' || status === 'MILD_PULLBACK'){
+  if(status === 'FIB_618' || status === 'FIB_786'){
     if(isHigherLow) resumeScore += 5;
     if(rsiTurning) resumeScore += 4;
     if(volDryUp) resumeScore += 3;
@@ -1133,9 +1132,9 @@ function analyzeWeekly(symbol, data, cfg){
   else if(score >= 50) tier = 'C';
   else tier = 'D';
 
-  // For PULLBACK statuses, use historical pivot in display (correct breakout reference)
+  // For Fib retracement statuses, use historical pivot in display (correct breakout reference)
   // instead of recent-base pivot (which may be contaminated by post-breakout highs).
-  const isPullback = status === 'PULLBACK' || status === 'DEEP_PULLBACK' || status === 'MILD_PULLBACK';
+  const isPullback = status === 'FIB_618' || status === 'FIB_786';
   const displayPivot = isPullback && histPivot ? histPivot : pivot;
   const displayDistance = isPullback && histDistance != null ? histDistance : distance;
 
@@ -1366,7 +1365,7 @@ function filterResults(rs, cfg){
   } else if(cfg.mode === 'setup'){
     arr = arr.filter(r => r.status === 'SETUP' || r.status === 'FRESH' || r.status === 'RECENT');
   } else if(cfg.mode === 'pullback'){
-    arr = arr.filter(r => r.status === 'PULLBACK' || r.status === 'DEEP_PULLBACK' || r.status === 'MILD_PULLBACK');
+    arr = arr.filter(r => r.status === 'FIB_618' || r.status === 'FIB_786');
   }
   arr = arr.filter(r => r.score >= cfg.scoreMin);
   return arr;
@@ -1396,11 +1395,11 @@ function renderResults(){
   $('#sFresh').textContent = all.filter(r=>r.status==='FRESH'||r.status==='RECENT').length;
   $('#sSetup').textContent = all.filter(r=>r.status==='SETUP').length;
   const pbEl = $('#sPullback');
-  if(pbEl) pbEl.textContent = all.filter(r=>r.status==='PULLBACK'||r.status==='DEEP_PULLBACK'||r.status==='MILD_PULLBACK').length;
+  if(pbEl) pbEl.textContent = all.filter(r=>r.status==='FIB_618'||r.status==='FIB_786').length;
   $('#sTotal').textContent = all.length;
 
   $('#resultsWrap').style.display='block';
-  const modeLabel = {fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',pullback:'🏄 Pullback หลังเบรก',all:'📊 ทั้งหมด'}[cfg.mode];
+  const modeLabel = {fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',pullback:'🎯 Fib Retracement (61.8% / 78.6%)',all:'📊 ทั้งหมด'}[cfg.mode];
   $('#resHead').textContent = `🌊 ${modeLabel}`;
   $('#resMeta').textContent = `${filtered.length} / ${all.length} หุ้น · เรียงตาม ${state.sort.key} ${state.sort.dir<0?'↓':'↑'}`;
 
@@ -1419,9 +1418,8 @@ function renderResults(){
     let statusBadge;
     if(r.status==='FRESH') statusBadge = '<span class="badge-fresh">⚡ FRESH</span>';
     else if(r.status==='RECENT') statusBadge = '<span class="badge-bo">🚀 BREAKOUT</span>';
-    else if(r.status==='DEEP_PULLBACK') statusBadge = `<span class="badge-deeppb" style="background:linear-gradient(135deg,#10b981,#059669);color:#062516;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="ย่อ ${r.retracePct.toFixed(0)}% จาก post-breakout high — premium buy zone">🏄 DEEP −${r.retracePct.toFixed(0)}%</span>`;
-    else if(r.status==='PULLBACK') statusBadge = `<span class="badge-pb" style="background:rgba(16,185,129,.2);color:#10b981;border:1px solid #10b981;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="ย่อ ${r.retracePct.toFixed(0)}% จาก post-breakout high">🏄 PB −${r.retracePct.toFixed(0)}%</span>`;
-    else if(r.status==='MILD_PULLBACK') statusBadge = `<span class="badge-mpb" style="background:rgba(96,165,250,.15);color:#60a5fa;border:1px solid rgba(96,165,250,.4);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="ย่อเพียง ${r.retracePct.toFixed(0)}% — เพิ่งเริ่มย่อ">🌊 MILD −${r.retracePct.toFixed(0)}%</span>`;
+    else if(r.status==='FIB_786') statusBadge = `<span class="badge-fib786" style="background:linear-gradient(135deg,#10b981,#059669);color:#062516;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="ย่อ ${r.retracePct.toFixed(0)}% — เข้าโซน Fib 78.6% (deep reversal zone)">🎯 FIB 78.6 · ${r.retracePct.toFixed(0)}%</span>`;
+    else if(r.status==='FIB_618') statusBadge = `<span class="badge-fib618" style="background:rgba(16,185,129,.2);color:#10b981;border:1px solid #10b981;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="ย่อ ${r.retracePct.toFixed(0)}% — เข้าโซน Fib 61.8% (golden pocket)">🎯 FIB 61.8 · ${r.retracePct.toFixed(0)}%</span>`;
     else if(r.status==='SETUP') statusBadge = '<span class="badge-setup">🎯 SETUP</span>';
     else statusBadge = '<span style="color:var(--muted);font-size:11px">⏳ Building</span>';
 
