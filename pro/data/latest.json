@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-14T00:26:38.124769",
-  "date": "2026-10-14",
+  "generated_at": "2026-10-15T00:00:31.851097",
+  "date": "2026-10-15",
   "universe": {
     "name": "S&P 500",
     "size": 503,
@@ -25,11 +25,66 @@
       "label": "ใกล้ 52W High — เกาะเทรนด์ที่กำลังวิ่ง",
       "description": "Close > SMA200 · ≥99% ของ 52W High · Vol > avg",
       "needs_fundamentals": false,
-      "buys": [],
+      "buys": [
+        {
+          "ticker": "CVX",
+          "metrics": {
+            "close": 222.04,
+            "sma200": 189.16,
+            "high52": 222.55,
+            "vol": 9492050.0,
+            "vol_avg": 8524475.0,
+            "pct_from_high52": -0.23,
+            "pct_above_sma200": 17.38,
+            "vol_ratio": 1.11
+          },
+          "conditions": {
+            "Close > SMA200": true,
+            "Close ≥ 99% of 52W High": true,
+            "Volume > VolSMA50": true
+          }
+        },
+        {
+          "ticker": "CNC",
+          "metrics": {
+            "close": 70.16,
+            "sma200": 53.86,
+            "high52": 70.37,
+            "vol": 4924909.0,
+            "vol_avg": 4308790.18,
+            "pct_from_high52": -0.3,
+            "pct_above_sma200": 30.27,
+            "vol_ratio": 1.14
+          },
+          "conditions": {
+            "Close > SMA200": true,
+            "Close ≥ 99% of 52W High": true,
+            "Volume > VolSMA50": true
+          }
+        },
+        {
+          "ticker": "MA",
+          "metrics": {
+            "close": 603.24,
+            "sma200": 532.6,
+            "high52": 606.61,
+            "vol": 3240513.0,
+            "vol_avg": 2777786.26,
+            "pct_from_high52": -0.56,
+            "pct_above_sma200": 13.26,
+            "vol_ratio": 1.17
+          },
+          "conditions": {
+            "Close > SMA200": true,
+            "Close ≥ 99% of 52W High": true,
+            "Volume > VolSMA50": true
+          }
+        }
+      ],
       "counts": {
-        "buy": 0,
-        "hold": 500,
-        "sell": 0,
+        "buy": 3,
+        "hold": 393,
+        "sell": 104,
         "nodata": 3
       }
     },
@@ -41,9 +96,9 @@
       "buys": [],
       "counts": {
         "buy": 0,
-        "hold": 0,
-        "sell": 0,
-        "nodata": 503
+        "hold": 41,
+        "sell": 152,
+        "nodata": 310
       }
     },
     {
@@ -54,9 +109,9 @@
       "buys": [],
       "counts": {
         "buy": 0,
-        "hold": 0,
-        "sell": 0,
-        "nodata": 503
+        "hold": 46,
+        "sell": 147,
+        "nodata": 310
       }
     },
     {
@@ -68,15 +123,15 @@
       "counts": {
         "buy": 0,
         "hold": 0,
-        "sell": 0,
-        "nodata": 503
+        "sell": 193,
+        "nodata": 310
       }
     }
   ],
   "high_conviction": [],
   "stats": {
-    "total_buy_signals": 0,
-    "unique_tickers": 0,
+    "total_buy_signals": 3,
+    "unique_tickers": 3,
     "strategies_run": 4
   }
 }

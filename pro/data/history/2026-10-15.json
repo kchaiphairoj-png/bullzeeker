@@ -1,0 +1,137 @@
+{
+  "generated_at": "2026-10-15T00:00:31.851097",
+  "date": "2026-10-15",
+  "universe": {
+    "name": "S&P 500",
+    "size": 503,
+    "data_received": 504
+  },
+  "market_regime": {
+    "uptrend": false,
+    "info": {
+      "spy_close": NaN,
+      "spy_sma50": NaN,
+      "spy_sma200": NaN,
+      "conditions": {
+        "SPY > SMA50": false,
+        "SMA50 > SMA200": false,
+        "SMA200 rising (20d)": false
+      }
+    }
+  },
+  "strategies": [
+    {
+      "key": "near_52w_high",
+      "label": "ใกล้ 52W High — เกาะเทรนด์ที่กำลังวิ่ง",
+      "description": "Close > SMA200 · ≥99% ของ 52W High · Vol > avg",
+      "needs_fundamentals": false,
+      "buys": [
+        {
+          "ticker": "CVX",
+          "metrics": {
+            "close": 222.04,
+            "sma200": 189.16,
+            "high52": 222.55,
+            "vol": 9492050.0,
+            "vol_avg": 8524475.0,
+            "pct_from_high52": -0.23,
+            "pct_above_sma200": 17.38,
+            "vol_ratio": 1.11
+          },
+          "conditions": {
+            "Close > SMA200": true,
+            "Close ≥ 99% of 52W High": true,
+            "Volume > VolSMA50": true
+          }
+        },
+        {
+          "ticker": "CNC",
+          "metrics": {
+            "close": 70.16,
+            "sma200": 53.86,
+            "high52": 70.37,
+            "vol": 4924909.0,
+            "vol_avg": 4308790.18,
+            "pct_from_high52": -0.3,
+            "pct_above_sma200": 30.27,
+            "vol_ratio": 1.14
+          },
+          "conditions": {
+            "Close > SMA200": true,
+            "Close ≥ 99% of 52W High": true,
+            "Volume > VolSMA50": true
+          }
+        },
+        {
+          "ticker": "MA",
+          "metrics": {
+            "close": 603.24,
+            "sma200": 532.6,
+            "high52": 606.61,
+            "vol": 3240513.0,
+            "vol_avg": 2777786.26,
+            "pct_from_high52": -0.56,
+            "pct_above_sma200": 13.26,
+            "vol_ratio": 1.17
+          },
+          "conditions": {
+            "Close > SMA200": true,
+            "Close ≥ 99% of 52W High": true,
+            "Volume > VolSMA50": true
+          }
+        }
+      ],
+      "counts": {
+        "buy": 3,
+        "hold": 393,
+        "sell": 104,
+        "nodata": 3
+      }
+    },
+    {
+      "key": "fresh_breakout",
+      "label": "Fresh Breakout — เข้าตั้งแต่ต้นเทรนด์",
+      "description": "Stage 2 · ฐานแน่น 30 วัน · เพิ่งทะลุ ≤5% · Vol 1.5×",
+      "needs_fundamentals": false,
+      "buys": [],
+      "counts": {
+        "buy": 0,
+        "hold": 41,
+        "sell": 152,
+        "nodata": 310
+      }
+    },
+    {
+      "key": "minervini_tt",
+      "label": "Minervini Trend Template — 8 ข้อครบ",
+      "description": "SMA50 > 150 > 200 + Close ใน 25% ของ 52W High + RS ≥ 70",
+      "needs_fundamentals": false,
+      "buys": [],
+      "counts": {
+        "buy": 0,
+        "hold": 46,
+        "sell": 147,
+        "nodata": 310
+      }
+    },
+    {
+      "key": "canslim",
+      "label": "CAN SLIM — Earnings ดี + RS สูง + Market uptrend",
+      "description": "EPS QoQ ≥25% · EPS Annual ≥25% · RS ≥80 · 52W High · Market uptrend",
+      "needs_fundamentals": true,
+      "buys": [],
+      "counts": {
+        "buy": 0,
+        "hold": 0,
+        "sell": 193,
+        "nodata": 310
+      }
+    }
+  ],
+  "high_conviction": [],
+  "stats": {
+    "total_buy_signals": 3,
+    "unique_tickers": 3,
+    "strategies_run": 4
+  }
+}
