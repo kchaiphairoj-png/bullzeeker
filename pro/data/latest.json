@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-16T23:46:12.732024",
-  "date": "2026-10-16",
+  "generated_at": "2026-10-17T23:17:58.156961",
+  "date": "2026-10-17",
   "universe": {
     "name": "S&P 500",
     "size": 503,
@@ -27,16 +27,16 @@
       "needs_fundamentals": false,
       "buys": [
         {
-          "ticker": "COP",
+          "ticker": "VTRS",
           "metrics": {
-            "close": 146.51,
-            "sma200": 118.73,
-            "high52": 146.58,
-            "vol": 7642397.0,
-            "vol_avg": 6604853.94,
+            "close": 18.66,
+            "sma200": 15.6,
+            "high52": 18.67,
+            "vol": 9421300.0,
+            "vol_avg": 8909902.0,
             "pct_from_high52": -0.05,
-            "pct_above_sma200": 23.4,
-            "vol_ratio": 1.16
+            "pct_above_sma200": 19.62,
+            "vol_ratio": 1.06
           },
           "conditions": {
             "Close > SMA200": true,
@@ -45,16 +45,16 @@
           }
         },
         {
-          "ticker": "VTRS",
+          "ticker": "COP",
           "metrics": {
-            "close": 18.66,
-            "sma200": 15.6,
-            "high52": 18.67,
-            "vol": 9415660.0,
-            "vol_avg": 8909789.2,
+            "close": 146.51,
+            "sma200": 118.73,
+            "high52": 146.59,
+            "vol": 7766500.0,
+            "vol_avg": 6607336.0,
             "pct_from_high52": -0.05,
-            "pct_above_sma200": 19.59,
-            "vol_ratio": 1.06
+            "pct_above_sma200": 23.4,
+            "vol_ratio": 1.18
           },
           "conditions": {
             "Close > SMA200": true,
@@ -68,29 +68,11 @@
             "close": 224.99,
             "sma200": 189.87,
             "high52": 225.31,
-            "vol": 8709921.0,
-            "vol_avg": 8532084.42,
+            "vol": 8719900.0,
+            "vol_avg": 8532284.0,
             "pct_from_high52": -0.14,
             "pct_above_sma200": 18.5,
             "vol_ratio": 1.02
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "EOG",
-          "metrics": {
-            "close": 158.01,
-            "sma200": 134.32,
-            "high52": 158.34,
-            "vol": 5298897.0,
-            "vol_avg": 3022455.94,
-            "pct_from_high52": -0.21,
-            "pct_above_sma200": 17.63,
-            "vol_ratio": 1.75
           },
           "conditions": {
             "Close > SMA200": true,
@@ -104,11 +86,11 @@
             "close": 93.9,
             "sma200": 80.96,
             "high52": 94.1,
-            "vol": 22595458.0,
-            "vol_avg": 15236827.16,
+            "vol": 23069000.0,
+            "vol_avg": 15246298.0,
             "pct_from_high52": -0.21,
             "pct_above_sma200": 15.98,
-            "vol_ratio": 1.48
+            "vol_ratio": 1.51
           },
           "conditions": {
             "Close > SMA200": true,
@@ -122,11 +104,29 @@
             "close": 49.15,
             "sma200": 36.43,
             "high52": 49.26,
-            "vol": 6324339.0,
-            "vol_avg": 5556700.78,
+            "vol": 6326400.0,
+            "vol_avg": 5556742.0,
             "pct_from_high52": -0.22,
             "pct_above_sma200": 34.91,
             "vol_ratio": 1.14
+          },
+          "conditions": {
+            "Close > SMA200": true,
+            "Close ≥ 99% of 52W High": true,
+            "Volume > VolSMA50": true
+          }
+        },
+        {
+          "ticker": "EOG",
+          "metrics": {
+            "close": 158.01,
+            "sma200": 134.32,
+            "high52": 158.37,
+            "vol": 5299200.0,
+            "vol_avg": 3022462.0,
+            "pct_from_high52": -0.23,
+            "pct_above_sma200": 17.63,
+            "vol_ratio": 1.75
           },
           "conditions": {
             "Close > SMA200": true,
@@ -140,8 +140,8 @@
             "close": 34.62,
             "sma200": 29.64,
             "high52": 34.71,
-            "vol": 14272609.0,
-            "vol_avg": 10846882.18,
+            "vol": 14273400.0,
+            "vol_avg": 10846898.0,
             "pct_from_high52": -0.26,
             "pct_above_sma200": 16.82,
             "vol_ratio": 1.32
@@ -158,11 +158,11 @@
             "close": 288.9,
             "sma200": 238.64,
             "high52": 290.12,
-            "vol": 2295973.0,
-            "vol_avg": 2053581.46,
+            "vol": 2332400.0,
+            "vol_avg": 2054310.0,
             "pct_from_high52": -0.42,
             "pct_above_sma200": 21.06,
-            "vol_ratio": 1.12
+            "vol_ratio": 1.14
           },
           "conditions": {
             "Close > SMA200": true,
@@ -176,8 +176,8 @@
             "close": 402.61,
             "sma200": 339.19,
             "high52": 404.74,
-            "vol": 6757293.0,
-            "vol_avg": 6317107.86,
+            "vol": 6780000.0,
+            "vol_avg": 6317562.0,
             "pct_from_high52": -0.53,
             "pct_above_sma200": 18.7,
             "vol_ratio": 1.07
@@ -193,12 +193,12 @@
           "metrics": {
             "close": 617.42,
             "sma200": 533.0,
-            "high52": 622.46,
-            "vol": 3265373.0,
-            "vol_avg": 2818979.46,
+            "high52": 622.49,
+            "vol": 3428200.0,
+            "vol_avg": 2822236.0,
             "pct_from_high52": -0.81,
             "pct_above_sma200": 15.84,
-            "vol_ratio": 1.16
+            "vol_ratio": 1.21
           },
           "conditions": {
             "Close > SMA200": true,
@@ -232,8 +232,8 @@
             "pct_from_pivot": 0.13,
             "pct_from_52wh": -6.77,
             "above_52wl_pct": 53.56,
-            "vol": 13127006.0,
-            "vol_avg": 8525992.12,
+            "vol": 13127100.0,
+            "vol_avg": 8525994.0,
             "vol_ratio": 1.54
           },
           "conditions": {
@@ -258,8 +258,8 @@
             "pct_from_pivot": 1.08,
             "pct_from_52wh": -2.3,
             "above_52wl_pct": 54.42,
-            "vol": 3194578.0,
-            "vol_avg": 1432999.56,
+            "vol": 3194800.0,
+            "vol_avg": 1433004.0,
             "vol_ratio": 2.23
           },
           "conditions": {
@@ -282,10 +282,10 @@
             "sma50": 145.78,
             "sma200": 134.32,
             "pct_from_pivot": 1.94,
-            "pct_from_52wh": -0.21,
+            "pct_from_52wh": -0.23,
             "above_52wl_pct": 55.54,
-            "vol": 5298897.0,
-            "vol_avg": 3022455.94,
+            "vol": 5299200.0,
+            "vol_avg": 3022462.0,
             "vol_ratio": 1.75
           },
           "conditions": {
@@ -556,7 +556,7 @@
             "high52": 18.67,
             "low52": 9.92,
             "pct_from_52wh": -0.05,
-            "pct_above_52wl": 88.05,
+            "pct_above_52wl": 88.1,
             "rs_rating": 94,
             "passed": 8,
             "sma200_5mo_up": true
@@ -735,7 +735,7 @@
             "sma50": 131.77,
             "sma150": 122.9,
             "sma200": 118.73,
-            "high52": 146.58,
+            "high52": 146.59,
             "low52": 85.57,
             "pct_from_52wh": -0.05,
             "pct_above_52wl": 71.22,
@@ -1073,9 +1073,9 @@
             "sma50": 358.14,
             "sma150": 326.15,
             "sma200": 307.29,
-            "high52": 386.22,
+            "high52": 386.26,
             "low52": 223.83,
-            "pct_from_52wh": -0.57,
+            "pct_from_52wh": -0.58,
             "pct_above_52wl": 71.57,
             "rs_rating": 87,
             "passed": 8,
@@ -1177,9 +1177,9 @@
             "sma50": 145.78,
             "sma150": 140.39,
             "sma200": 134.32,
-            "high52": 158.34,
+            "high52": 158.37,
             "low52": 101.59,
-            "pct_from_52wh": -0.21,
+            "pct_from_52wh": -0.23,
             "pct_above_52wl": 55.54,
             "rs_rating": 86,
             "passed": 8,
@@ -1983,7 +1983,7 @@
       "count": 3
     },
     {
-      "ticker": "COP",
+      "ticker": "VTRS",
       "strategies": [
         "near_52w_high",
         "minervini_tt"
@@ -1991,7 +1991,7 @@
       "count": 2
     },
     {
-      "ticker": "VTRS",
+      "ticker": "COP",
       "strategies": [
         "near_52w_high",
         "minervini_tt"
