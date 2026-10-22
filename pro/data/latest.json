@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-21T00:00:54.183500",
-  "date": "2026-10-21",
+  "generated_at": "2026-10-22T00:05:14.522748",
+  "date": "2026-10-22",
   "universe": {
     "name": "S&P 500",
     "size": 503,
@@ -25,336 +25,11 @@
       "label": "ใกล้ 52W High — เกาะเทรนด์ที่กำลังวิ่ง",
       "description": "Close > SMA200 · ≥99% ของ 52W High · Vol > avg",
       "needs_fundamentals": false,
-      "buys": [
-        {
-          "ticker": "CHD",
-          "metrics": {
-            "close": 105.96,
-            "sma200": 96.94,
-            "high52": 106.04,
-            "vol": 1987435.0,
-            "vol_avg": 1807584.7,
-            "pct_from_high52": -0.08,
-            "pct_above_sma200": 9.31,
-            "vol_ratio": 1.1
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "ELV",
-          "metrics": {
-            "close": 440.18,
-            "sma200": 370.05,
-            "high52": 440.67,
-            "vol": 1546655.0,
-            "vol_avg": 1129235.1,
-            "pct_from_high52": -0.11,
-            "pct_above_sma200": 18.95,
-            "vol_ratio": 1.37
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "TECH",
-          "metrics": {
-            "close": 72.58,
-            "sma200": 62.88,
-            "high52": 72.69,
-            "vol": 3210399.0,
-            "vol_avg": 2765895.98,
-            "pct_from_high52": -0.15,
-            "pct_above_sma200": 15.44,
-            "vol_ratio": 1.16
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "BRK-B",
-          "metrics": {
-            "close": 539.82,
-            "sma200": 493.92,
-            "high52": 540.77,
-            "vol": 5294806.0,
-            "vol_avg": 4389326.12,
-            "pct_from_high52": -0.18,
-            "pct_above_sma200": 9.29,
-            "vol_ratio": 1.21
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "WST",
-          "metrics": {
-            "close": 388.78,
-            "sma200": 308.39,
-            "high52": 389.73,
-            "vol": 569395.0,
-            "vol_avg": 526195.9,
-            "pct_from_high52": -0.24,
-            "pct_above_sma200": 26.07,
-            "vol_ratio": 1.08
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "HAS",
-          "metrics": {
-            "close": 109.52,
-            "sma200": 91.21,
-            "high52": 109.8,
-            "vol": 8007351.0,
-            "vol_avg": 1772549.02,
-            "pct_from_high52": -0.25,
-            "pct_above_sma200": 20.08,
-            "vol_ratio": 4.52
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "CAH",
-          "metrics": {
-            "close": 257.55,
-            "sma200": 220.36,
-            "high52": 258.3,
-            "vol": 1839301.0,
-            "vol_avg": 1764168.02,
-            "pct_from_high52": -0.29,
-            "pct_above_sma200": 16.87,
-            "vol_ratio": 1.04
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "HLT",
-          "metrics": {
-            "close": 359.29,
-            "sma200": 318.57,
-            "high52": 360.4,
-            "vol": 3937765.0,
-            "vol_avg": 1715063.3,
-            "pct_from_high52": -0.31,
-            "pct_above_sma200": 12.78,
-            "vol_ratio": 2.3
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "PFE",
-          "metrics": {
-            "close": 30.11,
-            "sma200": 26.61,
-            "high52": 30.25,
-            "vol": 34241703.0,
-            "vol_avg": 32558626.06,
-            "pct_from_high52": -0.45,
-            "pct_above_sma200": 13.15,
-            "vol_ratio": 1.05
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "V",
-          "metrics": {
-            "close": 406.57,
-            "sma200": 339.75,
-            "high52": 408.58,
-            "vol": 6656395.0,
-            "vol_avg": 6314185.9,
-            "pct_from_high52": -0.49,
-            "pct_above_sma200": 19.67,
-            "vol_ratio": 1.05
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "ADP",
-          "metrics": {
-            "close": 292.75,
-            "sma200": 238.99,
-            "high52": 294.27,
-            "vol": 2458380.0,
-            "vol_avg": 2054299.6,
-            "pct_from_high52": -0.51,
-            "pct_above_sma200": 22.49,
-            "vol_ratio": 1.2
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "VTRS",
-          "metrics": {
-            "close": 18.65,
-            "sma200": 15.66,
-            "high52": 18.75,
-            "vol": 14264689.0,
-            "vol_avg": 8900955.78,
-            "pct_from_high52": -0.53,
-            "pct_above_sma200": 19.1,
-            "vol_ratio": 1.6
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "MA",
-          "metrics": {
-            "close": 620.42,
-            "sma200": 533.51,
-            "high52": 624.29,
-            "vol": 2899980.0,
-            "vol_avg": 2826221.6,
-            "pct_from_high52": -0.62,
-            "pct_above_sma200": 16.29,
-            "vol_ratio": 1.03
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "BIIB",
-          "metrics": {
-            "close": 243.1,
-            "sma200": 198.44,
-            "high52": 244.65,
-            "vol": 1491975.0,
-            "vol_avg": 996401.5,
-            "pct_from_high52": -0.63,
-            "pct_above_sma200": 22.5,
-            "vol_ratio": 1.5
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "KO",
-          "metrics": {
-            "close": 93.49,
-            "sma200": 81.2,
-            "high52": 94.1,
-            "vol": 15687989.0,
-            "vol_avg": 15400339.78,
-            "pct_from_high52": -0.65,
-            "pct_above_sma200": 15.13,
-            "vol_ratio": 1.02
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "KDP",
-          "metrics": {
-            "close": 34.63,
-            "sma200": 29.7,
-            "high52": 34.88,
-            "vol": 18644901.0,
-            "vol_avg": 10892014.02,
-            "pct_from_high52": -0.73,
-            "pct_above_sma200": 16.59,
-            "vol_ratio": 1.71
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "TRV",
-          "metrics": {
-            "close": 395.73,
-            "sma200": 325.14,
-            "high52": 398.7,
-            "vol": 1747731.0,
-            "vol_avg": 1457344.62,
-            "pct_from_high52": -0.74,
-            "pct_above_sma200": 21.71,
-            "vol_ratio": 1.2
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        },
-        {
-          "ticker": "ABBV",
-          "metrics": {
-            "close": 289.08,
-            "sma200": 234.52,
-            "high52": 291.4,
-            "vol": 5173961.0,
-            "vol_avg": 4607017.22,
-            "pct_from_high52": -0.8,
-            "pct_above_sma200": 23.27,
-            "vol_ratio": 1.12
-          },
-          "conditions": {
-            "Close > SMA200": true,
-            "Close ≥ 99% of 52W High": true,
-            "Volume > VolSMA50": true
-          }
-        }
-      ],
+      "buys": [],
       "counts": {
-        "buy": 18,
-        "hold": 315,
-        "sell": 167,
+        "buy": 0,
+        "hold": 499,
+        "sell": 1,
         "nodata": 3
       }
     },
@@ -366,9 +41,9 @@
       "buys": [],
       "counts": {
         "buy": 0,
-        "hold": 88,
-        "sell": 259,
-        "nodata": 156
+        "hold": 0,
+        "sell": 1,
+        "nodata": 502
       }
     },
     {
@@ -379,9 +54,9 @@
       "buys": [],
       "counts": {
         "buy": 0,
-        "hold": 91,
-        "sell": 256,
-        "nodata": 156
+        "hold": 0,
+        "sell": 1,
+        "nodata": 502
       }
     },
     {
@@ -393,15 +68,15 @@
       "counts": {
         "buy": 0,
         "hold": 0,
-        "sell": 347,
-        "nodata": 156
+        "sell": 1,
+        "nodata": 502
       }
     }
   ],
   "high_conviction": [],
   "stats": {
-    "total_buy_signals": 18,
-    "unique_tickers": 18,
+    "total_buy_signals": 0,
+    "unique_tickers": 0,
     "strategies_run": 4
   }
 }
