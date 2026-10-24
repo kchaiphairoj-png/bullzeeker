@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-23T23:56:02.997583",
-  "date": "2026-10-23",
+  "generated_at": "2026-10-24T23:31:54.554023",
+  "date": "2026-10-24",
   "universe": {
     "name": "S&P 500",
     "size": 503,
@@ -32,8 +32,8 @@
             "close": 117.44,
             "sma200": 91.65,
             "high52": 117.77,
-            "vol": 2755152.0,
-            "vol_avg": 1892279.04,
+            "vol": 2767300.0,
+            "vol_avg": 1892522.0,
             "pct_from_high52": -0.28,
             "pct_above_sma200": 28.14,
             "vol_ratio": 1.46
@@ -50,8 +50,8 @@
             "close": 165.11,
             "sma200": 132.44,
             "high52": 166.15,
-            "vol": 1678555.0,
-            "vol_avg": 1581739.1,
+            "vol": 1678600.0,
+            "vol_avg": 1581740.0,
             "pct_from_high52": -0.63,
             "pct_above_sma200": 24.67,
             "vol_ratio": 1.06
@@ -68,8 +68,8 @@
             "close": 115.74,
             "sma200": 108.64,
             "high52": 116.5,
-            "vol": 2538717.0,
-            "vol_avg": 2177616.34,
+            "vol": 2538700.0,
+            "vol_avg": 2177616.0,
             "pct_from_high52": -0.65,
             "pct_above_sma200": 6.54,
             "vol_ratio": 1.17
@@ -86,11 +86,11 @@
             "close": 99.87,
             "sma200": 74.51,
             "high52": 100.58,
-            "vol": 3978699.0,
-            "vol_avg": 3568507.98,
+            "vol": 3978900.0,
+            "vol_avg": 3568512.0,
             "pct_from_high52": -0.71,
             "pct_above_sma200": 34.04,
-            "vol_ratio": 1.11
+            "vol_ratio": 1.12
           },
           "conditions": {
             "Close > SMA200": true,
@@ -104,8 +104,8 @@
             "close": 224.1,
             "sma200": 189.61,
             "high52": 225.79,
-            "vol": 1934628.0,
-            "vol_avg": 1875634.56,
+            "vol": 1934600.0,
+            "vol_avg": 1875634.0,
             "pct_from_high52": -0.75,
             "pct_above_sma200": 18.19,
             "vol_ratio": 1.03
@@ -122,8 +122,8 @@
             "close": 51.9,
             "sma200": 37.08,
             "high52": 52.39,
-            "vol": 7066667.0,
-            "vol_avg": 5529895.34,
+            "vol": 7067100.0,
+            "vol_avg": 5529904.0,
             "pct_from_high52": -0.94,
             "pct_above_sma200": 39.98,
             "vol_ratio": 1.28
@@ -160,8 +160,8 @@
             "pct_from_pivot": 0.49,
             "pct_from_52wh": -2.63,
             "above_52wl_pct": 34.08,
-            "vol": 1418573.0,
-            "vol_avg": 915513.46,
+            "vol": 1418600.0,
+            "vol_avg": 915514.0,
             "vol_ratio": 1.55
           },
           "conditions": {
@@ -1157,9 +1157,9 @@
             "sma50": 85.89,
             "sma150": 79.19,
             "sma200": 77.96,
-            "high52": 94.58,
+            "high52": 94.59,
             "low52": 61.3,
-            "pct_from_52wh": -0.46,
+            "pct_from_52wh": -0.47,
             "pct_above_52wl": 53.59,
             "rs_rating": 86,
             "passed": 8,
@@ -1757,7 +1757,7 @@
             "sma200": 29.81,
             "high52": 35.4,
             "low52": 24.88,
-            "pct_from_52wh": -2.04,
+            "pct_from_52wh": -2.03,
             "pct_above_52wl": 39.39,
             "rs_rating": 73,
             "passed": 8,
