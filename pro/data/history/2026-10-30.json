@@ -1,0 +1,82 @@
+{
+  "generated_at": "2026-10-30T01:12:44.209629",
+  "date": "2026-10-30",
+  "universe": {
+    "name": "S&P 500",
+    "size": 503,
+    "data_received": 503
+  },
+  "market_regime": {
+    "uptrend": false,
+    "info": {
+      "spy_close": NaN,
+      "spy_sma50": NaN,
+      "spy_sma200": NaN,
+      "conditions": {
+        "SPY > SMA50": false,
+        "SMA50 > SMA200": false,
+        "SMA200 rising (20d)": false
+      }
+    }
+  },
+  "strategies": [
+    {
+      "key": "near_52w_high",
+      "label": "ใกล้ 52W High — เกาะเทรนด์ที่กำลังวิ่ง",
+      "description": "Close > SMA200 · ≥99% ของ 52W High · Vol > avg",
+      "needs_fundamentals": false,
+      "buys": [],
+      "counts": {
+        "buy": 0,
+        "hold": 499,
+        "sell": 0,
+        "nodata": 4
+      }
+    },
+    {
+      "key": "fresh_breakout",
+      "label": "Fresh Breakout — เข้าตั้งแต่ต้นเทรนด์",
+      "description": "Stage 2 · ฐานแน่น 30 วัน · เพิ่งทะลุ ≤5% · Vol 1.5×",
+      "needs_fundamentals": false,
+      "buys": [],
+      "counts": {
+        "buy": 0,
+        "hold": 0,
+        "sell": 0,
+        "nodata": 503
+      }
+    },
+    {
+      "key": "minervini_tt",
+      "label": "Minervini Trend Template — 8 ข้อครบ",
+      "description": "SMA50 > 150 > 200 + Close ใน 25% ของ 52W High + RS ≥ 70",
+      "needs_fundamentals": false,
+      "buys": [],
+      "counts": {
+        "buy": 0,
+        "hold": 0,
+        "sell": 0,
+        "nodata": 503
+      }
+    },
+    {
+      "key": "canslim",
+      "label": "CAN SLIM — Earnings ดี + RS สูง + Market uptrend",
+      "description": "EPS QoQ ≥25% · EPS Annual ≥25% · RS ≥80 · 52W High · Market uptrend",
+      "needs_fundamentals": true,
+      "buys": [],
+      "counts": {
+        "buy": 0,
+        "hold": 0,
+        "sell": 0,
+        "nodata": 503
+      }
+    }
+  ],
+  "high_conviction": [],
+  "stats": {
+    "total_buy_signals": 0,
+    "unique_tickers": 0,
+    "strategies_run": 4
+  }
+}
