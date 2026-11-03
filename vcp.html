@@ -101,6 +101,7 @@ table.vcp-tbl tbody .name{font-size:10px;color:var(--muted);font-weight:400;font
 .badge-ready{background:linear-gradient(135deg,#10b981,#059669);color:#062516;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800}
 .badge-forming{background:rgba(168,85,247,.2);color:var(--purple);border:1px solid var(--purple);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800}
 .badge-broke{background:rgba(96,165,250,.15);color:#60a5fa;border:1px solid rgba(96,165,250,.4);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800}
+.badge-pb50{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;box-shadow:0 0 10px rgba(249,115,22,.3)}
 
 .tt-badge{display:inline-block;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:800;font-family:var(--mono)}
 .tt-8{background:var(--emerald);color:#062516}
@@ -208,10 +209,11 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
       <div class="ctrl">
         <label>Status Filter</label>
         <select id="modeSel">
-          <option value="all" selected>All (Forming + Ready + Breaking)</option>
-          <option value="ready">Ready to Buy (≤3% from pivot)</option>
-          <option value="forming">Still Forming</option>
-          <option value="broke">Just Broke Out (≤5% above)</option>
+          <option value="all" selected>All (Forming + Ready + Broke + Pullback)</option>
+          <option value="pullback50">🔄 Post-Breakout Pullback 50% (re-entry)</option>
+          <option value="ready">🎯 Ready to Buy (≤3% from pivot)</option>
+          <option value="forming">⏳ Still Forming</option>
+          <option value="broke">🚀 Just Broke Out (≤5% above)</option>
         </select>
       </div>
     </div>
@@ -237,6 +239,7 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
     <div class="stat purple"><label>🧬 Total VCP</label><div class="v" id="sTotal">—</div></div>
     <div class="stat gold"><label>🏆 Tier A (≥80)</label><div class="v" id="sTierA">—</div></div>
     <div class="stat green"><label>🎯 Ready to Buy</label><div class="v" id="sReady">—</div></div>
+    <div class="stat" style="border-color:#f97316"><label style="color:#fdba74">🔄 Pullback 50%</label><div class="v" id="sPullback50" style="color:#f97316">—</div></div>
     <div class="stat cyan"><label>⏳ Still Forming</label><div class="v" id="sForming">—</div></div>
     <div class="stat"><label>✓ Pass Trend Template</label><div class="v" id="sTT">—</div></div>
     <div class="stat"><label>🔢 Scan ทั้งหมด</label><div class="v" id="sScan">—</div></div>
@@ -302,6 +305,12 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
         <h3 style="color:var(--cyan);font-size:14px;margin-bottom:8px">💡 VCP Quality (จำนวน contractions)</h3>
         <p>ยิ่ง contractions เยอะ (2-6 ครั้ง) + ยิ่งแคบลงต่อเนื่อง + volume ยิ่งแห้ง = คุณภาพสูง</p>
         <p style="margin-top:6px;color:var(--muted);font-size:12px">T (Tightness) = % จาก high ถึง low ของ contraction นั้น ๆ</p>
+      </div>
+      <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid #f97316">
+        <h3 style="color:#f97316;font-size:14px;margin-bottom:8px">🔄 Pullback 50% (Minervini Re-entry)</h3>
+        <p>หุ้นที่ <b>เบรก VCP แล้ว รัลลี่ขึ้น</b> แล้ว <b>ย่อลงมา 50%</b> ของรัลลี่นั้น · เป็น <b>second entry</b> คลาสสิกของ Minervini — ยังอยู่เหนือ pivot (ไม่ failed breakout)</p>
+        <p style="margin-top:6px;color:var(--muted);font-size:12px">ตัวอย่าง: Pivot $100 → รัลลี่ไป $120 → ย่อมา $110 (50% retrace) = buy zone</p>
+        <p style="margin-top:6px;color:var(--muted);font-size:12px">เงื่อนไข: Rally ≥ 10% · Retrace 40-65% · ยังเหนือ pivot · 2+ bars ตั้งแต่ peak</p>
       </div>
     </div>
   </div>
@@ -618,6 +627,54 @@ function detectVCP(data, lookbackDays=65){
   };
 }
 
+/* ---------- POST-BREAKOUT PULLBACK 50% DETECTION ---------- */
+/* After a VCP breakout, price rallies then pulls back ~50% from the high.
+   Classic Minervini "second entry" / re-entry setup. */
+function detectPostBreakoutPullback(data, pivot){
+  const n = data.length;
+  const lookback = Math.min(60, n - 2);
+  // Find FIRST close above pivot within lookback window
+  let breakoutBar = -1;
+  for(let i = n - lookback; i < n - 2; i++){
+    if(data[i].c > pivot * 1.005){
+      breakoutBar = i;
+      break;
+    }
+  }
+  if(breakoutBar === -1) return null;
+
+  // Post-breakout high (use highs for peak detection)
+  const postHighs = data.slice(breakoutBar, n).map(d => d.h);
+  const postHigh = Math.max(...postHighs);
+  const peakIdx = breakoutBar + postHighs.indexOf(postHigh);
+  const barsSincePeak = n - 1 - peakIdx;
+
+  const rally = postHigh - pivot;
+  const rallyPct = rally / pivot * 100;
+  if(rallyPct < 10) return null;   // need meaningful rally
+
+  const currentPrice = data[n-1].c;
+  // Still above pivot (not failed breakout)
+  if(currentPrice < pivot * 0.98) return null;
+
+  const pullback = postHigh - currentPrice;
+  const retracePct = rally > 0 ? (pullback / rally * 100) : 0;
+  const pullbackFromHighPct = pullback / postHigh * 100;
+
+  // Volume dry-up during pullback (last 5 bars vs rally bars)
+  const recentVols = data.slice(n-5).map(d => d.v || 0);
+  const rallyVols = data.slice(breakoutBar, peakIdx+1).map(d => d.v || 0);
+  const recentAvg = recentVols.reduce((a,b)=>a+b,0) / Math.max(1, recentVols.length);
+  const rallyAvg = rallyVols.reduce((a,b)=>a+b,0) / Math.max(1, rallyVols.length);
+  const volDryUp = rallyAvg > 0 && recentAvg < rallyAvg * 0.85;
+
+  return {
+    breakoutBar, postHigh, peakIdx, barsSincePeak,
+    rallyPct, retracePct, pullbackFromHighPct,
+    volDryUp,
+  };
+}
+
 /* ---------- MAIN ANALYZER ---------- */
 function analyzeStock(symbol, data, spyData){
   // Trend Template
@@ -644,9 +701,18 @@ function analyzeStock(symbol, data, spyData){
 
   const price = data[data.length-1].c;
 
-  // Status
+  // Check post-breakout pullback (Minervini "second entry" setup) FIRST
+  const pullback = detectPostBreakoutPullback(data, vcp.pivot);
+  const isPullback50 = pullback &&
+    pullback.retracePct >= 40 && pullback.retracePct <= 65 &&
+    pullback.barsSincePeak >= 2;
+
+  // Status cascade: Pullback 50% has priority over regular classification
   let status, statusLabel;
-  if(vcp.distFromPivot > 0 && vcp.distFromPivot <= 5){
+  if(isPullback50){
+    status = 'PULLBACK_50';
+    statusLabel = '🔄 Pullback ' + pullback.retracePct.toFixed(0) + '% from $' + pullback.postHigh.toFixed(2);
+  } else if(vcp.distFromPivot > 0 && vcp.distFromPivot <= 5){
     status = 'BROKE';
     statusLabel = '🚀 Just Broke (+' + vcp.distFromPivot.toFixed(1) + '%)';
   } else if(vcp.distFromPivot >= -3 && vcp.distFromPivot <= 0){
@@ -683,9 +749,19 @@ function analyzeStock(symbol, data, spyData){
 
   // 5. Status proximity bonus (max 15)
   let proxScore = 0;
-  if(status === 'READY') proxScore = 15;
+  if(status === 'PULLBACK_50') proxScore = 15;   // premium Minervini re-entry
+  else if(status === 'READY') proxScore = 15;
   else if(status === 'BROKE') proxScore = 12;
   else if(status === 'FORMING') proxScore = Math.max(0, 10 - Math.abs(vcp.distFromPivot));
+
+  // 6. Pullback-50 extra bonuses (max 10 total)
+  if(status === 'PULLBACK_50'){
+    // Ideal retrace closer to 50% (not too shallow, not too deep)
+    const idealDist = Math.abs(pullback.retracePct - 50);
+    if(idealDist < 5) proxScore += 5;        // 45-55% retrace = ideal
+    else if(idealDist < 10) proxScore += 3;  // 40-45% or 55-60% = good
+    if(pullback.volDryUp) proxScore += 5;    // healthy pullback (vol drying)
+  }
 
   const totalScore = Math.round(Math.max(0, Math.min(100,
     ttScore + vcpScore + volScore + rsScore + proxScore
@@ -711,6 +787,14 @@ function analyzeStock(symbol, data, spyData){
     volDryUp: vcp.volDryUp,
     high52: tt.high52,
     low52: tt.low52,
+    // Post-breakout pullback fields (null when not applicable)
+    pullback,
+    isPullback50,
+    postHigh: pullback?.postHigh,
+    retracePct: pullback?.retracePct,
+    rallyPct: pullback?.rallyPct,
+    barsSincePeak: pullback?.barsSincePeak,
+    pullbackVolDryUp: pullback?.volDryUp,
   };
 }
 
@@ -805,6 +889,7 @@ function filterResults(rs){
   if(mode === 'ready') arr = arr.filter(r => r.status === 'READY');
   else if(mode === 'forming') arr = arr.filter(r => r.status === 'FORMING');
   else if(mode === 'broke') arr = arr.filter(r => r.status === 'BROKE');
+  else if(mode === 'pullback50') arr = arr.filter(r => r.status === 'PULLBACK_50');
   return arr;
 }
 
@@ -844,6 +929,7 @@ function renderResults(){
   $('#sTotal').textContent = all.length;
   $('#sTierA').textContent = all.filter(r => r.tier === 'A').length;
   $('#sReady').textContent = all.filter(r => r.status === 'READY').length;
+  $('#sPullback50').textContent = all.filter(r => r.status === 'PULLBACK_50').length;
   $('#sForming').textContent = all.filter(r => r.status === 'FORMING').length;
   $('#sTT').textContent = all.filter(r => r.ttScore === 8).length;
 
@@ -862,7 +948,8 @@ function renderResults(){
   $('#resBody').innerHTML = filtered.map(r => {
     const tc = tierColor(r.tier);
     let statusBadge;
-    if(r.status === 'READY') statusBadge = `<span class="badge-ready">${r.statusLabel}</span>`;
+    if(r.status === 'PULLBACK_50') statusBadge = `<span class="badge-pb50">${r.statusLabel}</span>`;
+    else if(r.status === 'READY') statusBadge = `<span class="badge-ready">${r.statusLabel}</span>`;
     else if(r.status === 'BROKE') statusBadge = `<span class="badge-broke">${r.statusLabel}</span>`;
     else statusBadge = `<span class="badge-forming">${r.statusLabel}</span>`;
     const ttCls = r.ttScore === 8 ? 'tt-8' : r.ttScore === 7 ? 'tt-7' : 'tt-low';
@@ -938,6 +1025,17 @@ function openDetail(symbol){
       <div>${r.tt.passArr[6]?'✅':'❌'} 7. ${r.tt.distFrom52wHigh.toFixed(1)}% จาก 52w high</div>
       <div>${r.c8?'✅':'❌'} 8. RS Rating ${r.rsRating} ${r.c8?'≥70':'<70'}</div>
     </div>
+
+    ${r.status === 'PULLBACK_50' ? `
+    <h3 style="font-size:13px;color:#f97316;margin:14px 0 10px">🔄 Post-Breakout Pullback (Minervini Re-entry)</h3>
+    <div style="background:linear-gradient(135deg,rgba(249,115,22,.08),var(--bg3));padding:14px;border-radius:10px;border-left:3px solid #f97316;font-size:12px;line-height:1.8">
+      <div>📊 Breakout pivot: <b style="color:var(--purple)">${fmt$(r.pivot)}</b></div>
+      <div>⛰️ Post-breakout high: <b style="color:var(--gold)">${fmt$(r.postHigh)}</b> · peak ${r.barsSincePeak} bars ago</div>
+      <div>📈 Rally from pivot: <b style="color:var(--emerald)">+${r.rallyPct.toFixed(1)}%</b></div>
+      <div>🔄 Current retrace: <b style="color:#f97316">${r.retracePct.toFixed(1)}% of rally</b> (ย่อ ${((r.postHigh - r.price)/r.postHigh*100).toFixed(1)}% จาก high)</div>
+      <div>${r.pullbackVolDryUp ? '✅ Volume dry-up ระหว่าง pullback (healthy)' : '⚠️ Volume ยัง active (ระวัง)'}</div>
+    </div>
+    ` : ''}
 
     <h3 style="font-size:13px;color:var(--gold);margin:14px 0 10px">🎯 Trade Plan (R:R 1:2 / 1:3)</h3>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;font-family:var(--mono)">
