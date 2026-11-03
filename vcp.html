@@ -629,47 +629,57 @@ function detectVCP(data, lookbackDays=65){
 
 /* ---------- POST-BREAKOUT PULLBACK 50% DETECTION ---------- */
 /* After a VCP breakout, price rallies then pulls back ~50% from the high.
-   Classic Minervini "second entry" / re-entry setup. */
-function detectPostBreakoutPullback(data, pivot){
+   Classic Minervini "second entry" / re-entry setup.
+   Uses an OLDER base pivot (not the recent-65d VCP pivot which = recent high). */
+function detectPostBreakoutPullback(data){
   const n = data.length;
-  const lookback = Math.min(60, n - 2);
-  // Find FIRST close above pivot within lookback window
+  if(n < 130) return null;
+
+  // Define OLDER base window: bars n-120 to n-30 (3-5 months ago)
+  // Base pivot = max close in that window (= resistance that got broken)
+  const baseStart = Math.max(0, n - 120);
+  const baseEnd = Math.max(baseStart + 10, n - 30);
+  const baseCloses = data.slice(baseStart, baseEnd).map(d => d.c);
+  if(baseCloses.length < 20) return null;
+  const basePivot = Math.max(...baseCloses);
+
+  // Find FIRST breakout above basePivot within bars [baseEnd, n-5]
   let breakoutBar = -1;
-  for(let i = n - lookback; i < n - 2; i++){
-    if(data[i].c > pivot * 1.005){
+  for(let i = baseEnd; i < n - 3; i++){
+    if(data[i].c > basePivot * 1.005){
       breakoutBar = i;
       break;
     }
   }
   if(breakoutBar === -1) return null;
 
-  // Post-breakout high (use highs for peak detection)
-  const postHighs = data.slice(breakoutBar, n).map(d => d.h);
-  const postHigh = Math.max(...postHighs);
-  const peakIdx = breakoutBar + postHighs.indexOf(postHigh);
+  // Post-breakout high
+  const postSlice = data.slice(breakoutBar, n);
+  const postHigh = Math.max(...postSlice.map(d => d.h));
+  const peakIdx = breakoutBar + postSlice.findIndex(d => d.h === postHigh);
   const barsSincePeak = n - 1 - peakIdx;
 
-  const rally = postHigh - pivot;
-  const rallyPct = rally / pivot * 100;
-  if(rallyPct < 10) return null;   // need meaningful rally
+  const rally = postHigh - basePivot;
+  const rallyPct = rally / basePivot * 100;
+  if(rallyPct < 8) return null;   // need meaningful rally
 
   const currentPrice = data[n-1].c;
-  // Still above pivot (not failed breakout)
-  if(currentPrice < pivot * 0.98) return null;
+  // Must still be above (or very close to) base pivot — not failed breakout
+  if(currentPrice < basePivot * 0.97) return null;
 
   const pullback = postHigh - currentPrice;
   const retracePct = rally > 0 ? (pullback / rally * 100) : 0;
   const pullbackFromHighPct = pullback / postHigh * 100;
 
   // Volume dry-up during pullback (last 5 bars vs rally bars)
-  const recentVols = data.slice(n-5).map(d => d.v || 0);
-  const rallyVols = data.slice(breakoutBar, peakIdx+1).map(d => d.v || 0);
+  const recentVols = data.slice(Math.max(0, n-5)).map(d => d.v || 0);
+  const rallyVols = data.slice(breakoutBar, Math.max(breakoutBar+1, peakIdx+1)).map(d => d.v || 0);
   const recentAvg = recentVols.reduce((a,b)=>a+b,0) / Math.max(1, recentVols.length);
   const rallyAvg = rallyVols.reduce((a,b)=>a+b,0) / Math.max(1, rallyVols.length);
   const volDryUp = rallyAvg > 0 && recentAvg < rallyAvg * 0.85;
 
   return {
-    breakoutBar, postHigh, peakIdx, barsSincePeak,
+    basePivot, breakoutBar, postHigh, peakIdx, barsSincePeak,
     rallyPct, retracePct, pullbackFromHighPct,
     volDryUp,
   };
@@ -702,7 +712,8 @@ function analyzeStock(symbol, data, spyData){
   const price = data[data.length-1].c;
 
   // Check post-breakout pullback (Minervini "second entry" setup) FIRST
-  const pullback = detectPostBreakoutPullback(data, vcp.pivot);
+  // Uses OLDER base pivot (not recent VCP pivot) for accurate retrace measurement
+  const pullback = detectPostBreakoutPullback(data);
   const isPullback50 = pullback &&
     pullback.retracePct >= 40 && pullback.retracePct <= 65 &&
     pullback.barsSincePeak >= 2;
@@ -1029,10 +1040,11 @@ function openDetail(symbol){
     ${r.status === 'PULLBACK_50' ? `
     <h3 style="font-size:13px;color:#f97316;margin:14px 0 10px">🔄 Post-Breakout Pullback (Minervini Re-entry)</h3>
     <div style="background:linear-gradient(135deg,rgba(249,115,22,.08),var(--bg3));padding:14px;border-radius:10px;border-left:3px solid #f97316;font-size:12px;line-height:1.8">
-      <div>📊 Breakout pivot: <b style="color:var(--purple)">${fmt$(r.pivot)}</b></div>
+      <div>📊 Base pivot (breakout level): <b style="color:var(--purple)">${fmt$(r.pullback.basePivot)}</b></div>
       <div>⛰️ Post-breakout high: <b style="color:var(--gold)">${fmt$(r.postHigh)}</b> · peak ${r.barsSincePeak} bars ago</div>
       <div>📈 Rally from pivot: <b style="color:var(--emerald)">+${r.rallyPct.toFixed(1)}%</b></div>
       <div>🔄 Current retrace: <b style="color:#f97316">${r.retracePct.toFixed(1)}% of rally</b> (ย่อ ${((r.postHigh - r.price)/r.postHigh*100).toFixed(1)}% จาก high)</div>
+      <div>✅ ยังเหนือ base pivot <b>+${((r.price - r.pullback.basePivot)/r.pullback.basePivot*100).toFixed(1)}%</b></div>
       <div>${r.pullbackVolDryUp ? '✅ Volume dry-up ระหว่าง pullback (healthy)' : '⚠️ Volume ยัง active (ระวัง)'}</div>
     </div>
     ` : ''}
