@@ -895,8 +895,10 @@ function filterResults(rs){
   const mode = $('#modeSel').value;
 
   arr = arr.filter(r => r.score >= scoreMin);
-  arr = arr.filter(r => r.contractionCount >= contMin);
-  arr = arr.filter(r => Math.abs(r.distance) <= distMax);
+  // Min contractions + max distance filters don't apply to PULLBACK_50
+  // (those have their own retrace criterion and may sit far from recent VCP pivot)
+  arr = arr.filter(r => r.status === 'PULLBACK_50' || r.contractionCount >= contMin);
+  arr = arr.filter(r => r.status === 'PULLBACK_50' || Math.abs(r.distance) <= distMax);
   if(mode === 'ready') arr = arr.filter(r => r.status === 'READY');
   else if(mode === 'forming') arr = arr.filter(r => r.status === 'FORMING');
   else if(mode === 'broke') arr = arr.filter(r => r.status === 'BROKE');
