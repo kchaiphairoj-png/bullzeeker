@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-05T01:35:10.278287",
-  "date": "2026-11-05",
+  "generated_at": "2026-11-06T01:42:05.220623",
+  "date": "2026-11-06",
   "universe": {
     "name": "S&P 500",
     "size": 503,
-    "data_received": 504
+    "data_received": 503
   },
   "market_regime": {
     "uptrend": false,
