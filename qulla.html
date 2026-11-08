@@ -685,9 +685,11 @@ function analyzeStock(symbol, data, spyData){
   if(requireSurf && !surf.surfingAny) return null;
 
   // === Tightness (last 5d ADR / 20d ADR) ===
+  // Note: in choppy markets this can spike as momentum stocks pre-breakout
+  // get volatile. Threshold relaxed to 1.1 (only reject if clearly expanding).
   const tightness = computeTightness(data);
   const requireTight = $('#cTight').checked;
-  if(requireTight && tightness != null && tightness > 0.85) return null;
+  if(requireTight && tightness != null && tightness > 1.1) return null;
 
   // === Volume dry-up filter for continuation setups ===
   const requireVolDry = $('#cVolDry').checked;
