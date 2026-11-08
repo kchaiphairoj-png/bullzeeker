@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>🏄 Qullamaggie Momentum Breakout Scanner | Bullzeeker</title>
+<meta name="description" content="Qullamaggie-style US momentum breakout scanner — big prior move + tight consolidation + surfing 10/20 MA. Ranked pre-breakout watchlist." />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏄</text></svg>" />
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#050810" />
+<style>
+:root{
+  --bg:#050810; --bg2:#0a1220; --bg3:#0f1a2e; --bg4:#152238;
+  --line:#1e2a44; --line2:#2a3856;
+  --text:#e6edf7; --muted:#8b97ab; --dim:#5f6b82;
+  --gold:#fbbf24; --gold-strong:#f59e0b;
+  --accent:#3b82f6; --emerald:#10b981; --red:#ef4444;
+  --purple:#a855f7; --cyan:#06b6d4; --orange:#f97316;
+  --thai-red:#ED1C24;
+  --mono:'JetBrains Mono','SF Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter','Noto Sans Thai',-apple-system,sans-serif;min-height:100vh;background:radial-gradient(ellipse at top right,rgba(249,115,22,.10),transparent 60%),radial-gradient(ellipse at bottom left,rgba(251,191,36,.06),transparent 60%),var(--bg)}
+body{padding-bottom:60px}
+
+.nav{position:sticky;top:0;z-index:100;background:rgba(5,8,16,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:12px 18px}
+.nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
+.brand-logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--thai-red),var(--gold),var(--accent));display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 12px rgba(251,191,36,.25)}
+.brand-name{font-weight:800;font-size:18px;letter-spacing:.5px}
+.brand-sub{font-size:11px;color:var(--muted);margin-top:-2px}
+.nav-links{display:flex;gap:6px;flex-wrap:wrap;overflow-x:auto;flex:1;justify-content:flex-end}
+.nav-a{padding:6px 12px;border-radius:8px;text-decoration:none;color:var(--muted);font-size:13px;font-weight:600;white-space:nowrap;border:1px solid transparent}
+.nav-a:hover{color:var(--text);background:var(--bg3)}
+.nav-a.active{color:var(--orange);background:rgba(249,115,22,.1);border-color:var(--orange)}
+
+main{max-width:1400px;margin:0 auto;padding:20px 18px}
+
+.hero{background:linear-gradient(135deg,rgba(249,115,22,.14),rgba(251,191,36,.06));border:1px solid var(--line2);border-radius:16px;padding:22px;margin-bottom:14px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;right:-40px;top:-40px;width:220px;height:220px;background:radial-gradient(circle,rgba(249,115,22,.18),transparent 70%);pointer-events:none}
+.hero h1{font-size:24px;font-weight:800;margin-bottom:4px;position:relative}
+.hero .sub{font-size:13px;color:var(--muted);position:relative;line-height:1.6}
+.hero .tag{display:inline-block;padding:3px 10px;border-radius:6px;background:var(--orange);color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px;margin-right:8px;vertical-align:middle}
+
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+.card-h h2{font-size:16px;font-weight:800}
+.pill{padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:var(--bg3);color:var(--muted);border:1px solid var(--line)}
+
+.ctrl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:12px}
+.ctrl{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.ctrl label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+.ctrl label .v{color:var(--orange);font-family:var(--mono);font-weight:700;float:right}
+.ctrl input,.ctrl select{width:100%;background:var(--bg2);border:1px solid var(--line);color:var(--text);padding:6px 8px;border-radius:6px;font-family:var(--mono);font-size:13px}
+.ctrl-checks{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.check{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg3);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px}
+.check.on{border-color:var(--orange);background:rgba(249,115,22,.08)}
+.check input{cursor:pointer}
+
+.btn-primary{background:linear-gradient(135deg,var(--orange),#ea580c);color:#fff;border:none;padding:12px 24px;border-radius:10px;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 6px 20px rgba(249,115,22,.35);transition:transform .15s}
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.progress-wrap{margin-top:12px;display:none}
+.progress-wrap.active{display:block}
+.progress-bar{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.progress-bar .fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--gold));transition:width .3s}
+.progress-text{font-size:11px;color:var(--muted);margin-top:6px;font-family:var(--mono);display:flex;justify-content:space-between}
+
+.stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.stat .v{font-size:20px;font-weight:800;font-family:var(--mono);margin-top:2px}
+.stat.orange .v{color:var(--orange)}
+.stat.gold .v{color:var(--gold)}
+.stat.green .v{color:var(--emerald)}
+.stat.cyan .v{color:var(--cyan)}
+
+table.q-tbl{width:100%;border-collapse:collapse;font-size:13px}
+table.q-tbl thead th{position:sticky;top:0;background:var(--bg3);color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:10px;padding:10px 8px;border-bottom:2px solid var(--line);cursor:pointer;user-select:none;z-index:1}
+table.q-tbl thead th:hover{color:var(--text)}
+table.q-tbl thead th.left{text-align:left}
+table.q-tbl tbody td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:center;font-family:var(--mono)}
+table.q-tbl tbody td.left{text-align:left}
+table.q-tbl tbody tr{cursor:pointer;transition:background .15s}
+table.q-tbl tbody tr:hover{background:var(--bg3)}
+table.q-tbl tbody tr.cat-A{background:linear-gradient(90deg,rgba(249,115,22,.08),transparent)}
+table.q-tbl tbody tr.cat-A:hover{background:linear-gradient(90deg,rgba(249,115,22,.14),var(--bg3))}
+table.q-tbl tbody .sym{font-weight:800;color:var(--text);font-family:'Inter',sans-serif}
+.pos{color:var(--emerald);font-weight:700}
+.neg{color:var(--red);font-weight:700}
+.score-bar{display:inline-block;width:60px;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-right:4px;vertical-align:middle}
+.score-bar>div{height:100%;border-radius:3px}
+
+.cat-A{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;box-shadow:0 0 10px rgba(249,115,22,.3)}
+.cat-B{background:rgba(251,191,36,.2);color:var(--gold);border:1px solid var(--gold);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800}
+.cat-C{background:linear-gradient(135deg,#10b981,#059669);color:#062516;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800}
+.cat-D{background:var(--bg2);color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
+
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .icon{font-size:48px;margin-bottom:10px;opacity:.5}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);color:var(--text);padding:12px 20px;border-radius:10px;font-weight:700;font-size:14px;border:1px solid var(--line2);box-shadow:0 12px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.3s;z-index:1000}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:1001;padding:20px}
+.modal-bg.show{display:flex}
+.modal-card{background:var(--bg2);border:1px solid var(--line2);border-radius:14px;padding:20px;max-width:760px;width:100%;max-height:90vh;overflow:auto}
+.modal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.modal-close{background:none;border:1px solid var(--line);color:var(--muted);padding:4px 12px;border-radius:6px;cursor:pointer;font-size:14px}
+
+.cond-row{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;border-bottom:1px dashed var(--line)}
+.cond-row:last-child{border:none}
+.cond-row .ic{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+.cond-row .ic.ok{background:var(--emerald);color:#062516}
+.cond-row .ic.no{background:var(--red);color:#fff}
+.cond-row .label{flex:1}
+.cond-row .val{font-family:var(--mono);color:var(--gold);font-weight:700}
+
+@media (max-width:900px){
+  table.q-tbl{font-size:11px}
+  table.q-tbl thead th,table.q-tbl tbody td{padding:6px 4px}
+  .col-mobile-hide{display:none}
+}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D593QC1NXE"></script>
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+gtag('js',new Date());gtag('config','G-D593QC1NXE');
+</script>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-inner">
+    <a href="/" class="brand">
+      <div class="brand-logo">🐂</div>
+      <div>
+        <div class="brand-name">Bullzeeker</div>
+        <div class="brand-sub">🏄 Qullamaggie Breakout Scanner</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="nav-a">🏠 หน้าหลัก</a>
+      <a href="/screener.html" class="nav-a">🎯 Screener</a>
+      <a href="/breakout.html" class="nav-a">🚀 Breakout</a>
+      <a href="/vcp.html" class="nav-a">🧬 VCP</a>
+      <a href="/qulla.html" class="nav-a active">🏄 Qullamaggie</a>
+      <a href="/longterm.html" class="nav-a">🌊 Long-Term</a>
+      <a href="/cio.html" class="nav-a">🤖 AI CIO</a>
+      <a href="/gold.html" class="nav-a">🥇 Gold</a>
+      <a href="/course.html" class="nav-a">🎓 คอร์ส</a>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1><span class="tag">QULLAMAGGIE</span>🏄 Momentum Breakout Scanner</h1>
+    <div class="sub">
+      Kristjan Kullamägi's continuation pattern: <b style="color:var(--orange)">big move (+30-100% ใน 1-3 เดือน)</b> → <b>orderly pullback + tight consolidation</b> (ย่อแบบ higher lows, surfs 10/20/50d MA) → <b>breakout</b> · Entry: Opening Range High · Stop: Low of day (≤ ADR) · Sell 1/3-1/2 day 3-5, trail 10/20d MA
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="card">
+    <div class="card-h"><h2>⚙️ Scan Parameters</h2></div>
+    <div class="ctrl-grid">
+      <div class="ctrl">
+        <label>Universe</label>
+        <select id="uniSel">
+          <option value="liquid_500">Liquid 500 · เร็ว</option>
+          <option value="sp500" selected>S&P 500</option>
+          <option value="liquid_1000">Liquid 1000</option>
+          <option value="market_full">Market Full (~1500)</option>
+          <option value="growth">High Growth</option>
+          <option value="midcap">Mid Cap</option>
+          <option value="smallcap">Small Cap</option>
+        </select>
+      </div>
+      <div class="ctrl">
+        <label>Min Score <span class="v" id="sMinV">60</span></label>
+        <input type="range" id="sMin" min="0" max="100" step="5" value="60" />
+      </div>
+      <div class="ctrl">
+        <label>Min Prior Move (%) <span class="v" id="mMinV">30</span></label>
+        <input type="range" id="mMin" min="10" max="100" step="5" value="30" />
+      </div>
+      <div class="ctrl">
+        <label>Max Dist from Pivot (%) <span class="v" id="dMaxV">7</span></label>
+        <input type="range" id="dMax" min="1" max="15" step="1" value="7" />
+      </div>
+      <div class="ctrl">
+        <label>Category Filter</label>
+        <select id="catSel">
+          <option value="all" selected>All (A + B + C)</option>
+          <option value="A">🏄 A — Breakout Imminent (0-3%)</option>
+          <option value="B">⏳ B — Watchlist (3-7%)</option>
+          <option value="C">🚀 C — Breakout Confirmed (just broke)</option>
+        </select>
+      </div>
+    </div>
+    <div class="ctrl-checks">
+      <label class="check on"><input type="checkbox" id="cTight" checked> ต้องมี tightening range (contraction)</label>
+      <label class="check on"><input type="checkbox" id="cSurf" checked> ต้อง surfing 10/20d MA (price ≤ 5% จาก MA)</label>
+      <label class="check on"><input type="checkbox" id="cVolDry" checked> Volume dry-up ระหว่าง base</label>
+      <label class="check"><input type="checkbox" id="cCache" checked> ใช้ Cache (TTL 1 วัน)</label>
+    </div>
+    <button class="btn-primary" id="scanBtn" onclick="runScan()">
+      <span id="sIcon">🏄</span> <span id="sLbl">สแกน Qullamaggie Setups</span>
+    </button>
+    <div class="progress-wrap" id="progWrap">
+      <div class="progress-bar"><div class="fill" id="progFill" style="width:0%"></div></div>
+      <div class="progress-text">
+        <span id="progText">—</span>
+        <span id="progCount">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar" id="statsBar" style="display:none">
+    <div class="stat orange"><label>🏄 Total Setups</label><div class="v" id="sTotal">—</div></div>
+    <div class="stat orange"><label>🏄 A — Imminent</label><div class="v" id="sCatA">—</div></div>
+    <div class="stat gold"><label>⏳ B — Watchlist</label><div class="v" id="sCatB">—</div></div>
+    <div class="stat green"><label>🚀 C — Confirmed</label><div class="v" id="sCatC">—</div></div>
+    <div class="stat"><label>🔢 Scanned</label><div class="v" id="sScan">—</div></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="card" id="resultsWrap" style="display:none">
+    <div class="card-h">
+      <h2 id="resHead">🏄 Qullamaggie Setups</h2>
+      <span class="pill" id="resMeta">—</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="q-tbl">
+        <thead>
+          <tr>
+            <th class="left" data-sort="symbol">Symbol</th>
+            <th data-sort="score">Score</th>
+            <th data-sort="category">Cat</th>
+            <th data-sort="priorMove" class="col-mobile-hide">Prior Move</th>
+            <th data-sort="baseDuration" class="col-mobile-hide">Base</th>
+            <th data-sort="baseDepth" class="col-mobile-hide">Depth</th>
+            <th data-sort="atrContraction" class="col-mobile-hide">ATR↓</th>
+            <th data-sort="volContraction" class="col-mobile-hide">Vol↓</th>
+            <th data-sort="rs">RS</th>
+            <th data-sort="pivot" class="col-mobile-hide">Pivot</th>
+            <th data-sort="distance">Dist %</th>
+            <th data-sort="price" class="col-mobile-hide">Price</th>
+          </tr>
+        </thead>
+        <tbody id="resBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- EDUCATION -->
+  <div class="card">
+    <div class="card-h"><h2>📚 เข้าใจ Qullamaggie's Pattern</h2></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;font-size:13px;line-height:1.7">
+      <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid var(--orange)">
+        <h3 style="color:var(--orange);font-size:14px;margin-bottom:8px">1️⃣ Big Move</h3>
+        <p>ขึ้นแรง <b>30-100%+</b> ใน <b>1-3 เดือน</b> (ไม่กี่วัน-สัปดาห์) · บ่งบอก leadership + momentum</p>
+      </div>
+      <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid var(--gold)">
+        <h3 style="color:var(--gold);font-size:14px;margin-bottom:8px">2️⃣ Orderly Pullback</h3>
+        <p>ย่อเป็นระเบียบ · <b>higher lows</b> · range แคบลง · <b>"surfing" 10/20/50d MA</b> · base 2 weeks-2 months</p>
+      </div>
+      <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid var(--emerald)">
+        <h3 style="color:var(--emerald);font-size:14px;margin-bottom:8px">3️⃣ Breakout</h3>
+        <p>เบรกเหนือ consolidation high · Entry: <b>Opening Range High</b> (1-60 นาที) · Stop: Low of day ≤ ATR/ADR</p>
+      </div>
+      <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid var(--cyan)">
+        <h3 style="color:var(--cyan);font-size:14px;margin-bottom:8px">🎯 Management</h3>
+        <p>ขาย <b>1/3-1/2</b> ที่ day 3-5 → ย้าย stop เป็น breakeven · trail ที่เหลือด้วย <b>10d</b> (มือใหม่) หรือ <b>20d MA</b> · exit เมื่อ close ต่ำกว่า MA</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="modal-bg" id="modal" onclick="if(event.target.id==='modal')closeModal()">
+  <div class="modal-card">
+    <div class="modal-h">
+      <div>
+        <h2 id="modalTitle" style="font-size:20px;font-weight:800">—</h2>
+        <div id="modalSub" style="color:var(--muted);font-size:12px;margin-top:2px">—</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">—</div>
+
+<script src="/universe.js"></script>
+<script>
+/* ============================================================
+   QULLAMAGGIE MOMENTUM BREAKOUT SCANNER
+   ============================================================ */
+
+const PROXIES = [
+  url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
+  url => 'https://corsproxy.io/?' + encodeURIComponent(url),
+];
+const CACHE_KEY = 'qulla_cache_v1';
+const CACHE_TTL = 1000 * 60 * 60 * 24;   // 1 day
+const FETCH_CONC = 25;
+
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+/* ---------- CACHE ---------- */
+let CACHE = {};
+try{ CACHE = JSON.parse(localStorage.getItem(CACHE_KEY)||'{}'); }catch{}
+function saveCache(){
+  try{ localStorage.setItem(CACHE_KEY, JSON.stringify(CACHE)); }
+  catch{
+    const ents = Object.entries(CACHE).sort((a,b)=>a[1].ts-b[1].ts);
+    ents.slice(0, Math.floor(ents.length*0.3)).forEach(([k])=>delete CACHE[k]);
+    try{ localStorage.setItem(CACHE_KEY, JSON.stringify(CACHE)); }catch{}
+  }
+}
+
+/* ---------- UTILS ---------- */
+function toast(m,ms=2500){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),ms)}
+function fmt$(v){return v==null||!isFinite(v)?'—':'$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmtPct(v,sign=true){if(v==null||!isFinite(v))return'—';return (sign&&v>=0?'+':'')+v.toFixed(2)+'%'}
+
+/* ---------- INDICATORS ---------- */
+function sma(arr, p){
+  if(arr.length < p) return arr.map(()=>null);
+  const out = new Array(p-1).fill(null);
+  let s = 0;
+  for(let i=0; i<p; i++) s += arr[i];
+  out.push(s/p);
+  for(let i=p; i<arr.length; i++){
+    s += arr[i] - arr[i-p];
+    out.push(s/p);
+  }
+  return out;
+}
+function atrSeries(highs, lows, closes, p=14){
+  const trs = [0];
+  for(let i=1; i<closes.length; i++){
+    trs.push(Math.max(
+      highs[i]-lows[i],
+      Math.abs(highs[i]-closes[i-1]),
+      Math.abs(lows[i]-closes[i-1])
+    ));
+  }
+  // Wilder smoothed
+  const out = new Array(p).fill(null);
+  let a = trs.slice(1, p+1).reduce((x,y)=>x+y,0)/p;
+  out.push(a);
+  for(let i=p+1; i<trs.length; i++){
+    a = (a*(p-1)+trs[i])/p;
+    out.push(a);
+  }
+  return out;
+}
+
+/* ---------- PROXY FETCH ---------- */
+async function tryProxies(url){
+  let lastErr;
+  for(let i=0; i<PROXIES.length; i++){
+    try{
+      const r = await fetch(PROXIES[i](url), {cache:'no-store'});
+      const txt = await r.text();
+      if(i === 0){
+        if(txt && txt.length >= 10) return txt;
+        throw new Error('empty');
+      }
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      if(!txt || txt.length < 10) throw new Error('empty');
+      return txt;
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error('proxy fail');
+}
+
+async function fetchDaily(symbol, useCache=true){
+  const now = Date.now();
+  if(useCache && CACHE[symbol] && (now-CACHE[symbol].ts)<CACHE_TTL) return CACHE[symbol].data;
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=1y&interval=1d`;
+  const txt = await tryProxies(url);
+  const j = JSON.parse(txt);
+  const res = j?.chart?.result?.[0];
+  if(!res) throw new Error('no data');
+  const ts = res.timestamp || [];
+  const q = res.indicators?.quote?.[0] || {};
+  const data = ts.map((t,i) => ({
+    t, o:q.open?.[i], h:q.high?.[i], l:q.low?.[i], c:q.close?.[i], v:q.volume?.[i]
+  })).filter(d => d.c != null && d.h != null && d.l != null);
+  if(data.length < 120) throw new Error('insufficient history');
+  CACHE[symbol] = {ts: now, data};
+  return data;
+}
+
+/* ---------- SPY (for RS) ---------- */
+let SPY_DATA = null;
+async function fetchSpy(){
+  if(SPY_DATA) return SPY_DATA;
+  SPY_DATA = await fetchDaily('SPY', true);
+  return SPY_DATA;
+}
+
+/* RS vs SPY — focused on 3M performance delta */
+function computeRS(stockData, spyData){
+  if(stockData.length < 70 || spyData.length < 70) return null;
+  const sc = stockData.map(d=>d.c);
+  const bc = spyData.map(d=>d.c);
+  const p63 = (sc[sc.length-1]/sc[sc.length-64] - 1) * 100;
+  const b63 = (bc[bc.length-1]/bc[bc.length-64] - 1) * 100;
+  const rsDiff = p63 - b63;
+  // Map to 0-100: match SPY = 50, outperform +30% = 95, under -30% = 5
+  return Math.round(Math.max(0, Math.min(100, 50 + rsDiff * 1.5)));
+}
+
+/* ---------- QULLAMAGGIE ANALYSIS ---------- */
+
+/* Find prior impulse move — highest N-day return ending within last 60 days */
+function findPriorImpulse(data){
+  const n = data.length;
+  if(n < 70) return null;
+  let best = {returnPct: -Infinity, startIdx:0, endIdx:0, days:0};
+  // Scan ending points in last 60 days, with lookback 20-60 days
+  for(let endIdx = n-60; endIdx < n; endIdx++){
+    for(const lb of [20, 30, 45, 60]){
+      const startIdx = endIdx - lb;
+      if(startIdx < 0) continue;
+      const startPx = data[startIdx].c;
+      const endPx = data[endIdx].c;
+      const ret = (endPx / startPx - 1) * 100;
+      if(ret > best.returnPct){
+        best = {returnPct: ret, startIdx, endIdx, days: lb, startPx, endPx};
+      }
+    }
+  }
+  return best.returnPct > 0 ? best : null;
+}
+
+/* Detect consolidation base after impulse peak */
+function detectBase(data, impulse){
+  const n = data.length;
+  if(!impulse || impulse.endIdx >= n-3) return null;
+  // Base starts at impulse end, extends to current
+  const baseStart = impulse.endIdx;
+  const baseEnd = n - 1;
+  const baseDuration = baseEnd - baseStart;
+  if(baseDuration < 8 || baseDuration > 60) return null;   // 2-12 weeks
+
+  const slice = data.slice(baseStart, baseEnd + 1);
+  const baseHigh = Math.max(...slice.map(d=>d.h));
+  const baseLow = Math.min(...slice.map(d=>d.l));
+  const baseDepth = (baseHigh - baseLow) / baseHigh * 100;
+  // Qualify: not too deep (bad flag/failed base)
+  if(baseDepth > 30) return null;
+
+  // Pivot = highest HIGH in base (resistance)
+  const pivot = baseHigh;
+  const currentPrice = data[n-1].c;
+  const distance = (currentPrice - pivot) / pivot * 100;
+
+  // ATR contraction: last 5 bars range vs preceding 15 bars range in base
+  const recentBars = slice.slice(-5);
+  const prevBars = slice.slice(-20, -5);
+  const avgRange = bars => bars.length ? bars.reduce((s,b) => s + (b.h - b.l), 0) / bars.length : 0;
+  const recentAvgRange = avgRange(recentBars);
+  const prevAvgRange = avgRange(prevBars);
+  const atrContractionRatio = prevAvgRange > 0 ? recentAvgRange / prevAvgRange : 1;
+
+  // Volume contraction: base volume vs impulse volume
+  const baseVols = slice.map(d => d.v || 0);
+  const impulseVols = data.slice(impulse.startIdx, impulse.endIdx + 1).map(d => d.v || 0);
+  const avgVol = vs => vs.length ? vs.reduce((s,v)=>s+v,0) / vs.length : 0;
+  const baseAvgVol = avgVol(baseVols);
+  const impulseAvgVol = avgVol(impulseVols);
+  const volContractionRatio = impulseAvgVol > 0 ? baseAvgVol / impulseAvgVol : 1;
+
+  // Higher lows check: last 3 pivot lows should be rising
+  const lows = slice.map(d=>d.l);
+  let higherLows = false;
+  if(slice.length >= 15){
+    const seg1Low = Math.min(...lows.slice(0, 5));
+    const seg2Low = Math.min(...lows.slice(5, 10));
+    const seg3Low = Math.min(...lows.slice(-5));
+    higherLows = seg3Low >= seg2Low && seg2Low >= seg1Low * 0.98;
+  }
+
+  return {
+    baseStart, baseEnd, baseDuration,
+    baseHigh, baseLow, baseDepth,
+    pivot, distance, currentPrice,
+    atrContractionRatio, recentAvgRange, prevAvgRange,
+    volContractionRatio, baseAvgVol, impulseAvgVol,
+    higherLows,
+  };
+}
+
+/* MA surfing check — price close to rising 10/20/50d MA */
+function checkSurfingMA(data){
+  const n = data.length;
+  const closes = data.map(d=>d.c);
+  const sma10 = sma(closes, 10);
+  const sma20 = sma(closes, 20);
+  const sma50 = sma(closes, 50);
+  const price = closes[n-1];
+  const ma10Now = sma10[n-1], ma20Now = sma20[n-1], ma50Now = sma50[n-1];
+  if(ma10Now == null || ma20Now == null || ma50Now == null) return null;
+
+  // Rising check: MA now > MA 10 bars ago
+  const ma10Rising = sma10[n-11] != null && ma10Now > sma10[n-11];
+  const ma20Rising = sma20[n-11] != null && ma20Now > sma20[n-11];
+  const ma50Rising = sma50[n-11] != null && ma50Now > sma50[n-11];
+
+  const distMa10 = (price - ma10Now) / ma10Now * 100;
+  const distMa20 = (price - ma20Now) / ma20Now * 100;
+  const distMa50 = (price - ma50Now) / ma50Now * 100;
+
+  // Surfing = price within ±5% of rising 10 OR 20 OR 50 MA
+  const surfingMa10 = Math.abs(distMa10) < 5 && ma10Rising;
+  const surfingMa20 = Math.abs(distMa20) < 5 && ma20Rising;
+  const surfingMa50 = Math.abs(distMa50) < 5 && ma50Rising;
+  const surfingAny = surfingMa10 || surfingMa20 || surfingMa50;
+
+  return {
+    sma10:ma10Now, sma20:ma20Now, sma50:ma50Now,
+    distMa10, distMa20, distMa50,
+    ma10Rising, ma20Rising, ma50Rising,
+    surfingMa10, surfingMa20, surfingMa50, surfingAny,
+  };
+}
+
+/* ADR (Average Daily Range) — 20d average of (high/low - 1) * 100 */
+function computeADR(data, p=20){
+  const slice = data.slice(-p);
+  if(slice.length < p) return null;
+  const ranges = slice.map(d => (d.h - d.l) / d.l * 100);
+  return ranges.reduce((s,r)=>s+r, 0) / ranges.length;
+}
+
+/* ---------- MAIN ANALYZER ---------- */
+function analyzeStock(symbol, data, spyData){
+  const n = data.length;
+  if(n < 120) return null;
+  const price = data[n-1].c;
+  if(price < 5) return null;
+
+  // Liquidity — 20d avg $ volume ≥ $20M
+  const vols = data.slice(-20);
+  const avg$Vol = vols.reduce((s,d)=>s + (d.c * (d.v||0)), 0) / vols.length;
+  if(avg$Vol < 10e6) return null;   // relaxed to $10M min
+
+  // Prior impulse
+  const impulse = findPriorImpulse(data);
+  if(!impulse) return null;
+  const minMove = +$('#mMin').value;
+  if(impulse.returnPct < minMove) return null;
+
+  // Base / consolidation
+  const base = detectBase(data, impulse);
+  if(!base) return null;
+
+  // Reject if excessively extended (price > 10% above pivot already)
+  if(base.distance > 10) return null;
+
+  // Surfing MA check
+  const surf = checkSurfingMA(data);
+  if(!surf) return null;
+  const requireSurf = $('#cSurf').checked;
+  if(requireSurf && !surf.surfingAny) return null;
+
+  // RS vs SPY
+  const rs = computeRS(data, spyData);
+  if(rs == null) return null;
+  // Want RS ≥ 55 (slight outperform)
+
+  // Tightening range filter
+  const requireTight = $('#cTight').checked;
+  if(requireTight && base.atrContractionRatio > 0.80) return null;   // recent 5d > 80% of prior 15d = not tight
+
+  // Volume dry-up filter
+  const requireVolDry = $('#cVolDry').checked;
+  if(requireVolDry && base.volContractionRatio > 0.90) return null;
+
+  // ADR
+  const adr = computeADR(data);
+
+  // Category assignment
+  let category, categoryLabel;
+  if(base.distance >= 0 && base.distance <= 5){
+    category = 'C';
+    categoryLabel = '🚀 Confirmed (+' + base.distance.toFixed(1) + '%)';
+  } else if(base.distance < 0 && base.distance >= -3){
+    category = 'A';
+    categoryLabel = '🏄 Imminent (' + base.distance.toFixed(1) + '%)';
+  } else if(base.distance < -3 && base.distance >= -7){
+    category = 'B';
+    categoryLabel = '⏳ Watchlist (' + base.distance.toFixed(1) + '%)';
+  } else {
+    return null;   // too far
+  }
+
+  // === SCORING (100 pts total) ===
+  // 1. Prior momentum (20): +30%→10, +60%→15, +100%+→20
+  let momScore = Math.min(20, impulse.returnPct / 5);
+
+  // 2. Base quality + tightness (25)
+  let baseScore = 0;
+  if(base.baseDuration >= 10 && base.baseDuration <= 45) baseScore += 10;
+  else if(base.baseDuration >= 8) baseScore += 5;
+  if(base.baseDepth < 15) baseScore += 8;
+  else if(base.baseDepth < 25) baseScore += 4;
+  if(base.higherLows) baseScore += 7;
+
+  // 3. Volatility contraction (15)
+  let atrScore = 0;
+  if(base.atrContractionRatio < 0.5) atrScore = 15;
+  else if(base.atrContractionRatio < 0.7) atrScore = 10;
+  else if(base.atrContractionRatio < 0.85) atrScore = 6;
+
+  // 4. Volume dry-up (15)
+  let volScore = 0;
+  if(base.volContractionRatio < 0.6) volScore = 15;
+  else if(base.volContractionRatio < 0.8) volScore = 10;
+  else if(base.volContractionRatio < 0.95) volScore = 5;
+
+  // 5. RS (10)
+  const rsScore = Math.max(0, Math.min(10, (rs - 50) / 5));
+
+  // 6. Pivot proximity (10)
+  let proxScore = 0;
+  if(category === 'A') proxScore = 10;
+  else if(category === 'C') proxScore = 8;
+  else if(category === 'B') proxScore = 5;
+
+  // 7. MA surfing bonus (5)
+  const surfScore = surf.surfingAny ? 5 : 0;
+
+  const totalScore = Math.round(Math.max(0, Math.min(100,
+    momScore + baseScore + atrScore + volScore + rsScore + proxScore + surfScore
+  )));
+
+  return {
+    symbol, name: symbol, price,
+    score: totalScore,
+    category, categoryLabel,
+    priorMove: impulse.returnPct,
+    impulseDays: impulse.days,
+    impulseStart: impulse.startIdx,
+    impulseEnd: impulse.endIdx,
+    baseDuration: base.baseDuration,
+    baseHigh: base.baseHigh,
+    baseLow: base.baseLow,
+    baseDepth: base.baseDepth,
+    pivot: base.pivot,
+    distance: base.distance,
+    atrContraction: base.atrContractionRatio,
+    volContraction: base.volContractionRatio,
+    higherLows: base.higherLows,
+    rs, adr,
+    surf,
+    components: {momScore, baseScore, atrScore, volScore, rsScore, proxScore, surfScore},
+  };
+}
+
+/* ---------- SCAN ---------- */
+let state = {results: [], scanning: false, sort: {key:'score', dir:-1}};
+
+function getUniverse(){
+  const sel = $('#uniSel').value;
+  const U = window.BULLZEEKER_UNIVERSE;
+  if(U && U[sel]) return [...new Set(U[sel])];
+  return [];
+}
+
+async function concurrent(items, conc, worker, onProgress){
+  let idx = 0, done = 0;
+  async function run(){
+    while(idx < items.length){
+      const myIdx = idx++;
+      try{ await worker(items[myIdx], myIdx); }
+      catch{}
+      done++;
+      onProgress?.(done, items.length);
+    }
+  }
+  await Promise.all(Array(conc).fill(0).map(run));
+}
+
+async function runScan(){
+  if(state.scanning) return;
+  state.scanning = true;
+  $('#scanBtn').disabled = true;
+  $('#sLbl').textContent = 'กำลังสแกน...';
+  $('#sIcon').textContent = '⏳';
+  $('#progWrap').classList.add('active');
+
+  try{
+    const uni = getUniverse();
+    if(!uni.length){ toast('⚠️ Universe empty'); return; }
+    $('#sScan').textContent = uni.length;
+
+    $('#progText').textContent = '📡 Loading SPY benchmark...';
+    const spy = await fetchSpy();
+
+    const results = [];
+    await concurrent(uni, FETCH_CONC, async (sym) => {
+      try{
+        const data = await fetchDaily(sym, $('#cCache').checked);
+        const r = analyzeStock(sym, data, spy);
+        if(r) results.push(r);
+      }catch{}
+    }, (done, total) => {
+      $('#progFill').style.width = ((done/total)*100).toFixed(1) + '%';
+      $('#progText').textContent = `📡 ${done}/${total} · พบ ${results.length} setups`;
+      $('#progCount').textContent = `${done} / ${total}`;
+    });
+
+    saveCache();
+    state.results = results;
+    renderResults();
+    toast(`✅ สแกนเสร็จ · เจอ ${results.length} Qullamaggie setups`, 3000);
+  }catch(e){
+    console.error(e);
+    toast('❌ Scan failed: ' + e.message, 3000);
+  }finally{
+    state.scanning = false;
+    $('#scanBtn').disabled = false;
+    $('#sLbl').textContent = 'สแกน Qullamaggie Setups';
+    $('#sIcon').textContent = '🏄';
+    setTimeout(()=> $('#progWrap').classList.remove('active'), 3000);
+  }
+}
+
+/* ---------- RENDER ---------- */
+function filterResults(rs){
+  let arr = rs.slice();
+  const scoreMin = +$('#sMin').value;
+  const distMax = +$('#dMax').value;
+  const cat = $('#catSel').value;
+  arr = arr.filter(r => r.score >= scoreMin);
+  arr = arr.filter(r => Math.abs(r.distance) <= distMax);
+  if(cat !== 'all') arr = arr.filter(r => r.category === cat);
+  return arr;
+}
+function sortResults(arr){
+  const {key, dir} = state.sort;
+  arr.sort((a,b) => {
+    let va = a[key], vb = b[key];
+    if(va == null) va = -Infinity;
+    if(vb == null) vb = -Infinity;
+    if(typeof va === 'string') return va.localeCompare(vb) * dir;
+    return (va - vb) * dir;
+  });
+  return arr;
+}
+function catColor(cat){
+  return cat === 'A' ? 'var(--orange)' : cat === 'C' ? 'var(--emerald)' : cat === 'B' ? 'var(--gold)' : 'var(--muted)';
+}
+
+function renderResults(){
+  const all = state.results;
+  const filtered = sortResults(filterResults(all));
+
+  $('#statsBar').style.display = 'grid';
+  $('#sTotal').textContent = all.length;
+  $('#sCatA').textContent = all.filter(r => r.category === 'A').length;
+  $('#sCatB').textContent = all.filter(r => r.category === 'B').length;
+  $('#sCatC').textContent = all.filter(r => r.category === 'C').length;
+
+  $('#resultsWrap').style.display = 'block';
+  $('#resMeta').textContent = `${filtered.length} / ${all.length} · sorted by ${state.sort.key} ${state.sort.dir<0?'↓':'↑'}`;
+
+  if(!filtered.length){
+    $('#resBody').innerHTML = `<tr><td colspan="12"><div class="empty">
+      <div class="icon">🏄</div><div><b>ไม่พบ setups</b></div>
+      <div style="margin-top:6px;font-size:12px">ลองลด Score, ลด Min Prior Move, เพิ่ม Max Dist, หรือเปลี่ยน Universe</div>
+    </div></td></tr>`;
+    return;
+  }
+
+  $('#resBody').innerHTML = filtered.map(r => {
+    const col = catColor(r.category);
+    const catCls = 'cat-' + r.category;
+    const distCls = r.distance >= 0 ? 'pos' : 'neg';
+    const rsCol = r.rs >= 80 ? 'var(--emerald)' : r.rs >= 65 ? 'var(--gold)' : 'var(--muted)';
+    return `<tr class="cat-${r.category}" onclick="openDetail('${r.symbol}')">
+      <td class="left"><div class="sym">${r.symbol}</div></td>
+      <td><span class="score-bar"><div style="width:${r.score}%;background:${col}"></div></span><b style="color:${col}">${r.score}</b></td>
+      <td><span class="${catCls}">${r.category}</span></td>
+      <td class="col-mobile-hide pos">+${r.priorMove.toFixed(0)}% / ${r.impulseDays}d</td>
+      <td class="col-mobile-hide">${r.baseDuration}d</td>
+      <td class="col-mobile-hide">${r.baseDepth.toFixed(1)}%</td>
+      <td class="col-mobile-hide">${(r.atrContraction*100).toFixed(0)}%</td>
+      <td class="col-mobile-hide">${(r.volContraction*100).toFixed(0)}%</td>
+      <td style="color:${rsCol}">${r.rs}</td>
+      <td class="col-mobile-hide">${fmt$(r.pivot)}</td>
+      <td class="${distCls}">${fmtPct(r.distance)}</td>
+      <td class="col-mobile-hide">${fmt$(r.price)}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ---------- MODAL ---------- */
+function openDetail(symbol){
+  const r = state.results.find(x => x.symbol === symbol);
+  if(!r) return;
+  $('#modalTitle').textContent = `🏄 ${r.symbol} · Qullamaggie Setup`;
+  $('#modalSub').textContent = `Score ${r.score} · ${r.categoryLabel}`;
+
+  // Trade plan: Entry = pivot (ORH trigger tomorrow), Stop = pivot - ADR, Target = 2-3R
+  const entry = r.pivot;
+  const adrDollar = (r.adr || 2) / 100 * entry;   // ADR in $
+  const stop = Math.max(entry - adrDollar * 1.2, entry * 0.93);   // stop = max(1.2x ADR, 7%)
+  const risk = entry - stop;
+  const t1 = entry + risk * 2;
+  const t2 = entry + risk * 3;
+  const acctEq = 10000;   // default $10k account
+  const riskPct = 0.5;
+  const shares = Math.floor((acctEq * riskPct / 100) / risk);
+
+  $('#modalBody').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px">
+      <div class="stat"><label>Price</label><div class="v" style="color:var(--gold)">${fmt$(r.price)}</div></div>
+      <div class="stat"><label>Pivot (Entry)</label><div class="v" style="color:var(--orange)">${fmt$(r.pivot)}</div></div>
+      <div class="stat"><label>Dist %</label><div class="v" style="color:${r.distance>=0?'var(--emerald)':'var(--muted)'}">${fmtPct(r.distance)}</div></div>
+      <div class="stat"><label>RS vs SPY</label><div class="v" style="color:${r.rs>=80?'var(--emerald)':'var(--gold)'}">${r.rs}</div></div>
+    </div>
+
+    <h3 style="font-size:13px;color:var(--orange);margin:14px 0 10px">✓ Qullamaggie Checklist</h3>
+    <div class="cond-row"><span class="ic ok">✓</span><span class="label">Prior move</span><span class="val">+${r.priorMove.toFixed(1)}% / ${r.impulseDays}d</span></div>
+    <div class="cond-row"><span class="ic ok">✓</span><span class="label">Base duration</span><span class="val">${r.baseDuration} days</span></div>
+    <div class="cond-row"><span class="ic ${r.baseDepth<25?'ok':'no'}">${r.baseDepth<25?'✓':'×'}</span><span class="label">Base depth</span><span class="val">${r.baseDepth.toFixed(1)}%</span></div>
+    <div class="cond-row"><span class="ic ${r.higherLows?'ok':'no'}">${r.higherLows?'✓':'×'}</span><span class="label">Higher lows in base</span><span class="val">${r.higherLows?'YES':'NO'}</span></div>
+    <div class="cond-row"><span class="ic ${r.atrContraction<0.8?'ok':'no'}">${r.atrContraction<0.8?'✓':'×'}</span><span class="label">ATR contraction (recent/prev)</span><span class="val">${(r.atrContraction*100).toFixed(0)}%</span></div>
+    <div class="cond-row"><span class="ic ${r.volContraction<0.9?'ok':'no'}">${r.volContraction<0.9?'✓':'×'}</span><span class="label">Volume dry-up (base/impulse)</span><span class="val">${(r.volContraction*100).toFixed(0)}%</span></div>
+    <div class="cond-row"><span class="ic ${r.surf.surfingAny?'ok':'no'}">${r.surf.surfingAny?'✓':'×'}</span><span class="label">Surfing 10/20/50d MA</span><span class="val">${r.surf.surfingMa10?'10d':''}${r.surf.surfingMa20?' 20d':''}${r.surf.surfingMa50?' 50d':''}${r.surf.surfingAny?'':'—'}</span></div>
+    <div class="cond-row"><span class="ic ${r.rs>=70?'ok':'no'}">${r.rs>=70?'✓':'×'}</span><span class="label">RS vs SPY</span><span class="val">${r.rs}</span></div>
+
+    <h3 style="font-size:13px;color:var(--cyan);margin:16px 0 10px">📊 MA Position</h3>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-family:var(--mono);font-size:12px">
+      <div style="background:var(--bg3);padding:8px;border-radius:6px"><div style="font-size:10px;color:var(--muted)">SMA10 ${r.surf.ma10Rising?'↑':'↓'}</div><div style="color:var(--gold);font-weight:800">${fmt$(r.surf.sma10)}</div><div style="color:${Math.abs(r.surf.distMa10)<5?'var(--emerald)':'var(--muted)'}">${fmtPct(r.surf.distMa10)}</div></div>
+      <div style="background:var(--bg3);padding:8px;border-radius:6px"><div style="font-size:10px;color:var(--muted)">SMA20 ${r.surf.ma20Rising?'↑':'↓'}</div><div style="color:var(--gold);font-weight:800">${fmt$(r.surf.sma20)}</div><div style="color:${Math.abs(r.surf.distMa20)<5?'var(--emerald)':'var(--muted)'}">${fmtPct(r.surf.distMa20)}</div></div>
+      <div style="background:var(--bg3);padding:8px;border-radius:6px"><div style="font-size:10px;color:var(--muted)">SMA50 ${r.surf.ma50Rising?'↑':'↓'}</div><div style="color:var(--gold);font-weight:800">${fmt$(r.surf.sma50)}</div><div style="color:${Math.abs(r.surf.distMa50)<5?'var(--emerald)':'var(--muted)'}">${fmtPct(r.surf.distMa50)}</div></div>
+    </div>
+
+    <h3 style="font-size:13px;color:var(--gold);margin:16px 0 10px">🎯 Trade Plan (Qullamaggie Style)</h3>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:8px">คำนวณจาก account $${acctEq.toLocaleString()} · risk ${riskPct}% / trade · ADR ${r.adr?.toFixed(2)}%</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;font-family:var(--mono)">
+      <div style="background:var(--bg3);padding:10px;border-radius:8px;border-left:3px solid var(--orange)">
+        <div style="color:var(--muted);font-size:10px;text-transform:uppercase">Entry (Pivot/ORH)</div>
+        <div style="color:var(--orange);font-weight:800;font-size:16px">${fmt$(entry)}</div>
+        <div style="color:var(--muted);font-size:11px;margin-top:4px">buy ORH แรกของวันเบรก</div>
+      </div>
+      <div style="background:var(--bg3);padding:10px;border-radius:8px;border-left:3px solid var(--red)">
+        <div style="color:var(--muted);font-size:10px;text-transform:uppercase">Stop (≤ ADR)</div>
+        <div style="color:var(--red);font-weight:800;font-size:16px">${fmt$(stop)}</div>
+        <div style="color:var(--muted);font-size:11px;margin-top:4px">risk $${risk.toFixed(2)} / share</div>
+      </div>
+      <div style="background:var(--bg3);padding:10px;border-radius:8px;border-left:3px solid var(--emerald)">
+        <div style="color:var(--muted);font-size:10px;text-transform:uppercase">Target 1 (1:2)</div>
+        <div style="color:var(--emerald);font-weight:800;font-size:16px">${fmt$(t1)}</div>
+        <div style="color:var(--muted);font-size:11px;margin-top:4px">sell 1/3-1/2 day 3-5</div>
+      </div>
+      <div style="background:var(--bg3);padding:10px;border-radius:8px;border-left:3px solid var(--emerald)">
+        <div style="color:var(--muted);font-size:10px;text-transform:uppercase">Target 2 (1:3)</div>
+        <div style="color:var(--emerald);font-weight:800;font-size:16px">${fmt$(t2)}</div>
+        <div style="color:var(--muted);font-size:11px;margin-top:4px">trail 10/20d MA</div>
+      </div>
+    </div>
+    <div style="margin-top:10px;padding:10px;background:var(--bg3);border-radius:8px;font-size:12px;color:var(--muted);line-height:1.6">
+      💰 Position size: <b style="color:var(--gold)">${shares} shares</b> (= $${(shares*entry).toLocaleString()}) · risk $${(shares*risk).toFixed(0)}
+    </div>
+
+    <h3 style="font-size:13px;color:var(--purple);margin:16px 0 10px">📈 Score Breakdown</h3>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;font-size:12px;font-family:var(--mono)">
+      <div>Momentum (${r.components.momScore.toFixed(0)}/20)</div>
+      <div>Base Quality (${r.components.baseScore.toFixed(0)}/25)</div>
+      <div>ATR Contraction (${r.components.atrScore.toFixed(0)}/15)</div>
+      <div>Vol Dry-up (${r.components.volScore.toFixed(0)}/15)</div>
+      <div>RS (${r.components.rsScore.toFixed(0)}/10)</div>
+      <div>Pivot Proximity (${r.components.proxScore.toFixed(0)}/10)</div>
+      <div>MA Surfing (${r.components.surfScore.toFixed(0)}/5)</div>
+      <div style="color:var(--orange);font-weight:800">TOTAL ${r.score}/100</div>
+    </div>
+
+    <div style="margin-top:14px;display:flex;gap:6px;flex-wrap:wrap">
+      <a href="https://www.tradingview.com/chart/?symbol=${r.symbol}" target="_blank" rel="noopener" style="padding:8px 14px;background:var(--orange);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:700">📊 TradingView</a>
+      <a href="https://finance.yahoo.com/quote/${r.symbol}" target="_blank" rel="noopener" style="padding:8px 14px;background:var(--bg3);color:var(--text);border:1px solid var(--line2);border-radius:8px;text-decoration:none;font-size:12px;font-weight:700">📈 Yahoo</a>
+    </div>
+  `;
+  $('#modal').classList.add('show');
+}
+function closeModal(){ $('#modal').classList.remove('show'); }
+
+/* ---------- BINDINGS ---------- */
+$('#sMin').addEventListener('input', e => { $('#sMinV').textContent = e.target.value; if(state.results.length) renderResults(); });
+$('#mMin').addEventListener('input', e => { $('#mMinV').textContent = e.target.value; });
+$('#dMax').addEventListener('input', e => { $('#dMaxV').textContent = e.target.value; if(state.results.length) renderResults(); });
+$('#catSel').addEventListener('change', () => { if(state.results.length) renderResults(); });
+$$('.check input').forEach(cb => {
+  cb.addEventListener('change', () => cb.closest('.check').classList.toggle('on', cb.checked));
+});
+$$('thead th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    if(state.sort.key === key) state.sort.dir *= -1;
+    else { state.sort.key = key; state.sort.dir = -1; }
+    if(state.results.length) renderResults();
+  });
+});
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW register failed:', err));
+  });
+}
+</script>
+</body>
+</html>
