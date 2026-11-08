@@ -159,9 +159,10 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
 
   <!-- HERO -->
   <div class="hero">
-    <h1><span class="tag">QULLAMAGGIE</span>🏄 Momentum Breakout Scanner</h1>
+    <h1><span class="tag">QULLAMAGGIE</span>🏄 Momentum Breakout Scanner · <span style="color:#fbbf24">⭐ 7-Stars Grade</span></h1>
     <div class="sub">
-      Kristjan Kullamägi's continuation pattern: <b style="color:var(--orange)">big move (+30-100% ใน 1-3 เดือน)</b> → <b>orderly pullback + tight consolidation</b> (ย่อแบบ higher lows, surfs 10/20/50d MA) → <b>breakout</b> · Entry: Opening Range High · Stop: Low of day (≤ ADR) · Sell 1/3-1/2 day 3-5, trail 10/20d MA
+      Kristjan Kullamägi's continuation pattern: <b style="color:var(--orange)">big move (+30-100% ใน 1-3 เดือน)</b> → <b>orderly pullback + tight consolidation</b> (ย่อแบบ higher lows, surfs 10/20/50d MA) → <b>breakout</b> · Entry: Opening Range High · Stop: Low of day (≤ ADR) · Sell 1/3-1/2 day 3-5, trail 10/20d MA ·
+      <b style="color:#fbbf24">⭐ Grade 7+ Stars</b> = ELITE setup (big EP catalyst + respects MA + holds + trends + vol surge + tight + vol dry + RS leader + RS strong)
     </div>
   </div>
 
@@ -198,6 +199,10 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
         <input type="range" id="adrMin" min="0" max="10" step="0.5" value="4" />
       </div>
       <div class="ctrl">
+        <label>⭐ Min Stars <span class="v" id="starMinV">0</span></label>
+        <input type="range" id="starMin" min="0" max="9" step="1" value="0" />
+      </div>
+      <div class="ctrl">
         <label>Category Filter</label>
         <select id="catSel">
           <option value="all" selected>All (A + B + C)</option>
@@ -230,6 +235,7 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
   <!-- STATS -->
   <div class="stats-bar" id="statsBar" style="display:none">
     <div class="stat orange"><label>🏄 Total Setups</label><div class="v" id="sTotal">—</div></div>
+    <div class="stat gold"><label>⭐ Elite 7+ Stars</label><div class="v" id="sElite">—</div></div>
     <div class="stat orange"><label>🏄 A — Imminent</label><div class="v" id="sCatA">—</div></div>
     <div class="stat gold"><label>⏳ B — Watchlist</label><div class="v" id="sCatB">—</div></div>
     <div class="stat green"><label>🚀 C — Confirmed</label><div class="v" id="sCatC">—</div></div>
@@ -248,6 +254,7 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
           <tr>
             <th class="left" data-sort="symbol">Symbol</th>
             <th data-sort="score">Score</th>
+            <th data-sort="totalStars">⭐ Stars</th>
             <th data-sort="category">Cat</th>
             <th data-sort="priorMove" class="col-mobile-hide">Prior Move</th>
             <th data-sort="baseDuration" class="col-mobile-hide">Base</th>
@@ -288,6 +295,22 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
       <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid #eab308">
         <h3 style="color:#eab308;font-size:14px;margin-bottom:8px">⚡ Episodic Pivot (EP) — Setup ที่ 2</h3>
         <p>หุ้นที่ <b>gap +7.5%+ ในวันเดียว</b> พร้อม volume ≥ 2x avg · มักจาก earnings / news / catalyst · Entry: ORH ของวันถัดไป · Stop: low ของวัน EP</p>
+      </div>
+      <div style="background:linear-gradient(135deg,rgba(251,191,36,.10),var(--bg3));padding:14px;border-radius:10px;border-left:3px solid #fbbf24">
+        <h3 style="color:#fbbf24;font-size:14px;margin-bottom:8px">⭐ 7-Stars Setup (Elite Grade)</h3>
+        <p style="margin-bottom:6px">"This is a 7* setup on a 5* scale" — เช็คลิสต์ 9 ข้อ จำนวน stars ที่ได้ = คุณภาพ setup (จาก Trader Coach / TraderLion):</p>
+        <ol style="padding-left:18px;font-size:11px;color:var(--muted);line-height:1.6">
+          <li>Big move post-earnings (EP candle)</li>
+          <li>Stock respects MA20 during rally</li>
+          <li>Multiple "Holds" at MA in base</li>
+          <li>Trends well upward (higher highs)</li>
+          <li>Volume surge on EP (≥3× avg)</li>
+          <li>Tight range (&lt;70% rally ADR)</li>
+          <li>Volume dry-up in base (&lt;60%)</li>
+          <li>RS Leader (≥85)</li>
+          <li>RS still strong in base</li>
+        </ol>
+        <p style="margin-top:8px;color:#fbbf24;font-weight:700;font-size:12px">🏆 7+ stars = ELITE · 5-6 = Strong · 3-4 = Decent</p>
       </div>
       <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid var(--purple)">
         <h3 style="color:var(--purple);font-size:14px;margin-bottom:8px">📊 Hard Filters (จาก research)</h3>
@@ -636,6 +659,148 @@ function computeReturns(data){
   return {r20, r60, r126};
 }
 
+/* ============================================================
+   ⭐ 7-STARS SETUP GRADING
+   Based on Trader Coach / TraderLion "7-star on a 5-star scale"
+   checklist (from user's course slide):
+   1. Big move post earnings (EP candle in rally)
+   2. Stock respects key MAs during rally
+   3. Multiple "Holds" at MA (bounces during base)
+   4. Trends well (upward) post earnings
+   5. Volume surge on earnings/EP candle
+   6. Tight range (ADR contraction in base)
+   7. Volume Dry Up during consolidation
+   8. Relative Strength at 52w high during rally = Leader
+   9. RS still strong / near 52w high in base
+   ============================================================ */
+function compute7Stars(data, impulse, base, surf, rsRating){
+  const n = data.length;
+  const stars = {};
+  const starLabels = [];
+
+  // Star 1: Big move originated from EP-like candle (big vol + gap/body)
+  // Scan impulse window for a "catalyst candle" with vol ≥ 2.5x avg + body ≥ 2× avg range
+  let hasEP = false, epCandle = null, epVolRatio = 0;
+  if(impulse){
+    const impulseVols = data.slice(Math.max(0, impulse.startIdx-20), impulse.startIdx).map(d=>d.v||0);
+    const preImpAvg = impulseVols.reduce((s,v)=>s+v,0) / Math.max(1, impulseVols.length);
+    for(let i = impulse.startIdx; i <= impulse.endIdx; i++){
+      if(i < 1) continue;
+      const c = data[i], p = data[i-1];
+      const body = Math.abs(c.c - c.o);
+      const dayMove = (c.c / p.c - 1) * 100;
+      const volRatio = preImpAvg > 0 ? c.v / preImpAvg : 0;
+      if(volRatio >= 2.5 && (dayMove >= 7.5 || body / c.o * 100 >= 6)){
+        hasEP = true; epCandle = {idx:i, dayMove, volRatio}; epVolRatio = volRatio;
+        break;
+      }
+    }
+  }
+  stars.bigMovePostEP = hasEP;
+  if(hasEP) starLabels.push('⭐ Big move from EP');
+
+  // Star 2: Stock respects key MAs during rally (closes above MA20 for ≥80% of impulse)
+  let respectsMA = false, respectsPct = 0;
+  if(impulse){
+    const closes = data.map(d=>d.c);
+    const sma20 = sma(closes, 20);
+    const impulseRange = data.slice(impulse.startIdx, impulse.endIdx+1);
+    let aboveCount = 0, totalCount = 0;
+    for(let i = impulse.startIdx; i <= impulse.endIdx; i++){
+      if(sma20[i] == null) continue;
+      totalCount++;
+      if(closes[i] > sma20[i]) aboveCount++;
+    }
+    respectsPct = totalCount ? aboveCount / totalCount * 100 : 0;
+    respectsMA = respectsPct >= 80;
+  }
+  stars.respectsMA = respectsMA;
+  if(respectsMA) starLabels.push('⭐ Respects MA in rally');
+
+  // Star 3: Multiple "Holds" at MA10/MA20 during base (price touches MA then bounces)
+  let holdsCount = 0;
+  if(base){
+    const closes = data.map(d=>d.c);
+    const lows = data.map(d=>d.l);
+    const sma10 = sma(closes, 10);
+    const sma20 = sma(closes, 20);
+    for(let i = base.baseStart + 2; i <= base.baseEnd - 1; i++){
+      if(sma10[i] == null || sma20[i] == null) continue;
+      const refMA = Math.min(sma10[i], sma20[i]);   // tighter of the two
+      const touched = lows[i] <= refMA * 1.015 && lows[i] >= refMA * 0.97;
+      const nextClose = data[i+1]?.c;
+      const bounced = nextClose && nextClose > data[i].c;
+      if(touched && bounced) holdsCount++;
+    }
+  }
+  stars.multipleHolds = holdsCount >= 2;
+  if(holdsCount >= 2) starLabels.push(`⭐ ${holdsCount} Holds at MA`);
+
+  // Star 4: Trends well post-earnings/EP (consistent higher highs in rally)
+  let trendsWell = false, higherHighsCount = 0;
+  if(impulse && impulse.days >= 10){
+    const highs = data.slice(impulse.startIdx, impulse.endIdx+1).map(d=>d.h);
+    const segments = Math.min(5, Math.floor(highs.length / 5));
+    const segHighs = [];
+    for(let s = 0; s < segments; s++){
+      const start = Math.floor(s * highs.length / segments);
+      const end = Math.floor((s+1) * highs.length / segments);
+      segHighs.push(Math.max(...highs.slice(start, end)));
+    }
+    for(let s = 1; s < segHighs.length; s++){
+      if(segHighs[s] > segHighs[s-1]) higherHighsCount++;
+    }
+    trendsWell = higherHighsCount >= segHighs.length - 2;   // mostly rising
+  }
+  stars.trendsWell = trendsWell;
+  if(trendsWell) starLabels.push('⭐ Trends well in rally');
+
+  // Star 5: Volume surge on EP (already captured by Star 1 — also give here if ≥3x)
+  stars.volumeOnEP = epVolRatio >= 3.0;
+  if(stars.volumeOnEP) starLabels.push(`⭐ Vol ${epVolRatio.toFixed(1)}× on EP`);
+
+  // Star 6: Tight range (recent 5d ADR < 70% of impulse ADR)
+  let tightRange = false, tightRatio = null;
+  if(impulse && base){
+    const impSlice = data.slice(impulse.startIdx, impulse.endIdx+1);
+    const recentSlice = data.slice(-5);
+    const avgRange = bars => bars.reduce((s,b)=>s + (b.h-b.l)/b.l*100, 0) / bars.length;
+    const impAdr = avgRange(impSlice);
+    const recentAdr = avgRange(recentSlice);
+    tightRatio = impAdr > 0 ? recentAdr / impAdr : null;
+    tightRange = tightRatio != null && tightRatio < 0.7;
+  }
+  stars.tightRange = tightRange;
+  if(tightRange) starLabels.push(`⭐ Tight range (${(tightRatio*100).toFixed(0)}%)`);
+
+  // Star 7: Volume dry-up in base (< 60% of impulse avg vol)
+  let volDryUp = false, volDryRatio = null;
+  if(base && impulse){
+    const baseVols = data.slice(base.baseStart, base.baseEnd+1).map(d=>d.v||0);
+    const impulseVols = data.slice(impulse.startIdx, impulse.endIdx+1).map(d=>d.v||0);
+    const avgV = vs => vs.reduce((s,v)=>s+v,0) / Math.max(1,vs.length);
+    volDryRatio = avgV(baseVols) / Math.max(1, avgV(impulseVols));
+    volDryUp = volDryRatio < 0.6;
+  }
+  stars.volDryUp = volDryUp;
+  if(volDryUp) starLabels.push(`⭐ Vol dry-up (${(volDryRatio*100).toFixed(0)}%)`);
+
+  // Star 8: RS Leader (RS rating ≥ 85 = top 15% vs SPY)
+  stars.rsLeader = rsRating >= 85;
+  if(rsRating >= 85) starLabels.push(`⭐ RS Leader (${rsRating})`);
+
+  // Star 9: RS still strong in base (price near 52w high + RS ≥ 75)
+  const price = data[n-1].c;
+  const high52 = Math.max(...data.slice(-252).map(d=>d.h));
+  const distFromAth = (price - high52) / high52 * 100;
+  stars.rsStrongInBase = rsRating >= 75 && distFromAth > -12;
+  if(stars.rsStrongInBase) starLabels.push(`⭐ RS strong in base`);
+
+  const totalStars = Object.values(stars).filter(Boolean).length;
+
+  return {stars, starLabels, totalStars, hasEP, epCandle, respectsPct, holdsCount, tightRatio, volDryRatio, distFromAth};
+}
+
 /* ---------- MAIN ANALYZER — Qullamaggie's actual methodology ---------- */
 function analyzeStock(symbol, data, spyData){
   const n = data.length;
@@ -794,24 +959,31 @@ function analyzeStock(symbol, data, spyData){
     momScore + baseScore + tightScore + volScore + adrScore + rsScore + surfScore + proxScore
   )));
 
+  // === ⭐ 7-STARS GRADE ===
+  const starAnalysis = compute7Stars(data, impulse, base, surf, rs);
+
   return {
     symbol, name: symbol, price,
     score: totalScore,
     category, categoryLabel, setupType,
     priorMove: impulse?.returnPct,
     impulseDays: impulse?.days,
-    ep,   // Episodic Pivot details (if any)
+    ep,
     baseDuration: base?.baseDuration,
     baseDepth: base?.baseDepth,
     pivot, distance,
     tightness,
-    atrContraction: tightness,   // legacy field name
+    atrContraction: tightness,
     volContraction: base?.volContractionRatio,
     higherLows: base?.higherLows,
     priceInBase: base?.priceInBase,
     rs, adr,
     r20: ret.r20, r60: ret.r60, r126: ret.r126,
     surf,
+    stars: starAnalysis.stars,
+    starLabels: starAnalysis.starLabels,
+    totalStars: starAnalysis.totalStars,
+    starAnalysis,
     components: {momScore, baseScore, tightScore, volScore, adrScore, rsScore, surfScore, proxScore},
   };
 }
@@ -891,8 +1063,10 @@ function filterResults(rs){
   const scoreMin = +$('#sMin').value;
   const distMax = +$('#dMax').value;
   const cat = $('#catSel').value;
+  const starMin = +$('#starMin').value;
   arr = arr.filter(r => r.score >= scoreMin);
   arr = arr.filter(r => Math.abs(r.distance) <= distMax);
+  arr = arr.filter(r => (r.totalStars || 0) >= starMin);
   if(cat === 'EP') arr = arr.filter(r => r.setupType === 'EP');
   else if(cat === 'CONT') arr = arr.filter(r => r.setupType === 'CONTINUATION');
   else if(cat !== 'all') arr = arr.filter(r => r.category === cat);
@@ -919,6 +1093,7 @@ function renderResults(){
 
   $('#statsBar').style.display = 'grid';
   $('#sTotal').textContent = all.length;
+  $('#sElite').textContent = all.filter(r => (r.totalStars||0) >= 7).length;
   $('#sCatA').textContent = all.filter(r => r.category === 'A').length;
   $('#sCatB').textContent = all.filter(r => r.category === 'B').length;
   $('#sCatC').textContent = all.filter(r => r.category === 'C').length;
@@ -942,6 +1117,7 @@ function renderResults(){
     return `<tr class="cat-${r.category}" onclick="openDetail('${r.symbol}')">
       <td class="left"><div class="sym">${r.symbol}</div></td>
       <td><span class="score-bar"><div style="width:${r.score}%;background:${col}"></div></span><b style="color:${col}">${r.score}</b></td>
+      <td><span style="font-weight:800;font-size:13px;color:${r.totalStars>=7?'#fbbf24':r.totalStars>=5?'#f97316':r.totalStars>=3?'#60a5fa':'var(--muted)'}">${r.totalStars}/9</span>${r.totalStars>=7?' <span style="padding:1px 4px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#0a0e16;font-size:9px;font-weight:800;border-radius:3px;margin-left:2px">⭐ ELITE</span>':''}</td>
       <td>
         <span class="${catCls}">${r.category}</span>
         ${r.setupType === 'EP' ? '<span style="display:inline-block;margin-left:3px;padding:1px 5px;background:#eab308;color:#422006;border-radius:4px;font-size:9px;font-weight:800">EP</span>' : ''}
@@ -983,6 +1159,19 @@ function openDetail(symbol){
       <div class="stat"><label>Pivot (Entry)</label><div class="v" style="color:var(--orange)">${fmt$(r.pivot)}</div></div>
       <div class="stat"><label>Dist %</label><div class="v" style="color:${r.distance>=0?'var(--emerald)':'var(--muted)'}">${fmtPct(r.distance)}</div></div>
       <div class="stat"><label>RS vs SPY</label><div class="v" style="color:${r.rs>=80?'var(--emerald)':'var(--gold)'}">${r.rs}</div></div>
+    </div>
+
+    <h3 style="font-size:13px;color:#fbbf24;margin:14px 0 10px">⭐ 7-Stars Setup Grade · <span style="color:${r.totalStars>=7?'#fbbf24':r.totalStars>=5?'#f97316':r.totalStars>=3?'#60a5fa':'var(--muted)'};font-size:16px">${r.totalStars}/9 ${r.totalStars>=7?'· ELITE ⭐⭐⭐':r.totalStars>=5?'· STRONG':r.totalStars>=3?'· DECENT':''}</span></h3>
+    <div style="background:linear-gradient(135deg,rgba(251,191,36,.06),var(--bg3));padding:12px;border-radius:10px;border:1px solid ${r.totalStars>=7?'#fbbf24':'var(--line)'};margin-bottom:12px">
+      <div class="cond-row"><span class="ic ${r.stars.bigMovePostEP?'ok':'no'}">${r.stars.bigMovePostEP?'⭐':'·'}</span><span class="label">1. Big move from EP (earnings/catalyst candle)</span><span class="val">${r.starAnalysis.epCandle ? '+'+r.starAnalysis.epCandle.dayMove.toFixed(0)+'% · '+r.starAnalysis.epCandle.volRatio.toFixed(1)+'× vol' : 'none'}</span></div>
+      <div class="cond-row"><span class="ic ${r.stars.respectsMA?'ok':'no'}">${r.stars.respectsMA?'⭐':'·'}</span><span class="label">2. Respects MA20 during rally</span><span class="val">${r.starAnalysis.respectsPct.toFixed(0)}% of bars above</span></div>
+      <div class="cond-row"><span class="ic ${r.stars.multipleHolds?'ok':'no'}">${r.stars.multipleHolds?'⭐':'·'}</span><span class="label">3. Multiple "Holds" at MA in base</span><span class="val">${r.starAnalysis.holdsCount} holds</span></div>
+      <div class="cond-row"><span class="ic ${r.stars.trendsWell?'ok':'no'}">${r.stars.trendsWell?'⭐':'·'}</span><span class="label">4. Trends well (higher highs post-EP)</span><span class="val">${r.stars.trendsWell?'YES':'NO'}</span></div>
+      <div class="cond-row"><span class="ic ${r.stars.volumeOnEP?'ok':'no'}">${r.stars.volumeOnEP?'⭐':'·'}</span><span class="label">5. Volume surge on EP (≥3× avg)</span><span class="val">${r.starAnalysis.epCandle ? r.starAnalysis.epCandle.volRatio.toFixed(1)+'×' : '—'}</span></div>
+      <div class="cond-row"><span class="ic ${r.stars.tightRange?'ok':'no'}">${r.stars.tightRange?'⭐':'·'}</span><span class="label">6. Tight range in base (&lt;70% rally ADR)</span><span class="val">${r.starAnalysis.tightRatio != null ? (r.starAnalysis.tightRatio*100).toFixed(0)+'%' : '—'}</span></div>
+      <div class="cond-row"><span class="ic ${r.stars.volDryUp?'ok':'no'}">${r.stars.volDryUp?'⭐':'·'}</span><span class="label">7. Volume dry-up (&lt;60% rally vol)</span><span class="val">${r.starAnalysis.volDryRatio != null ? (r.starAnalysis.volDryRatio*100).toFixed(0)+'%' : '—'}</span></div>
+      <div class="cond-row"><span class="ic ${r.stars.rsLeader?'ok':'no'}">${r.stars.rsLeader?'⭐':'·'}</span><span class="label">8. RS Leader (RS ≥ 85)</span><span class="val">RS ${r.rs}</span></div>
+      <div class="cond-row"><span class="ic ${r.stars.rsStrongInBase?'ok':'no'}">${r.stars.rsStrongInBase?'⭐':'·'}</span><span class="label">9. RS strong in base (near 52w high + RS≥75)</span><span class="val">${r.starAnalysis.distFromAth.toFixed(1)}% from ATH</span></div>
     </div>
 
     <h3 style="font-size:13px;color:var(--orange);margin:14px 0 10px">✓ Qullamaggie Checklist · Setup: ${r.setupType}</h3>
@@ -1062,6 +1251,7 @@ function closeModal(){ $('#modal').classList.remove('show'); }
 $('#sMin').addEventListener('input', e => { $('#sMinV').textContent = e.target.value; if(state.results.length) renderResults(); });
 $('#mMin').addEventListener('input', e => { $('#mMinV').textContent = e.target.value; });
 $('#adrMin').addEventListener('input', e => { $('#adrMinV').textContent = e.target.value; });
+$('#starMin').addEventListener('input', e => { $('#starMinV').textContent = e.target.value; if(state.results.length) renderResults(); });
 $('#dMax').addEventListener('input', e => { $('#dMaxV').textContent = e.target.value; if(state.results.length) renderResults(); });
 $('#catSel').addEventListener('change', () => { if(state.results.length) renderResults(); });
 $$('.check input').forEach(cb => {
