@@ -518,15 +518,17 @@ function detectBase(data, impulse){
   const baseHigh = Math.max(...slice.map(d=>d.h));
   const baseLow = Math.min(...slice.map(d=>d.l));
   const baseDepth = (baseHigh - baseLow) / baseHigh * 100;
-  if(baseDepth > 25) return null;    // Qullamaggie bull flags are shallow
+  // Qullamaggie bull flags: tight = <15%, moderate = 15-25%, deep = 25-35%.
+  // In correction markets we allow up to 35% but score penalizes deep bases.
+  if(baseDepth > 35) return null;
 
   const pivot = baseHigh;
   const currentPrice = data[n-1].c;
   const distance = (currentPrice - pivot) / pivot * 100;
 
-  // Price must be in UPPER 50% of base (near pivot, not at bottom)
+  // Price must be in upper 40% of base (near pivot — reject bottom-of-base)
   const priceInBase = (currentPrice - baseLow) / (baseHigh - baseLow);
-  if(priceInBase < 0.5) return null;
+  if(priceInBase < 0.4) return null;
 
   // Higher lows: split base into 3 segments by index, compare lowest point
   const lows = slice.map(d=>d.l);
