@@ -194,12 +194,18 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
         <input type="range" id="dMax" min="1" max="15" step="1" value="7" />
       </div>
       <div class="ctrl">
+        <label>Min ADR % <span class="v" id="adrMinV">4</span></label>
+        <input type="range" id="adrMin" min="0" max="10" step="0.5" value="4" />
+      </div>
+      <div class="ctrl">
         <label>Category Filter</label>
         <select id="catSel">
           <option value="all" selected>All (A + B + C)</option>
           <option value="A">🏄 A — Breakout Imminent (0-3%)</option>
           <option value="B">⏳ B — Watchlist (3-7%)</option>
           <option value="C">🚀 C — Breakout Confirmed (just broke)</option>
+          <option value="EP">⚡ Episodic Pivot setups only</option>
+          <option value="CONT">📈 Continuation setups only</option>
         </select>
       </div>
     </div>
@@ -278,6 +284,21 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
       <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid var(--cyan)">
         <h3 style="color:var(--cyan);font-size:14px;margin-bottom:8px">🎯 Management</h3>
         <p>ขาย <b>1/3-1/2</b> ที่ day 3-5 → ย้าย stop เป็น breakeven · trail ที่เหลือด้วย <b>10d</b> (มือใหม่) หรือ <b>20d MA</b> · exit เมื่อ close ต่ำกว่า MA</p>
+      </div>
+      <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid #eab308">
+        <h3 style="color:#eab308;font-size:14px;margin-bottom:8px">⚡ Episodic Pivot (EP) — Setup ที่ 2</h3>
+        <p>หุ้นที่ <b>gap +7.5%+ ในวันเดียว</b> พร้อม volume ≥ 2x avg · มักจาก earnings / news / catalyst · Entry: ORH ของวันถัดไป · Stop: low ของวัน EP</p>
+      </div>
+      <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid var(--purple)">
+        <h3 style="color:var(--purple);font-size:14px;margin-bottom:8px">📊 Hard Filters (จาก research)</h3>
+        <ul style="padding-left:18px;font-size:12px;color:var(--muted);line-height:1.8">
+          <li><b>ADR ≥ 4-6%</b> (Momentum Leader)</li>
+          <li><b>10d SMA > 20d SMA</b> (both rising)</li>
+          <li>Price ภายใน ±5% ของ 10d หรือ 20d MA</li>
+          <li>Fresh crossover: <b>≤ 15 วัน</b> ตั้งแต่ 10/20 cross = ดีกว่า</li>
+          <li>Market: QQQ 10EMA > 20EMA (favorable)</li>
+          <li>Liquidity: avg $-volume ≥ $10M/day</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -423,58 +444,86 @@ function computeRS(stockData, spyData){
   return Math.round(Math.max(0, Math.min(100, 50 + rsDiff * 1.5)));
 }
 
-/* ---------- QULLAMAGGIE ANALYSIS ---------- */
+/* ---------- QULLAMAGGIE ANALYSIS (upgraded per actual methodology) ---------- */
 
-/* Find prior impulse move — highest N-day return ending within last 60 days */
+/* Find prior impulse move — highest N-day return ending within last 90 days */
 function findPriorImpulse(data){
   const n = data.length;
-  if(n < 70) return null;
+  if(n < 90) return null;
   let best = {returnPct: -Infinity, startIdx:0, endIdx:0, days:0};
-  // Scan ending points in last 60 days, with lookback 20-60 days
   for(let endIdx = n-60; endIdx < n; endIdx++){
-    for(const lb of [20, 30, 45, 60]){
+    for(const lb of [20, 30, 45, 60, 90]){
       const startIdx = endIdx - lb;
       if(startIdx < 0) continue;
-      const startPx = data[startIdx].c;
-      const endPx = data[endIdx].c;
-      const ret = (endPx / startPx - 1) * 100;
+      const ret = (data[endIdx].c / data[startIdx].c - 1) * 100;
       if(ret > best.returnPct){
-        best = {returnPct: ret, startIdx, endIdx, days: lb, startPx, endPx};
+        best = {returnPct: ret, startIdx, endIdx, days: lb, startPx: data[startIdx].c, endPx: data[endIdx].c};
       }
     }
   }
   return best.returnPct > 0 ? best : null;
 }
 
-/* Detect consolidation base after impulse peak */
+/* Episodic Pivot detection — single-day gap ≥7.5% with volume surge */
+function detectEpisodicPivot(data){
+  const n = data.length;
+  if(n < 30) return null;
+  const vols20 = data.slice(-20, -1).map(d => d.v || 0);
+  const avgVol = vols20.reduce((s,v)=>s+v,0) / Math.max(1, vols20.length);
+  // Scan last 30 bars for EP candle
+  for(let i = n-1; i >= n-30; i--){
+    if(i < 1) break;
+    const c = data[i], p = data[i-1];
+    const gap = (c.o / p.c - 1) * 100;          // open gap
+    const dayMove = (c.c / p.c - 1) * 100;      // close-to-close
+    const volRatio = c.v / avgVol;
+    // EP: either gap or close move ≥ 7.5% on 2x+ volume
+    if((gap >= 7.5 || dayMove >= 7.5) && volRatio >= 2.0 && c.c > c.o){
+      return {
+        idx: i,
+        barsAgo: n - 1 - i,
+        gap, dayMove, volRatio,
+        epHigh: c.h, epLow: c.l, epClose: c.c,
+      };
+    }
+  }
+  return null;
+}
+
+/* Detect consolidation base after impulse peak (Qullamaggie bull flag) */
 function detectBase(data, impulse){
   const n = data.length;
   if(!impulse || impulse.endIdx >= n-3) return null;
-  // Base starts at impulse end, extends to current
   const baseStart = impulse.endIdx;
   const baseEnd = n - 1;
   const baseDuration = baseEnd - baseStart;
-  if(baseDuration < 8 || baseDuration > 60) return null;   // 2-12 weeks
+  if(baseDuration < 8 || baseDuration > 60) return null;
 
   const slice = data.slice(baseStart, baseEnd + 1);
   const baseHigh = Math.max(...slice.map(d=>d.h));
   const baseLow = Math.min(...slice.map(d=>d.l));
   const baseDepth = (baseHigh - baseLow) / baseHigh * 100;
-  // Qualify: not too deep (bad flag/failed base)
-  if(baseDepth > 30) return null;
+  if(baseDepth > 25) return null;    // Qullamaggie bull flags are shallow
 
-  // Pivot = highest HIGH in base (resistance)
   const pivot = baseHigh;
   const currentPrice = data[n-1].c;
   const distance = (currentPrice - pivot) / pivot * 100;
 
-  // ATR contraction: last 5 bars range vs preceding 15 bars range in base
-  const recentBars = slice.slice(-5);
-  const prevBars = slice.slice(-20, -5);
-  const avgRange = bars => bars.length ? bars.reduce((s,b) => s + (b.h - b.l), 0) / bars.length : 0;
-  const recentAvgRange = avgRange(recentBars);
-  const prevAvgRange = avgRange(prevBars);
-  const atrContractionRatio = prevAvgRange > 0 ? recentAvgRange / prevAvgRange : 1;
+  // Price must be in UPPER 50% of base (near pivot, not at bottom)
+  const priceInBase = (currentPrice - baseLow) / (baseHigh - baseLow);
+  if(priceInBase < 0.5) return null;
+
+  // Higher lows: split base into 3 segments by index, compare lowest point
+  const lows = slice.map(d=>d.l);
+  let higherLows = false;
+  if(slice.length >= 12){
+    const seg = Math.floor(slice.length / 3);
+    const low1 = Math.min(...lows.slice(0, seg));
+    const low2 = Math.min(...lows.slice(seg, seg*2));
+    const low3 = Math.min(...lows.slice(seg*2));
+    // Allow 2% slack on middle
+    higherLows = low3 > low1 * 0.98 && low3 >= low2 * 0.95;
+  }
 
   // Volume contraction: base volume vs impulse volume
   const baseVols = slice.map(d => d.v || 0);
@@ -484,27 +533,16 @@ function detectBase(data, impulse){
   const impulseAvgVol = avgVol(impulseVols);
   const volContractionRatio = impulseAvgVol > 0 ? baseAvgVol / impulseAvgVol : 1;
 
-  // Higher lows check: last 3 pivot lows should be rising
-  const lows = slice.map(d=>d.l);
-  let higherLows = false;
-  if(slice.length >= 15){
-    const seg1Low = Math.min(...lows.slice(0, 5));
-    const seg2Low = Math.min(...lows.slice(5, 10));
-    const seg3Low = Math.min(...lows.slice(-5));
-    higherLows = seg3Low >= seg2Low && seg2Low >= seg1Low * 0.98;
-  }
-
   return {
     baseStart, baseEnd, baseDuration,
     baseHigh, baseLow, baseDepth,
-    pivot, distance, currentPrice,
-    atrContractionRatio, recentAvgRange, prevAvgRange,
+    pivot, distance, currentPrice, priceInBase,
     volContractionRatio, baseAvgVol, impulseAvgVol,
     higherLows,
   };
 }
 
-/* MA surfing check — price close to rising 10/20/50d MA */
+/* MA surfing check — Qullamaggie's core: 10d SMA > 20d SMA both rising, price near 10d */
 function checkSurfingMA(data){
   const n = data.length;
   const closes = data.map(d=>d.c);
@@ -515,159 +553,247 @@ function checkSurfingMA(data){
   const ma10Now = sma10[n-1], ma20Now = sma20[n-1], ma50Now = sma50[n-1];
   if(ma10Now == null || ma20Now == null || ma50Now == null) return null;
 
-  // Rising check: MA now > MA 10 bars ago
   const ma10Rising = sma10[n-11] != null && ma10Now > sma10[n-11];
   const ma20Rising = sma20[n-11] != null && ma20Now > sma20[n-11];
   const ma50Rising = sma50[n-11] != null && ma50Now > sma50[n-11];
+
+  // Core Qullamaggie condition: 10d > 20d (both rising)
+  const ma10Above20 = ma10Now > ma20Now;
+  const bothRising = ma10Rising && ma20Rising;
 
   const distMa10 = (price - ma10Now) / ma10Now * 100;
   const distMa20 = (price - ma20Now) / ma20Now * 100;
   const distMa50 = (price - ma50Now) / ma50Now * 100;
 
-  // Surfing = price within ±5% of rising 10 OR 20 OR 50 MA
-  const surfingMa10 = Math.abs(distMa10) < 5 && ma10Rising;
-  const surfingMa20 = Math.abs(distMa20) < 5 && ma20Rising;
-  const surfingMa50 = Math.abs(distMa50) < 5 && ma50Rising;
-  const surfingAny = surfingMa10 || surfingMa20 || surfingMa50;
+  // Surfing = price within ±5% of 10 OR 20 MA when both rising
+  const surfingMa10 = Math.abs(distMa10) < 5;
+  const surfingMa20 = Math.abs(distMa20) < 5;
+  const surfingMa50 = Math.abs(distMa50) < 5;
+  const surfingAny = (surfingMa10 || surfingMa20) && bothRising && ma10Above20;
+
+  // Days since 10d crossed above 20d (fresh crossover = better)
+  let daysSinceCross = null;
+  for(let i = n-1; i >= Math.max(0, n-60); i--){
+    if(sma10[i] != null && sma20[i] != null && sma10[i] <= sma20[i]){
+      daysSinceCross = n - 1 - i;
+      break;
+    }
+  }
 
   return {
     sma10:ma10Now, sma20:ma20Now, sma50:ma50Now,
     distMa10, distMa20, distMa50,
     ma10Rising, ma20Rising, ma50Rising,
+    ma10Above20, bothRising,
     surfingMa10, surfingMa20, surfingMa50, surfingAny,
+    daysSinceCross,
   };
 }
 
-/* ADR (Average Daily Range) — 20d average of (high/low - 1) * 100 */
+/* ADR % (Average Daily Range % over N days) — Qullamaggie wants ≥ 4-6% */
 function computeADR(data, p=20){
   const slice = data.slice(-p);
-  if(slice.length < p) return null;
+  if(slice.length < 5) return null;
   const ranges = slice.map(d => (d.h - d.l) / d.l * 100);
   return ranges.reduce((s,r)=>s+r, 0) / ranges.length;
 }
 
-/* ---------- MAIN ANALYZER ---------- */
+/* Tightness: last 5-day ADR / 20-day ADR (< 0.8 = tightening, < 0.6 = very tight) */
+function computeTightness(data){
+  if(data.length < 20) return null;
+  const last5 = data.slice(-5);
+  const full20 = data.slice(-20);
+  const avgRange = bars => bars.reduce((s,b) => s + (b.h - b.l) / b.l * 100, 0) / bars.length;
+  const last5Adr = avgRange(last5);
+  const full20Adr = avgRange(full20);
+  return full20Adr > 0 ? last5Adr / full20Adr : null;
+}
+
+/* Momentum returns over multiple TFs */
+function computeReturns(data){
+  const n = data.length;
+  const price = data[n-1].c;
+  const r20 = n >= 21 ? (price / data[n-21].c - 1) * 100 : null;
+  const r60 = n >= 61 ? (price / data[n-61].c - 1) * 100 : null;
+  const r126 = n >= 127 ? (price / data[n-127].c - 1) * 100 : null;
+  return {r20, r60, r126};
+}
+
+/* ---------- MAIN ANALYZER — Qullamaggie's actual methodology ---------- */
 function analyzeStock(symbol, data, spyData){
   const n = data.length;
   if(n < 120) return null;
   const price = data[n-1].c;
   if(price < 5) return null;
 
-  // Liquidity — 20d avg $ volume ≥ $20M
+  // === HARD FILTER 1: Liquidity (Qullamaggie wants $3M+ daily volume, we use $10M) ===
   const vols = data.slice(-20);
   const avg$Vol = vols.reduce((s,d)=>s + (d.c * (d.v||0)), 0) / vols.length;
-  if(avg$Vol < 10e6) return null;   // relaxed to $10M min
+  if(avg$Vol < 10e6) return null;
 
-  // Prior impulse
+  // === HARD FILTER 2: ADR ≥ 4% (Qullamaggie's core: Momentum Leading Stock) ===
+  const adr = computeADR(data, 20);
+  const minAdr = +$('#adrMin').value;
+  if(adr == null || adr < minAdr) return null;
+
+  // Momentum returns
+  const ret = computeReturns(data);
+
+  // === Try detection path 1: Continuation (big move → base) ===
   const impulse = findPriorImpulse(data);
-  if(!impulse) return null;
-  const minMove = +$('#mMin').value;
-  if(impulse.returnPct < minMove) return null;
+  let setupType = null, base = null, ep = null;
 
-  // Base / consolidation
-  const base = detectBase(data, impulse);
-  if(!base) return null;
+  if(impulse){
+    const minMove = +$('#mMin').value;
+    if(impulse.returnPct >= minMove){
+      base = detectBase(data, impulse);
+      if(base) setupType = 'CONTINUATION';
+    }
+  }
 
-  // Reject if excessively extended (price > 10% above pivot already)
-  if(base.distance > 10) return null;
+  // === Try detection path 2: Episodic Pivot (gap +7.5%+) ===
+  if(!setupType){
+    ep = detectEpisodicPivot(data);
+    if(ep) setupType = 'EP';
+  }
 
-  // Surfing MA check
+  if(!setupType) return null;
+
+  // === MA surfing (REQUIRED for Qullamaggie — core thesis) ===
   const surf = checkSurfingMA(data);
   if(!surf) return null;
   const requireSurf = $('#cSurf').checked;
+  // Core gate: 10 > 20 MA with both rising + price near 10/20
+  if(requireSurf && (!surf.ma10Above20 || !surf.bothRising)) return null;
   if(requireSurf && !surf.surfingAny) return null;
+
+  // === Tightness (last 5d ADR / 20d ADR) ===
+  const tightness = computeTightness(data);
+  const requireTight = $('#cTight').checked;
+  if(requireTight && tightness != null && tightness > 0.85) return null;
+
+  // === Volume dry-up filter for continuation setups ===
+  const requireVolDry = $('#cVolDry').checked;
+  if(requireVolDry && base && base.volContractionRatio > 0.95) return null;
 
   // RS vs SPY
   const rs = computeRS(data, spyData);
   if(rs == null) return null;
-  // Want RS ≥ 55 (slight outperform)
 
-  // Tightening range filter
-  const requireTight = $('#cTight').checked;
-  if(requireTight && base.atrContractionRatio > 0.80) return null;   // recent 5d > 80% of prior 15d = not tight
-
-  // Volume dry-up filter
-  const requireVolDry = $('#cVolDry').checked;
-  if(requireVolDry && base.volContractionRatio > 0.90) return null;
-
-  // ADR
-  const adr = computeADR(data);
-
-  // Category assignment
-  let category, categoryLabel;
-  if(base.distance >= 0 && base.distance <= 5){
-    category = 'C';
-    categoryLabel = '🚀 Confirmed (+' + base.distance.toFixed(1) + '%)';
-  } else if(base.distance < 0 && base.distance >= -3){
-    category = 'A';
-    categoryLabel = '🏄 Imminent (' + base.distance.toFixed(1) + '%)';
-  } else if(base.distance < -3 && base.distance >= -7){
-    category = 'B';
-    categoryLabel = '⏳ Watchlist (' + base.distance.toFixed(1) + '%)';
+  // === Pivot + distance ===
+  let pivot, distance, categoryBase;
+  if(setupType === 'CONTINUATION'){
+    pivot = base.pivot;
+    distance = base.distance;
+    categoryBase = true;
   } else {
-    return null;   // too far
+    // EP: pivot = EP candle high (next day breakout trigger)
+    pivot = ep.epHigh;
+    distance = (price - pivot) / pivot * 100;
+    categoryBase = false;
   }
 
-  // === SCORING (100 pts total) ===
-  // 1. Prior momentum (20): +30%→10, +60%→15, +100%+→20
-  let momScore = Math.min(20, impulse.returnPct / 5);
+  // Reject if way too extended (>10% above pivot)
+  if(distance > 10) return null;
 
-  // 2. Base quality + tightness (25)
+  // === Category ===
+  let category, categoryLabel;
+  if(distance >= 0 && distance <= 5){
+    category = 'C';
+    categoryLabel = '🚀 Confirmed (+' + distance.toFixed(1) + '%)';
+  } else if(distance < 0 && distance >= -3){
+    category = 'A';
+    categoryLabel = '🏄 Imminent (' + distance.toFixed(1) + '%)';
+  } else if(distance < -3 && distance >= -7){
+    category = 'B';
+    categoryLabel = '⏳ Watchlist (' + distance.toFixed(1) + '%)';
+  } else {
+    return null;
+  }
+
+  // === SCORING (100 pts) ===
+  // 1. Prior momentum (20)
+  let momScore = 0;
+  if(impulse) momScore = Math.min(20, impulse.returnPct / 5);
+  else if(ret.r60 && ret.r60 > 20) momScore = Math.min(15, ret.r60 / 4);
+  // EP bonus: if recent gap
+  if(ep) momScore = Math.max(momScore, Math.min(20, ep.dayMove * 2));
+
+  // 2. Base quality (25) — only if continuation setup
   let baseScore = 0;
-  if(base.baseDuration >= 10 && base.baseDuration <= 45) baseScore += 10;
-  else if(base.baseDuration >= 8) baseScore += 5;
-  if(base.baseDepth < 15) baseScore += 8;
-  else if(base.baseDepth < 25) baseScore += 4;
-  if(base.higherLows) baseScore += 7;
+  if(base){
+    if(base.baseDuration >= 10 && base.baseDuration <= 45) baseScore += 10;
+    else if(base.baseDuration >= 8) baseScore += 5;
+    if(base.baseDepth < 12) baseScore += 8;
+    else if(base.baseDepth < 20) baseScore += 4;
+    if(base.higherLows) baseScore += 7;
+  } else {
+    // EP: give base-equivalent score
+    baseScore = ep ? 15 : 0;
+  }
 
-  // 3. Volatility contraction (15)
-  let atrScore = 0;
-  if(base.atrContractionRatio < 0.5) atrScore = 15;
-  else if(base.atrContractionRatio < 0.7) atrScore = 10;
-  else if(base.atrContractionRatio < 0.85) atrScore = 6;
+  // 3. Tightness (15) — last 5d ADR / 20d ADR
+  let tightScore = 0;
+  if(tightness != null){
+    if(tightness < 0.5) tightScore = 15;
+    else if(tightness < 0.7) tightScore = 10;
+    else if(tightness < 0.85) tightScore = 6;
+    else if(tightness < 1.0) tightScore = 3;
+  }
 
   // 4. Volume dry-up (15)
   let volScore = 0;
-  if(base.volContractionRatio < 0.6) volScore = 15;
-  else if(base.volContractionRatio < 0.8) volScore = 10;
-  else if(base.volContractionRatio < 0.95) volScore = 5;
+  if(base){
+    if(base.volContractionRatio < 0.5) volScore = 15;
+    else if(base.volContractionRatio < 0.7) volScore = 10;
+    else if(base.volContractionRatio < 0.9) volScore = 6;
+  } else if(ep){
+    // EP: volume surge was the setup itself
+    volScore = Math.min(15, ep.volRatio * 3);
+  }
 
-  // 5. RS (10)
+  // 5. ADR quality (10) — Qullamaggie wants HIGH ADR
+  const adrScore = Math.max(0, Math.min(10, (adr - 3) * 2));   // ADR 4=2, 6=6, 8=10
+
+  // 6. RS (10)
   const rsScore = Math.max(0, Math.min(10, (rs - 50) / 5));
 
-  // 6. Pivot proximity (10)
-  let proxScore = 0;
-  if(category === 'A') proxScore = 10;
-  else if(category === 'C') proxScore = 8;
-  else if(category === 'B') proxScore = 5;
+  // 7. MA surfing + 10>20 + fresh cross (bonus up to 10)
+  let surfScore = 0;
+  if(surf.ma10Above20 && surf.bothRising) surfScore += 3;
+  if(surf.surfingMa10 || surf.surfingMa20) surfScore += 3;
+  if(surf.daysSinceCross != null && surf.daysSinceCross <= 15) surfScore += 2;   // fresh cross
+  if(surf.ma50Rising) surfScore += 2;
 
-  // 7. MA surfing bonus (5)
-  const surfScore = surf.surfingAny ? 5 : 0;
+  // 8. Pivot proximity (5)
+  let proxScore = 0;
+  if(category === 'A') proxScore = 5;
+  else if(category === 'C') proxScore = 4;
+  else proxScore = 2;
 
   const totalScore = Math.round(Math.max(0, Math.min(100,
-    momScore + baseScore + atrScore + volScore + rsScore + proxScore + surfScore
+    momScore + baseScore + tightScore + volScore + adrScore + rsScore + surfScore + proxScore
   )));
 
   return {
     symbol, name: symbol, price,
     score: totalScore,
-    category, categoryLabel,
-    priorMove: impulse.returnPct,
-    impulseDays: impulse.days,
-    impulseStart: impulse.startIdx,
-    impulseEnd: impulse.endIdx,
-    baseDuration: base.baseDuration,
-    baseHigh: base.baseHigh,
-    baseLow: base.baseLow,
-    baseDepth: base.baseDepth,
-    pivot: base.pivot,
-    distance: base.distance,
-    atrContraction: base.atrContractionRatio,
-    volContraction: base.volContractionRatio,
-    higherLows: base.higherLows,
+    category, categoryLabel, setupType,
+    priorMove: impulse?.returnPct,
+    impulseDays: impulse?.days,
+    ep,   // Episodic Pivot details (if any)
+    baseDuration: base?.baseDuration,
+    baseDepth: base?.baseDepth,
+    pivot, distance,
+    tightness,
+    atrContraction: tightness,   // legacy field name
+    volContraction: base?.volContractionRatio,
+    higherLows: base?.higherLows,
+    priceInBase: base?.priceInBase,
     rs, adr,
+    r20: ret.r20, r60: ret.r60, r126: ret.r126,
     surf,
-    components: {momScore, baseScore, atrScore, volScore, rsScore, proxScore, surfScore},
+    components: {momScore, baseScore, tightScore, volScore, adrScore, rsScore, surfScore, proxScore},
   };
 }
 
@@ -748,7 +874,9 @@ function filterResults(rs){
   const cat = $('#catSel').value;
   arr = arr.filter(r => r.score >= scoreMin);
   arr = arr.filter(r => Math.abs(r.distance) <= distMax);
-  if(cat !== 'all') arr = arr.filter(r => r.category === cat);
+  if(cat === 'EP') arr = arr.filter(r => r.setupType === 'EP');
+  else if(cat === 'CONT') arr = arr.filter(r => r.setupType === 'CONTINUATION');
+  else if(cat !== 'all') arr = arr.filter(r => r.category === cat);
   return arr;
 }
 function sortResults(arr){
@@ -795,12 +923,15 @@ function renderResults(){
     return `<tr class="cat-${r.category}" onclick="openDetail('${r.symbol}')">
       <td class="left"><div class="sym">${r.symbol}</div></td>
       <td><span class="score-bar"><div style="width:${r.score}%;background:${col}"></div></span><b style="color:${col}">${r.score}</b></td>
-      <td><span class="${catCls}">${r.category}</span></td>
-      <td class="col-mobile-hide pos">+${r.priorMove.toFixed(0)}% / ${r.impulseDays}d</td>
-      <td class="col-mobile-hide">${r.baseDuration}d</td>
-      <td class="col-mobile-hide">${r.baseDepth.toFixed(1)}%</td>
-      <td class="col-mobile-hide">${(r.atrContraction*100).toFixed(0)}%</td>
-      <td class="col-mobile-hide">${(r.volContraction*100).toFixed(0)}%</td>
+      <td>
+        <span class="${catCls}">${r.category}</span>
+        ${r.setupType === 'EP' ? '<span style="display:inline-block;margin-left:3px;padding:1px 5px;background:#eab308;color:#422006;border-radius:4px;font-size:9px;font-weight:800">EP</span>' : ''}
+      </td>
+      <td class="col-mobile-hide pos">${r.priorMove != null ? '+' + r.priorMove.toFixed(0) + '% / ' + r.impulseDays + 'd' : (r.ep ? 'EP +' + r.ep.dayMove.toFixed(0) + '% gap' : '—')}</td>
+      <td class="col-mobile-hide">${r.baseDuration != null ? r.baseDuration + 'd' : (r.ep ? r.ep.barsAgo + 'd ago' : '—')}</td>
+      <td class="col-mobile-hide">${r.baseDepth != null ? r.baseDepth.toFixed(1) + '%' : 'ADR ' + r.adr.toFixed(1) + '%'}</td>
+      <td class="col-mobile-hide">${r.tightness != null ? (r.tightness*100).toFixed(0)+'%' : '—'}</td>
+      <td class="col-mobile-hide">${r.volContraction != null ? (r.volContraction*100).toFixed(0)+'%' : (r.ep ? r.ep.volRatio.toFixed(1)+'x' : '—')}</td>
       <td style="color:${rsCol}">${r.rs}</td>
       <td class="col-mobile-hide">${fmt$(r.pivot)}</td>
       <td class="${distCls}">${fmtPct(r.distance)}</td>
@@ -835,15 +966,21 @@ function openDetail(symbol){
       <div class="stat"><label>RS vs SPY</label><div class="v" style="color:${r.rs>=80?'var(--emerald)':'var(--gold)'}">${r.rs}</div></div>
     </div>
 
-    <h3 style="font-size:13px;color:var(--orange);margin:14px 0 10px">✓ Qullamaggie Checklist</h3>
-    <div class="cond-row"><span class="ic ok">✓</span><span class="label">Prior move</span><span class="val">+${r.priorMove.toFixed(1)}% / ${r.impulseDays}d</span></div>
-    <div class="cond-row"><span class="ic ok">✓</span><span class="label">Base duration</span><span class="val">${r.baseDuration} days</span></div>
-    <div class="cond-row"><span class="ic ${r.baseDepth<25?'ok':'no'}">${r.baseDepth<25?'✓':'×'}</span><span class="label">Base depth</span><span class="val">${r.baseDepth.toFixed(1)}%</span></div>
-    <div class="cond-row"><span class="ic ${r.higherLows?'ok':'no'}">${r.higherLows?'✓':'×'}</span><span class="label">Higher lows in base</span><span class="val">${r.higherLows?'YES':'NO'}</span></div>
-    <div class="cond-row"><span class="ic ${r.atrContraction<0.8?'ok':'no'}">${r.atrContraction<0.8?'✓':'×'}</span><span class="label">ATR contraction (recent/prev)</span><span class="val">${(r.atrContraction*100).toFixed(0)}%</span></div>
-    <div class="cond-row"><span class="ic ${r.volContraction<0.9?'ok':'no'}">${r.volContraction<0.9?'✓':'×'}</span><span class="label">Volume dry-up (base/impulse)</span><span class="val">${(r.volContraction*100).toFixed(0)}%</span></div>
-    <div class="cond-row"><span class="ic ${r.surf.surfingAny?'ok':'no'}">${r.surf.surfingAny?'✓':'×'}</span><span class="label">Surfing 10/20/50d MA</span><span class="val">${r.surf.surfingMa10?'10d':''}${r.surf.surfingMa20?' 20d':''}${r.surf.surfingMa50?' 50d':''}${r.surf.surfingAny?'':'—'}</span></div>
+    <h3 style="font-size:13px;color:var(--orange);margin:14px 0 10px">✓ Qullamaggie Checklist · Setup: ${r.setupType}</h3>
+    ${r.priorMove != null ? `<div class="cond-row"><span class="ic ok">✓</span><span class="label">Prior move (impulse)</span><span class="val">+${r.priorMove.toFixed(1)}% / ${r.impulseDays}d</span></div>` : ''}
+    ${r.ep ? `<div class="cond-row"><span class="ic ok">⚡</span><span class="label">Episodic Pivot (gap/day move)</span><span class="val">+${r.ep.dayMove.toFixed(1)}% · ${r.ep.volRatio.toFixed(1)}× vol · ${r.ep.barsAgo}d ago</span></div>` : ''}
+    ${r.baseDuration != null ? `<div class="cond-row"><span class="ic ok">✓</span><span class="label">Base duration</span><span class="val">${r.baseDuration} days</span></div>` : ''}
+    ${r.baseDepth != null ? `<div class="cond-row"><span class="ic ${r.baseDepth<20?'ok':'no'}">${r.baseDepth<20?'✓':'×'}</span><span class="label">Base depth</span><span class="val">${r.baseDepth.toFixed(1)}%</span></div>` : ''}
+    ${r.higherLows != null ? `<div class="cond-row"><span class="ic ${r.higherLows?'ok':'no'}">${r.higherLows?'✓':'×'}</span><span class="label">Higher lows in base</span><span class="val">${r.higherLows?'YES':'NO'}</span></div>` : ''}
+    ${r.tightness != null ? `<div class="cond-row"><span class="ic ${r.tightness<0.85?'ok':'no'}">${r.tightness<0.85?'✓':'×'}</span><span class="label">Tightness (5d ADR / 20d ADR)</span><span class="val">${(r.tightness*100).toFixed(0)}%</span></div>` : ''}
+    ${r.volContraction != null ? `<div class="cond-row"><span class="ic ${r.volContraction<0.9?'ok':'no'}">${r.volContraction<0.9?'✓':'×'}</span><span class="label">Volume dry-up (base/impulse)</span><span class="val">${(r.volContraction*100).toFixed(0)}%</span></div>` : ''}
+    <div class="cond-row"><span class="ic ${r.adr>=4?'ok':'no'}">${r.adr>=4?'✓':'×'}</span><span class="label">ADR % (Momentum Leader)</span><span class="val">${r.adr?.toFixed(2)}%</span></div>
+    <div class="cond-row"><span class="ic ${r.surf.ma10Above20?'ok':'no'}">${r.surf.ma10Above20?'✓':'×'}</span><span class="label">10d SMA > 20d SMA</span><span class="val">${r.surf.ma10Above20?'YES':'NO'}</span></div>
+    <div class="cond-row"><span class="ic ${r.surf.bothRising?'ok':'no'}">${r.surf.bothRising?'✓':'×'}</span><span class="label">10d & 20d both rising</span><span class="val">${r.surf.bothRising?'YES':'NO'}</span></div>
+    <div class="cond-row"><span class="ic ${r.surf.surfingAny?'ok':'no'}">${r.surf.surfingAny?'✓':'×'}</span><span class="label">Surfing 10d or 20d MA (±5%)</span><span class="val">${r.surf.surfingMa10?'10d':''}${r.surf.surfingMa20?' 20d':''}${r.surf.surfingMa50?' 50d':''}${r.surf.surfingAny?'':'—'}</span></div>
+    ${r.surf.daysSinceCross != null ? `<div class="cond-row"><span class="ic ${r.surf.daysSinceCross <= 15?'ok':'no'}">${r.surf.daysSinceCross <= 15?'✓':'·'}</span><span class="label">Days since 10/20 cross (fresh <15d better)</span><span class="val">${r.surf.daysSinceCross}d</span></div>` : ''}
     <div class="cond-row"><span class="ic ${r.rs>=70?'ok':'no'}">${r.rs>=70?'✓':'×'}</span><span class="label">RS vs SPY</span><span class="val">${r.rs}</span></div>
+    <div class="cond-row"><span class="ic ok">·</span><span class="label">Returns 1M / 3M / 6M</span><span class="val">${r.r20?.toFixed(0)||'—'}% / ${r.r60?.toFixed(0)||'—'}% / ${r.r126?.toFixed(0)||'—'}%</span></div>
 
     <h3 style="font-size:13px;color:var(--cyan);margin:16px 0 10px">📊 MA Position</h3>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-family:var(--mono);font-size:12px">
@@ -884,12 +1021,13 @@ function openDetail(symbol){
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;font-size:12px;font-family:var(--mono)">
       <div>Momentum (${r.components.momScore.toFixed(0)}/20)</div>
       <div>Base Quality (${r.components.baseScore.toFixed(0)}/25)</div>
-      <div>ATR Contraction (${r.components.atrScore.toFixed(0)}/15)</div>
+      <div>Tightness (${r.components.tightScore.toFixed(0)}/15)</div>
       <div>Vol Dry-up (${r.components.volScore.toFixed(0)}/15)</div>
+      <div>ADR Quality (${r.components.adrScore.toFixed(0)}/10)</div>
       <div>RS (${r.components.rsScore.toFixed(0)}/10)</div>
-      <div>Pivot Proximity (${r.components.proxScore.toFixed(0)}/10)</div>
-      <div>MA Surfing (${r.components.surfScore.toFixed(0)}/5)</div>
-      <div style="color:var(--orange);font-weight:800">TOTAL ${r.score}/100</div>
+      <div>MA Surfing (${r.components.surfScore.toFixed(0)}/10)</div>
+      <div>Pivot Proximity (${r.components.proxScore.toFixed(0)}/5)</div>
+      <div style="color:var(--orange);font-weight:800;grid-column:span 2">TOTAL ${r.score}/100</div>
     </div>
 
     <div style="margin-top:14px;display:flex;gap:6px;flex-wrap:wrap">
@@ -904,6 +1042,7 @@ function closeModal(){ $('#modal').classList.remove('show'); }
 /* ---------- BINDINGS ---------- */
 $('#sMin').addEventListener('input', e => { $('#sMinV').textContent = e.target.value; if(state.results.length) renderResults(); });
 $('#mMin').addEventListener('input', e => { $('#mMinV').textContent = e.target.value; });
+$('#adrMin').addEventListener('input', e => { $('#adrMinV').textContent = e.target.value; });
 $('#dMax').addEventListener('input', e => { $('#dMaxV').textContent = e.target.value; if(state.results.length) renderResults(); });
 $('#catSel').addEventListener('change', () => { if(state.results.length) renderResults(); });
 $$('.check input').forEach(cb => {
