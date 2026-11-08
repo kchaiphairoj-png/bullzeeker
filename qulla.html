@@ -446,22 +446,37 @@ function computeRS(stockData, spyData){
 
 /* ---------- QULLAMAGGIE ANALYSIS (upgraded per actual methodology) ---------- */
 
-/* Find prior impulse move — highest N-day return ending within last 90 days */
+/* Find prior impulse move using swing-point method.
+   Peak must be at least 8 bars old (so a base has had time to form). */
 function findPriorImpulse(data){
   const n = data.length;
   if(n < 90) return null;
-  let best = {returnPct: -Infinity, startIdx:0, endIdx:0, days:0};
-  for(let endIdx = n-60; endIdx < n; endIdx++){
-    for(const lb of [20, 30, 45, 60, 90]){
-      const startIdx = endIdx - lb;
-      if(startIdx < 0) continue;
-      const ret = (data[endIdx].c / data[startIdx].c - 1) * 100;
-      if(ret > best.returnPct){
-        best = {returnPct: ret, startIdx, endIdx, days: lb, startPx: data[startIdx].c, endPx: data[endIdx].c};
-      }
+  // Find highest HIGH in bars [n-60, n-8] — this is the "impulse peak"
+  let peakIdx = -1, peakPx = -Infinity;
+  const peakStart = Math.max(0, n - 60);
+  const peakEnd = Math.max(peakStart + 1, n - 8);
+  for(let i = peakStart; i < peakEnd; i++){
+    if(data[i].h > peakPx){
+      peakPx = data[i].h;
+      peakIdx = i;
     }
   }
-  return best.returnPct > 0 ? best : null;
+  if(peakIdx < 0) return null;
+  // Find lowest LOW in bars [peakIdx-90, peakIdx] — this is the swing low BEFORE peak
+  const troughStart = Math.max(0, peakIdx - 90);
+  let troughIdx = troughStart, troughPx = Infinity;
+  for(let i = troughStart; i < peakIdx; i++){
+    if(data[i].l < troughPx){
+      troughPx = data[i].l;
+      troughIdx = i;
+    }
+  }
+  if(troughPx === Infinity || troughPx <= 0) return null;
+  const returnPct = (peakPx - troughPx) / troughPx * 100;
+  const days = peakIdx - troughIdx;
+  // Require minimum impulse duration (not a 1-day spike)
+  if(days < 5) return null;
+  return {returnPct, startIdx: troughIdx, endIdx: peakIdx, days, startPx: troughPx, endPx: peakPx};
 }
 
 /* Episodic Pivot detection — single-day gap ≥7.5% with volume surge */
