@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-11T01:21:23.359667",
-  "date": "2026-11-11",
+  "generated_at": "2026-11-12T02:22:14.635616",
+  "date": "2026-11-12",
   "universe": {
     "name": "S&P 500",
     "size": 503,
-    "data_received": 504
+    "data_received": 503
   },
   "market_regime": {
     "uptrend": false,
@@ -28,9 +28,9 @@
       "buys": [],
       "counts": {
         "buy": 0,
-        "hold": 500,
+        "hold": 499,
         "sell": 0,
-        "nodata": 3
+        "nodata": 4
       }
     },
     {
