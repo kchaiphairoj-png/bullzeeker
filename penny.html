@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>🚀 100x Penny Stock Screener | Bullzeeker</title>
-<meta name="description" content="Research tool to screen US penny stocks for the profile that historically produced 100x moves: small cap, cash runway, dated catalyst, short squeeze potential, low float." />
+<title>🚀 100x Penny Stock Screener (Live Market) | Bullzeeker</title>
+<meta name="description" content="Live penny stock screener for US markets: ~800 small/micro cap tickers, catalyst feed, momentum filters, auto-refresh. Research tool only." />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>" />
 <link rel="manifest" href="/manifest.json" />
@@ -38,18 +38,28 @@ body{padding-bottom:60px}
 main{max-width:1400px;margin:0 auto;padding:20px 18px}
 
 .hero{background:linear-gradient(135deg,rgba(236,72,153,.12),rgba(251,191,36,.06));border:1px solid var(--line2);border-radius:16px;padding:22px;margin-bottom:14px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;right:-40px;top:-40px;width:220px;height:220px;background:radial-gradient(circle,rgba(236,72,153,.15),transparent 70%);pointer-events:none}
 .hero h1{font-size:24px;font-weight:800;margin-bottom:4px;position:relative}
 .hero .sub{font-size:13px;color:var(--muted);position:relative;line-height:1.6}
 .hero .tag{display:inline-block;padding:3px 10px;border-radius:6px;background:var(--pink);color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px;margin-right:8px;vertical-align:middle}
 .disclaimer{background:rgba(239,68,68,.1);border:1px solid var(--red);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--red);font-weight:700;display:flex;align-items:center;gap:8px}
 
+.tabs{display:flex;gap:4px;margin-bottom:14px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:4px;overflow-x:auto}
+.tab{padding:10px 18px;border:none;background:transparent;color:var(--muted);font-weight:700;cursor:pointer;border-radius:8px;transition:.15s;font-size:13px;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.tab:hover{color:var(--text);background:var(--bg3)}
+.tab.active{color:#fff;background:linear-gradient(135deg,var(--pink),#db2777);box-shadow:0 2px 10px rgba(236,72,153,.3)}
+.tab .count{padding:1px 6px;border-radius:4px;font-size:10px;font-weight:800;background:rgba(255,255,255,.2)}
+
+.panel{display:none}
+.panel.active{display:block}
+
 .card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
 .card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px;flex-wrap:wrap}
 .card-h h2{font-size:16px;font-weight:800}
 .pill{padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:var(--bg3);color:var(--muted);border:1px solid var(--line)}
+.pill.live{background:rgba(16,185,129,.15);color:var(--emerald);border-color:var(--emerald);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
 
-.ctrl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:12px}
+.ctrl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:12px}
 .ctrl{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .ctrl label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
 .ctrl label .v{color:var(--pink);font-family:var(--mono);font-weight:700;float:right}
@@ -60,6 +70,14 @@ main{max-width:1400px;margin:0 auto;padding:20px 18px}
 .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--line2);padding:10px 18px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer}
 .btn-secondary:hover{background:var(--bg4)}
+.btn-toggle{background:var(--bg3);color:var(--muted);border:1px solid var(--line);padding:10px 18px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer}
+.btn-toggle.on{color:var(--emerald);border-color:var(--emerald);background:rgba(16,185,129,.08)}
+
+.progress-wrap{margin-top:12px;display:none}
+.progress-wrap.active{display:block}
+.progress-bar{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.progress-bar .fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--gold));transition:width .3s}
+.progress-text{font-size:11px;color:var(--muted);margin-top:6px;font-family:var(--mono);display:flex;justify-content:space-between}
 
 .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
 .stat{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
@@ -68,6 +86,7 @@ main{max-width:1400px;margin:0 auto;padding:20px 18px}
 .stat.pink .v{color:var(--pink)}
 .stat.gold .v{color:var(--gold)}
 .stat.green .v{color:var(--emerald)}
+.stat.red .v{color:var(--red)}
 
 table.p-tbl{width:100%;border-collapse:collapse;font-size:13px}
 table.p-tbl thead th{position:sticky;top:0;background:var(--bg3);color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:10px;padding:10px 8px;border-bottom:2px solid var(--line);cursor:pointer;user-select:none;z-index:1}
@@ -79,7 +98,7 @@ table.p-tbl tbody tr{cursor:pointer;transition:background .15s}
 table.p-tbl tbody tr:hover{background:var(--bg3)}
 table.p-tbl tbody tr.s5{background:linear-gradient(90deg,rgba(236,72,153,.1),transparent)}
 table.p-tbl tbody tr.s5:hover{background:linear-gradient(90deg,rgba(236,72,153,.18),var(--bg3))}
-table.p-tbl tbody tr.s4{background:linear-gradient(90deg,rgba(251,191,36,.06),transparent)}
+table.p-tbl tbody tr.hot{background:linear-gradient(90deg,rgba(251,191,36,.08),transparent)}
 table.p-tbl tbody .sym{font-weight:800;color:var(--text);font-family:'Inter',sans-serif}
 table.p-tbl tbody .name{font-size:10px;color:var(--muted);font-weight:400;font-family:'Inter',sans-serif;margin-top:2px}
 .pos{color:var(--emerald);font-weight:700}
@@ -95,6 +114,8 @@ table.p-tbl tbody .name{font-size:10px;color:var(--muted);font-weight:400;font-f
 .risk-high{background:var(--red);color:#fff}
 .risk-med{background:rgba(251,191,36,.25);color:var(--gold);border:1px solid var(--gold)}
 .risk-low{background:var(--bg3);color:var(--muted);border:1px solid var(--line)}
+.vol-hot{background:linear-gradient(135deg,var(--orange),var(--red));color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:800}
+.vol-warm{background:var(--gold);color:#0a0e16;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:800}
 
 .empty{text-align:center;padding:40px 20px;color:var(--muted)}
 .empty .icon{font-size:48px;margin-bottom:10px;opacity:.5}
@@ -104,16 +125,14 @@ table.p-tbl tbody .name{font-size:10px;color:var(--muted);font-weight:400;font-f
 .toast.ok{border-color:var(--emerald);color:var(--emerald)}
 .toast.err{border-color:var(--red);color:var(--red)}
 
-/* Side drawer */
 .drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:1001;backdrop-filter:blur(4px)}
 .drawer-bg.show{display:block}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100vw);background:var(--bg2);border-left:1px solid var(--line2);box-shadow:-8px 0 40px rgba(0,0,0,.5);transform:translateX(100%);transition:transform .3s;overflow-y:auto;padding:20px}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:var(--bg2);border-left:1px solid var(--line2);box-shadow:-8px 0 40px rgba(0,0,0,.5);transform:translateX(100%);transition:transform .3s;overflow-y:auto;padding:20px}
 .drawer.show{transform:translateX(0)}
 .drawer-h{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:10px}
 .drawer-h h3{font-size:20px;font-weight:800;line-height:1.2}
 .drawer-h .sub{color:var(--muted);font-size:12px;margin-top:4px}
 .drawer-close{background:none;border:1px solid var(--line);color:var(--muted);padding:4px 12px;border-radius:6px;cursor:pointer}
-
 .crit-row{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:10px 12px;background:var(--bg3);border-radius:8px;margin-bottom:6px;font-size:13px}
 .crit-row .ic{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
 .crit-row .ic.yes{background:var(--emerald);color:#062516}
@@ -123,10 +142,23 @@ table.p-tbl tbody .name{font-size:10px;color:var(--muted);font-weight:400;font-f
 .crit-row .reason{font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px}
 .crit-row .val{text-align:right;font-family:var(--mono);color:var(--gold);font-weight:800}
 
+.cal-item{display:grid;grid-template-columns:60px 1fr auto;gap:14px;padding:12px 14px;background:var(--bg3);border-radius:10px;margin-bottom:8px;align-items:center;transition:.15s;cursor:pointer}
+.cal-item:hover{background:var(--bg4);transform:translateX(2px)}
+.cal-item .days{text-align:center;font-family:var(--mono);font-weight:800}
+.cal-item .days .num{font-size:22px;color:var(--pink);line-height:1}
+.cal-item .days .unit{font-size:10px;color:var(--muted);text-transform:uppercase}
+.cal-item .days.urgent .num{color:var(--red);animation:pulse 1.5s infinite}
+.cal-item .info .ticker{font-weight:800;font-size:15px;color:var(--text)}
+.cal-item .info .name{font-size:11px;color:var(--muted)}
+.cal-item .info .cat{font-size:12px;color:var(--gold);margin-top:3px}
+.cal-item .date{text-align:right;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.cal-item .est{font-size:10px;color:var(--gold)}
+
 @media (max-width:900px){
   table.p-tbl{font-size:11px}
   table.p-tbl thead th,table.p-tbl tbody td{padding:6px 4px}
   .col-mobile-hide{display:none}
+  .tab{padding:8px 12px;font-size:12px}
 }
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-D593QC1NXE"></script>
@@ -143,7 +175,7 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
       <div class="brand-logo">🐂</div>
       <div>
         <div class="brand-name">Bullzeeker</div>
-        <div class="brand-sub">🚀 100x Penny Stock Screener</div>
+        <div class="brand-sub">🚀 100x Penny Stock Screener (Live)</div>
       </div>
     </a>
     <div class="nav-links">
@@ -154,7 +186,6 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
       <a href="/breakout.html" class="nav-a">🚀 Breakout</a>
       <a href="/longterm.html" class="nav-a">🌊 Long-Term</a>
       <a href="/cio.html" class="nav-a">🤖 AI CIO</a>
-      <a href="/course.html" class="nav-a">🎓 คอร์ส</a>
     </div>
   </div>
 </div>
@@ -163,154 +194,184 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
 
   <!-- HERO -->
   <div class="hero">
-    <h1><span class="tag">RESEARCH</span>🚀 100x Penny Stock Screener</h1>
+    <h1><span class="tag">LIVE</span>🚀 100x Penny Stock Screener</h1>
     <div class="sub">
-      Screen US small-cap stocks (NASDAQ/NYSE/NYSE Am) for the <b style="color:var(--pink)">5-criteria profile</b> that historically produced 100x moves:
-      small market cap · cash runway ≥ 12 months · dated catalyst · short squeeze potential · low float.
-      <b style="color:var(--gold)">Research tool only — not investment advice.</b>
+      Scans <b style="color:var(--pink)" id="univCount">~800</b> US small/micro cap tickers live via Yahoo Finance.
+      3 โหมด: <b>Curated</b> (handpicked catalysts + scoring) · <b>Market Scan</b> (live full-universe momentum/volume filters) · <b>Calendar</b> (upcoming FDA events).
+      Auto-refresh on timer · "Last scanned" timestamp · Research tool only.
     </div>
   </div>
 
   <div class="disclaimer">
-    ⚠️ <span><b>For research only. Not investment advice.</b> Data may be delayed or incomplete. Penny stocks carry extreme risk of total loss. Verify all data against SEC filings before any trade.</span>
+    ⚠️ <span><b>For research only. Not investment advice.</b> Data delayed 15-20 min (Yahoo). Penny stocks carry extreme risk of total loss. Verify all data against SEC filings before any trade.</span>
   </div>
 
-  <!-- FILTER PANEL -->
-  <div class="card">
-    <div class="card-h">
-      <h2>⚙️ Screening Filters</h2>
-      <span class="pill" id="candidateCount">— candidates</span>
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" data-tab="curated" onclick="switchTab('curated')">🎯 Curated <span class="count" id="tCurated">0</span></button>
+    <button class="tab" data-tab="scan" onclick="switchTab('scan')">🌊 Market Scan <span class="count" id="tScan">0</span></button>
+    <button class="tab" data-tab="calendar" onclick="switchTab('calendar')">📅 Calendar <span class="count" id="tCal">0</span></button>
+  </div>
+
+  <!-- ============= TAB 1: CURATED ============= -->
+  <div class="panel active" id="panel-curated">
+    <div class="card">
+      <div class="card-h">
+        <h2>⚙️ Curated Screening Filters</h2>
+        <span class="pill" id="candidateCount">— candidates</span>
+      </div>
+      <div class="ctrl-grid">
+        <div class="ctrl"><label>Max Market Cap <span class="v" id="maxCapV">$300M</span></label><input type="range" id="maxCap" min="50" max="2000" step="50" value="300" /></div>
+        <div class="ctrl"><label>Min Runway (months) <span class="v" id="minRunV">12</span></label><input type="range" id="minRun" min="3" max="36" step="1" value="12" /></div>
+        <div class="ctrl"><label>Catalyst Window (days) <span class="v" id="catWinV">365</span></label><input type="range" id="catWin" min="30" max="730" step="30" value="365" /></div>
+        <div class="ctrl"><label>Min Short % Float <span class="v" id="minShortV">20</span></label><input type="range" id="minShort" min="5" max="50" step="1" value="20" /></div>
+        <div class="ctrl"><label>Min Days-to-Cover <span class="v" id="minDTCV">7</span></label><input type="range" id="minDTC" min="1" max="20" step="1" value="7" /></div>
+        <div class="ctrl"><label>Max Float <span class="v" id="maxFloatV">30M</span></label><input type="range" id="maxFloat" min="5" max="200" step="5" value="30" /></div>
+        <div class="ctrl"><label>Min Score</label>
+          <select id="minScore"><option value="0">Show all</option><option value="1">≥ 1</option><option value="2">≥ 2</option><option value="3">≥ 3</option><option value="4">≥ 4</option><option value="5">5 only</option></select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-primary" id="scanBtn" onclick="runCuratedScan()">🚀 Scan Curated</button>
+        <button class="btn-secondary" onclick="exportCsv('curated')">📥 Export CSV</button>
+        <button class="btn-secondary" onclick="copyShareLink()">🔗 Share Link</button>
+      </div>
     </div>
-    <div class="ctrl-grid">
-      <div class="ctrl">
-        <label>Max Market Cap <span class="v" id="maxCapV">$300M</span></label>
-        <input type="range" id="maxCap" min="50" max="2000" step="50" value="300" />
+
+    <div class="stats-bar" id="curatedStats" style="display:none">
+      <div class="stat pink"><label>🚀 Candidates</label><div class="v" id="sTotal">—</div></div>
+      <div class="stat pink"><label>🏆 Score 5/5</label><div class="v" id="sScore5">—</div></div>
+      <div class="stat gold"><label>⭐ ≥ 4/5</label><div class="v" id="sScore4">—</div></div>
+      <div class="stat green"><label>Pass Catalyst</label><div class="v" id="sPassCat">—</div></div>
+      <div class="stat green"><label>Pass Market Cap</label><div class="v" id="sPassCap">—</div></div>
+    </div>
+
+    <div class="card" id="curatedResultsWrap" style="display:none">
+      <div class="card-h">
+        <h2>📊 Curated Candidates</h2>
+        <span class="pill" id="curatedMeta">—</span>
       </div>
-      <div class="ctrl">
-        <label>Min Runway (months) <span class="v" id="minRunV">12</span></label>
-        <input type="range" id="minRun" min="3" max="36" step="1" value="12" />
+      <div style="overflow-x:auto">
+        <table class="p-tbl">
+          <thead><tr>
+            <th class="left" data-sort="ticker" data-mode="curated">Ticker</th>
+            <th data-sort="score" data-mode="curated">Score</th>
+            <th class="left col-mobile-hide">Catalyst</th>
+            <th data-sort="catalyst_date" data-mode="curated">Cat. Date</th>
+            <th class="col-mobile-hide">Market Cap</th>
+            <th class="col-mobile-hide">Runway</th>
+            <th data-sort="price" data-mode="curated" class="col-mobile-hide">Price</th>
+            <th class="col-mobile-hide">Short %</th>
+            <th class="col-mobile-hide">Float</th>
+            <th class="left col-mobile-hide">Risks</th>
+          </tr></thead>
+          <tbody id="curatedBody"></tbody>
+        </table>
       </div>
-      <div class="ctrl">
-        <label>Catalyst Window (days) <span class="v" id="catWinV">365</span></label>
-        <input type="range" id="catWin" min="30" max="730" step="30" value="365" />
+    </div>
+  </div>
+
+  <!-- ============= TAB 2: MARKET SCAN ============= -->
+  <div class="panel" id="panel-scan">
+    <div class="card">
+      <div class="card-h">
+        <h2>🌊 Market Scan Filters (live ~800 tickers)</h2>
+        <span class="pill" id="lastScanScan">—</span>
       </div>
-      <div class="ctrl">
-        <label>Min Short % Float <span class="v" id="minShortV">20</span></label>
-        <input type="range" id="minShort" min="5" max="50" step="1" value="20" />
+      <div class="ctrl-grid">
+        <div class="ctrl"><label>Sector</label>
+          <select id="scanSector">
+            <option value="all" selected>All sectors</option>
+            <option value="biotech">Biotech / Pharma</option>
+            <option value="mining">Mining</option>
+            <option value="energy">Energy / Battery</option>
+            <option value="cannabis">Cannabis / Psychedelics</option>
+            <option value="ev">EV / Mobility</option>
+            <option value="crypto">Crypto / Blockchain</option>
+            <option value="fintech">Fintech / Software</option>
+            <option value="retail">Retail / Consumer</option>
+            <option value="industrial">Industrial</option>
+            <option value="spac">SPAC / Post-merger</option>
+          </select>
+        </div>
+        <div class="ctrl"><label>Max Price <span class="v" id="maxPriceV">$10</span></label><input type="range" id="maxPrice" min="1" max="20" step="0.5" value="10" /></div>
+        <div class="ctrl"><label>Min Price <span class="v" id="minPriceV">$0.5</span></label><input type="range" id="minPrice" min="0.1" max="5" step="0.1" value="0.5" /></div>
+        <div class="ctrl"><label>Min $-Vol (daily) <span class="v" id="minDvolV">$500K</span></label><input type="range" id="minDvol" min="100" max="10000" step="100" value="500" /></div>
+        <div class="ctrl"><label>Min Volume Surge <span class="v" id="minSurgeV">2×</span></label><input type="range" id="minSurge" min="1" max="10" step="0.5" value="2" /></div>
+        <div class="ctrl"><label>Min % Change Today <span class="v" id="minChgV">0%</span></label><input type="range" id="minChg" min="-20" max="50" step="1" value="0" /></div>
+        <div class="ctrl"><label>Min 5-day Return <span class="v" id="min5dV">-50%</span></label><input type="range" id="min5d" min="-50" max="100" step="5" value="-50" /></div>
+        <div class="ctrl"><label>Near 52w High (within %) <span class="v" id="near52V">off</span></label><input type="range" id="near52" min="0" max="50" step="5" value="0" /></div>
       </div>
-      <div class="ctrl">
-        <label>Min Days-to-Cover <span class="v" id="minDTCV">7</span></label>
-        <input type="range" id="minDTC" min="1" max="20" step="1" value="7" />
-      </div>
-      <div class="ctrl">
-        <label>Max Float <span class="v" id="maxFloatV">30M</span></label>
-        <input type="range" id="maxFloat" min="5" max="200" step="5" value="30" />
-      </div>
-      <div class="ctrl">
-        <label>Min Score</label>
-        <select id="minScore">
-          <option value="0" selected>Show all</option>
-          <option value="1">≥ 1 pt</option>
-          <option value="2">≥ 2 pts</option>
-          <option value="3">≥ 3 pts</option>
-          <option value="4">≥ 4 pts</option>
-          <option value="5">5 pts only</option>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn-primary" id="scanMarketBtn" onclick="runMarketScan()">🌊 Scan Market Live</button>
+        <button class="btn-toggle" id="autoBtn" onclick="toggleAuto()">⏱️ Auto: OFF</button>
+        <select id="autoInterval" style="padding:10px 12px;background:var(--bg3);border:1px solid var(--line);color:var(--text);border-radius:8px;font-size:12px">
+          <option value="5">5 min</option>
+          <option value="15" selected>15 min</option>
+          <option value="30">30 min</option>
         </select>
+        <button class="btn-secondary" onclick="exportCsv('scan')">📥 Export CSV</button>
       </div>
-      <div class="ctrl">
-        <label>Min Avg $-Vol (default $500k)</label>
-        <input type="number" id="minDollarVol" value="500000" step="50000" />
+      <div class="progress-wrap" id="scanProg">
+        <div class="progress-bar"><div class="fill" id="scanFill" style="width:0%"></div></div>
+        <div class="progress-text"><span id="scanText">—</span><span id="scanCount">—</span></div>
       </div>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn-primary" id="scanBtn" onclick="runScan()">🚀 Scan Live Prices</button>
-      <button class="btn-secondary" onclick="exportCsv()">📥 Export CSV</button>
-      <button class="btn-secondary" onclick="copyShareLink()">🔗 Copy Share Link</button>
+
+    <div class="stats-bar" id="scanStats" style="display:none">
+      <div class="stat pink"><label>🌊 Scanned</label><div class="v" id="scScanned">—</div></div>
+      <div class="stat pink"><label>Passed Filters</label><div class="v" id="scPassed">—</div></div>
+      <div class="stat gold"><label>🔥 Vol Surge ≥5×</label><div class="v" id="scHot">—</div></div>
+      <div class="stat green"><label>▲ Up Today</label><div class="v" id="scUp">—</div></div>
+      <div class="stat red"><label>▼ Down Today</label><div class="v" id="scDown">—</div></div>
     </div>
-    <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.5">
-      💡 <b>How to add a candidate:</b> Edit <code style="color:var(--gold);font-family:var(--mono)">catalysts.js</code> on GitHub and commit → auto-deploys. Each candidate needs curated fundamentals (cash, burn, float, short interest) sourced from SEC filings.
+
+    <div class="card" id="scanResultsWrap" style="display:none">
+      <div class="card-h">
+        <h2>📊 Market Scan Results</h2>
+        <span class="pill" id="scanMeta">—</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="p-tbl">
+          <thead><tr>
+            <th class="left" data-sort="ticker" data-mode="scan">Ticker</th>
+            <th data-sort="price" data-mode="scan">Price</th>
+            <th data-sort="chgPct" data-mode="scan">Chg %</th>
+            <th data-sort="volSurge" data-mode="scan">Vol Surge</th>
+            <th data-sort="dollarVol" data-mode="scan" class="col-mobile-hide">$-Vol</th>
+            <th data-sort="return5d" data-mode="scan" class="col-mobile-hide">5d</th>
+            <th data-sort="return20d" data-mode="scan" class="col-mobile-hide">20d</th>
+            <th data-sort="distFrom52wHigh" data-mode="scan" class="col-mobile-hide">52w High %</th>
+            <th data-sort="rangePct52w" data-mode="scan" class="col-mobile-hide">52w Range</th>
+            <th class="col-mobile-hide">Catalyst?</th>
+          </tr></thead>
+          <tbody id="scanBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <!-- STATS -->
-  <div class="stats-bar" id="statsBar" style="display:none">
-    <div class="stat pink"><label>🚀 Total Candidates</label><div class="v" id="sTotal">—</div></div>
-    <div class="stat pink"><label>🏆 Score 5/5</label><div class="v" id="sScore5">—</div></div>
-    <div class="stat gold"><label>⭐ Score ≥ 4</label><div class="v" id="sScore4">—</div></div>
-    <div class="stat green"><label>Pass Market Cap</label><div class="v" id="sPassCap">—</div></div>
-    <div class="stat green"><label>Pass Catalyst</label><div class="v" id="sPassCat">—</div></div>
-    <div class="stat green"><label>Pass Low Float</label><div class="v" id="sPassFloat">—</div></div>
-  </div>
-
-  <!-- RESULTS -->
-  <div class="card" id="resultsWrap" style="display:none">
-    <div class="card-h">
-      <h2>📊 Screened Candidates</h2>
-      <span class="pill" id="resMeta">—</span>
-    </div>
-    <div style="overflow-x:auto">
-      <table class="p-tbl">
-        <thead>
-          <tr>
-            <th class="left" data-sort="ticker">Ticker</th>
-            <th data-sort="score">Score</th>
-            <th class="left col-mobile-hide" data-sort="catalyst">Catalyst</th>
-            <th data-sort="catalyst_date">Cat. Date</th>
-            <th data-sort="market_cap" class="col-mobile-hide">Market Cap</th>
-            <th data-sort="runway" class="col-mobile-hide">Runway</th>
-            <th data-sort="price" class="col-mobile-hide">Price</th>
-            <th data-sort="short_pct" class="col-mobile-hide">Short %</th>
-            <th data-sort="float_m" class="col-mobile-hide">Float</th>
-            <th class="left col-mobile-hide">Risk Flags</th>
-            <th class="col-mobile-hide">As Of</th>
-          </tr>
-        </thead>
-        <tbody id="resBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- EDUCATION -->
-  <div class="card">
-    <div class="card-h"><h2>📚 100x Profile (research only)</h2></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;font-size:13px;line-height:1.7">
-      <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid var(--pink)">
-        <h3 style="color:var(--pink);font-size:14px;margin-bottom:8px">1️⃣ Small Market Cap</h3>
-        <p>&lt; $300M · ยิ่งเล็ก ยิ่ง upside เยอะ (10× ที่ $100M = $1B, 100× = $10B — ยังเป็นไปได้)</p>
+  <!-- ============= TAB 3: CALENDAR ============= -->
+  <div class="panel" id="panel-calendar">
+    <div class="card">
+      <div class="card-h">
+        <h2>📅 Catalyst Calendar (next 12 months)</h2>
+        <span class="pill" id="calMeta">—</span>
       </div>
-      <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid var(--gold)">
-        <h3 style="color:var(--gold);font-size:14px;margin-bottom:8px">2️⃣ Cash Runway ≥ 12 เดือน</h3>
-        <p>ต้องมีเงินสดพอให้ไปถึง catalyst · ถ้า burn เร็ว + ไม่มี cash = dilution หนัก → stock ร่วง</p>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5">
+        📝 แสดงเหตุการณ์สำคัญของหุ้น Curated candidates เรียงตามวันที่ใกล้ที่สุด · อัพเดทโดยแก้ไข <code style="color:var(--gold);font-family:var(--mono)">catalysts.js</code> ใน GitHub
       </div>
-      <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid var(--emerald)">
-        <h3 style="color:var(--emerald);font-size:14px;margin-bottom:8px">3️⃣ Dated Catalyst</h3>
-        <p>PDUFA · Phase 3 readout · product launch · major contract · กำหนดวันชัดเจน ≤ 365 วัน</p>
-      </div>
-      <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid var(--purple)">
-        <h3 style="color:var(--purple);font-size:14px;margin-bottom:8px">4️⃣ Short Squeeze Potential</h3>
-        <p>Short interest ≥ 20% ของ float · หรือ days-to-cover ≥ 7 · catalyst ดี = short cover = squeeze</p>
-      </div>
-      <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid var(--cyan)">
-        <h3 style="color:var(--cyan);font-size:14px;margin-bottom:8px">5️⃣ Low Float</h3>
-        <p>Float ≤ 30M shares · demand สูง + supply จำกัด = ราคาวิ่งเร็ว · แต่ volatile สูงมาก</p>
-      </div>
-      <div style="background:var(--bg3);padding:14px;border-radius:10px;border-left:3px solid var(--red)">
-        <h3 style="color:var(--red);font-size:14px;margin-bottom:8px">⚠️ Risk Flags (badges only)</h3>
-        <p>Dilution / Delisting / Going concern / Reverse split · badges เตือน แต่ไม่ลด score · ต้องประเมินเอง</p>
-      </div>
+      <div id="calendarList"></div>
     </div>
   </div>
 
 </main>
 
-<!-- Drawer for candidate detail -->
+<!-- Drawer -->
 <div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-h">
-    <div>
-      <h3 id="drTitle">—</h3>
-      <div class="sub" id="drSub">—</div>
-    </div>
+    <div><h3 id="drTitle">—</h3><div class="sub" id="drSub">—</div></div>
     <button class="drawer-close" onclick="closeDrawer()">✕</button>
   </div>
   <div id="drBody"></div>
@@ -319,19 +380,20 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
 <div class="toast" id="toast">—</div>
 
 <script src="/catalysts.js"></script>
+<script src="/penny-universe.js"></script>
 <script src="/penny-scoring.js"></script>
 <script>
 /* ============================================================
-   100X PENNY STOCK SCREENER — Bullzeeker
+   100X PENNY SCREENER v2 — Live Market Scan
    ============================================================ */
 
 const PROXIES = [
   url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
   url => 'https://corsproxy.io/?' + encodeURIComponent(url),
 ];
-const CACHE_KEY = 'bullzeeker_penny_cache_v1';
-const CACHE_TTL_MS = 60 * 60 * 1000;   // 1 hour for prices (refresh frequently)
-const FETCH_CONC = 8;
+const CACHE_KEY = 'bullzeeker_penny_cache_v2';
+const CACHE_TTL_MS = 60 * 60 * 1000;
+const FETCH_CONC = 20;
 
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
@@ -347,59 +409,17 @@ function toast(m, type='', ms=2500){
   clearTimeout(toast._t); toast._t = setTimeout(() => t.className = 'toast ' + type, ms);
 }
 function fmt$(v){return v==null||!isFinite(v)?'—':'$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmtPrice(v){return v==null||!isFinite(v)?'—':'$'+v.toFixed(v<1?3:2)}
+function fmtPct(v){return v==null||!isFinite(v)?'—':(v>=0?'+':'')+v.toFixed(2)+'%'}
 function fmtM(v){return v==null||!isFinite(v)?'—':'$'+v.toLocaleString('en-US',{maximumFractionDigits:0})+'M'}
-function fmtCount(v){return v==null||!isFinite(v)?'—':v.toLocaleString('en-US',{maximumFractionDigits:1})+'M'}
-
-/* ---------- SETTINGS (persisted to URL query string) ---------- */
-function readSettingsFromURL(){
-  const p = new URLSearchParams(location.search);
-  return {
-    max_market_cap_m: +p.get('cap') || 300,
-    min_runway_months: +p.get('run') || 12,
-    catalyst_window_days: +p.get('cat') || 365,
-    min_short_pct: +p.get('short') || 20,
-    min_days_to_cover: +p.get('dtc') || 7,
-    max_float_m: +p.get('float') || 30,
-    min_score: +p.get('ms') || 0,
-    min_dollar_vol: +p.get('dvol') || 500000,
-  };
-}
-function writeSettingsToURL(s){
-  const p = new URLSearchParams();
-  p.set('cap', s.max_market_cap_m);
-  p.set('run', s.min_runway_months);
-  p.set('cat', s.catalyst_window_days);
-  p.set('short', s.min_short_pct);
-  p.set('dtc', s.min_days_to_cover);
-  p.set('float', s.max_float_m);
-  p.set('ms', s.min_score);
-  p.set('dvol', s.min_dollar_vol);
-  history.replaceState(null, '', '?' + p.toString());
-}
-function getSettings(){
-  return {
-    max_market_cap_m: +$('#maxCap').value,
-    min_runway_months: +$('#minRun').value,
-    catalyst_window_days: +$('#catWin').value,
-    min_short_pct: +$('#minShort').value,
-    min_days_to_cover: +$('#minDTC').value,
-    max_float_m: +$('#maxFloat').value,
-    min_score: +$('#minScore').value,
-    min_dollar_vol: +$('#minDollarVol').value,
-  };
-}
-function applySettingsToUI(s){
-  $('#maxCap').value = s.max_market_cap_m;  $('#maxCapV').textContent = `$${s.max_market_cap_m}M`;
-  $('#minRun').value = s.min_runway_months; $('#minRunV').textContent = s.min_runway_months;
-  $('#catWin').value = s.catalyst_window_days; $('#catWinV').textContent = s.catalyst_window_days;
-  $('#minShort').value = s.min_short_pct; $('#minShortV').textContent = s.min_short_pct;
-  $('#minDTC').value = s.min_days_to_cover; $('#minDTCV').textContent = s.min_days_to_cover;
-  $('#maxFloat').value = s.max_float_m; $('#maxFloatV').textContent = `${s.max_float_m}M`;
-  $('#minScore').value = s.min_score;
-  $('#minDollarVol').value = s.min_dollar_vol;
+function fmtK(v){
+  if(v==null||!isFinite(v)) return '—';
+  if(v >= 1e6) return '$'+(v/1e6).toFixed(1)+'M';
+  if(v >= 1e3) return '$'+(v/1e3).toFixed(0)+'K';
+  return '$'+v.toFixed(0);
 }
 
-/* ---------- PROXY FETCH (Yahoo chart endpoint) ---------- */
+/* ---------- PROXY FETCH ---------- */
 async function tryProxies(url){
   let lastErr;
   for(let i=0; i<PROXIES.length; i++){
@@ -412,17 +432,17 @@ async function tryProxies(url){
       return txt;
     }catch(e){ lastErr = e; }
   }
-  throw lastErr || new Error('all proxies failed');
+  throw lastErr || new Error('proxy fail');
 }
 
-async function fetchLivePrice(ticker, useCache=true){
+async function fetchTickerData(ticker, useCache=true){
   const now = Date.now();
   const key = 'q_' + ticker;
   if(useCache && CACHE[key] && (now - CACHE[key].ts) < CACHE_TTL_MS){
     return CACHE[key].data;
   }
   try{
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?range=1mo&interval=1d`;
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?range=3mo&interval=1d`;
     const txt = await tryProxies(url);
     const j = JSON.parse(txt);
     const res = j?.chart?.result?.[0];
@@ -430,39 +450,50 @@ async function fetchLivePrice(ticker, useCache=true){
     const meta = res.meta;
     const quotes = res.indicators?.quote?.[0] || {};
     const closes = (quotes.close || []).filter(x => x != null);
+    const highs = (quotes.high || []).filter(x => x != null);
+    const lows = (quotes.low || []).filter(x => x != null);
     const vols = (quotes.volume || []).filter(x => x != null);
+    if(closes.length < 5) return null;
     const price = meta.regularMarketPrice ?? closes[closes.length-1];
-    // 20-day avg $ volume
-    const last20Closes = closes.slice(-20);
-    const last20Vols = vols.slice(-20);
-    let avg$Vol = 0;
-    for(let i=0; i<last20Closes.length; i++) avg$Vol += last20Closes[i] * (last20Vols[i]||0);
-    avg$Vol /= Math.max(1, last20Closes.length);
+    const prevClose = meta.chartPreviousClose ?? closes[closes.length-2];
+    const chgPct = prevClose ? (price/prevClose - 1) * 100 : null;
+    // Volume metrics
+    const todayVol = meta.regularMarketVolume ?? vols[vols.length-1];
+    const last20Vols = vols.slice(-21, -1);
+    const avg20Vol = last20Vols.length ? last20Vols.reduce((a,b)=>a+b,0)/last20Vols.length : 0;
+    const volSurge = avg20Vol > 0 ? todayVol / avg20Vol : null;
+    // $-volume
+    const last20Closes = closes.slice(-21, -1);
+    let avgDollarVol = 0;
+    for(let i=0; i<last20Closes.length; i++) avgDollarVol += last20Closes[i] * (last20Vols[i]||0);
+    avgDollarVol /= Math.max(1, last20Closes.length);
+    // 52w range
+    const yearHigh = meta.fiftyTwoWeekHigh ?? Math.max(...highs);
+    const yearLow = meta.fiftyTwoWeekLow ?? Math.min(...lows);
+    const distFrom52wHigh = yearHigh > 0 ? (price - yearHigh)/yearHigh * 100 : null;
+    const rangePct52w = yearHigh > yearLow ? (price - yearLow)/(yearHigh - yearLow) * 100 : null;
+    // Returns
+    const nC = closes.length;
+    const return5d = nC >= 6 ? (price / closes[nC-6] - 1) * 100 : null;
+    const return20d = nC >= 21 ? (price / closes[nC-21] - 1) * 100 : null;
+    const return60d = nC >= 61 ? (price / closes[nC-61] - 1) * 100 : null;
     const data = {
-      price,
-      previousClose: meta.chartPreviousClose,
-      changePct: meta.chartPreviousClose ? (price / meta.chartPreviousClose - 1) * 100 : null,
-      dayHigh: meta.regularMarketDayHigh,
-      dayLow: meta.regularMarketDayLow,
-      yearHigh: meta.fiftyTwoWeekHigh,
-      yearLow: meta.fiftyTwoWeekLow,
-      volume: meta.regularMarketVolume,
-      avgDollarVol: avg$Vol,
-      marketState: meta.marketState,
-      currency: meta.currency,
+      ticker, price, prevClose, chgPct,
+      dayHigh: meta.regularMarketDayHigh, dayLow: meta.regularMarketDayLow,
+      yearHigh, yearLow, distFrom52wHigh, rangePct52w,
+      volume: todayVol, avg20Vol, volSurge, avgDollarVol,
+      return5d, return20d, return60d,
+      marketState: meta.marketState, currency: meta.currency,
       fetchedAt: now,
     };
     CACHE[key] = {ts: now, data};
     return data;
   }catch(e){
-    console.warn(`fetchLivePrice(${ticker}) failed:`, e.message);
     return null;
   }
 }
 
-/* ---------- SCAN ---------- */
-let state = {results: [], scanning: false, sort: {key:'score', dir:-1}};
-
+/* ---------- CONCURRENT FETCH ---------- */
 async function concurrent(items, conc, worker, onProgress){
   let idx = 0, done = 0;
   async function run(){
@@ -475,291 +506,478 @@ async function concurrent(items, conc, worker, onProgress){
   await Promise.all(Array(conc).fill(0).map(run));
 }
 
-async function runScan(){
-  if(state.scanning) return;
-  state.scanning = true;
-  const btn = $('#scanBtn');
-  btn.disabled = true; btn.textContent = '⏳ Fetching live prices...';
+/* ---------- TAB SWITCHING ---------- */
+function switchTab(name){
+  $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  $$('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-'+name));
+  // Lazy-load tab content
+  if(name === 'calendar') renderCalendar();
+}
 
+/* =============================================================
+   MODE 1: CURATED SCAN (use catalysts.js + penny-scoring.js)
+   ============================================================= */
+const stateCurated = {results: [], sort: {key:'score', dir:-1}};
+
+function getCuratedSettings(){
+  return {
+    max_market_cap_m: +$('#maxCap').value,
+    min_runway_months: +$('#minRun').value,
+    catalyst_window_days: +$('#catWin').value,
+    min_short_pct: +$('#minShort').value,
+    min_days_to_cover: +$('#minDTC').value,
+    max_float_m: +$('#maxFloat').value,
+    min_score: +$('#minScore').value,
+  };
+}
+
+async function runCuratedScan(){
+  const btn = $('#scanBtn');
+  btn.disabled = true; btn.textContent = '⏳ Fetching...';
   try{
     const candidates = window.BULLZEEKER_100X || [];
-    if(!candidates.length){ toast('⚠️ No candidates in catalysts.js', 'err'); return; }
-    const settings = getSettings();
-    writeSettingsToURL(settings);
-
-    // Fetch live prices
+    if(!candidates.length){ toast('⚠️ No candidates', 'err'); return; }
+    const settings = getCuratedSettings();
     const liveData = {};
-    await concurrent(candidates, FETCH_CONC, async (c) => {
-      liveData[c.ticker] = await fetchLivePrice(c.ticker, true);
-    }, (done, total) => {
-      btn.textContent = `⏳ ${done}/${total} prices...`;
+    await concurrent(candidates, 8, async (c) => {
+      liveData[c.ticker] = await fetchTickerData(c.ticker, true);
     });
     saveCache();
-
-    // Score each candidate
     const scoringApi = window.BULLZEEKER_100X_SCORING;
     const results = candidates.map(c => {
       const live = liveData[c.ticker];
-      const livePrice = live?.price ?? null;
-      const scored = scoringApi.scoreCandidate(c, livePrice, settings, new Date());
-      // Attach live data + dollar volume check
-      const passLiquidity = live && live.avgDollarVol >= settings.min_dollar_vol;
-      return {
-        ...scored,
-        live,
-        passLiquidity: live ? passLiquidity : null,
-      };
+      const scored = scoringApi.scoreCandidate(c, live?.price ?? null, settings, new Date());
+      return {...scored, live};
     });
-
-    state.results = results;
-    renderResults();
-    const n = results.length;
-    const score5 = results.filter(r => r.score === 5).length;
-    toast(`✅ Scanned ${n} candidates · ${score5} scored 5/5`, 'ok');
-  }catch(e){
-    console.error(e);
-    toast('❌ Scan failed: ' + e.message, 'err');
-  }finally{
-    state.scanning = false;
-    btn.disabled = false; btn.textContent = '🚀 Scan Live Prices';
-  }
+    stateCurated.results = results;
+    renderCurated();
+    toast(`✅ Scanned ${results.length} candidates`, 'ok');
+  }catch(e){ toast('❌ ' + e.message, 'err'); }
+  finally{ btn.disabled = false; btn.textContent = '🚀 Scan Curated'; }
 }
 
-/* ---------- RENDER ---------- */
-function filterResults(rs){
-  const s = getSettings();
-  return rs.filter(r => r.score >= s.min_score);
-}
-function sortResults(arr){
-  const {key, dir} = state.sort;
-  const keyFn = r => {
-    switch(key){
-      case 'ticker': return r.ticker;
-      case 'score': return r.score;
-      case 'catalyst': return r.candidate.catalyst || '';
-      case 'catalyst_date': return r.candidate.catalyst_date || '9999-12-31';
-      case 'market_cap': return r.criteria.market_cap.value ?? -1;
-      case 'runway': return r.criteria.runway.value ?? -1;
-      case 'price': return r.livePrice ?? -1;
-      case 'short_pct': return r.criteria.short_squeeze.value?.short_interest_pct ?? -1;
-      case 'float_m': return r.criteria.low_float.value ?? -1;
-      default: return r.score;
-    }
-  };
+function renderCurated(){
+  const all = stateCurated.results;
+  const settings = getCuratedSettings();
+  let arr = all.filter(r => r.score >= settings.min_score);
+  const {key, dir} = stateCurated.sort;
   arr.sort((a,b) => {
-    const va = keyFn(a), vb = keyFn(b);
+    const kf = r => {
+      switch(key){
+        case 'ticker': return r.ticker;
+        case 'score': return r.score;
+        case 'catalyst_date': return r.candidate.catalyst_date || '9999-12-31';
+        case 'price': return r.livePrice ?? -1;
+        default: return r.score;
+      }
+    };
+    const va = kf(a), vb = kf(b);
     if(typeof va === 'string') return va.localeCompare(vb) * dir;
     return (va - vb) * dir;
   });
-  return arr;
-}
 
-function scoreChip(score){
-  const cls = 'score-' + score;
-  return `<span class="score-chip ${cls}">${score}/5</span>`;
-}
-function fmtDate(iso){ if(!iso) return '—'; return iso; }
-
-function daysUntil(iso){
-  if(!iso) return null;
-  const d = new Date(iso + 'T00:00:00Z');
-  return Math.round((d - new Date()) / (24*3600*1000));
-}
-
-function renderResults(){
-  const all = state.results;
-  const filtered = sortResults(filterResults(all.slice()));
-
-  $('#statsBar').style.display = 'grid';
+  $('#tCurated').textContent = all.length;
+  $('#curatedStats').style.display = 'grid';
   $('#sTotal').textContent = all.length;
   $('#sScore5').textContent = all.filter(r => r.score === 5).length;
   $('#sScore4').textContent = all.filter(r => r.score >= 4).length;
-  $('#sPassCap').textContent = all.filter(r => r.criteria.market_cap.pass === true).length;
   $('#sPassCat').textContent = all.filter(r => r.criteria.catalyst.pass === true).length;
-  $('#sPassFloat').textContent = all.filter(r => r.criteria.low_float.pass === true).length;
+  $('#sPassCap').textContent = all.filter(r => r.criteria.market_cap.pass === true).length;
 
-  $('#resultsWrap').style.display = 'block';
-  $('#resMeta').textContent = `${filtered.length} / ${all.length} candidates · sorted by ${state.sort.key} ${state.sort.dir<0?'↓':'↑'}`;
+  $('#curatedResultsWrap').style.display = 'block';
+  $('#curatedMeta').textContent = `${arr.length} / ${all.length}`;
 
-  if(!filtered.length){
-    $('#resBody').innerHTML = `<tr><td colspan="11"><div class="empty">
-      <div class="icon">🚀</div><div><b>No candidates match the filter</b></div>
-      <div style="margin-top:6px;font-size:12px">Lower Min Score, loosen thresholds, or add more tickers to catalysts.js</div>
-    </div></td></tr>`;
+  if(!arr.length){
+    $('#curatedBody').innerHTML = `<tr><td colspan="10"><div class="empty"><div class="icon">🚀</div>No candidates match</div></td></tr>`;
     return;
   }
 
-  $('#resBody').innerHTML = filtered.map(r => {
+  $('#curatedBody').innerHTML = arr.map(r => {
     const c = r.candidate;
     const live = r.live;
-    const days = daysUntil(c.catalyst_date);
-    const daysBadge = days == null ? '—' : (days < 0 ? `<span class="neg">${-days}d ago</span>` : days <= 30 ? `<span style="color:var(--pink);font-weight:800">${days}d</span>` : `${days}d`);
+    const days = c.catalyst_date ? Math.round((new Date(c.catalyst_date+'T00:00:00Z') - new Date())/(24*3600*1000)) : null;
+    const daysBadge = days == null ? '—' : days < 0 ? `<span class="neg">${-days}d ago</span>` : days <= 30 ? `<span style="color:var(--pink);font-weight:800">${days}d</span>` : `${days}d`;
     const capV = r.criteria.market_cap.value;
     const runV = r.criteria.runway.value;
     const sp = r.criteria.short_squeeze.value?.short_interest_pct;
     const fl = r.criteria.low_float.value;
-    const trCls = r.score === 5 ? 's5' : r.score >= 4 ? 's4' : '';
-    const risksHtml = r.risks.length
-      ? r.risks.map(rk => `<span class="risk-badge risk-${rk.sev}">${rk.label}</span>`).join('')
-      : '<span style="color:var(--muted);font-size:10px">—</span>';
-    return `<tr class="${trCls}" onclick="openDrawer('${r.ticker}')">
-      <td class="left"><div class="sym">${r.ticker}</div><div class="name">${c.name || ''}</div></td>
-      <td>${scoreChip(r.score)}</td>
-      <td class="left col-mobile-hide" style="font-size:12px">${c.catalyst || '—'}</td>
-      <td>${fmtDate(c.catalyst_date)}<div style="font-size:10px;color:var(--muted)">${daysBadge}${c.date_is_estimate?' <span style="color:var(--gold)">(est.)</span>':''}</div></td>
+    const trCls = r.score === 5 ? 's5' : '';
+    const risksHtml = r.risks.length ? r.risks.map(rk => `<span class="risk-badge risk-${rk.sev}">${rk.label}</span>`).join('') : '<span style="color:var(--muted);font-size:10px">—</span>';
+    return `<tr class="${trCls}" onclick="openDrawerCurated('${r.ticker}')">
+      <td class="left"><div class="sym">${r.ticker}</div><div class="name">${c.name||''}</div></td>
+      <td><span class="score-chip score-${r.score}">${r.score}/5</span></td>
+      <td class="left col-mobile-hide" style="font-size:12px">${c.catalyst||'—'}</td>
+      <td>${c.catalyst_date||'—'}<div style="font-size:10px;color:var(--muted)">${daysBadge}${c.date_is_estimate?' <span style="color:var(--gold)">(est.)</span>':''}</div></td>
       <td class="col-mobile-hide">${capV != null ? fmtM(capV) : '<span style="color:var(--muted)">?</span>'}</td>
-      <td class="col-mobile-hide">${runV === Infinity ? '<span class="pos">self-fund</span>' : runV != null ? runV.toFixed(1) + 'mo' : '<span style="color:var(--muted)">?</span>'}</td>
-      <td class="col-mobile-hide">${live?.price != null ? fmt$(live.price) : '<span style="color:var(--muted)">?</span>'}${live?.changePct != null ? `<div style="font-size:10px" class="${live.changePct>=0?'pos':'neg'}">${live.changePct>=0?'+':''}${live.changePct.toFixed(2)}%</div>` : ''}</td>
-      <td class="col-mobile-hide">${sp != null ? sp.toFixed(1) + '%' : '<span style="color:var(--muted)">?</span>'}</td>
-      <td class="col-mobile-hide">${fl != null ? fl.toFixed(1) + 'M' : '<span style="color:var(--muted)">?</span>'}</td>
+      <td class="col-mobile-hide">${runV === Infinity ? '<span class="pos">self</span>' : runV != null ? runV.toFixed(1)+'mo' : '<span style="color:var(--muted)">?</span>'}</td>
+      <td class="col-mobile-hide">${live?.price ? fmtPrice(live.price) : '?'}${live?.chgPct != null ? `<div style="font-size:10px" class="${live.chgPct>=0?'pos':'neg'}">${fmtPct(live.chgPct)}</div>` : ''}</td>
+      <td class="col-mobile-hide">${sp != null ? sp.toFixed(1)+'%' : '<span style="color:var(--muted)">?</span>'}</td>
+      <td class="col-mobile-hide">${fl != null ? fl.toFixed(1)+'M' : '<span style="color:var(--muted)">?</span>'}</td>
       <td class="left col-mobile-hide">${risksHtml}</td>
-      <td class="col-mobile-hide" style="font-size:11px;color:var(--muted)">${c.as_of || '—'}</td>
     </tr>`;
   }).join('');
 }
 
-/* ---------- DRAWER ---------- */
-function openDrawer(ticker){
-  const r = state.results.find(x => x.ticker === ticker);
+function openDrawerCurated(ticker){
+  const r = stateCurated.results.find(x => x.ticker === ticker);
   if(!r) return;
   const c = r.candidate;
   const live = r.live;
-  $('#drTitle').textContent = `${r.ticker} — ${c.name || ''}`;
-  $('#drSub').textContent = `Score ${r.score}/5 · ${c.catalyst || ''} · ${c.catalyst_date || ''}${c.date_is_estimate ? ' (estimate)' : ''}`;
-
+  $('#drTitle').textContent = `${r.ticker} — ${c.name||''}`;
+  $('#drSub').textContent = `Score ${r.score}/5 · ${c.catalyst||''}`;
   const row = (crit, label, icon) => {
     const ic = crit.pass === true ? 'yes' : crit.pass === false ? 'no' : 'unk';
     const icTxt = crit.pass === true ? '✓' : crit.pass === false ? '✕' : '?';
     const val = crit.value;
-    let valDisplay = '—';
+    let vd = '—';
     if(val != null && val !== Infinity){
-      if(typeof val === 'number') valDisplay = val.toFixed(1);
-      else if(typeof val === 'object') valDisplay = Object.values(val).filter(v=>v!=null).map(v=>v.toFixed(1)).join(' · ');
-    } else if(val === Infinity) valDisplay = '∞';
-    return `<div class="crit-row">
-      <span class="ic ${ic}">${icTxt}</span>
-      <div>
-        <div class="label">${icon} ${label}</div>
-        <div class="reason">${crit.reason}</div>
-      </div>
-      <div class="val">${valDisplay}</div>
-    </div>`;
+      if(typeof val === 'number') vd = val.toFixed(1);
+      else if(typeof val === 'object') vd = Object.values(val).filter(v=>v!=null).map(v=>v.toFixed(1)).join(' · ');
+    } else if(val === Infinity) vd = '∞';
+    return `<div class="crit-row"><span class="ic ${ic}">${icTxt}</span><div><div class="label">${icon} ${label}</div><div class="reason">${crit.reason}</div></div><div class="val">${vd}</div></div>`;
   };
-
-  const risksHtml = r.risks.length
-    ? r.risks.map(rk => `<span class="risk-badge risk-${rk.sev}">${rk.label}</span>`).join(' ')
-    : '<span style="color:var(--muted);font-size:12px">None flagged</span>';
-
-  const liveBlock = live ? `
-    <div style="background:var(--bg3);padding:12px;border-radius:8px;margin-bottom:12px;font-size:12px;font-family:var(--mono)">
-      <div><b style="color:var(--gold)">${fmt$(live.price)}</b> · ${live.changePct != null ? `<span class="${live.changePct>=0?'pos':'neg'}">${live.changePct>=0?'+':''}${live.changePct.toFixed(2)}%</span>` : '—'} · ${live.marketState || ''}</div>
-      <div style="color:var(--muted);margin-top:4px">52w: $${live.yearLow?.toFixed(2)} – $${live.yearHigh?.toFixed(2)} · Avg $-vol: ${(live.avgDollarVol/1e6).toFixed(2)}M</div>
-      <div style="color:var(--muted);margin-top:2px">As of: ${new Date(live.fetchedAt).toLocaleString()}</div>
-    </div>` : `<div style="color:var(--muted);font-size:12px;padding:8px">Live price unavailable</div>`;
-
-  $('#drBody').innerHTML = `
-    ${liveBlock}
-
+  const risksHtml = r.risks.length ? r.risks.map(rk => `<span class="risk-badge risk-${rk.sev}">${rk.label}</span>`).join(' ') : '<span style="color:var(--muted);font-size:12px">None</span>';
+  const liveBlock = live ? `<div style="background:var(--bg3);padding:12px;border-radius:8px;margin-bottom:12px;font-size:12px;font-family:var(--mono)">
+    <div><b style="color:var(--gold)">${fmtPrice(live.price)}</b> · ${live.chgPct != null ? `<span class="${live.chgPct>=0?'pos':'neg'}">${fmtPct(live.chgPct)}</span>` : '—'} · ${live.marketState||''}</div>
+    <div style="color:var(--muted);margin-top:4px">52w: ${fmtPrice(live.yearLow)}–${fmtPrice(live.yearHigh)} · Avg $-vol: ${fmtK(live.avgDollarVol)}</div>
+    <div style="color:var(--muted);margin-top:2px">Vol surge: <b class="${live.volSurge>=3?'pos':''}">${live.volSurge?.toFixed(2)||'—'}×</b> · Updated: ${new Date(live.fetchedAt).toLocaleString()}</div>
+  </div>` : `<div style="color:var(--muted);font-size:12px;padding:8px">Live data unavailable</div>`;
+  $('#drBody').innerHTML = `${liveBlock}
     <h4 style="font-size:13px;color:var(--pink);margin:14px 0 8px">📊 5-Criteria Breakdown</h4>
     ${row(r.criteria.market_cap, 'Market Cap ≤ max', '1️⃣')}
     ${row(r.criteria.runway, 'Cash Runway ≥ min', '2️⃣')}
     ${row(r.criteria.catalyst, 'Catalyst within window', '3️⃣')}
     ${row(r.criteria.short_squeeze, 'Short Squeeze potential', '4️⃣')}
     ${row(r.criteria.low_float, 'Low Float', '5️⃣')}
-
     <h4 style="font-size:13px;color:var(--red);margin:14px 0 8px">⚠️ Risk Flags</h4>
     <div style="padding:8px">${risksHtml}</div>
-
-    <h4 style="font-size:13px;color:var(--cyan);margin:14px 0 8px">💰 Runway Calculation</h4>
-    <div style="background:var(--bg3);padding:10px;border-radius:8px;font-family:var(--mono);font-size:12px;line-height:1.7">
-      <div>Cash + ST investments: <b>${c.cash_m != null ? fmtM(c.cash_m) : '?'}</b></div>
-      <div>Avg quarterly burn: <b>${c.quarterly_burn_m != null ? fmtM(c.quarterly_burn_m) : '?'}</b></div>
-      <div>Monthly burn: <b>${c.quarterly_burn_m != null ? fmtM(c.quarterly_burn_m / 3) : '?'}</b></div>
-      <div style="color:var(--gold);font-weight:800;margin-top:4px">→ Runway: ${r.criteria.runway.value === Infinity ? '∞ (self-funding)' : r.criteria.runway.value != null ? r.criteria.runway.value.toFixed(1) + ' months' : '?'}</div>
-    </div>
-
     ${c.notes ? `<h4 style="font-size:13px;color:var(--gold);margin:14px 0 8px">📝 Notes</h4><div style="background:var(--bg3);padding:10px;border-radius:8px;font-size:12px;line-height:1.6">${c.notes}</div>` : ''}
-
     <h4 style="font-size:13px;color:var(--purple);margin:14px 0 8px">🔗 Sources</h4>
     <div style="display:flex;gap:6px;flex-wrap:wrap">
-      ${c.source_url ? `<a href="${c.source_url}" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--bg3);color:var(--text);border:1px solid var(--line2);border-radius:8px;text-decoration:none;font-size:11px;font-weight:700">📄 SEC Filings</a>` : ''}
+      ${c.source_url ? `<a href="${c.source_url}" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--bg3);color:var(--text);border:1px solid var(--line2);border-radius:8px;text-decoration:none;font-size:11px;font-weight:700">📄 SEC</a>` : ''}
       <a href="https://www.tradingview.com/chart/?symbol=${r.ticker}" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--pink);color:#fff;border-radius:8px;text-decoration:none;font-size:11px;font-weight:700">📊 TradingView</a>
       <a href="https://finance.yahoo.com/quote/${r.ticker}" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--bg3);color:var(--text);border:1px solid var(--line2);border-radius:8px;text-decoration:none;font-size:11px;font-weight:700">📈 Yahoo</a>
       <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=${r.ticker}&type=10-&dateb=&owner=include&count=40" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--bg3);color:var(--text);border:1px solid var(--line2);border-radius:8px;text-decoration:none;font-size:11px;font-weight:700">🏛️ EDGAR</a>
-    </div>
-
-    <div style="margin-top:14px;padding:10px;background:rgba(239,68,68,.08);border:1px solid var(--red);border-radius:8px;font-size:11px;color:var(--red);line-height:1.5">
-      ⚠️ For research only · Verify all data against SEC filings · Penny stocks have extreme risk of total loss.
-    </div>
-  `;
-  $('#drawerBg').classList.add('show');
-  $('#drawer').classList.add('show');
+    </div>`;
+  $('#drawerBg').classList.add('show'); $('#drawer').classList.add('show');
 }
+
+/* =============================================================
+   MODE 2: MARKET SCAN (live full universe)
+   ============================================================= */
+const stateScan = {results: [], sort: {key:'volSurge', dir:-1}, lastScanAt: null, timer: null, autoOn: false};
+
+function getScanSettings(){
+  return {
+    sector: $('#scanSector').value,
+    maxPrice: +$('#maxPrice').value,
+    minPrice: +$('#minPrice').value,
+    minDvol: +$('#minDvol').value * 1000,   // slider shown in $K, stored as $
+    minSurge: +$('#minSurge').value,
+    minChg: +$('#minChg').value,
+    min5d: +$('#min5d').value,
+    near52: +$('#near52').value,
+  };
+}
+
+async function runMarketScan(){
+  const btn = $('#scanMarketBtn');
+  btn.disabled = true; btn.textContent = '⏳ Scanning market...';
+  $('#scanProg').classList.add('active');
+
+  try{
+    const s = getScanSettings();
+    const uni = window.BULLZEEKER_PENNY_UNIVERSE;
+    if(!uni){ toast('⚠️ Universe not loaded', 'err'); return; }
+    const tickers = s.sector === 'all' ? uni.all : uni[s.sector] || [];
+
+    // Build a catalyst map so we can tag market-scan results that have an upcoming catalyst
+    const catMap = {};
+    (window.BULLZEEKER_100X || []).forEach(c => { catMap[c.ticker] = c; });
+
+    const results = [];
+    await concurrent(tickers, FETCH_CONC, async (sym) => {
+      try{
+        const d = await fetchTickerData(sym, true);
+        if(d) results.push(d);
+      }catch{}
+    }, (done, total) => {
+      $('#scanFill').style.width = ((done/total)*100).toFixed(1) + '%';
+      $('#scanText').textContent = `📡 ${done}/${total} · fetched ${results.length} ok`;
+      $('#scanCount').textContent = `${done} / ${total}`;
+    });
+    saveCache();
+
+    // Tag each with catalyst info
+    results.forEach(r => { r.catalyst = catMap[r.ticker] || null; });
+
+    stateScan.results = results;
+    stateScan.lastScanAt = Date.now();
+    renderScan();
+    toast(`✅ Scanned ${tickers.length} · ${results.length} fetched · ${applyScanFilters(results).length} passed filters`, 'ok');
+  }catch(e){ toast('❌ ' + e.message, 'err'); console.error(e); }
+  finally{
+    btn.disabled = false; btn.textContent = '🌊 Scan Market Live';
+    setTimeout(() => $('#scanProg').classList.remove('active'), 3000);
+  }
+}
+
+function applyScanFilters(results){
+  const s = getScanSettings();
+  return results.filter(r => {
+    if(r.price == null) return false;
+    if(r.price < s.minPrice || r.price > s.maxPrice) return false;
+    if(r.avgDollarVol < s.minDvol) return false;
+    if(s.minSurge > 1 && (r.volSurge == null || r.volSurge < s.minSurge)) return false;
+    if(r.chgPct == null || r.chgPct < s.minChg) return false;
+    if(r.return5d != null && r.return5d < s.min5d) return false;
+    if(s.near52 > 0 && (r.distFrom52wHigh == null || r.distFrom52wHigh < -s.near52)) return false;
+    return true;
+  });
+}
+
+function renderScan(){
+  const all = stateScan.results;
+  const filtered = applyScanFilters(all);
+
+  const {key, dir} = stateScan.sort;
+  filtered.sort((a,b) => {
+    const va = a[key] ?? -Infinity, vb = b[key] ?? -Infinity;
+    if(typeof va === 'string') return va.localeCompare(vb) * dir;
+    return (va - vb) * dir;
+  });
+
+  const hot = all.filter(r => (r.volSurge||0) >= 5).length;
+  const up = all.filter(r => (r.chgPct||0) > 0).length;
+  const down = all.filter(r => (r.chgPct||0) < 0).length;
+
+  $('#tScan').textContent = filtered.length;
+  $('#scanStats').style.display = 'grid';
+  $('#scScanned').textContent = all.length;
+  $('#scPassed').textContent = filtered.length;
+  $('#scHot').textContent = hot;
+  $('#scUp').textContent = up;
+  $('#scDown').textContent = down;
+
+  // Last scanned timestamp
+  if(stateScan.lastScanAt){
+    const mins = Math.round((Date.now() - stateScan.lastScanAt)/60000);
+    $('#lastScanScan').innerHTML = `<span class="pill ${mins<2?'live':''}">Last scan: ${mins === 0 ? 'just now' : mins+'m ago'} · ${stateScan.autoOn ? '🔁 auto on' : ''}</span>`.replace(/^<span[^>]+>|<\/span>$/g, '');
+    $('#lastScanScan').outerHTML = `<span id="lastScanScan" class="pill ${mins<2?'live':''}">Last scan: ${mins === 0 ? 'just now' : mins+'m ago'}${stateScan.autoOn ? ' · 🔁 auto' : ''}</span>`;
+  }
+
+  $('#scanResultsWrap').style.display = 'block';
+  $('#scanMeta').textContent = `${filtered.length} / ${all.length} · sort: ${key} ${dir<0?'↓':'↑'}`;
+
+  if(!filtered.length){
+    $('#scanBody').innerHTML = `<tr><td colspan="10"><div class="empty"><div class="icon">🌊</div>No tickers match the filters</div></td></tr>`;
+    return;
+  }
+
+  $('#scanBody').innerHTML = filtered.slice(0, 200).map(r => {
+    const vsBadge = r.volSurge >= 5 ? `<span class="vol-hot">${r.volSurge.toFixed(1)}×</span>` : r.volSurge >= 2 ? `<span class="vol-warm">${r.volSurge.toFixed(1)}×</span>` : r.volSurge?.toFixed(1) + '×' || '—';
+    const chgCls = r.chgPct >= 0 ? 'pos' : 'neg';
+    const catBadge = r.catalyst ? `<span style="color:var(--pink);font-weight:800;font-size:11px">🚀 ${r.catalyst.catalyst_date}</span>` : '<span style="color:var(--muted);font-size:10px">—</span>';
+    const hot = (r.volSurge||0) >= 5 ? 'hot' : '';
+    return `<tr class="${hot}" onclick="openDrawerScan('${r.ticker}')">
+      <td class="left"><div class="sym">${r.ticker}</div></td>
+      <td>${fmtPrice(r.price)}</td>
+      <td class="${chgCls}">${fmtPct(r.chgPct)}</td>
+      <td>${vsBadge}</td>
+      <td class="col-mobile-hide">${fmtK(r.avgDollarVol)}</td>
+      <td class="col-mobile-hide ${r.return5d>=0?'pos':'neg'}">${fmtPct(r.return5d)}</td>
+      <td class="col-mobile-hide ${r.return20d>=0?'pos':'neg'}">${fmtPct(r.return20d)}</td>
+      <td class="col-mobile-hide ${r.distFrom52wHigh>=-10?'pos':'neg'}">${fmtPct(r.distFrom52wHigh)}</td>
+      <td class="col-mobile-hide">${r.rangePct52w != null ? r.rangePct52w.toFixed(0)+'%' : '—'}</td>
+      <td class="col-mobile-hide">${catBadge}</td>
+    </tr>`;
+  }).join('') + (filtered.length > 200 ? `<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:12px">Showing top 200 of ${filtered.length} — tighten filters to see more</td></tr>` : '');
+}
+
+function openDrawerScan(ticker){
+  const r = stateScan.results.find(x => x.ticker === ticker);
+  if(!r) return;
+  $('#drTitle').textContent = ticker + (r.catalyst?.name ? ' — ' + r.catalyst.name : '');
+  $('#drSub').textContent = `Price ${fmtPrice(r.price)} · ${fmtPct(r.chgPct)} today · Vol surge ${r.volSurge?.toFixed(2)||'—'}×`;
+  const metric = (label, val, extra) => `<div class="crit-row"><span class="ic unk">·</span><div><div class="label">${label}</div><div class="reason">${extra||''}</div></div><div class="val">${val}</div></div>`;
+  const catSec = r.catalyst ? `<h4 style="font-size:13px;color:var(--pink);margin:14px 0 8px">🚀 Catalyst (from catalysts.js)</h4>
+    <div style="background:rgba(236,72,153,.08);padding:12px;border-radius:8px;font-size:13px;line-height:1.6">
+      <div><b style="color:var(--pink)">${r.catalyst.catalyst}</b></div>
+      <div style="color:var(--gold);font-family:var(--mono);margin-top:4px">📅 ${r.catalyst.catalyst_date}${r.catalyst.date_is_estimate ? ' (estimate)' : ''}</div>
+      ${r.catalyst.notes ? `<div style="color:var(--muted);margin-top:6px;font-size:12px">${r.catalyst.notes}</div>` : ''}
+    </div>` : '';
+  $('#drBody').innerHTML = `
+    <div style="background:var(--bg3);padding:12px;border-radius:8px;margin-bottom:12px;font-size:12px;font-family:var(--mono)">
+      <div style="font-size:18px"><b style="color:var(--gold)">${fmtPrice(r.price)}</b> · <span class="${r.chgPct>=0?'pos':'neg'}">${fmtPct(r.chgPct)}</span> · ${r.marketState||''}</div>
+      <div style="color:var(--muted);margin-top:6px">Day ${fmtPrice(r.dayLow)}–${fmtPrice(r.dayHigh)} · 52w ${fmtPrice(r.yearLow)}–${fmtPrice(r.yearHigh)}</div>
+      <div style="color:var(--muted);margin-top:2px">Fetched: ${new Date(r.fetchedAt).toLocaleString()}</div>
+    </div>
+    <h4 style="font-size:13px;color:var(--cyan);margin:14px 0 8px">📊 Market Metrics</h4>
+    ${metric('Vol Surge (today vs 20d avg)', r.volSurge?.toFixed(2)+'×' || '—', '≥2× = elevated, ≥5× = hot')}
+    ${metric('Avg Daily $-Vol (20d)', fmtK(r.avgDollarVol), 'liquidity proxy')}
+    ${metric('Return 5d', fmtPct(r.return5d))}
+    ${metric('Return 20d', fmtPct(r.return20d))}
+    ${metric('Return 60d', fmtPct(r.return60d))}
+    ${metric('Distance from 52w High', fmtPct(r.distFrom52wHigh))}
+    ${metric('Position in 52w Range', r.rangePct52w?.toFixed(0)+'%' || '—', '0% = low, 100% = high')}
+    ${catSec}
+    <h4 style="font-size:13px;color:var(--purple);margin:14px 0 8px">🔗 Research</h4>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <a href="https://www.tradingview.com/chart/?symbol=${ticker}" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--pink);color:#fff;border-radius:8px;text-decoration:none;font-size:11px;font-weight:700">📊 TradingView</a>
+      <a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--bg3);color:var(--text);border:1px solid var(--line2);border-radius:8px;text-decoration:none;font-size:11px;font-weight:700">📈 Yahoo</a>
+      <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=${ticker}&type=10-&dateb=&owner=include&count=40" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--bg3);color:var(--text);border:1px solid var(--line2);border-radius:8px;text-decoration:none;font-size:11px;font-weight:700">🏛️ EDGAR</a>
+      <a href="https://finviz.com/quote.ashx?t=${ticker}" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--bg3);color:var(--text);border:1px solid var(--line2);border-radius:8px;text-decoration:none;font-size:11px;font-weight:700">📊 Finviz</a>
+    </div>`;
+  $('#drawerBg').classList.add('show'); $('#drawer').classList.add('show');
+}
+
+/* ---------- AUTO-REFRESH ---------- */
+function toggleAuto(){
+  const btn = $('#autoBtn');
+  if(stateScan.autoOn){
+    clearInterval(stateScan.timer);
+    stateScan.timer = null; stateScan.autoOn = false;
+    btn.textContent = '⏱️ Auto: OFF'; btn.classList.remove('on');
+    toast('⏸️ Auto-refresh off');
+  } else {
+    const mins = +$('#autoInterval').value;
+    stateScan.timer = setInterval(() => {
+      if(!document.hidden) runMarketScan();   // only refresh when tab visible
+    }, mins * 60 * 1000);
+    stateScan.autoOn = true;
+    btn.textContent = `⏱️ Auto: ON (${mins}m)`; btn.classList.add('on');
+    toast(`▶️ Auto-refresh every ${mins}m`, 'ok');
+  }
+}
+
+/* =============================================================
+   MODE 3: CATALYST CALENDAR
+   ============================================================= */
+function renderCalendar(){
+  const list = window.BULLZEEKER_100X || [];
+  const now = new Date();
+  const sorted = list
+    .filter(c => c.catalyst_date)
+    .map(c => ({...c, _days: Math.round((new Date(c.catalyst_date+'T00:00:00Z') - now)/(24*3600*1000))}))
+    .filter(c => c._days >= -7)
+    .sort((a,b) => a._days - b._days);
+  $('#tCal').textContent = sorted.length;
+  $('#calMeta').textContent = `${sorted.length} upcoming events`;
+  if(!sorted.length){
+    $('#calendarList').innerHTML = `<div class="empty"><div class="icon">📅</div>No upcoming catalysts in catalysts.js</div>`;
+    return;
+  }
+  $('#calendarList').innerHTML = sorted.map(c => {
+    const urgent = c._days <= 30 ? 'urgent' : '';
+    const daysNum = c._days < 0 ? Math.abs(c._days) : c._days;
+    const daysLabel = c._days < 0 ? 'd ago' : c._days === 0 ? 'today' : 'days';
+    return `<div class="cal-item" onclick="window.open('https://www.tradingview.com/chart/?symbol=${c.ticker}','_blank')">
+      <div class="days ${urgent}"><div class="num">${c._days === 0 ? '📍' : daysNum}</div><div class="unit">${daysLabel}</div></div>
+      <div class="info">
+        <div class="ticker">${c.ticker}</div>
+        <div class="name">${c.name||''}</div>
+        <div class="cat">${c.catalyst||''}</div>
+      </div>
+      <div class="date">${c.catalyst_date}${c.date_is_estimate ? '<div class="est">(estimate)</div>' : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+/* =============================================================
+   DRAWER CLOSE + CSV EXPORT + SHARE LINK
+   ============================================================= */
 function closeDrawer(){ $('#drawerBg').classList.remove('show'); $('#drawer').classList.remove('show'); }
 
-/* ---------- CSV EXPORT ---------- */
-function exportCsv(){
-  const rs = sortResults(filterResults(state.results.slice()));
-  if(!rs.length){ toast('No results to export', 'err'); return; }
-  const header = 'ticker,name,score,catalyst,catalyst_date,date_is_estimate,market_cap_m,runway_months,price,short_pct,days_to_cover,float_m,risks,as_of';
-  const rows = rs.map(r => {
-    const c = r.candidate;
-    const sp = r.criteria.short_squeeze.value?.short_interest_pct;
-    const dtc = r.criteria.short_squeeze.value?.days_to_cover;
-    const run = r.criteria.runway.value === Infinity ? 'self-funding' : r.criteria.runway.value;
-    const risks = r.risks.map(x=>x.code).join('|');
-    const row = [r.ticker, `"${c.name||''}"`, r.score, `"${c.catalyst||''}"`, c.catalyst_date||'', c.date_is_estimate||false, r.criteria.market_cap.value??'', run??'', r.livePrice??'', sp??'', dtc??'', r.criteria.low_float.value??'', risks, c.as_of||''];
-    return row.join(',');
-  });
-  const csv = header + '\n' + rows.join('\n');
+function exportCsv(mode){
+  if(mode === 'curated'){
+    const rs = stateCurated.results;
+    if(!rs.length){ toast('No results', 'err'); return; }
+    const header = 'ticker,name,score,catalyst,catalyst_date,market_cap_m,runway,price,chg_pct,short_pct,float_m';
+    const rows = rs.map(r => {
+      const c = r.candidate;
+      const sp = r.criteria.short_squeeze.value?.short_interest_pct;
+      const run = r.criteria.runway.value === Infinity ? 'self' : r.criteria.runway.value;
+      return [r.ticker, `"${c.name||''}"`, r.score, `"${c.catalyst||''}"`, c.catalyst_date||'', r.criteria.market_cap.value??'', run??'', r.livePrice??'', r.live?.chgPct??'', sp??'', r.criteria.low_float.value??''].join(',');
+    });
+    downloadCsv(`bullzeeker_curated_${new Date().toISOString().slice(0,10)}.csv`, header+'\n'+rows.join('\n'));
+  } else {
+    const rs = applyScanFilters(stateScan.results);
+    if(!rs.length){ toast('No results', 'err'); return; }
+    const header = 'ticker,price,chg_pct,vol_surge,avg_dollar_vol,return_5d,return_20d,return_60d,dist_52w_high,range_pct_52w,has_catalyst';
+    const rows = rs.map(r => [r.ticker, r.price, r.chgPct, r.volSurge, r.avgDollarVol, r.return5d, r.return20d, r.return60d, r.distFrom52wHigh, r.rangePct52w, r.catalyst ? '1' : '0'].join(','));
+    downloadCsv(`bullzeeker_scan_${new Date().toISOString().slice(0,10)}.csv`, header+'\n'+rows.join('\n'));
+  }
+}
+
+function downloadCsv(name, csv){
   const blob = new Blob([csv], {type:'text/csv'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = `bullzeeker_100x_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click(); URL.revokeObjectURL(url);
+  a.href = url; a.download = name; a.click(); URL.revokeObjectURL(url);
   toast('📥 CSV exported', 'ok');
 }
 
-/* ---------- SHARE LINK ---------- */
 function copyShareLink(){
-  const s = getSettings();
-  writeSettingsToURL(s);
-  const url = location.href;
-  navigator.clipboard.writeText(url).then(() => toast('🔗 Link copied', 'ok'));
+  const s = getCuratedSettings();
+  const p = new URLSearchParams();
+  Object.entries(s).forEach(([k,v]) => p.set(k, v));
+  history.replaceState(null, '', '?'+p.toString());
+  navigator.clipboard.writeText(location.href).then(() => toast('🔗 Link copied', 'ok'));
 }
 
 /* ---------- BINDINGS ---------- */
+// Curated sliders
 ['maxCap','minRun','catWin','minShort','minDTC','maxFloat'].forEach(id => {
   const el = $('#'+id);
   el.addEventListener('input', () => {
-    const map = {maxCap:['maxCapV', v=>'$'+v+'M'], minRun:['minRunV', v=>v], catWin:['catWinV', v=>v], minShort:['minShortV', v=>v], minDTC:['minDTCV', v=>v], maxFloat:['maxFloatV', v=>v+'M']};
-    const [tid, fmt] = map[id];
-    $('#'+tid).textContent = fmt(el.value);
-    if(state.results.length) renderResults();
+    const map = {maxCap:['maxCapV',v=>'$'+v+'M'], minRun:['minRunV',v=>v], catWin:['catWinV',v=>v], minShort:['minShortV',v=>v], minDTC:['minDTCV',v=>v], maxFloat:['maxFloatV',v=>v+'M']};
+    const [t, f] = map[id]; $('#'+t).textContent = f(el.value);
+    if(stateCurated.results.length) renderCurated();
   });
 });
-$('#minScore').addEventListener('change', () => { if(state.results.length) renderResults(); });
-$('#minDollarVol').addEventListener('change', () => { if(state.results.length) renderResults(); });
+$('#minScore').addEventListener('change', () => { if(stateCurated.results.length) renderCurated(); });
 
+// Scan sliders
+['maxPrice','minPrice','minDvol','minSurge','minChg','min5d','near52'].forEach(id => {
+  const el = $('#'+id);
+  el.addEventListener('input', () => {
+    const map = {
+      maxPrice:['maxPriceV',v=>'$'+v], minPrice:['minPriceV',v=>'$'+v],
+      minDvol:['minDvolV',v=>'$'+v+'K'], minSurge:['minSurgeV',v=>v+'×'],
+      minChg:['minChgV',v=>v+'%'], min5d:['min5dV',v=>v+'%'],
+      near52:['near52V',v=>v==='0'?'off':'-'+v+'%'],
+    };
+    const [t, f] = map[id]; $('#'+t).textContent = f(el.value);
+    if(stateScan.results.length) renderScan();
+  });
+});
+$('#scanSector').addEventListener('change', () => { if(stateScan.results.length) renderScan(); });
+
+// Sort columns
 $$('thead th[data-sort]').forEach(th => {
   th.addEventListener('click', () => {
+    const mode = th.dataset.mode;
     const key = th.dataset.sort;
-    if(state.sort.key === key) state.sort.dir *= -1;
-    else { state.sort.key = key; state.sort.dir = -1; }
-    if(state.results.length) renderResults();
+    const st = mode === 'curated' ? stateCurated : stateScan;
+    if(st.sort.key === key) st.sort.dir *= -1;
+    else { st.sort.key = key; st.sort.dir = -1; }
+    if(mode === 'curated' && stateCurated.results.length) renderCurated();
+    else if(mode === 'scan' && stateScan.results.length) renderScan();
   });
 });
 
 /* ---------- INIT ---------- */
 function init(){
-  // Load settings from URL
-  const s = readSettingsFromURL();
-  applySettingsToUI(s);
-  // Show candidate count
+  // Universe count
+  const uni = window.BULLZEEKER_PENNY_UNIVERSE;
+  if(uni) $('#univCount').textContent = `~${uni.all.length}`;
+  // Candidate count
   const n = (window.BULLZEEKER_100X || []).length;
   $('#candidateCount').textContent = `${n} candidates in catalysts.js`;
-  // Auto-scan if candidates exist
-  if(n > 0) runScan();
+  // Render calendar tab in background so count shows
+  renderCalendar();
+  // Auto-scan curated on load
+  if(n > 0) runCuratedScan();
 }
 document.addEventListener('DOMContentLoaded', init);
 </script>
