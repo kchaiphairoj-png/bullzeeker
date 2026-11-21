@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>🧪 100x Scoring Tests | Bullzeeker</title>
+<style>
+body{font-family:'JetBrains Mono',monospace;background:#050810;color:#e6edf7;padding:20px;max-width:900px;margin:0 auto}
+h1{color:#ec4899;font-size:22px;margin-bottom:14px}
+.summary{padding:14px;border-radius:10px;margin-bottom:20px;font-weight:700}
+.summary.ok{background:rgba(16,185,129,.15);border:1px solid #10b981;color:#10b981}
+.summary.fail{background:rgba(239,68,68,.15);border:1px solid #ef4444;color:#ef4444}
+.test{padding:8px 12px;border-radius:6px;margin:4px 0;font-size:13px;line-height:1.5}
+.test.pass{background:rgba(16,185,129,.08);border-left:3px solid #10b981}
+.test.fail{background:rgba(239,68,68,.1);border-left:3px solid #ef4444}
+.test .name{font-weight:700;color:#fbbf24}
+.test .expected{color:#8b97ab;font-size:11px;margin-top:4px}
+.test .actual{color:#ef4444;font-size:11px;margin-top:2px}
+code{color:#fbbf24;background:#0f1a2e;padding:1px 6px;border-radius:4px}
+a{color:#3b82f6}
+</style>
+</head>
+<body>
+<h1>🧪 100x Scoring Module Tests</h1>
+<p style="color:#8b97ab;font-size:13px;margin-bottom:14px">Unit tests for <code>penny-scoring.js</code>. Open browser console for full trace.</p>
+<div id="summary"></div>
+<div id="results"></div>
+
+<p style="margin-top:20px;color:#8b97ab;font-size:12px">
+  <a href="/penny.html">← Back to 100x Screener</a>
+</p>
+
+<script src="/penny-scoring.js"></script>
+<script>
+const api = window.BULLZEEKER_100X_SCORING;
+const results = [];
+
+function assert(name, actual, expected){
+  const passed = JSON.stringify(actual) === JSON.stringify(expected);
+  results.push({name, passed, expected, actual});
+  console[passed?'log':'error'](`${passed?'✅':'❌'} ${name}`, {actual, expected});
+}
+
+function near(name, actual, expected, tol=0.01){
+  const passed = Math.abs(actual - expected) < tol;
+  results.push({name, passed, expected:`≈${expected}`, actual});
+}
+
+/* ============================================================
+   checkMarketCap
+   ============================================================ */
+assert('mcap: 200M curated passes 300 default',
+  api.checkMarketCap({market_cap_m: 200}, null, {}).pass, true);
+assert('mcap: 400M curated fails 300 default',
+  api.checkMarketCap({market_cap_m: 400}, null, {}).pass, false);
+assert('mcap: null curated + null price = unknown',
+  api.checkMarketCap({market_cap_m: null}, null, {}).pass, null);
+assert('mcap: computed from price × shares passes',
+  api.checkMarketCap({market_cap_m: null, shares_outstanding_m: 50}, 4, {}).pass, true);   // 50 * 4 = 200
+assert('mcap: computed from price × shares fails',
+  api.checkMarketCap({market_cap_m: null, shares_outstanding_m: 100}, 5, {}).pass, false); // 500
+assert('mcap: custom threshold',
+  api.checkMarketCap({market_cap_m: 500}, null, {max_market_cap_m: 1000}).pass, true);
+
+/* ============================================================
+   checkRunway
+   ============================================================ */
+assert('runway: self_funding=true passes',
+  api.checkRunway({self_funding: true}, {}).pass, true);
+assert('runway: burn=0 counts as self-funding',
+  api.checkRunway({cash_m: 10, quarterly_burn_m: 0}, {}).pass, true);
+assert('runway: cash 100 / burn 10/qtr = 30 months, passes 12',
+  api.checkRunway({cash_m: 100, quarterly_burn_m: 10}, {}).pass, true);
+assert('runway: cash 10 / burn 10/qtr = 3 months, fails 12',
+  api.checkRunway({cash_m: 10, quarterly_burn_m: 10}, {}).pass, false);
+assert('runway: null cash = unknown',
+  api.checkRunway({cash_m: null, quarterly_burn_m: 10}, {}).pass, null);
+assert('runway: null burn + not self_funding = unknown',
+  api.checkRunway({cash_m: 50, quarterly_burn_m: null}, {}).pass, null);
+assert('runway: custom min_runway',
+  api.checkRunway({cash_m: 20, quarterly_burn_m: 10}, {min_runway_months: 24}).pass, false); // 6 months, fails 24
+near('runway: computed months is correct',
+  api.checkRunway({cash_m: 30, quarterly_burn_m: 15}, {}).value, 6);
+
+/* ============================================================
+   checkCatalyst
+   ============================================================ */
+const today = new Date('2026-11-21T00:00:00Z');
+assert('catalyst: within 365 days default passes',
+  api.checkCatalyst({catalyst_date: '2027-03-01'}, {}, today).pass, true);  // 100d
+assert('catalyst: past date fails',
+  api.checkCatalyst({catalyst_date: '2026-10-01'}, {}, today).pass, false);
+assert('catalyst: too far future fails default',
+  api.checkCatalyst({catalyst_date: '2028-12-01'}, {}, today).pass, false);
+assert('catalyst: missing date = unknown',
+  api.checkCatalyst({catalyst_date: null}, {}, today).pass, null);
+assert('catalyst: custom window 90d',
+  api.checkCatalyst({catalyst_date: '2027-05-01'}, {catalyst_window_days: 90}, today).pass, false);  // 161d > 90
+assert('catalyst: custom window 90d - within',
+  api.checkCatalyst({catalyst_date: '2026-12-15'}, {catalyst_window_days: 90}, today).pass, true);  // 24d
+
+/* ============================================================
+   checkShortSqueeze
+   ============================================================ */
+assert('short: SI 25% passes 20 default',
+  api.checkShortSqueeze({short_interest_pct: 25, days_to_cover: null}, {}).pass, true);
+assert('short: DTC 8 passes 7 default',
+  api.checkShortSqueeze({short_interest_pct: 10, days_to_cover: 8}, {}).pass, true);
+assert('short: both low fails',
+  api.checkShortSqueeze({short_interest_pct: 10, days_to_cover: 3}, {}).pass, false);
+assert('short: both null = unknown',
+  api.checkShortSqueeze({short_interest_pct: null, days_to_cover: null}, {}).pass, null);
+assert('short: only DTC set + passes',
+  api.checkShortSqueeze({short_interest_pct: null, days_to_cover: 10}, {}).pass, true);
+assert('short: custom thresholds',
+  api.checkShortSqueeze({short_interest_pct: 15, days_to_cover: 5}, {min_short_pct: 10, min_days_to_cover: 3}).pass, true);
+
+/* ============================================================
+   checkFloat
+   ============================================================ */
+assert('float: 20M passes 30 default',
+  api.checkFloat({float_m: 20}, {}).pass, true);
+assert('float: 50M fails 30 default',
+  api.checkFloat({float_m: 50}, {}).pass, false);
+assert('float: null = unknown',
+  api.checkFloat({float_m: null}, {}).pass, null);
+assert('float: custom max 100',
+  api.checkFloat({float_m: 80}, {max_float_m: 100}).pass, true);
+
+/* ============================================================
+   computeRiskFlags
+   ============================================================ */
+assert('risks: all clean = no flags',
+  api.computeRiskFlags({risks:{dilution:null,delisting:false,going_concern:false,reverse_split_12m:false}}).length, 0);
+assert('risks: going concern + delisting',
+  api.computeRiskFlags({risks:{dilution:null,delisting:true,going_concern:true,reverse_split_12m:false}}).length, 2);
+assert('risks: dilution high returns flag',
+  api.computeRiskFlags({risks:{dilution:'high'}}).some(f=>f.code==='dilution'), true);
+assert('risks: no risks object = empty',
+  api.computeRiskFlags({}).length, 0);
+
+/* ============================================================
+   scoreCandidate — integration
+   ============================================================ */
+const perfectCandidate = {
+  ticker: 'PERF', name: 'Perfect Co',
+  market_cap_m: 150,
+  cash_m: 60, quarterly_burn_m: 10,   // 18 months runway
+  catalyst_date: '2027-03-01',
+  short_interest_pct: 28, days_to_cover: 10,
+  float_m: 15,
+  risks: {},
+};
+const scored = api.scoreCandidate(perfectCandidate, null, {}, today);
+assert('scoreCandidate: perfect = 5/5', scored.score, 5);
+assert('scoreCandidate: returns ticker', scored.ticker, 'PERF');
+assert('scoreCandidate: criteria object has 5 keys', Object.keys(scored.criteria).length, 5);
+
+const partialCandidate = {
+  ticker: 'PART', name: 'Partial',
+  market_cap_m: 150,       // pass
+  cash_m: null,            // unknown runway
+  catalyst_date: '2027-03-01',  // pass
+  short_interest_pct: 5,   // fail
+  float_m: null,           // unknown
+  risks: {},
+};
+const scoredPartial = api.scoreCandidate(partialCandidate, null, {}, today);
+assert('scoreCandidate: partial = 2 (cap+cat)', scoredPartial.score, 2);
+assert('scoreCandidate: null runway stays unknown', scoredPartial.criteria.runway.pass, null);
+assert('scoreCandidate: null float stays unknown', scoredPartial.criteria.low_float.pass, null);
+
+const selfFunded = {
+  ticker: 'SF',
+  market_cap_m: 150,
+  self_funding: true,       // auto-pass runway
+  catalyst_date: '2027-03-01',
+  short_interest_pct: 25,
+  float_m: 20,
+  risks: {},
+};
+const scoredSF = api.scoreCandidate(selfFunded, null, {}, today);
+assert('scoreCandidate: self-funding = 5/5', scoredSF.score, 5);
+assert('scoreCandidate: self-funding runway reason', scoredSF.criteria.runway.reason, 'self-funding (positive OCF)');
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const passed = results.filter(r => r.passed).length;
+const failed = results.filter(r => !r.passed).length;
+const total = results.length;
+document.getElementById('summary').className = 'summary ' + (failed === 0 ? 'ok' : 'fail');
+document.getElementById('summary').innerHTML = failed === 0
+  ? `✅ All ${total} tests passed`
+  : `❌ ${failed} of ${total} tests failed · ${passed} passed`;
+
+document.getElementById('results').innerHTML = results.map(r => `
+  <div class="test ${r.passed ? 'pass' : 'fail'}">
+    <div class="name">${r.passed ? '✅' : '❌'} ${r.name}</div>
+    ${!r.passed ? `
+      <div class="expected">expected: ${JSON.stringify(r.expected)}</div>
+      <div class="actual">actual:   ${JSON.stringify(r.actual)}</div>
+    ` : ''}
+  </div>
+`).join('');
+</script>
+</body>
+</html>
