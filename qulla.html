@@ -203,6 +203,10 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
         <input type="range" id="starMin" min="0" max="9" step="1" value="0" />
       </div>
       <div class="ctrl">
+        <label>🔊 Vol vs 50d avg (today) <span class="v" id="v50MinV">off</span></label>
+        <input type="range" id="v50Min" min="1" max="10" step="0.25" value="1" />
+      </div>
+      <div class="ctrl">
         <label>Category Filter</label>
         <select id="catSel">
           <option value="all" selected>All (A + B + C)</option>
@@ -261,6 +265,7 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
             <th data-sort="baseDepth" class="col-mobile-hide">Depth</th>
             <th data-sort="atrContraction" class="col-mobile-hide">ATR↓</th>
             <th data-sort="volContraction" class="col-mobile-hide">Vol↓</th>
+            <th data-sort="vol50Surge" class="col-mobile-hide">Vol/50d</th>
             <th data-sort="rs">RS</th>
             <th data-sort="pivot" class="col-mobile-hide">Pivot</th>
             <th data-sort="distance">Dist %</th>
@@ -813,6 +818,15 @@ function analyzeStock(symbol, data, spyData){
   const avg$Vol = vols.reduce((s,d)=>s + (d.c * (d.v||0)), 0) / vols.length;
   if(avg$Vol < 10e6) return null;
 
+  // Volume surge vs 50d average (today's vol / avg of prior 50 days, excluding today)
+  let vol50Surge = null;
+  if(n >= 51){
+    const prior50 = data.slice(n-51, n-1);
+    const avg50 = prior50.reduce((s,d)=>s + (d.v||0), 0) / prior50.length;
+    const todayVol = data[n-1].v || 0;
+    if(avg50 > 0) vol50Surge = todayVol / avg50;
+  }
+
   // === HARD FILTER 2: ADR ≥ 4% (Qullamaggie's core: Momentum Leading Stock) ===
   const adr = computeADR(data, 20);
   const minAdr = +$('#adrMin').value;
@@ -978,6 +992,7 @@ function analyzeStock(symbol, data, spyData){
     higherLows: base?.higherLows,
     priceInBase: base?.priceInBase,
     rs, adr,
+    vol50Surge,
     r20: ret.r20, r60: ret.r60, r126: ret.r126,
     surf,
     stars: starAnalysis.stars,
@@ -1064,9 +1079,11 @@ function filterResults(rs){
   const distMax = +$('#dMax').value;
   const cat = $('#catSel').value;
   const starMin = +$('#starMin').value;
+  const v50Min = +$('#v50Min').value;
   arr = arr.filter(r => r.score >= scoreMin);
   arr = arr.filter(r => Math.abs(r.distance) <= distMax);
   arr = arr.filter(r => (r.totalStars || 0) >= starMin);
+  if(v50Min > 1) arr = arr.filter(r => r.vol50Surge != null && r.vol50Surge >= v50Min);
   if(cat === 'EP') arr = arr.filter(r => r.setupType === 'EP');
   else if(cat === 'CONT') arr = arr.filter(r => r.setupType === 'CONTINUATION');
   else if(cat !== 'all') arr = arr.filter(r => r.category === cat);
@@ -1102,7 +1119,7 @@ function renderResults(){
   $('#resMeta').textContent = `${filtered.length} / ${all.length} · sorted by ${state.sort.key} ${state.sort.dir<0?'↓':'↑'}`;
 
   if(!filtered.length){
-    $('#resBody').innerHTML = `<tr><td colspan="12"><div class="empty">
+    $('#resBody').innerHTML = `<tr><td colspan="14"><div class="empty">
       <div class="icon">🏄</div><div><b>ไม่พบ setups</b></div>
       <div style="margin-top:6px;font-size:12px">ลองลด Score, ลด Min Prior Move, เพิ่ม Max Dist, หรือเปลี่ยน Universe</div>
     </div></td></tr>`;
@@ -1127,6 +1144,7 @@ function renderResults(){
       <td class="col-mobile-hide">${r.baseDepth != null ? r.baseDepth.toFixed(1) + '%' : 'ADR ' + r.adr.toFixed(1) + '%'}</td>
       <td class="col-mobile-hide">${r.tightness != null ? (r.tightness*100).toFixed(0)+'%' : '—'}</td>
       <td class="col-mobile-hide">${r.volContraction != null ? (r.volContraction*100).toFixed(0)+'%' : (r.ep ? r.ep.volRatio.toFixed(1)+'x' : '—')}</td>
+      <td class="col-mobile-hide">${r.vol50Surge != null ? (r.vol50Surge >= 3 ? '<b style="color:#f87171">'+r.vol50Surge.toFixed(1)+'×</b>' : r.vol50Surge >= 1.5 ? '<b style="color:#fbbf24">'+r.vol50Surge.toFixed(1)+'×</b>' : r.vol50Surge.toFixed(1)+'×') : '—'}</td>
       <td style="color:${rsCol}">${r.rs}</td>
       <td class="col-mobile-hide">${fmt$(r.pivot)}</td>
       <td class="${distCls}">${fmtPct(r.distance)}</td>
@@ -1252,6 +1270,11 @@ $('#sMin').addEventListener('input', e => { $('#sMinV').textContent = e.target.v
 $('#mMin').addEventListener('input', e => { $('#mMinV').textContent = e.target.value; });
 $('#adrMin').addEventListener('input', e => { $('#adrMinV').textContent = e.target.value; });
 $('#starMin').addEventListener('input', e => { $('#starMinV').textContent = e.target.value; if(state.results.length) renderResults(); });
+$('#v50Min').addEventListener('input', e => {
+  const v = +e.target.value;
+  $('#v50MinV').textContent = v <= 1 ? 'off' : v.toFixed(2) + '×';
+  if(state.results.length) renderResults();
+});
 $('#dMax').addEventListener('input', e => { $('#dMaxV').textContent = e.target.value; if(state.results.length) renderResults(); });
 $('#catSel').addEventListener('change', () => { if(state.results.length) renderResults(); });
 $$('.check input').forEach(cb => {

@@ -207,6 +207,10 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
         <input type="range" id="dMax" min="2" max="25" step="1" value="10" />
       </div>
       <div class="ctrl">
+        <label>🔊 Vol vs 50d avg (today) <span class="v" id="v50MinV">off</span></label>
+        <input type="range" id="v50Min" min="1" max="10" step="0.25" value="1" />
+      </div>
+      <div class="ctrl">
         <label>Status Filter</label>
         <select id="modeSel">
           <option value="all" selected>All (Forming + Ready + Broke + Pullback)</option>
@@ -266,6 +270,7 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
             <th data-sort="distance">Dist %</th>
             <th data-sort="price" class="col-mobile-hide">Price</th>
             <th data-sort="rsRating" class="col-mobile-hide">RS</th>
+            <th data-sort="vol50Surge" class="col-mobile-hide">Vol/50d</th>
           </tr>
         </thead>
         <tbody id="resBody"></tbody>
@@ -687,6 +692,16 @@ function detectPostBreakoutPullback(data){
 
 /* ---------- MAIN ANALYZER ---------- */
 function analyzeStock(symbol, data, spyData){
+  // Volume surge vs prior 50d avg (today's vol / avg of prior 50 days, excluding today)
+  let vol50Surge = null;
+  const nBars = data.length;
+  if(nBars >= 51){
+    const prior50 = data.slice(nBars-51, nBars-1);
+    const avg50 = prior50.reduce((s,d)=>s + (d.v||0), 0) / prior50.length;
+    const todayVol = data[nBars-1].v || 0;
+    if(avg50 > 0) vol50Surge = todayVol / avg50;
+  }
+
   // Trend Template
   const tt = checkTrendTemplate(data);
   if(!tt) return null;
@@ -796,6 +811,7 @@ function analyzeStock(symbol, data, spyData){
     allContractions: vcp.allContractions,
     lastTightness: vcp.lastTightness,
     volDryUp: vcp.volDryUp,
+    vol50Surge,
     high52: tt.high52,
     low52: tt.low52,
     // Post-breakout pullback fields (null when not applicable)
@@ -892,6 +908,7 @@ function filterResults(rs){
   const scoreMin = +$('#sMin').value;
   const contMin = +$('#cMin').value;
   const distMax = +$('#dMax').value;
+  const v50Min = +$('#v50Min').value;
   const mode = $('#modeSel').value;
 
   arr = arr.filter(r => r.score >= scoreMin);
@@ -899,6 +916,7 @@ function filterResults(rs){
   // (those have their own retrace criterion and may sit far from recent VCP pivot)
   arr = arr.filter(r => r.status === 'PULLBACK_50' || r.contractionCount >= contMin);
   arr = arr.filter(r => r.status === 'PULLBACK_50' || Math.abs(r.distance) <= distMax);
+  if(v50Min > 1) arr = arr.filter(r => r.vol50Surge != null && r.vol50Surge >= v50Min);
   if(mode === 'ready') arr = arr.filter(r => r.status === 'READY');
   else if(mode === 'forming') arr = arr.filter(r => r.status === 'FORMING');
   else if(mode === 'broke') arr = arr.filter(r => r.status === 'BROKE');
@@ -950,7 +968,7 @@ function renderResults(){
   $('#resMeta').textContent = `${filtered.length} / ${all.length} · sorted by ${state.sort.key} ${state.sort.dir<0?'↓':'↑'}`;
 
   if(!filtered.length){
-    $('#resBody').innerHTML = `<tr><td colspan="11"><div class="empty">
+    $('#resBody').innerHTML = `<tr><td colspan="12"><div class="empty">
       <div class="icon">🧬</div>
       <div><b>ไม่พบหุ้นที่ตรงเงื่อนไข</b></div>
       <div style="margin-top:6px;font-size:12px">ลองลด Score, ลด Min Contractions, หรือเพิ่ม Max Dist</div>
@@ -984,6 +1002,7 @@ function renderResults(){
       <td class="${distCls}">${fmtPct(r.distance)}</td>
       <td class="col-mobile-hide">${fmt$(r.price)}</td>
       <td class="col-mobile-hide" style="color:${r.rsRating >= 80 ? 'var(--emerald)' : r.rsRating >= 70 ? 'var(--gold)' : 'var(--muted)'}">${r.rsRating}</td>
+      <td class="col-mobile-hide">${r.vol50Surge != null ? (r.vol50Surge >= 3 ? '<b style="color:#f87171">'+r.vol50Surge.toFixed(1)+'×</b>' : r.vol50Surge >= 1.5 ? '<b style="color:#fbbf24">'+r.vol50Surge.toFixed(1)+'×</b>' : r.vol50Surge.toFixed(1)+'×') : '—'}</td>
     </tr>`;
   }).join('');
 }
@@ -1093,6 +1112,11 @@ function closeModal(){ $('#modal').classList.remove('show'); }
 $('#sMin').addEventListener('input', e => { $('#sMinV').textContent = e.target.value; if(state.results.length) renderResults(); });
 $('#cMin').addEventListener('input', e => { $('#cMinV').textContent = e.target.value; if(state.results.length) renderResults(); });
 $('#dMax').addEventListener('input', e => { $('#dMaxV').textContent = e.target.value; if(state.results.length) renderResults(); });
+$('#v50Min').addEventListener('input', e => {
+  const v = +e.target.value;
+  $('#v50MinV').textContent = v <= 1 ? 'off' : v.toFixed(2) + '×';
+  if(state.results.length) renderResults();
+});
 $('#modeSel').addEventListener('change', () => { if(state.results.length) renderResults(); });
 
 // Check-box visual sync
