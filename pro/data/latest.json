@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-21T02:39:56.550728",
-  "date": "2026-11-21",
+  "generated_at": "2026-11-22T01:29:46.706127",
+  "date": "2026-11-22",
   "universe": {
     "name": "S&P 500",
     "size": 503,
-    "data_received": 504
+    "data_received": 503
   },
   "market_regime": {
     "uptrend": false,
@@ -47,9 +47,9 @@
       ],
       "counts": {
         "buy": 1,
-        "hold": 228,
+        "hold": 227,
         "sell": 271,
-        "nodata": 3
+        "nodata": 4
       }
     },
     {
@@ -61,8 +61,8 @@
       "counts": {
         "buy": 0,
         "hold": 100,
-        "sell": 399,
-        "nodata": 4
+        "sell": 398,
+        "nodata": 5
       }
     },
     {
@@ -1167,8 +1167,8 @@
       "counts": {
         "buy": 42,
         "hold": 100,
-        "sell": 356,
-        "nodata": 5
+        "sell": 355,
+        "nodata": 6
       }
     },
     {
@@ -1180,8 +1180,8 @@
       "counts": {
         "buy": 0,
         "hold": 0,
-        "sell": 499,
-        "nodata": 4
+        "sell": 498,
+        "nodata": 5
       }
     }
   ],
