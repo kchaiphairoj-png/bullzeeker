@@ -301,6 +301,22 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
         <div class="ctrl"><label>Min % Change Today <span class="v" id="minChgV">0%</span></label><input type="range" id="minChg" min="-20" max="50" step="1" value="0" /></div>
         <div class="ctrl"><label>Min 5-day Return <span class="v" id="min5dV">-50%</span></label><input type="range" id="min5d" min="-50" max="100" step="5" value="-50" /></div>
         <div class="ctrl"><label>Near 52w High (within %) <span class="v" id="near52V">off</span></label><input type="range" id="near52" min="0" max="50" step="5" value="0" /></div>
+        <div class="ctrl"><label>🔊 Vol vs 50d avg <span class="v" id="minV50V">off</span></label><input type="range" id="minV50" min="1" max="10" step="0.25" value="1" /></div>
+        <div class="ctrl"><label>🔊 Vol vs 200d avg <span class="v" id="minV200V">off</span></label><input type="range" id="minV200" min="1" max="10" step="0.25" value="1" /></div>
+        <div class="ctrl"><label>⚡ Gap % today ≥ <span class="v" id="minGapV">off</span></label><input type="range" id="minGap" min="0" max="30" step="1" value="0" /></div>
+        <div class="ctrl"><label>📈 MA Trend Filter</label>
+          <select id="maFilter">
+            <option value="off" selected>off</option>
+            <option value="sma20">Above SMA20</option>
+            <option value="sma50">Above SMA50</option>
+            <option value="sma20_50">Above SMA20 AND SMA50</option>
+            <option value="sma20_50_200">Above all 3 MAs (strong trend)</option>
+          </select>
+        </div>
+        <div class="ctrl"><label>🟢 Consecutive green days ≥ <span class="v" id="minGreenV">off</span></label><input type="range" id="minGreen" min="0" max="7" step="1" value="0" /></div>
+        <div class="ctrl"><label>💪 RS vs SPY (3M) ≥ <span class="v" id="minRsV">off</span></label><input type="range" id="minRs" min="-30" max="100" step="5" value="-30" /></div>
+        <div class="ctrl"><label>🛡️ Max drop from 5d high <span class="v" id="maxDropV">30%</span></label><input type="range" id="maxDrop" min="5" max="60" step="5" value="30" /></div>
+        <div class="ctrl"><label>📦 Min today vol (shares) <span class="v" id="minVolSharesV">500K</span></label><input type="range" id="minVolShares" min="0" max="5000" step="100" value="500" /></div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <button class="btn-primary" id="scanMarketBtn" onclick="runMarketScan()">🌊 Scan Market Live</button>
@@ -337,12 +353,14 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
             <th class="left" data-sort="ticker" data-mode="scan">Ticker</th>
             <th data-sort="price" data-mode="scan">Price</th>
             <th data-sort="chgPct" data-mode="scan">Chg %</th>
-            <th data-sort="volSurge" data-mode="scan">Vol Surge</th>
-            <th data-sort="dollarVol" data-mode="scan" class="col-mobile-hide">$-Vol</th>
+            <th data-sort="gapPct" data-mode="scan" class="col-mobile-hide">Gap %</th>
+            <th data-sort="volSurge" data-mode="scan">Vol/20d</th>
+            <th data-sort="volSurge50" data-mode="scan" class="col-mobile-hide">Vol/50d</th>
+            <th data-sort="consecGreen" data-mode="scan" class="col-mobile-hide">🟢 Streak</th>
+            <th data-sort="distFromSma20Pct" data-mode="scan" class="col-mobile-hide">vs SMA20</th>
+            <th data-sort="rsVsSpy60d" data-mode="scan" class="col-mobile-hide">RS vs SPY</th>
             <th data-sort="return5d" data-mode="scan" class="col-mobile-hide">5d</th>
-            <th data-sort="return20d" data-mode="scan" class="col-mobile-hide">20d</th>
-            <th data-sort="distFrom52wHigh" data-mode="scan" class="col-mobile-hide">52w High %</th>
-            <th data-sort="rangePct52w" data-mode="scan" class="col-mobile-hide">52w Range</th>
+            <th data-sort="distFrom52wHigh" data-mode="scan" class="col-mobile-hide">52w H %</th>
             <th class="col-mobile-hide">Catalyst?</th>
           </tr></thead>
           <tbody id="scanBody"></tbody>
@@ -435,6 +453,14 @@ async function tryProxies(url){
   throw lastErr || new Error('proxy fail');
 }
 
+/* Simple SMA helper */
+function _sma(arr, p){
+  if(arr.length < p) return null;
+  let s = 0;
+  for(let i = arr.length - p; i < arr.length; i++) s += arr[i];
+  return s / p;
+}
+
 async function fetchTickerData(ticker, useCache=true){
   const now = Date.now();
   const key = 'q_' + ticker;
@@ -442,7 +468,8 @@ async function fetchTickerData(ticker, useCache=true){
     return CACHE[key].data;
   }
   try{
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?range=3mo&interval=1d`;
+    // 1y range gives us 50/200d SMA + 50/200d vol average
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?range=1y&interval=1d`;
     const txt = await tryProxies(url);
     const j = JSON.parse(txt);
     const res = j?.chart?.result?.[0];
@@ -450,38 +477,87 @@ async function fetchTickerData(ticker, useCache=true){
     const meta = res.meta;
     const quotes = res.indicators?.quote?.[0] || {};
     const closes = (quotes.close || []).filter(x => x != null);
+    const opens = (quotes.open || []).filter(x => x != null);
     const highs = (quotes.high || []).filter(x => x != null);
     const lows = (quotes.low || []).filter(x => x != null);
     const vols = (quotes.volume || []).filter(x => x != null);
     if(closes.length < 5) return null;
-    const price = meta.regularMarketPrice ?? closes[closes.length-1];
-    const prevClose = meta.chartPreviousClose ?? closes[closes.length-2];
+    const nC = closes.length;
+    const price = meta.regularMarketPrice ?? closes[nC-1];
+    const prevClose = meta.chartPreviousClose ?? (nC >= 2 ? closes[nC-2] : null);
     const chgPct = prevClose ? (price/prevClose - 1) * 100 : null;
-    // Volume metrics
+
+    // === VOLUME METRICS (Priority 1 — multi-period) ===
     const todayVol = meta.regularMarketVolume ?? vols[vols.length-1];
     const last20Vols = vols.slice(-21, -1);
+    const last50Vols = vols.slice(-51, -1);
+    const last200Vols = vols.slice(-201, -1);
     const avg20Vol = last20Vols.length ? last20Vols.reduce((a,b)=>a+b,0)/last20Vols.length : 0;
+    const avg50Vol = last50Vols.length >= 30 ? last50Vols.reduce((a,b)=>a+b,0)/last50Vols.length : null;
+    const avg200Vol = last200Vols.length >= 100 ? last200Vols.reduce((a,b)=>a+b,0)/last200Vols.length : null;
     const volSurge = avg20Vol > 0 ? todayVol / avg20Vol : null;
-    // $-volume
+    const volSurge50 = avg50Vol > 0 ? todayVol / avg50Vol : null;
+    const volSurge200 = avg200Vol > 0 ? todayVol / avg200Vol : null;
+
+    // $-volume (20d)
     const last20Closes = closes.slice(-21, -1);
     let avgDollarVol = 0;
     for(let i=0; i<last20Closes.length; i++) avgDollarVol += last20Closes[i] * (last20Vols[i]||0);
     avgDollarVol /= Math.max(1, last20Closes.length);
+
+    // === GAP % (today open vs prev close) ===
+    const todayOpen = meta.regularMarketOpen ?? opens[opens.length-1];
+    const gapPct = (todayOpen && prevClose) ? (todayOpen/prevClose - 1) * 100 : null;
+
+    // === MOVING AVERAGES ===
+    const sma10 = _sma(closes, 10);
+    const sma20 = _sma(closes, 20);
+    const sma50 = _sma(closes, 50);
+    const sma200 = _sma(closes, 200);
+    const distFromSma20Pct = sma20 ? (price/sma20 - 1) * 100 : null;
+    const distFromSma50Pct = sma50 ? (price/sma50 - 1) * 100 : null;
+    const distFromSma200Pct = sma200 ? (price/sma200 - 1) * 100 : null;
+    const aboveSma20 = sma20 != null && price > sma20;
+    const aboveSma50 = sma50 != null && price > sma50;
+    const aboveSma200 = sma200 != null && price > sma200;
+
+    // === CONSECUTIVE GREEN DAYS (close > open OR close > prev close) ===
+    let consecGreen = 0;
+    for(let i = nC - 1; i >= 0; i--){
+      const isGreen = i > 0 ? closes[i] > closes[i-1] : closes[i] > (opens[i] || closes[i]);
+      if(isGreen) consecGreen++;
+      else break;
+    }
+
+    // === ANTI-PUMP: distance from recent 5d high (dead cat filter) ===
+    const recent5Highs = highs.slice(-5);
+    const recent5dHigh = recent5Highs.length ? Math.max(...recent5Highs) : null;
+    const distFromRecent5dHigh = recent5dHigh > 0 ? (price - recent5dHigh)/recent5dHigh * 100 : null;
+
     // 52w range
     const yearHigh = meta.fiftyTwoWeekHigh ?? Math.max(...highs);
     const yearLow = meta.fiftyTwoWeekLow ?? Math.min(...lows);
     const distFrom52wHigh = yearHigh > 0 ? (price - yearHigh)/yearHigh * 100 : null;
     const rangePct52w = yearHigh > yearLow ? (price - yearLow)/(yearHigh - yearLow) * 100 : null;
+
     // Returns
-    const nC = closes.length;
     const return5d = nC >= 6 ? (price / closes[nC-6] - 1) * 100 : null;
     const return20d = nC >= 21 ? (price / closes[nC-21] - 1) * 100 : null;
     const return60d = nC >= 61 ? (price / closes[nC-61] - 1) * 100 : null;
+
     const data = {
-      ticker, price, prevClose, chgPct,
+      ticker, price, prevClose, chgPct, todayOpen,
       dayHigh: meta.regularMarketDayHigh, dayLow: meta.regularMarketDayLow,
       yearHigh, yearLow, distFrom52wHigh, rangePct52w,
-      volume: todayVol, avg20Vol, volSurge, avgDollarVol,
+      volume: todayVol, avg20Vol, avg50Vol, avg200Vol,
+      volSurge, volSurge50, volSurge200,
+      avgDollarVol,
+      gapPct,
+      sma10, sma20, sma50, sma200,
+      distFromSma20Pct, distFromSma50Pct, distFromSma200Pct,
+      aboveSma20, aboveSma50, aboveSma200,
+      consecGreen,
+      recent5dHigh, distFromRecent5dHigh,
       return5d, return20d, return60d,
       marketState: meta.marketState, currency: meta.currency,
       fetchedAt: now,
@@ -491,6 +567,21 @@ async function fetchTickerData(ticker, useCache=true){
   }catch(e){
     return null;
   }
+}
+
+/* ---------- SPY BENCHMARK (for RS calculation) ---------- */
+let SPY_RETURN_60D = null;
+let SPY_FETCHED_AT = 0;
+const SPY_TTL = 60 * 60 * 1000;   // 1h
+async function fetchSpyReturn(){
+  const now = Date.now();
+  if(SPY_RETURN_60D != null && (now - SPY_FETCHED_AT) < SPY_TTL) return SPY_RETURN_60D;
+  const spy = await fetchTickerData('SPY', true);
+  if(spy && spy.return60d != null){
+    SPY_RETURN_60D = spy.return60d;
+    SPY_FETCHED_AT = now;
+  }
+  return SPY_RETURN_60D;
 }
 
 /* ---------- CONCURRENT FETCH ---------- */
@@ -672,11 +763,20 @@ function getScanSettings(){
     sector: $('#scanSector').value,
     maxPrice: +$('#maxPrice').value,
     minPrice: +$('#minPrice').value,
-    minDvol: +$('#minDvol').value * 1000,   // slider shown in $K, stored as $
+    minDvol: +$('#minDvol').value * 1000,
     minSurge: +$('#minSurge').value,
     minChg: +$('#minChg').value,
     min5d: +$('#min5d').value,
     near52: +$('#near52').value,
+    // Priority 1+2 additions
+    minV50: +$('#minV50').value,              // vol vs 50d (1.0 = off)
+    minV200: +$('#minV200').value,            // vol vs 200d (1.0 = off)
+    minGap: +$('#minGap').value,              // gap % today (0 = off)
+    maFilter: $('#maFilter').value,           // off | sma20 | sma50 | sma20_50 | sma20_50_200
+    minGreen: +$('#minGreen').value,          // consecutive green days (0 = off)
+    minRs: +$('#minRs').value,                // RS vs SPY 60d (-30 = off)
+    maxDrop: +$('#maxDrop').value,            // max % down from 5d high
+    minVolShares: +$('#minVolShares').value * 1000,   // slider shown in K shares
   };
 }
 
@@ -695,6 +795,10 @@ async function runMarketScan(){
     const catMap = {};
     (window.BULLZEEKER_100X || []).forEach(c => { catMap[c.ticker] = c; });
 
+    // Fetch SPY benchmark first (for RS calculation)
+    $('#scanText').textContent = '📡 Fetching SPY benchmark for RS...';
+    const spyRet = await fetchSpyReturn();
+
     const results = [];
     await concurrent(tickers, FETCH_CONC, async (sym) => {
       try{
@@ -708,8 +812,11 @@ async function runMarketScan(){
     });
     saveCache();
 
-    // Tag each with catalyst info
-    results.forEach(r => { r.catalyst = catMap[r.ticker] || null; });
+    // Tag each with catalyst info + compute RS vs SPY
+    results.forEach(r => {
+      r.catalyst = catMap[r.ticker] || null;
+      r.rsVsSpy60d = (r.return60d != null && spyRet != null) ? (r.return60d - spyRet) : null;
+    });
 
     stateScan.results = results;
     stateScan.lastScanAt = Date.now();
@@ -726,12 +833,26 @@ function applyScanFilters(results){
   const s = getScanSettings();
   return results.filter(r => {
     if(r.price == null) return false;
+    // Core
     if(r.price < s.minPrice || r.price > s.maxPrice) return false;
     if(r.avgDollarVol < s.minDvol) return false;
     if(s.minSurge > 1 && (r.volSurge == null || r.volSurge < s.minSurge)) return false;
     if(r.chgPct == null || r.chgPct < s.minChg) return false;
     if(r.return5d != null && r.return5d < s.min5d) return false;
     if(s.near52 > 0 && (r.distFrom52wHigh == null || r.distFrom52wHigh < -s.near52)) return false;
+    // Priority 1+2 — only apply if slider > "off" value
+    if(s.minV50 > 1 && (r.volSurge50 == null || r.volSurge50 < s.minV50)) return false;
+    if(s.minV200 > 1 && (r.volSurge200 == null || r.volSurge200 < s.minV200)) return false;
+    if(s.minGap > 0 && (r.gapPct == null || r.gapPct < s.minGap)) return false;
+    if(s.maFilter === 'sma20' && !r.aboveSma20) return false;
+    if(s.maFilter === 'sma50' && !r.aboveSma50) return false;
+    if(s.maFilter === 'sma20_50' && (!r.aboveSma20 || !r.aboveSma50)) return false;
+    if(s.maFilter === 'sma20_50_200' && (!r.aboveSma20 || !r.aboveSma50 || !r.aboveSma200)) return false;
+    if(s.minGreen > 0 && (r.consecGreen == null || r.consecGreen < s.minGreen)) return false;
+    if(s.minRs > -30 && (r.rsVsSpy60d == null || r.rsVsSpy60d < s.minRs)) return false;
+    // Anti-pump: if we have dist from recent 5d high and it dropped more than max, reject
+    if(r.distFromRecent5dHigh != null && r.distFromRecent5dHigh < -s.maxDrop) return false;
+    if(s.minVolShares > 0 && (r.volume == null || r.volume < s.minVolShares)) return false;
     return true;
   });
 }
@@ -770,28 +891,36 @@ function renderScan(){
   $('#scanMeta').textContent = `${filtered.length} / ${all.length} · sort: ${key} ${dir<0?'↓':'↑'}`;
 
   if(!filtered.length){
-    $('#scanBody').innerHTML = `<tr><td colspan="10"><div class="empty"><div class="icon">🌊</div>No tickers match the filters</div></td></tr>`;
+    $('#scanBody').innerHTML = `<tr><td colspan="12"><div class="empty"><div class="icon">🌊</div>No tickers match the filters</div></td></tr>`;
     return;
   }
 
   $('#scanBody').innerHTML = filtered.slice(0, 200).map(r => {
-    const vsBadge = r.volSurge >= 5 ? `<span class="vol-hot">${r.volSurge.toFixed(1)}×</span>` : r.volSurge >= 2 ? `<span class="vol-warm">${r.volSurge.toFixed(1)}×</span>` : r.volSurge?.toFixed(1) + '×' || '—';
+    const vsBadge = r.volSurge >= 5 ? `<span class="vol-hot">${r.volSurge.toFixed(1)}×</span>` : r.volSurge >= 2 ? `<span class="vol-warm">${r.volSurge.toFixed(1)}×</span>` : (r.volSurge?.toFixed(1) + '×' || '—');
+    const v50 = r.volSurge50 != null ? (r.volSurge50 >= 3 ? `<span class="vol-hot">${r.volSurge50.toFixed(1)}×</span>` : r.volSurge50 >= 1.5 ? `<span class="vol-warm">${r.volSurge50.toFixed(1)}×</span>` : r.volSurge50.toFixed(1)+'×') : '—';
     const chgCls = r.chgPct >= 0 ? 'pos' : 'neg';
+    const gapCls = r.gapPct != null && r.gapPct >= 0 ? 'pos' : 'neg';
+    const streak = r.consecGreen != null ? (r.consecGreen >= 3 ? `<span style="color:var(--pink);font-weight:800">${r.consecGreen}🔥</span>` : r.consecGreen) : '—';
+    const vsSma20 = r.distFromSma20Pct != null ? `<span class="${r.aboveSma20?'pos':'neg'}">${fmtPct(r.distFromSma20Pct)}</span>` : '—';
+    const rsCls = r.rsVsSpy60d != null && r.rsVsSpy60d >= 0 ? 'pos' : 'neg';
+    const rsCell = r.rsVsSpy60d != null ? `<span class="${rsCls}">${r.rsVsSpy60d>=0?'+':''}${r.rsVsSpy60d.toFixed(0)}%</span>` : '—';
     const catBadge = r.catalyst ? `<span style="color:var(--pink);font-weight:800;font-size:11px">🚀 ${r.catalyst.catalyst_date}</span>` : '<span style="color:var(--muted);font-size:10px">—</span>';
-    const hot = (r.volSurge||0) >= 5 ? 'hot' : '';
+    const hot = (r.volSurge||0) >= 5 || (r.volSurge50||0) >= 3 ? 'hot' : '';
     return `<tr class="${hot}" onclick="openDrawerScan('${r.ticker}')">
       <td class="left"><div class="sym">${r.ticker}</div></td>
       <td>${fmtPrice(r.price)}</td>
       <td class="${chgCls}">${fmtPct(r.chgPct)}</td>
+      <td class="col-mobile-hide ${gapCls}">${r.gapPct != null ? fmtPct(r.gapPct) : '—'}</td>
       <td>${vsBadge}</td>
-      <td class="col-mobile-hide">${fmtK(r.avgDollarVol)}</td>
+      <td class="col-mobile-hide">${v50}</td>
+      <td class="col-mobile-hide">${streak}</td>
+      <td class="col-mobile-hide">${vsSma20}</td>
+      <td class="col-mobile-hide">${rsCell}</td>
       <td class="col-mobile-hide ${r.return5d>=0?'pos':'neg'}">${fmtPct(r.return5d)}</td>
-      <td class="col-mobile-hide ${r.return20d>=0?'pos':'neg'}">${fmtPct(r.return20d)}</td>
       <td class="col-mobile-hide ${r.distFrom52wHigh>=-10?'pos':'neg'}">${fmtPct(r.distFrom52wHigh)}</td>
-      <td class="col-mobile-hide">${r.rangePct52w != null ? r.rangePct52w.toFixed(0)+'%' : '—'}</td>
       <td class="col-mobile-hide">${catBadge}</td>
     </tr>`;
-  }).join('') + (filtered.length > 200 ? `<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:12px">Showing top 200 of ${filtered.length} — tighten filters to see more</td></tr>` : '');
+  }).join('') + (filtered.length > 200 ? `<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:12px">Showing top 200 of ${filtered.length} — tighten filters to see more</td></tr>` : '');
 }
 
 function openDrawerScan(ticker){
@@ -812,16 +941,31 @@ function openDrawerScan(ticker){
       <div style="color:var(--muted);margin-top:6px">Day ${fmtPrice(r.dayLow)}–${fmtPrice(r.dayHigh)} · 52w ${fmtPrice(r.yearLow)}–${fmtPrice(r.yearHigh)}</div>
       <div style="color:var(--muted);margin-top:2px">Fetched: ${new Date(r.fetchedAt).toLocaleString()}</div>
     </div>
-    <h4 style="font-size:13px;color:var(--cyan);margin:14px 0 8px">📊 Market Metrics</h4>
-    ${metric('Vol Surge (today vs 20d avg)', r.volSurge?.toFixed(2)+'×' || '—', '≥2× = elevated, ≥5× = hot')}
+    <h4 style="font-size:13px;color:var(--cyan);margin:14px 0 8px">📊 Volume & Momentum</h4>
+    ${metric('Vol Surge vs 20d avg', (r.volSurge?.toFixed(2)+'×') || '—', '≥2× = elevated, ≥5× = hot')}
+    ${metric('Vol Surge vs 50d avg', r.volSurge50 != null ? r.volSurge50.toFixed(2)+'×' : '—', '≥1.5× = sustained')}
+    ${metric('Vol Surge vs 200d avg', r.volSurge200 != null ? r.volSurge200.toFixed(2)+'×' : '—', 'long-horizon context')}
+    ${metric('Today Gap %', r.gapPct != null ? fmtPct(r.gapPct) : '—', 'open vs prior close')}
+    ${metric('Consecutive Green Days', r.consecGreen != null ? r.consecGreen : '—', '≥3 = momentum')}
     ${metric('Avg Daily $-Vol (20d)', fmtK(r.avgDollarVol), 'liquidity proxy')}
+
+    <h4 style="font-size:13px;color:var(--gold);margin:14px 0 8px">📈 Trend (Moving Averages)</h4>
+    ${metric('SMA 20', r.sma20 != null ? fmtPrice(r.sma20) : '—', r.aboveSma20 ? '✓ above' : r.sma20 ? '✗ below' : '')}
+    ${metric('SMA 50', r.sma50 != null ? fmtPrice(r.sma50) : '—', r.aboveSma50 ? '✓ above' : r.sma50 ? '✗ below' : '')}
+    ${metric('SMA 200', r.sma200 != null ? fmtPrice(r.sma200) : '—', r.aboveSma200 ? '✓ above' : r.sma200 ? '✗ below' : '')}
+    ${metric('Distance from SMA 20', r.distFromSma20Pct != null ? fmtPct(r.distFromSma20Pct) : '—')}
+    ${metric('Distance from SMA 50', r.distFromSma50Pct != null ? fmtPct(r.distFromSma50Pct) : '—')}
+    ${metric('Distance from Recent 5d High', r.distFromRecent5dHigh != null ? fmtPct(r.distFromRecent5dHigh) : '—', '0% = at breakout')}
+
+    <h4 style="font-size:13px;color:var(--purple);margin:14px 0 8px">⚡ Relative Strength & Returns</h4>
+    ${metric('RS vs SPY (60d)', r.rsVsSpy60d != null ? (r.rsVsSpy60d>=0?'+':'')+r.rsVsSpy60d.toFixed(1)+'%' : '—', 'outperformance vs market')}
     ${metric('Return 5d', fmtPct(r.return5d))}
     ${metric('Return 20d', fmtPct(r.return20d))}
     ${metric('Return 60d', fmtPct(r.return60d))}
     ${metric('Distance from 52w High', fmtPct(r.distFrom52wHigh))}
-    ${metric('Position in 52w Range', r.rangePct52w?.toFixed(0)+'%' || '—', '0% = low, 100% = high')}
+    ${metric('Position in 52w Range', (r.rangePct52w?.toFixed(0)+'%') || '—', '0% = low, 100% = high')}
     ${catSec}
-    <h4 style="font-size:13px;color:var(--purple);margin:14px 0 8px">🔗 Research</h4>
+    <h4 style="font-size:13px;color:var(--cyan);margin:14px 0 8px">🔗 Research</h4>
     <div style="display:flex;gap:6px;flex-wrap:wrap">
       <a href="https://www.tradingview.com/chart/?symbol=${ticker}" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--pink);color:#fff;border-radius:8px;text-decoration:none;font-size:11px;font-weight:700">📊 TradingView</a>
       <a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--bg3);color:var(--text);border:1px solid var(--line2);border-radius:8px;text-decoration:none;font-size:11px;font-weight:700">📈 Yahoo</a>
@@ -937,7 +1081,7 @@ function copyShareLink(){
 });
 $('#minScore').addEventListener('change', () => { if(stateCurated.results.length) renderCurated(); });
 
-// Scan sliders
+// Scan sliders (core)
 ['maxPrice','minPrice','minDvol','minSurge','minChg','min5d','near52'].forEach(id => {
   const el = $('#'+id);
   el.addEventListener('input', () => {
@@ -951,6 +1095,24 @@ $('#minScore').addEventListener('change', () => { if(stateCurated.results.length
     if(stateScan.results.length) renderScan();
   });
 });
+// Scan sliders (Priority 1+2)
+['minV50','minV200','minGap','minGreen','minRs','maxDrop','minVolShares'].forEach(id => {
+  const el = $('#'+id);
+  el.addEventListener('input', () => {
+    const map = {
+      minV50:['minV50V', v => +v <= 1 ? 'off' : v+'×'],
+      minV200:['minV200V', v => +v <= 1 ? 'off' : v+'×'],
+      minGap:['minGapV', v => +v <= 0 ? 'off' : '+'+v+'%'],
+      minGreen:['minGreenV', v => +v <= 0 ? 'off' : v+' days'],
+      minRs:['minRsV', v => +v <= -30 ? 'off' : (v>=0?'+':'')+v+'%'],
+      maxDrop:['maxDropV', v => v+'%'],
+      minVolShares:['minVolSharesV', v => +v <= 0 ? 'off' : v+'K'],
+    };
+    const [t, f] = map[id]; $('#'+t).textContent = f(el.value);
+    if(stateScan.results.length) renderScan();
+  });
+});
+$('#maFilter').addEventListener('change', () => { if(stateScan.results.length) renderScan(); });
 $('#scanSector').addEventListener('change', () => { if(stateScan.results.length) renderScan(); });
 
 // Sort columns
