@@ -335,7 +335,8 @@
       <div class="ctrl">
         <label>โหมดการคัด</label>
         <select id="modeSel">
-          <option value="pullback" selected>🎯 Fib Retracement 61.8% / 78.6% (classic reversal zones)</option>
+          <option value="mega" selected>🌊 Mega Week Breakout (JFrog-style explosive week)</option>
+          <option value="pullback">🎯 Fib Retracement 61.8% / 78.6% (classic reversal zones)</option>
           <option value="fresh">⚡ Fresh Breakout (1-8 สัปดาห์)</option>
           <option value="setup">🎯 Setup ใกล้ Pivot (พร้อมเบรก)</option>
           <option value="all">📊 ทั้งหมด</option>
@@ -380,6 +381,7 @@
     <div class="stat ocean"><label>🌊 Tier A (Score ≥80)</label><div class="v" id="sA">—</div></div>
     <div class="stat"><label>🥈 Tier B (65-79)</label><div class="v" id="sB">—</div></div>
     <div class="stat green"><label>🎯 Fib 61.8% / 78.6%</label><div class="v" id="sPullback">—</div></div>
+    <div class="stat gold"><label>🌊 Mega Week</label><div class="v" id="sMega">—</div></div>
     <div class="stat gold"><label>⚡ Fresh Breakout</label><div class="v" id="sFresh">—</div></div>
     <div class="stat purple"><label>🎯 Setup ใกล้ Pivot</label><div class="v" id="sSetup">—</div></div>
     <div class="stat"><label>🔢 Scan ทั้งหมด</label><div class="v" id="sTotal">—</div></div>
@@ -858,8 +860,10 @@ function analyzeWeekly(symbol, data, cfg){
 
   // MAs
   const ma10w = ema(closes, 10);
+  const ma20w = ema(closes, 20);  // for Mega Week compression signal
   const ma30w = sma(closes, 30);  // Stan Weinstein's key
   const ma40w = ema(closes, 40);  // Minervini's long-term
+  const ma50w = ema(closes, 50);  // for Mega Week compression signal
 
   const ma30Now = ma30w[n-1];
   const ma40Now = ma40w[n-1];
@@ -871,7 +875,11 @@ function analyzeWeekly(symbol, data, cfg){
 
   // Base period: as long as available, up to 5 years
   // Adaptive: try to find the LONGEST base that meets criteria
-  const baseMinWeeks = Math.round(cfg.baseYears * 52);
+  // Mega Week pattern often fires from 1-2y bases (JFrog, etc.), so when mode='mega'
+  // relax the minimum to 52 weeks so short-base explosive breakouts aren't filtered out.
+  const baseMinWeeks = cfg.mode === 'mega'
+    ? Math.min(Math.round(cfg.baseYears * 52), 52)
+    : Math.round(cfg.baseYears * 52);
   const maxLookback = Math.min(n-2, 260);  // ~5y max
   if(maxLookback < baseMinWeeks) return null;
 
@@ -1004,6 +1012,67 @@ function analyzeWeekly(symbol, data, cfg){
     }
   }
 
+  // === 🌊 MEGA WEEK BREAKOUT DETECTION (JFrog-style) ===
+  // Signals: explosive weekly candle from EMA 10/20/50 compression + volume surge + RSI thrust
+  // This fires BEFORE the SETUP/BUILDING fallback so it takes priority.
+  const ma10Now_ = ma10w[n-1], ma20Now_ = ma20w[n-1], ma50Now_ = ma50w[n-1];
+  let megaWeek = null;
+  if(ma10Now_ != null && ma20Now_ != null && ma50Now_ != null){
+    // 1. EMA compression PRIOR to this week (measure spread as of 2 weeks ago, pre-breakout)
+    const refIdx = n - 2;
+    const e10Ref = ma10w[refIdx], e20Ref = ma20w[refIdx], e50Ref = ma50w[refIdx];
+    let emaCompression = null;
+    if(e10Ref != null && e20Ref != null && e50Ref != null){
+      const maxEma = Math.max(e10Ref, e20Ref, e50Ref);
+      const minEma = Math.min(e10Ref, e20Ref, e50Ref);
+      const meanEma = (e10Ref + e20Ref + e50Ref) / 3;
+      emaCompression = meanEma > 0 ? (maxEma - minEma) / meanEma * 100 : null;  // % spread
+    }
+    // 2. This week body size (close-to-close) — big explosive move
+    const bigBody = changePct >= 15;              // ≥15% weekly gain
+    const greenCandle = closes[n-1] > (data[n-1].o || closes[n-2]);
+    // 3. Price now above ALL 3 EMAs
+    const aboveAllEmas = price > ma10Now_ && price > ma20Now_ && price > ma50Now_;
+    // 4. Volume surge on breakout week vs prior 10w avg
+    const prior10Vols = vols.slice(Math.max(0, n-11), n-1);
+    const prior10Avg = prior10Vols.length ? prior10Vols.reduce((a,b)=>a+b,0)/prior10Vols.length : 0;
+    const breakoutWeekVol = vols[n-1] || 0;
+    const breakoutVolRatio = prior10Avg > 0 ? breakoutWeekVol / prior10Avg : 0;
+    // 5. RSI thrust — rsi14w jumped (now vs 3 weeks ago)
+    const rsi14arr = rsi(closes, 14);
+    const rsiNow = rsi14arr[n-1];
+    const rsiPrev = rsi14arr[n-4];
+    const rsiThrust = (rsiNow != null && rsiPrev != null) ? rsiNow - rsiPrev : null;
+    // 6. Meaningful base: price did something resembling consolidation for ≥26 weeks
+    //    (EMA20 < 25% range over last 26 weeks = ranging/basing)
+    let hadBase = false;
+    if(n >= 27){
+      const ema20Slice = ma20w.slice(n-27, n-1).filter(v => v != null);
+      if(ema20Slice.length >= 20){
+        const hi = Math.max(...ema20Slice);
+        const lo = Math.min(...ema20Slice);
+        hadBase = hi > 0 && (hi - lo) / hi < 0.35;
+      }
+    }
+
+    // MEGA WEEK trigger: tight EMA cluster + big green week + above all EMAs + vol surge
+    const compressionOk = emaCompression != null && emaCompression <= 12;  // ≤12% spread = tight
+    const volOk = breakoutVolRatio >= 1.5;
+    const rsiOk = rsiThrust != null && rsiThrust >= 15;
+
+    if(bigBody && greenCandle && aboveAllEmas && compressionOk && volOk && hadBase){
+      megaWeek = {
+        changePct, emaCompression, breakoutVolRatio,
+        rsiNow, rsiPrev, rsiThrust,
+        ema10: ma10Now_, ema20: ma20Now_, ema50: ma50Now_
+      };
+      // Mega Week takes priority — overrides FRESH/RECENT classification
+      // since it carries stronger conviction signals (compression + volume + body)
+      status = 'MEGA_WEEK';
+      statusLabel = `🌊 Mega Week · +${changePct.toFixed(0)}% · EMA tight ${emaCompression.toFixed(1)}% · vol ${breakoutVolRatio.toFixed(1)}×${rsiOk ? ` · RSI +${rsiThrust.toFixed(0)}` : ''}`;
+    }
+  }
+
   // Still unclassified — try SETUP/BUILDING on recent base pivot
   if(!status){
     if(distance >= -5 && distance < 0){
@@ -1095,7 +1164,8 @@ function analyzeWeekly(symbol, data, cfg){
 
   // 4. Breakout / Status quality (max 20)
   let breakoutScore = 0;
-  if(status === 'FRESH') breakoutScore = 20;
+  if(status === 'MEGA_WEEK') breakoutScore = 20;      // explosive compression break
+  else if(status === 'FRESH') breakoutScore = 20;
   else if(status === 'RECENT') breakoutScore = 18;
   else if(status === 'FIB_786') breakoutScore = 20;   // deep Fib reversal — premium buy
   else if(status === 'FIB_618') breakoutScore = 18;   // golden pocket
@@ -1120,6 +1190,15 @@ function analyzeWeekly(symbol, data, cfg){
     if(rsiTurning) resumeScore += 4;
     if(volDryUp) resumeScore += 3;
     if(reversalCandle) resumeScore += 3;
+  }
+  // Mega Week extra bonuses (max 15) — rewards stronger JFrog-style patterns
+  if(status === 'MEGA_WEEK' && megaWeek){
+    if(megaWeek.emaCompression <= 6) resumeScore += 5;         // very tight cluster
+    else if(megaWeek.emaCompression <= 9) resumeScore += 3;
+    if(megaWeek.breakoutVolRatio >= 3) resumeScore += 4;       // massive volume
+    else if(megaWeek.breakoutVolRatio >= 2) resumeScore += 2;
+    if(megaWeek.rsiThrust != null && megaWeek.rsiThrust >= 20) resumeScore += 3;  // RSI ignition
+    if(megaWeek.changePct >= 25) resumeScore += 3;             // monster candle
   }
 
   const score = Math.round(Math.max(0, Math.min(100,
@@ -1155,6 +1234,7 @@ function analyzeWeekly(symbol, data, cfg){
     histPivot, histBreakoutWeek, postBreakoutHigh, postBreakoutHighWeek,
     rallyPct, retracePct, weeksSinceBreakout, weeksSincePeak,
     histDistance, isHigherLow, rsi14w, volDryUp, reversalCandle, resumeScore,
+    megaWeek,
     data
   };
 }
@@ -1360,10 +1440,12 @@ async function runScan(){
 /* ---------- RENDER ---------- */
 function filterResults(rs, cfg){
   let arr = rs.slice();
-  if(cfg.mode === 'fresh'){
-    arr = arr.filter(r => r.status === 'FRESH' || r.status === 'RECENT');
+  if(cfg.mode === 'mega'){
+    arr = arr.filter(r => r.status === 'MEGA_WEEK');
+  } else if(cfg.mode === 'fresh'){
+    arr = arr.filter(r => r.status === 'FRESH' || r.status === 'RECENT' || r.status === 'MEGA_WEEK');
   } else if(cfg.mode === 'setup'){
-    arr = arr.filter(r => r.status === 'SETUP' || r.status === 'FRESH' || r.status === 'RECENT');
+    arr = arr.filter(r => r.status === 'SETUP' || r.status === 'FRESH' || r.status === 'RECENT' || r.status === 'MEGA_WEEK');
   } else if(cfg.mode === 'pullback'){
     arr = arr.filter(r => r.status === 'FIB_618' || r.status === 'FIB_786');
   }
@@ -1393,13 +1475,14 @@ function renderResults(){
   $('#sA').textContent = all.filter(r=>r.tier==='A').length;
   $('#sB').textContent = all.filter(r=>r.tier==='B').length;
   $('#sFresh').textContent = all.filter(r=>r.status==='FRESH'||r.status==='RECENT').length;
+  const mEl = $('#sMega'); if(mEl) mEl.textContent = all.filter(r=>r.status==='MEGA_WEEK').length;
   $('#sSetup').textContent = all.filter(r=>r.status==='SETUP').length;
   const pbEl = $('#sPullback');
   if(pbEl) pbEl.textContent = all.filter(r=>r.status==='FIB_618'||r.status==='FIB_786').length;
   $('#sTotal').textContent = all.length;
 
   $('#resultsWrap').style.display='block';
-  const modeLabel = {fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',pullback:'🎯 Fib Retracement (61.8% / 78.6%)',all:'📊 ทั้งหมด'}[cfg.mode];
+  const modeLabel = {mega:'🌊 Mega Week Breakouts',fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',pullback:'🎯 Fib Retracement (61.8% / 78.6%)',all:'📊 ทั้งหมด'}[cfg.mode];
   $('#resHead').textContent = `🌊 ${modeLabel}`;
   $('#resMeta').textContent = `${filtered.length} / ${all.length} หุ้น · เรียงตาม ${state.sort.key} ${state.sort.dir<0?'↓':'↑'}`;
 
