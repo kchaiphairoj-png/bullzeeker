@@ -27,13 +27,15 @@
 const ALLOWED_HOSTS = [
   'query1.finance.yahoo.com',
   'query2.finance.yahoo.com',
+  'financialmodelingprep.com',   // FMP fundamentals — key injected from env.FMP_KEY
 ];
 
 // Cache TTL (seconds)
 const CACHE_TTL = {
   quote: 60,        // 1 minute for quotes
   chart: 300,       // 5 minutes for chart data
-  quoteSummary: 3600, // 1 hour for fundamentals (changes quarterly)
+  quoteSummary: 3600,   // 1 hour for fundamentals (changes quarterly)
+  fmp: 43200,           // 12 hours for FMP (fundamentals move slowly, save our 250/day quota)
   default: 60,
 };
 
@@ -54,8 +56,10 @@ export default {
       return jsonResponse({
         service: 'Bullzeeker Proxy',
         status: 'OK',
-        usage: '?url=<yahoo-finance-url>',
-        example: '?url=https://query1.finance.yahoo.com/v8/finance/chart/SPY?range=5d&interval=1d',
+        usage: '?url=<yahoo-or-fmp-url>',
+        example_yahoo: '?url=https://query1.finance.yahoo.com/v8/finance/chart/SPY?range=5d&interval=1d',
+        example_fmp:   '?url=https://financialmodelingprep.com/api/v3/stock-screener?marketCapMoreThan=300000000&limit=1000',
+        fmp_key_configured: Boolean(env.FMP_KEY),
         cache: CACHE_TTL,
       }, 200);
     }
@@ -81,9 +85,23 @@ export default {
       }, 403);
     }
 
+    // === FMP: inject API key from env, pick longer TTL ===
+    const isFmp = targetURL.hostname === 'financialmodelingprep.com';
+    if (isFmp) {
+      if (!env.FMP_KEY) {
+        return jsonResponse({
+          error: 'FMP_KEY secret not configured on this worker',
+          hint: 'Run: wrangler secret put FMP_KEY (or set it in Cloudflare dashboard → Worker → Settings → Variables)',
+        }, 500);
+      }
+      // Overwrite any stale apikey the frontend might have included
+      targetURL.searchParams.set('apikey', env.FMP_KEY);
+    }
+
     // === Determine cache TTL based on endpoint ===
     let ttl = CACHE_TTL.default;
-    if (targetURL.pathname.includes('/quote')) ttl = CACHE_TTL.quote;
+    if (isFmp) ttl = CACHE_TTL.fmp;
+    else if (targetURL.pathname.includes('/quote')) ttl = CACHE_TTL.quote;
     else if (targetURL.pathname.includes('/chart')) ttl = CACHE_TTL.chart;
     else if (targetURL.pathname.includes('/quoteSummary')) ttl = CACHE_TTL.quoteSummary;
 
@@ -103,9 +121,9 @@ export default {
       });
     }
 
-    // === Fetch from Yahoo Finance ===
+    // === Fetch from Yahoo Finance or FMP (targetURL carries injected FMP key) ===
     try {
-      const yahooResponse = await fetch(target, {
+      const upstreamResponse = await fetch(targetURL.toString(), {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           'Accept': 'application/json',
@@ -117,14 +135,14 @@ export default {
         },
       });
 
-      const body = await yahooResponse.text();
+      const body = await upstreamResponse.text();
 
       // Build response with CORS + cache headers
       response = new Response(body, {
-        status: yahooResponse.status,
+        status: upstreamResponse.status,
         headers: {
           ...corsHeaders(),
-          'Content-Type': yahooResponse.headers.get('Content-Type') || 'application/json',
+          'Content-Type': upstreamResponse.headers.get('Content-Type') || 'application/json',
           'Cache-Control': `public, max-age=${ttl}`,
           'X-Bullzeeker-Cache': 'MISS',
           'X-Bullzeeker-TTL': String(ttl),
@@ -132,7 +150,7 @@ export default {
       });
 
       // Store in Cloudflare cache (async, doesn't block response)
-      if (yahooResponse.ok) {
+      if (upstreamResponse.ok) {
         ctx.waitUntil(cache.put(cacheKey, response.clone()));
       }
 

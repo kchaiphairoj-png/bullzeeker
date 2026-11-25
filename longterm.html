@@ -815,6 +815,81 @@ function clearCache(){
   updateCacheInfo(); toast('🗑️ ล้าง cache แล้ว');
 }
 
+/* ---------- FMP FUNDAMENTALS (bulk screener, cached 24h, no key on client) ----------
+   Key lives in the Cloudflare Worker env (FMP_KEY secret) — never on client.
+   We call ONE bulk endpoint per day (/stock-screener) to get fundamentals for
+   ~1500 US stocks, keyed by symbol, and reuse across all scans.
+   This avoids burning the 250 calls/day quota on per-stock lookups. */
+const FMP_CACHE_KEY = 'longterm_fmp_v1';
+const FMP_TTL = 1000 * 60 * 60 * 24;  // 24h
+let FMP_MAP = null;      // {SYMBOL: {marketCap, sector, industry, beta, price, volume, isEtf, country, exchange, companyName}}
+let FMP_FETCHED_AT = 0;
+
+function loadFmpCache(){
+  try{
+    const raw = localStorage.getItem(FMP_CACHE_KEY);
+    if(!raw) return;
+    const parsed = JSON.parse(raw);
+    if(parsed && parsed.map && parsed.ts && (Date.now() - parsed.ts) < FMP_TTL){
+      FMP_MAP = parsed.map;
+      FMP_FETCHED_AT = parsed.ts;
+    }
+  }catch{}
+}
+loadFmpCache();
+
+async function fetchFmpFundamentals(force=false){
+  const now = Date.now();
+  if(!force && FMP_MAP && (now - FMP_FETCHED_AT) < FMP_TTL) return FMP_MAP;
+
+  // Bulk screener: all actively-traded US common stocks with cap ≥ $100M.
+  // Returns ~2000-4000 rows in a single API call — one and done per day.
+  const url = 'https://financialmodelingprep.com/api/v3/stock-screener'
+    + '?marketCapMoreThan=100000000'
+    + '&exchange=NASDAQ,NYSE,AMEX'
+    + '&isActivelyTrading=true'
+    + '&limit=5000';
+
+  try{
+    const txt = await tryProxies(url);
+    const arr = JSON.parse(txt);
+    if(!Array.isArray(arr)){
+      console.warn('FMP: unexpected response', arr);
+      return FMP_MAP || null;
+    }
+    const map = {};
+    for(const s of arr){
+      if(!s || !s.symbol) continue;
+      // Skip ETFs — this is a stock watchlist
+      if(s.isEtf) continue;
+      map[s.symbol] = {
+        marketCap: s.marketCap,
+        sector: s.sector,
+        industry: s.industry,
+        beta: s.beta,
+        price: s.price,
+        volume: s.volume,
+        country: s.country,
+        exchange: s.exchangeShortName || s.exchange,
+        companyName: s.companyName,
+      };
+    }
+    FMP_MAP = map;
+    FMP_FETCHED_AT = now;
+    try{ localStorage.setItem(FMP_CACHE_KEY, JSON.stringify({map, ts: now})); }catch{}
+    return map;
+  }catch(e){
+    console.warn('FMP fetch failed, falling back to cached (or null):', e.message);
+    return FMP_MAP || null;
+  }
+}
+
+/* Lookup FMP data for a symbol — returns {marketCap, sector, ...} or null */
+function fmpOf(sym){
+  if(!FMP_MAP) return null;
+  return FMP_MAP[sym] || null;
+}
+
 async function fetchWeekly(symbol, useCache=true){
   const now = Date.now();
   if(useCache && CACHE[symbol] && (now-CACHE[symbol].ts)<CACHE_TTL) return CACHE[symbol].data;
@@ -1096,23 +1171,46 @@ function analyzeWeekly(symbol, data, cfg){
   // === 🎯 PROXIMITY SCORE (for Pre-Mega Watchlist) ===
   // Measures how close the stock is to a full Mega Week setup (0-100 scale).
   // Uses partial credit on each Mega condition so near-misses are ranked.
-  // Also incorporates "quality" + "pullback depth" per user's request.
+  // Incorporates "quality" + "pullback depth" per user's request.
   let proximityScore = 0;
   let pullbackPct = null;
   let qualityOk = false;
+  let fundamentals = null;      // FMP data if available for this symbol
+  let fundamentalScore = 0;     // 0-10 bonus based on marketCap / sector / liquidity
   const e10Now = ma10w[n-1], e20Now = ma20w[n-1], e50Now = ma50w[n-1];
   if(e10Now != null && e20Now != null && e50Now != null){
-    // --- Quality proxies (Yahoo chart has no fundamentals; use market-structure proxies) ---
+    // --- Quality via FMP (real fundamentals) with price-proxy fallback ---
+    const fmp = fmpOf(symbol);
     const avgDollarVol = baseVols.length
       ? baseVols.reduce((s,v,i)=>s + v*(baseCloses[i]||0),0) / baseVols.length
       : 0;
     const priceOk = price >= 5;                   // not a penny stock
     const liquidOk = avgDollarVol >= 5_000_000;   // $5M+ daily = institution-grade
-    // ath is defined earlier; drawdownFromATH is defined later — compute inline here
     const ddFromAthHere = ath > 0 ? Math.abs((price - ath) / ath * 100) : 100;
-    const notDyingOk = ddFromAthHere < 92;        // not a near-dead stock
+    const notDyingOk = ddFromAthHere < 92;
     const trendOk = ma40Now != null && ma40Now > 0;
-    qualityOk = priceOk && liquidOk && notDyingOk && trendOk;
+
+    if(fmp){
+      // Have real fundamentals — use market cap tier instead of price proxy
+      fundamentals = fmp;
+      const capM = (fmp.marketCap || 0) / 1e6;
+      const capOk = capM >= 300;                       // ≥$300M = mid-cap+ (institutional)
+      const hasSector = !!fmp.sector;
+      const usExchange = ['NASDAQ','NYSE','AMEX'].includes(fmp.exchange);
+      qualityOk = capOk && hasSector && usExchange && notDyingOk && trendOk && priceOk;
+      // Fundamental score: cap tier (mega=4, large=3, mid=2, small=1) + liquidity + sector
+      if(capM >= 200_000) fundamentalScore = 4;         // mega-cap
+      else if(capM >= 10_000) fundamentalScore = 3;     // large-cap
+      else if(capM >= 2_000) fundamentalScore = 2;      // mid-cap
+      else if(capM >= 300) fundamentalScore = 1;        // small-cap
+      if(liquidOk) fundamentalScore += 3;
+      if(hasSector) fundamentalScore += 2;
+      if(fmp.beta != null && fmp.beta >= 0.5 && fmp.beta <= 2.5) fundamentalScore += 1;  // reasonable beta
+    } else {
+      // No FMP for this symbol — fall back to price proxy
+      qualityOk = priceOk && liquidOk && notDyingOk && trendOk;
+      fundamentalScore = (priceOk ? 2 : 0) + (liquidOk ? 3 : 0);  // reduced ceiling without FMP
+    }
 
     // --- 1. EMA compression (max 25) — the "squeeze" ---
     const e10Ref2 = ma10w[n-2], e20Ref2 = ma20w[n-2], e50Ref2 = ma50w[n-2];
@@ -1179,10 +1277,8 @@ function analyzeWeekly(symbol, data, cfg){
     else if(volRatio >= 1.2) proximityScore += 4;
     else if(volRatio >= 1.0) proximityScore += 2;
 
-    // --- 7. Quality gate (max 10) — fundamentals proxy ---
-    if(qualityOk) proximityScore += 10;
-    else if(priceOk && liquidOk) proximityScore += 6;
-    else if(priceOk) proximityScore += 3;
+    // --- 7. Fundamental quality (max 10) — real FMP data when available ---
+    proximityScore += Math.min(10, fundamentalScore);
   }
   proximityScore = Math.min(100, Math.round(proximityScore));
 
@@ -1336,6 +1432,7 @@ function analyzeWeekly(symbol, data, cfg){
     histDistance, isHigherLow, rsi14w, volDryUp, reversalCandle, resumeScore,
     megaWeek,
     proximityScore, pullbackPct, qualityOk,
+    fundamentals, fundamentalScore,
     data
   };
 }
@@ -1429,6 +1526,25 @@ async function runScan(){
 
   try{
     const t0 = performance.now();
+
+    // ============================================
+    // PASS 0: FMP bulk fundamentals (1 call/day, cached 24h in localStorage)
+    // ============================================
+    const fmpCached = FMP_MAP && (Date.now() - FMP_FETCHED_AT) < FMP_TTL;
+    $('#progText').textContent = fmpCached
+      ? `💎 FMP fundamentals from cache (${Object.keys(FMP_MAP).length} stocks)`
+      : `💎 PASS 0: Loading FMP fundamentals (bulk, 1 API call)...`;
+    $('#progFill').style.width = '2%';
+    try{
+      await fetchFmpFundamentals(false);
+      if(FMP_MAP){
+        log(`💎 FMP: ${Object.keys(FMP_MAP).length} stocks loaded ${fmpCached ? '(cache)' : '(fresh)'}`);
+      } else {
+        log(`⚠️ FMP unavailable — falling back to price-proxy quality`);
+      }
+    }catch(e){
+      log(`⚠️ FMP skipped: ${e.message}`);
+    }
 
     // ============================================
     // PASS 1: Quick chart-endpoint filter (chart endpoint more reliable
@@ -1611,7 +1727,10 @@ function renderResults(){
     const distCls = r.distance>=0 ? 'pos' : 'neg';
     let statusBadge;
     if(r.status==='MEGA_WEEK') statusBadge = `<span style="background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="${r.statusLabel}">🌊 MEGA WEEK</span>`;
-    else if(r.status==='WATCH') statusBadge = `<span style="background:rgba(14,165,233,.15);color:#0ea5e9;border:1px solid #0ea5e9;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="Proximity ${r.proximityScore||0}/100 · ย่อ ${r.pullbackPct?.toFixed(0)||'—'}%">👁️ WATCH</span>`;
+    else if(r.status==='WATCH'){
+      const fmpTip = r.fundamentals ? ` · ${r.fundamentals.sector||'—'} · $${((r.fundamentals.marketCap||0)/1e9).toFixed(1)}B` : '';
+      statusBadge = `<span style="background:rgba(14,165,233,.15);color:#0ea5e9;border:1px solid #0ea5e9;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="Proximity ${r.proximityScore||0}/100 · ย่อ ${r.pullbackPct?.toFixed(0)||'—'}%${fmpTip}">👁️ WATCH</span>`;
+    }
     else if(r.status==='FRESH') statusBadge = '<span class="badge-fresh">⚡ FRESH</span>';
     else if(r.status==='RECENT') statusBadge = '<span class="badge-bo">🚀 BREAKOUT</span>';
     else if(r.status==='FIB_786') statusBadge = `<span class="badge-fib786" style="background:linear-gradient(135deg,#10b981,#059669);color:#062516;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="ย่อ ${r.retracePct.toFixed(0)}% — เข้าโซน Fib 78.6% (deep reversal zone)">🎯 FIB 78.6 · ${r.retracePct.toFixed(0)}%</span>`;
@@ -1624,7 +1743,8 @@ function renderResults(){
     const dispCol   = isPremega
       ? (dispScore>=70?'#0ea5e9':dispScore>=55?'#60a5fa':dispScore>=40?'#8b97ab':'#5a6478')
       : tCol;
-    const scoreHint = isPremega ? ` <span style="color:var(--muted);font-size:9px" title="ย่อจาก high 20w · เกณฑ์คุณภาพผ่าน">· ย่อ ${r.pullbackPct?.toFixed(0)||'—'}%</span>` : '';
+    const fmpInline = r.fundamentals ? ` · $${((r.fundamentals.marketCap||0)/1e9).toFixed(1)}B · ${(r.fundamentals.sector||'—').slice(0,12)}` : '';
+    const scoreHint = isPremega ? ` <span style="color:var(--muted);font-size:9px" title="ย่อจาก high 20w · fundamentals จาก FMP">· ย่อ ${r.pullbackPct?.toFixed(0)||'—'}%${fmpInline}</span>` : '';
 
     return `<tr class="tier-${r.tier}" onclick="openModal('${r.symbol}')">
       <td class="left">
