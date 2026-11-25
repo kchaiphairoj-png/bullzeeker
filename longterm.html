@@ -820,8 +820,8 @@ function clearCache(){
    We call ONE bulk endpoint per day (/stock-screener) to get fundamentals for
    ~1500 US stocks, keyed by symbol, and reuse across all scans.
    This avoids burning the 250 calls/day quota on per-stock lookups. */
-const FMP_CACHE_KEY = 'longterm_fmp_v1';
-const FMP_TTL = 1000 * 60 * 60 * 24;  // 24h
+const FMP_CACHE_KEY = 'longterm_fmp_v2';
+const FMP_TTL = 1000 * 60 * 60 * 24 * 7;  // 7 days (fundamentals change slowly; save quota)
 let FMP_MAP = null;      // {SYMBOL: {marketCap, sector, industry, beta, price, volume, isEtf, country, exchange, companyName}}
 let FMP_FETCHED_AT = 0;
 
@@ -830,64 +830,89 @@ function loadFmpCache(){
     const raw = localStorage.getItem(FMP_CACHE_KEY);
     if(!raw) return;
     const parsed = JSON.parse(raw);
-    if(parsed && parsed.map && parsed.ts && (Date.now() - parsed.ts) < FMP_TTL){
+    if(parsed && parsed.map){
+      // Keep all entries — per-symbol TTL is checked at read time.
       FMP_MAP = parsed.map;
-      FMP_FETCHED_AT = parsed.ts;
+      FMP_FETCHED_AT = parsed.ts || 0;
     }
   }catch{}
 }
 loadFmpCache();
 
-async function fetchFmpFundamentals(force=false){
-  const now = Date.now();
-  if(!force && FMP_MAP && (now - FMP_FETCHED_AT) < FMP_TTL) return FMP_MAP;
+/* Bulk screener endpoint was retired for FMP free tier on 2025-08-31.
+   Only /stable/profile?symbol=X works now (per-symbol, 250 calls/day quota).
+   Strategy: lazy per-symbol fetch, 7-day localStorage cache per symbol,
+   and only enrich the top-N ranked stocks in Pre-Mega Watchlist (saves quota). */
+if(!FMP_MAP) FMP_MAP = {};   // ensure map exists for lazy fills
+let FMP_QUOTA_USED = 0;
+const FMP_QUOTA_PER_SESSION = 180;   // safety cap below the 250/day limit
 
-  // Bulk screener: all actively-traded US common stocks with cap ≥ $100M.
-  // Returns ~2000-4000 rows in a single API call — one and done per day.
-  const url = 'https://financialmodelingprep.com/api/v3/stock-screener'
-    + '?marketCapMoreThan=100000000'
-    + '&exchange=NASDAQ,NYSE,AMEX'
-    + '&isActivelyTrading=true'
-    + '&limit=5000';
-
+async function fetchFmpSymbol(sym){
+  // In-memory / localStorage cache hit (7 day TTL, keyed per symbol)
+  const cached = FMP_MAP[sym];
+  if(cached && cached.ts && (Date.now() - cached.ts) < FMP_TTL){
+    return cached;
+  }
+  if(FMP_QUOTA_USED >= FMP_QUOTA_PER_SESSION) return null;   // conserve quota
+  const url = 'https://financialmodelingprep.com/stable/profile?symbol=' + encodeURIComponent(sym);
   try{
     const txt = await tryProxies(url);
     const arr = JSON.parse(txt);
-    if(!Array.isArray(arr)){
-      console.warn('FMP: unexpected response', arr);
-      return FMP_MAP || null;
+    if(!Array.isArray(arr) || !arr.length) return null;
+    const s = arr[0];
+    const entry = {
+      marketCap: s.marketCap, sector: s.sector, industry: s.industry,
+      beta: s.beta, price: s.price, volume: s.volume,
+      country: s.country, exchange: s.exchangeShortName || s.exchange,
+      companyName: s.companyName, ts: Date.now()
+    };
+    FMP_MAP[sym] = entry;
+    FMP_QUOTA_USED++;
+    // Save the whole map periodically — every 10 fetches to reduce localStorage churn
+    if(FMP_QUOTA_USED % 10 === 0){
+      try{ localStorage.setItem(FMP_CACHE_KEY, JSON.stringify({map: FMP_MAP, ts: Date.now()})); }catch{}
     }
-    const map = {};
-    for(const s of arr){
-      if(!s || !s.symbol) continue;
-      // Skip ETFs — this is a stock watchlist
-      if(s.isEtf) continue;
-      map[s.symbol] = {
-        marketCap: s.marketCap,
-        sector: s.sector,
-        industry: s.industry,
-        beta: s.beta,
-        price: s.price,
-        volume: s.volume,
-        country: s.country,
-        exchange: s.exchangeShortName || s.exchange,
-        companyName: s.companyName,
-      };
-    }
-    FMP_MAP = map;
-    FMP_FETCHED_AT = now;
-    try{ localStorage.setItem(FMP_CACHE_KEY, JSON.stringify({map, ts: now})); }catch{}
-    return map;
+    return entry;
   }catch(e){
-    console.warn('FMP fetch failed, falling back to cached (or null):', e.message);
-    return FMP_MAP || null;
+    console.warn('FMP symbol fetch failed:', sym, e.message);
+    return null;
   }
+}
+
+/* No-op pre-scan — the old bulk call was removed with the free tier restriction. */
+async function fetchFmpFundamentals(){
+  return FMP_MAP || {};   // just return cached map; fills happen lazily
+}
+
+/* Enrich top-N results with per-symbol FMP data (lazy, cached) */
+async function enrichTopWithFmp(results, topN){
+  const slice = results.slice(0, topN);
+  let concurrent = 8;
+  let i = 0;
+  await Promise.all(Array(concurrent).fill(0).map(async () => {
+    while(i < slice.length){
+      const r = slice[i++];
+      if(!r || !r.symbol) continue;
+      const fmp = await fetchFmpSymbol(r.symbol);
+      if(fmp){
+        r.fundamentals = fmp;
+        // Recompute qualityOk + fundamentalScore with real data
+        const capM = (fmp.marketCap || 0) / 1e6;
+        r.qualityOk = capM >= 300 && !!fmp.sector && ['NASDAQ','NYSE','AMEX'].includes(fmp.exchange);
+      }
+    }
+  }));
+  // Persist map at end
+  try{ localStorage.setItem(FMP_CACHE_KEY, JSON.stringify({map: FMP_MAP, ts: Date.now()})); }catch{}
 }
 
 /* Lookup FMP data for a symbol — returns {marketCap, sector, ...} or null */
 function fmpOf(sym){
   if(!FMP_MAP) return null;
-  return FMP_MAP[sym] || null;
+  const e = FMP_MAP[sym];
+  if(!e) return null;
+  // Legacy cached entries without ts — treat as valid
+  return e;
 }
 
 async function fetchWeekly(symbol, useCache=true){
@@ -1528,22 +1553,17 @@ async function runScan(){
     const t0 = performance.now();
 
     // ============================================
-    // PASS 0: FMP bulk fundamentals (1 call/day, cached 24h in localStorage)
+    // PASS 0: FMP fundamentals — free tier only supports per-symbol lazy fetch now
+    // (bulk screener was retired 2025-08-31). We load cached fundamentals here and
+    // lazy-enrich top-ranked stocks in renderResults (premega mode only).
     // ============================================
-    const fmpCached = FMP_MAP && (Date.now() - FMP_FETCHED_AT) < FMP_TTL;
-    $('#progText').textContent = fmpCached
-      ? `💎 FMP fundamentals from cache (${Object.keys(FMP_MAP).length} stocks)`
-      : `💎 PASS 0: Loading FMP fundamentals (bulk, 1 API call)...`;
     $('#progFill').style.width = '2%';
-    try{
-      await fetchFmpFundamentals(false);
-      if(FMP_MAP){
-        log(`💎 FMP: ${Object.keys(FMP_MAP).length} stocks loaded ${fmpCached ? '(cache)' : '(fresh)'}`);
-      } else {
-        log(`⚠️ FMP unavailable — falling back to price-proxy quality`);
-      }
-    }catch(e){
-      log(`⚠️ FMP skipped: ${e.message}`);
+    const cachedCount = FMP_MAP ? Object.keys(FMP_MAP).length : 0;
+    if(cachedCount > 0){
+      $('#progText').textContent = `💎 FMP fundamentals: ${cachedCount} symbols cached (7d TTL)`;
+      log(`💎 FMP cache: ${cachedCount} symbols · lazy fill on top-ranked`);
+    } else {
+      log(`💎 FMP: cache empty · top-ranked stocks will be enriched on first render`);
     }
 
     // ============================================
@@ -1695,6 +1715,19 @@ function renderResults(){
   const cfg = state.cfg;
   const all = state.results;
   const filtered = sortResults(filterResults(all, cfg));
+
+  // Premega: lazy-enrich top 100 with real FMP fundamentals (re-renders when done).
+  // Runs once per render cycle; cached entries won't spend quota.
+  if(cfg.mode === 'premega' && !state._fmpEnriching){
+    const needFmp = filtered.slice(0, 100).filter(r => !r.fundamentals);
+    if(needFmp.length){
+      state._fmpEnriching = true;
+      enrichTopWithFmp(needFmp, needFmp.length).then(() => {
+        state._fmpEnriching = false;
+        renderResults();   // re-render with enriched badges
+      }).catch(e => { state._fmpEnriching = false; console.warn('FMP enrich failed:', e); });
+    }
+  }
 
   // Stats
   $('#statsBar').style.display='grid';

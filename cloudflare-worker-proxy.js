@@ -51,8 +51,8 @@ export default {
       return new Response(null, { headers: corsHeaders() });
     }
 
-    // === Health check ===
-    if (url.pathname === '/' || url.pathname === '/health') {
+    // === Health check (only when NO ?url= param, otherwise proxy the request) ===
+    if ((url.pathname === '/' || url.pathname === '/health') && !url.searchParams.has('url')) {
       return jsonResponse({
         service: 'Bullzeeker Proxy',
         status: 'OK',
