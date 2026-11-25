@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-11-22T01:29:46.706127",
-  "date": "2026-11-22",
+  "generated_at": "2026-11-25T04:25:46.068704",
+  "date": "2026-11-25",
   "universe": {
     "name": "S&P 500",
     "size": 503,
-    "data_received": 503
+    "data_received": 504
   },
   "market_regime": {
     "uptrend": false,
     "info": {
-      "spy_close": 689.8099975585938,
-      "spy_sma50": 760.179794921875,
-      "spy_sma200": 732.7552993774414,
+      "spy_close": 718.780029296875,
+      "spy_sma50": 758.6357946777343,
+      "spy_sma200": 733.0377993774414,
       "conditions": {
         "SPY > SMA50": false,
         "SMA50 > SMA200": true,
@@ -27,16 +27,142 @@
       "needs_fundamentals": false,
       "buys": [
         {
-          "ticker": "TECH",
+          "ticker": "BIIB",
           "metrics": {
-            "close": 72.67,
-            "sma200": 63.56,
-            "high52": 72.88,
-            "vol": 3663200.0,
-            "vol_avg": 3115382.0,
+            "close": 269.11,
+            "sma200": 207.53,
+            "high52": 269.89,
+            "vol": 1389600.0,
+            "vol_avg": 1234208.0,
             "pct_from_high52": -0.29,
-            "pct_above_sma200": 14.34,
+            "pct_above_sma200": 29.67,
+            "vol_ratio": 1.13
+          },
+          "conditions": {
+            "Close > SMA200": true,
+            "Close ≥ 99% of 52W High": true,
+            "Volume > VolSMA50": true
+          }
+        },
+        {
+          "ticker": "TGT",
+          "metrics": {
+            "close": 176.06,
+            "sma200": 138.62,
+            "high52": 176.73,
+            "vol": 4982400.0,
+            "vol_avg": 4184188.0,
+            "pct_from_high52": -0.38,
+            "pct_above_sma200": 27.01,
+            "vol_ratio": 1.19
+          },
+          "conditions": {
+            "Close > SMA200": true,
+            "Close ≥ 99% of 52W High": true,
+            "Volume > VolSMA50": true
+          }
+        },
+        {
+          "ticker": "REGN",
+          "metrics": {
+            "close": 987.09,
+            "sma200": 753.23,
+            "high52": 991.73,
+            "vol": 1133400.0,
+            "vol_avg": 875466.0,
+            "pct_from_high52": -0.47,
+            "pct_above_sma200": 31.05,
+            "vol_ratio": 1.29
+          },
+          "conditions": {
+            "Close > SMA200": true,
+            "Close ≥ 99% of 52W High": true,
+            "Volume > VolSMA50": true
+          }
+        },
+        {
+          "ticker": "DIS",
+          "metrics": {
+            "close": 122.51,
+            "sma200": 104.2,
+            "high52": 123.37,
+            "vol": 11582900.0,
+            "vol_avg": 9262362.0,
+            "pct_from_high52": -0.7,
+            "pct_above_sma200": 17.57,
+            "vol_ratio": 1.25
+          },
+          "conditions": {
+            "Close > SMA200": true,
+            "Close ≥ 99% of 52W High": true,
+            "Volume > VolSMA50": true
+          }
+        },
+        {
+          "ticker": "GILD",
+          "metrics": {
+            "close": 178.29,
+            "sma200": 142.53,
+            "high52": 179.68,
+            "vol": 9269700.0,
+            "vol_avg": 6321650.0,
+            "pct_from_high52": -0.77,
+            "pct_above_sma200": 25.09,
+            "vol_ratio": 1.47
+          },
+          "conditions": {
+            "Close > SMA200": true,
+            "Close ≥ 99% of 52W High": true,
+            "Volume > VolSMA50": true
+          }
+        },
+        {
+          "ticker": "BDX",
+          "metrics": {
+            "close": 220.0,
+            "sma200": 170.36,
+            "high52": 221.74,
+            "vol": 2260400.0,
+            "vol_avg": 1910904.0,
+            "pct_from_high52": -0.78,
+            "pct_above_sma200": 29.14,
             "vol_ratio": 1.18
+          },
+          "conditions": {
+            "Close > SMA200": true,
+            "Close ≥ 99% of 52W High": true,
+            "Volume > VolSMA50": true
+          }
+        },
+        {
+          "ticker": "VRTX",
+          "metrics": {
+            "close": 563.92,
+            "sma200": 485.65,
+            "high52": 568.67,
+            "vol": 1371200.0,
+            "vol_avg": 1364452.0,
+            "pct_from_high52": -0.84,
+            "pct_above_sma200": 16.12,
+            "vol_ratio": 1.0
+          },
+          "conditions": {
+            "Close > SMA200": true,
+            "Close ≥ 99% of 52W High": true,
+            "Volume > VolSMA50": true
+          }
+        },
+        {
+          "ticker": "ABBV",
+          "metrics": {
+            "close": 300.28,
+            "sma200": 243.16,
+            "high52": 302.93,
+            "vol": 5923900.0,
+            "vol_avg": 5115368.0,
+            "pct_from_high52": -0.87,
+            "pct_above_sma200": 23.49,
+            "vol_ratio": 1.16
           },
           "conditions": {
             "Close > SMA200": true,
@@ -46,10 +172,10 @@
         }
       ],
       "counts": {
-        "buy": 1,
-        "hold": 227,
-        "sell": 271,
-        "nodata": 4
+        "buy": 8,
+        "hold": 259,
+        "sell": 233,
+        "nodata": 3
       }
     },
     {
@@ -57,12 +183,39 @@
       "label": "Fresh Breakout — เข้าตั้งแต่ต้นเทรนด์",
       "description": "Stage 2 · ฐานแน่น 30 วัน · เพิ่งทะลุ ≤5% · Vol 1.5×",
       "needs_fundamentals": false,
-      "buys": [],
+      "buys": [
+        {
+          "ticker": "A",
+          "metrics": {
+            "close": 183.52,
+            "pivot": 182.99,
+            "base_low": 169.4,
+            "base_range_pct": 8.02,
+            "sma50": 172.34,
+            "sma200": 139.5,
+            "pct_from_pivot": 0.29,
+            "pct_from_52wh": -2.89,
+            "above_52wl_pct": 69.38,
+            "vol": 3573500.0,
+            "vol_avg": 2320898.0,
+            "vol_ratio": 1.54
+          },
+          "conditions": {
+            "Uptrend (C > SMA50 > SMA200)": true,
+            "SMA200 rising (20d)": true,
+            "Tight base (range < 15%)": true,
+            "Breakout (Close > base high)": true,
+            "Fresh (≤ 5% above pivot)": true,
+            "Volume surge (> 1.5× avg)": true,
+            "Above 30% of 52W Low": true
+          }
+        }
+      ],
       "counts": {
-        "buy": 0,
-        "hold": 100,
-        "sell": 398,
-        "nodata": 5
+        "buy": 1,
+        "hold": 130,
+        "sell": 368,
+        "nodata": 4
       }
     },
     {
@@ -72,16 +225,68 @@
       "needs_fundamentals": false,
       "buys": [
         {
+          "ticker": "MRNA",
+          "metrics": {
+            "close": 227.38,
+            "sma50": 210.87,
+            "sma150": 119.22,
+            "sma200": 102.2,
+            "high52": 280.8,
+            "low52": 23.55,
+            "pct_from_52wh": -19.02,
+            "pct_above_52wl": 865.73,
+            "rs_rating": 99,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "CRL",
+          "metrics": {
+            "close": 336.13,
+            "sma50": 318.52,
+            "sma150": 253.47,
+            "sma200": 232.37,
+            "high52": 379.63,
+            "low52": 146.2,
+            "pct_from_52wh": -11.46,
+            "pct_above_52wl": 129.91,
+            "rs_rating": 98,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
           "ticker": "TGT",
           "metrics": {
-            "close": 165.83,
-            "sma50": 156.83,
-            "sma150": 144.69,
-            "sma200": 138.06,
-            "high52": 171.91,
-            "low52": 83.44,
-            "pct_from_52wh": -3.54,
-            "pct_above_52wl": 98.74,
+            "close": 176.06,
+            "sma50": 157.45,
+            "sma150": 145.23,
+            "sma200": 138.62,
+            "high52": 176.73,
+            "low52": 84.52,
+            "pct_from_52wh": -0.38,
+            "pct_above_52wl": 108.31,
             "rs_rating": 98,
             "passed": 8,
             "sma200_5mo_up": true
@@ -100,14 +305,14 @@
         {
           "ticker": "VTRS",
           "metrics": {
-            "close": 19.63,
-            "sma50": 18.47,
-            "sma150": 17.07,
-            "sma200": 16.4,
+            "close": 19.85,
+            "sma50": 18.59,
+            "sma150": 17.14,
+            "sma200": 16.45,
             "high52": 21.2,
-            "low52": 10.15,
-            "pct_from_52wh": -7.41,
-            "pct_above_52wl": 93.4,
+            "low52": 10.39,
+            "pct_from_52wh": -6.37,
+            "pct_above_52wl": 91.05,
             "rs_rating": 97,
             "passed": 8,
             "sma200_5mo_up": true
@@ -126,15 +331,41 @@
         {
           "ticker": "SWK",
           "metrics": {
-            "close": 106.62,
-            "sma50": 98.3,
-            "sma150": 91.31,
-            "sma200": 87.8,
+            "close": 109.25,
+            "sma50": 99.15,
+            "sma150": 91.77,
+            "sma200": 88.01,
             "high52": 122.68,
-            "low52": 62.28,
-            "pct_from_52wh": -13.09,
-            "pct_above_52wl": 71.19,
-            "rs_rating": 96,
+            "low52": 65.5,
+            "pct_from_52wh": -10.95,
+            "pct_above_52wl": 66.79,
+            "rs_rating": 94,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "BEN",
+          "metrics": {
+            "close": 33.39,
+            "sma50": 32.79,
+            "sma150": 32.67,
+            "sma200": 30.91,
+            "high52": 36.79,
+            "low52": 21.61,
+            "pct_from_52wh": -9.24,
+            "pct_above_52wl": 54.51,
+            "rs_rating": 93,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -152,40 +383,14 @@
         {
           "ticker": "CPAY",
           "metrics": {
-            "close": 429.84,
-            "sma50": 413.57,
-            "sma150": 380.44,
-            "sma200": 365.04,
+            "close": 447.91,
+            "sma50": 414.91,
+            "sma150": 381.95,
+            "sma200": 365.92,
             "high52": 479.53,
-            "low52": 276.82,
-            "pct_from_52wh": -10.36,
-            "pct_above_52wl": 55.28,
-            "rs_rating": 94,
-            "passed": 8,
-            "sma200_5mo_up": true
-          },
-          "conditions": {
-            "1. Close > SMA150 & SMA200": true,
-            "2. SMA150 > SMA200": true,
-            "3. SMA200 rising (≥1 month)": true,
-            "4. SMA50 > SMA150 > SMA200": true,
-            "5. Close > SMA50": true,
-            "6. Close ≥ +30% from 52W Low": true,
-            "7. Close within 25% of 52W High": true,
-            "8. RS Rating ≥ 70": true
-          }
-        },
-        {
-          "ticker": "WST",
-          "metrics": {
-            "close": 390.3,
-            "sma50": 386.53,
-            "sma150": 351.12,
-            "sma200": 325.66,
-            "high52": 438.27,
-            "low52": 223.83,
-            "pct_from_52wh": -10.95,
-            "pct_above_52wl": 74.37,
+            "low52": 281.16,
+            "pct_from_52wh": -6.59,
+            "pct_above_52wl": 59.31,
             "rs_rating": 93,
             "passed": 8,
             "sma200_5mo_up": true
@@ -204,14 +409,14 @@
         {
           "ticker": "ABNB",
           "metrics": {
-            "close": 170.36,
-            "sma50": 169.65,
-            "sma150": 157.45,
-            "sma200": 150.41,
+            "close": 173.39,
+            "sma50": 169.82,
+            "sma150": 157.86,
+            "sma200": 150.93,
             "high52": 197.87,
-            "low52": 110.81,
-            "pct_from_52wh": -13.9,
-            "pct_above_52wl": 53.74,
+            "low52": 113.38,
+            "pct_from_52wh": -12.37,
+            "pct_above_52wl": 52.93,
             "rs_rating": 92,
             "passed": 8,
             "sma200_5mo_up": true
@@ -228,16 +433,16 @@
           }
         },
         {
-          "ticker": "GWW",
+          "ticker": "DLTR",
           "metrics": {
-            "close": 1357.35,
-            "sma50": 1344.62,
-            "sma150": 1311.97,
-            "sma200": 1263.69,
-            "high52": 1521.41,
-            "low52": 916.11,
-            "pct_from_52wh": -10.78,
-            "pct_above_52wl": 48.16,
+            "close": 154.65,
+            "sma50": 126.35,
+            "sma150": 119.38,
+            "sma200": 117.97,
+            "high52": 156.99,
+            "low52": 85.88,
+            "pct_from_52wh": -1.49,
+            "pct_above_52wl": 80.08,
             "rs_rating": 92,
             "passed": 8,
             "sma200_5mo_up": true
@@ -256,14 +461,14 @@
         {
           "ticker": "BIIB",
           "metrics": {
-            "close": 249.59,
-            "sma50": 236.83,
-            "sma150": 213.82,
-            "sma200": 206.87,
-            "high52": 261.0,
+            "close": 269.11,
+            "sma50": 238.67,
+            "sma150": 214.82,
+            "sma200": 207.53,
+            "high52": 269.89,
             "low52": 160.36,
-            "pct_from_52wh": -4.37,
-            "pct_above_52wl": 55.64,
+            "pct_from_52wh": -0.29,
+            "pct_above_52wl": 67.82,
             "rs_rating": 92,
             "passed": 8,
             "sma200_5mo_up": true
@@ -282,14 +487,14 @@
         {
           "ticker": "BAX",
           "metrics": {
-            "close": 25.39,
-            "sma50": 24.64,
-            "sma150": 22.86,
-            "sma200": 21.77,
+            "close": 26.98,
+            "sma50": 24.76,
+            "sma150": 22.97,
+            "sma200": 21.82,
             "high52": 30.0,
             "low52": 15.73,
-            "pct_from_52wh": -15.37,
-            "pct_above_52wl": 61.41,
+            "pct_from_52wh": -10.07,
+            "pct_above_52wl": 71.52,
             "rs_rating": 91,
             "passed": 8,
             "sma200_5mo_up": true
@@ -306,17 +511,17 @@
           }
         },
         {
-          "ticker": "EBAY",
+          "ticker": "GWW",
           "metrics": {
-            "close": 115.59,
-            "sma50": 115.57,
-            "sma150": 111.13,
-            "sma200": 106.1,
-            "high52": 127.74,
-            "low52": 78.03,
-            "pct_from_52wh": -9.51,
-            "pct_above_52wl": 48.14,
-            "rs_rating": 90,
+            "close": 1398.02,
+            "sma50": 1349.44,
+            "sma150": 1315.06,
+            "sma200": 1265.69,
+            "high52": 1521.41,
+            "low52": 929.7,
+            "pct_from_52wh": -8.11,
+            "pct_above_52wl": 50.37,
+            "rs_rating": 91,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -332,17 +537,17 @@
           }
         },
         {
-          "ticker": "HST",
+          "ticker": "CSX",
           "metrics": {
-            "close": 24.1,
-            "sma50": 23.86,
-            "sma150": 23.37,
-            "sma200": 22.43,
-            "high52": 26.19,
-            "low52": 16.77,
-            "pct_from_52wh": -7.98,
-            "pct_above_52wl": 43.71,
-            "rs_rating": 90,
+            "close": 50.08,
+            "sma50": 49.21,
+            "sma150": 48.54,
+            "sma200": 46.71,
+            "high52": 53.6,
+            "low52": 33.97,
+            "pct_from_52wh": -6.57,
+            "pct_above_52wl": 47.42,
+            "rs_rating": 91,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -358,16 +563,16 @@
           }
         },
         {
-          "ticker": "MAR",
+          "ticker": "DAL",
           "metrics": {
-            "close": 406.64,
-            "sma50": 383.49,
-            "sma150": 371.58,
-            "sma200": 363.6,
-            "high52": 433.3,
-            "low52": 281.72,
-            "pct_from_52wh": -6.15,
-            "pct_above_52wl": 44.34,
+            "close": 84.5,
+            "sma50": 82.59,
+            "sma150": 82.01,
+            "sma200": 78.13,
+            "high52": 95.68,
+            "low52": 55.28,
+            "pct_from_52wh": -11.68,
+            "pct_above_52wl": 52.86,
             "rs_rating": 90,
             "passed": 8,
             "sma200_5mo_up": true
@@ -386,14 +591,14 @@
         {
           "ticker": "BDX",
           "metrics": {
-            "close": 212.78,
-            "sma50": 194.44,
-            "sma150": 171.46,
-            "sma200": 169.82,
-            "high52": 220.36,
+            "close": 220.0,
+            "sma50": 195.78,
+            "sma150": 172.28,
+            "sma200": 170.36,
+            "high52": 221.74,
             "low52": 140.11,
-            "pct_from_52wh": -3.44,
-            "pct_above_52wl": 51.87,
+            "pct_from_52wh": -0.78,
+            "pct_above_52wl": 57.02,
             "rs_rating": 90,
             "passed": 8,
             "sma200_5mo_up": true
@@ -410,16 +615,16 @@
           }
         },
         {
-          "ticker": "AIZ",
+          "ticker": "WST",
           "metrics": {
-            "close": 316.65,
-            "sma50": 287.91,
-            "sma150": 273.12,
-            "sma200": 260.3,
-            "high52": 326.99,
-            "low52": 209.86,
-            "pct_from_52wh": -3.16,
-            "pct_above_52wl": 50.89,
+            "close": 388.75,
+            "sma50": 387.89,
+            "sma150": 352.71,
+            "sma200": 327.11,
+            "high52": 438.27,
+            "low52": 223.83,
+            "pct_from_52wh": -11.3,
+            "pct_above_52wl": 73.68,
             "rs_rating": 89,
             "passed": 8,
             "sma200_5mo_up": true
@@ -436,43 +641,17 @@
           }
         },
         {
-          "ticker": "LH",
+          "ticker": "HST",
           "metrics": {
-            "close": 367.13,
-            "sma50": 334.76,
-            "sma150": 301.94,
-            "sma200": 294.8,
-            "high52": 375.1,
-            "low52": 245.0,
-            "pct_from_52wh": -2.12,
-            "pct_above_52wl": 49.85,
+            "close": 24.86,
+            "sma50": 23.97,
+            "sma150": 23.42,
+            "sma200": 22.49,
+            "high52": 26.19,
+            "low52": 17.04,
+            "pct_from_52wh": -5.08,
+            "pct_above_52wl": 45.89,
             "rs_rating": 89,
-            "passed": 8,
-            "sma200_5mo_up": true
-          },
-          "conditions": {
-            "1. Close > SMA150 & SMA200": true,
-            "2. SMA150 > SMA200": true,
-            "3. SMA200 rising (≥1 month)": true,
-            "4. SMA50 > SMA150 > SMA200": true,
-            "5. Close > SMA50": true,
-            "6. Close ≥ +30% from 52W Low": true,
-            "7. Close within 25% of 52W High": true,
-            "8. RS Rating ≥ 70": true
-          }
-        },
-        {
-          "ticker": "MAS",
-          "metrics": {
-            "close": 82.6,
-            "sma50": 74.99,
-            "sma150": 73.98,
-            "sma200": 72.02,
-            "high52": 87.86,
-            "low52": 58.16,
-            "pct_from_52wh": -5.99,
-            "pct_above_52wl": 42.02,
-            "rs_rating": 88,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -490,14 +669,40 @@
         {
           "ticker": "CBOE",
           "metrics": {
-            "close": 357.71,
-            "sma50": 312.45,
-            "sma150": 302.51,
-            "sma200": 299.23,
+            "close": 362.52,
+            "sma50": 315.7,
+            "sma150": 303.31,
+            "sma200": 300.05,
             "high52": 379.76,
             "low52": 227.15,
-            "pct_from_52wh": -5.81,
-            "pct_above_52wl": 57.48,
+            "pct_from_52wh": -4.54,
+            "pct_above_52wl": 59.59,
+            "rs_rating": 89,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "AIZ",
+          "metrics": {
+            "close": 322.64,
+            "sma50": 289.35,
+            "sma150": 274.35,
+            "sma200": 261.11,
+            "high52": 326.99,
+            "low52": 209.86,
+            "pct_from_52wh": -1.33,
+            "pct_above_52wl": 53.74,
             "rs_rating": 88,
             "passed": 8,
             "sma200_5mo_up": true
@@ -514,16 +719,16 @@
           }
         },
         {
-          "ticker": "DGX",
+          "ticker": "LH",
           "metrics": {
-            "close": 258.28,
-            "sma50": 243.73,
-            "sma150": 223.29,
-            "sma200": 217.49,
-            "high52": 263.19,
-            "low52": 171.18,
-            "pct_from_52wh": -1.87,
-            "pct_above_52wl": 50.88,
+            "close": 376.11,
+            "sma50": 336.95,
+            "sma150": 303.29,
+            "sma200": 295.79,
+            "high52": 378.88,
+            "low52": 245.0,
+            "pct_from_52wh": -0.73,
+            "pct_above_52wl": 53.51,
             "rs_rating": 88,
             "passed": 8,
             "sma200_5mo_up": true
@@ -540,69 +745,17 @@
           }
         },
         {
-          "ticker": "DLTR",
+          "ticker": "MAR",
           "metrics": {
-            "close": 137.96,
-            "sma50": 125.11,
-            "sma150": 118.79,
-            "sma200": 117.73,
-            "high52": 148.54,
-            "low52": 85.88,
-            "pct_from_52wh": -7.12,
-            "pct_above_52wl": 60.64,
+            "close": 416.23,
+            "sma50": 386.58,
+            "sma150": 372.17,
+            "sma200": 364.44,
+            "high52": 433.3,
+            "low52": 282.03,
+            "pct_from_52wh": -3.94,
+            "pct_above_52wl": 47.58,
             "rs_rating": 87,
-            "passed": 8,
-            "sma200_5mo_up": true
-          },
-          "conditions": {
-            "1. Close > SMA150 & SMA200": true,
-            "2. SMA150 > SMA200": true,
-            "3. SMA200 rising (≥1 month)": true,
-            "4. SMA50 > SMA150 > SMA200": true,
-            "5. Close > SMA50": true,
-            "6. Close ≥ +30% from 52W Low": true,
-            "7. Close within 25% of 52W High": true,
-            "8. RS Rating ≥ 70": true
-          }
-        },
-        {
-          "ticker": "TRV",
-          "metrics": {
-            "close": 393.24,
-            "sma50": 383.58,
-            "sma150": 351.56,
-            "sma200": 338.64,
-            "high52": 418.0,
-            "low52": 268.0,
-            "pct_from_52wh": -5.92,
-            "pct_above_52wl": 46.73,
-            "rs_rating": 87,
-            "passed": 8,
-            "sma200_5mo_up": true
-          },
-          "conditions": {
-            "1. Close > SMA150 & SMA200": true,
-            "2. SMA150 > SMA200": true,
-            "3. SMA200 rising (≥1 month)": true,
-            "4. SMA50 > SMA150 > SMA200": true,
-            "5. Close > SMA50": true,
-            "6. Close ≥ +30% from 52W Low": true,
-            "7. Close within 25% of 52W High": true,
-            "8. RS Rating ≥ 70": true
-          }
-        },
-        {
-          "ticker": "KO",
-          "metrics": {
-            "close": 96.99,
-            "sma50": 91.81,
-            "sma150": 86.02,
-            "sma200": 83.88,
-            "high52": 100.56,
-            "low52": 67.27,
-            "pct_from_52wh": -3.55,
-            "pct_above_52wl": 44.18,
-            "rs_rating": 86,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -620,15 +773,15 @@
         {
           "ticker": "LYV",
           "metrics": {
-            "close": 174.96,
-            "sma50": 173.47,
-            "sma150": 173.4,
-            "sma200": 169.26,
+            "close": 183.63,
+            "sma50": 173.93,
+            "sma150": 173.78,
+            "sma200": 169.64,
             "high52": 189.25,
             "low52": 125.34,
-            "pct_from_52wh": -7.55,
-            "pct_above_52wl": 39.59,
-            "rs_rating": 84,
+            "pct_from_52wh": -2.97,
+            "pct_above_52wl": 46.51,
+            "rs_rating": 87,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -644,17 +797,17 @@
           }
         },
         {
-          "ticker": "JNJ",
+          "ticker": "DXCM",
           "metrics": {
-            "close": 270.47,
-            "sma50": 267.43,
-            "sma150": 254.04,
-            "sma200": 250.83,
-            "high52": 290.25,
-            "low52": 199.91,
-            "pct_from_52wh": -6.81,
-            "pct_above_52wl": 35.3,
-            "rs_rating": 84,
+            "close": 84.64,
+            "sma50": 83.85,
+            "sma150": 78.23,
+            "sma200": 75.45,
+            "high52": 92.59,
+            "low52": 56.72,
+            "pct_from_52wh": -8.59,
+            "pct_above_52wl": 49.22,
+            "rs_rating": 86,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -670,16 +823,146 @@
           }
         },
         {
-          "ticker": "CHD",
+          "ticker": "AMGN",
           "metrics": {
-            "close": 110.84,
-            "sma50": 103.02,
-            "sma150": 99.3,
-            "sma200": 99.02,
-            "high52": 115.46,
-            "low52": 81.49,
-            "pct_from_52wh": -4.0,
-            "pct_above_52wl": 36.02,
+            "close": 473.94,
+            "sma50": 433.76,
+            "sma150": 391.67,
+            "sma200": 384.22,
+            "high52": 483.99,
+            "low52": 312.39,
+            "pct_from_52wh": -2.08,
+            "pct_above_52wl": 51.71,
+            "rs_rating": 86,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "EXPD",
+          "metrics": {
+            "close": 197.81,
+            "sma50": 193.23,
+            "sma150": 177.55,
+            "sma200": 169.61,
+            "high52": 207.93,
+            "low52": 129.59,
+            "pct_from_52wh": -4.87,
+            "pct_above_52wl": 52.64,
+            "rs_rating": 85,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "TRV",
+          "metrics": {
+            "close": 400.87,
+            "sma50": 384.37,
+            "sma150": 352.84,
+            "sma200": 339.64,
+            "high52": 418.0,
+            "low52": 268.0,
+            "pct_from_52wh": -4.1,
+            "pct_above_52wl": 49.58,
+            "rs_rating": 85,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "DGX",
+          "metrics": {
+            "close": 265.61,
+            "sma50": 244.6,
+            "sma150": 224.08,
+            "sma200": 218.22,
+            "high52": 268.37,
+            "low52": 171.18,
+            "pct_from_52wh": -1.03,
+            "pct_above_52wl": 55.16,
+            "rs_rating": 85,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "DRI",
+          "metrics": {
+            "close": 240.2,
+            "sma50": 215.33,
+            "sma150": 209.1,
+            "sma200": 207.68,
+            "high52": 240.74,
+            "low52": 172.7,
+            "pct_from_52wh": -0.22,
+            "pct_above_52wl": 39.09,
+            "rs_rating": 85,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "MAS",
+          "metrics": {
+            "close": 85.1,
+            "sma50": 75.63,
+            "sma150": 74.18,
+            "sma200": 72.15,
+            "high52": 87.86,
+            "low52": 58.16,
+            "pct_from_52wh": -3.14,
+            "pct_above_52wl": 46.32,
             "rs_rating": 84,
             "passed": 8,
             "sma200_5mo_up": true
@@ -698,14 +981,14 @@
         {
           "ticker": "EG",
           "metrics": {
-            "close": 421.98,
-            "sma50": 391.97,
-            "sma150": 370.22,
-            "sma200": 360.55,
+            "close": 427.86,
+            "sma50": 393.8,
+            "sma150": 371.26,
+            "sma200": 361.56,
             "high52": 437.77,
-            "low52": 304.55,
-            "pct_from_52wh": -3.61,
-            "pct_above_52wl": 38.56,
+            "low52": 306.09,
+            "pct_from_52wh": -2.26,
+            "pct_above_52wl": 39.78,
             "rs_rating": 84,
             "passed": 8,
             "sma200_5mo_up": true
@@ -722,68 +1005,16 @@
           }
         },
         {
-          "ticker": "HLT",
+          "ticker": "JNJ",
           "metrics": {
-            "close": 356.25,
-            "sma50": 341.04,
-            "sma150": 331.43,
-            "sma200": 326.17,
-            "high52": 381.34,
-            "low52": 263.95,
-            "pct_from_52wh": -6.58,
-            "pct_above_52wl": 34.97,
-            "rs_rating": 83,
-            "passed": 8,
-            "sma200_5mo_up": true
-          },
-          "conditions": {
-            "1. Close > SMA150 & SMA200": true,
-            "2. SMA150 > SMA200": true,
-            "3. SMA200 rising (≥1 month)": true,
-            "4. SMA50 > SMA150 > SMA200": true,
-            "5. Close > SMA50": true,
-            "6. Close ≥ +30% from 52W Low": true,
-            "7. Close within 25% of 52W High": true,
-            "8. RS Rating ≥ 70": true
-          }
-        },
-        {
-          "ticker": "DRI",
-          "metrics": {
-            "close": 225.74,
-            "sma50": 214.43,
-            "sma150": 208.59,
-            "sma200": 207.48,
-            "high52": 240.28,
-            "low52": 169.0,
-            "pct_from_52wh": -6.05,
-            "pct_above_52wl": 33.57,
-            "rs_rating": 83,
-            "passed": 8,
-            "sma200_5mo_up": true
-          },
-          "conditions": {
-            "1. Close > SMA150 & SMA200": true,
-            "2. SMA150 > SMA200": true,
-            "3. SMA200 rising (≥1 month)": true,
-            "4. SMA50 > SMA150 > SMA200": true,
-            "5. Close > SMA50": true,
-            "6. Close ≥ +30% from 52W Low": true,
-            "7. Close within 25% of 52W High": true,
-            "8. RS Rating ≥ 70": true
-          }
-        },
-        {
-          "ticker": "BBY",
-          "metrics": {
-            "close": 97.95,
-            "sma50": 94.7,
-            "sma150": 82.32,
-            "sma200": 77.81,
-            "high52": 106.83,
-            "low52": 55.1,
-            "pct_from_52wh": -8.31,
-            "pct_above_52wl": 77.77,
+            "close": 276.46,
+            "sma50": 267.69,
+            "sma150": 254.67,
+            "sma200": 251.17,
+            "high52": 290.25,
+            "low52": 199.91,
+            "pct_from_52wh": -4.75,
+            "pct_above_52wl": 38.29,
             "rs_rating": 82,
             "passed": 8,
             "sma200_5mo_up": true
@@ -800,17 +1031,17 @@
           }
         },
         {
-          "ticker": "CAH",
+          "ticker": "BMY",
           "metrics": {
-            "close": 272.81,
-            "sma50": 247.95,
-            "sma150": 229.7,
-            "sma200": 226.61,
-            "high52": 286.29,
-            "low52": 180.45,
-            "pct_from_52wh": -4.71,
-            "pct_above_52wl": 51.18,
-            "rs_rating": 82,
+            "close": 62.02,
+            "sma50": 61.33,
+            "sma150": 60.64,
+            "sma200": 60.42,
+            "high52": 68.64,
+            "low52": 47.58,
+            "pct_from_52wh": -9.64,
+            "pct_above_52wl": 30.35,
+            "rs_rating": 81,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -826,17 +1057,69 @@
           }
         },
         {
-          "ticker": "KDP",
+          "ticker": "KO",
           "metrics": {
-            "close": 34.84,
-            "sma50": 33.62,
-            "sma150": 31.61,
-            "sma200": 30.63,
-            "high52": 38.29,
-            "low52": 24.88,
-            "pct_from_52wh": -9.01,
-            "pct_above_52wl": 40.03,
-            "rs_rating": 79,
+            "close": 97.62,
+            "sma50": 92.12,
+            "sma150": 86.31,
+            "sma200": 84.07,
+            "high52": 100.56,
+            "low52": 67.27,
+            "pct_from_52wh": -2.92,
+            "pct_above_52wl": 45.12,
+            "rs_rating": 81,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "CHD",
+          "metrics": {
+            "close": 112.32,
+            "sma50": 103.71,
+            "sma150": 99.55,
+            "sma200": 99.15,
+            "high52": 115.46,
+            "low52": 81.49,
+            "pct_from_52wh": -2.72,
+            "pct_above_52wl": 37.83,
+            "rs_rating": 81,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "MET",
+          "metrics": {
+            "close": 99.21,
+            "sma50": 99.05,
+            "sma150": 92.47,
+            "sma200": 87.68,
+            "high52": 106.72,
+            "low52": 67.33,
+            "pct_from_52wh": -7.04,
+            "pct_above_52wl": 47.35,
+            "rs_rating": 80,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -854,15 +1137,15 @@
         {
           "ticker": "LLY",
           "metrics": {
-            "close": 1347.11,
-            "sma50": 1266.92,
-            "sma150": 1166.76,
-            "sma200": 1117.9,
+            "close": 1407.59,
+            "sma50": 1276.87,
+            "sma150": 1173.08,
+            "sma200": 1121.25,
             "high52": 1475.25,
             "low52": 850.51,
-            "pct_from_52wh": -8.69,
-            "pct_above_52wl": 58.39,
-            "rs_rating": 78,
+            "pct_from_52wh": -4.59,
+            "pct_above_52wl": 65.5,
+            "rs_rating": 80,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -878,17 +1161,95 @@
           }
         },
         {
-          "ticker": "MO",
+          "ticker": "HLT",
           "metrics": {
-            "close": 74.87,
-            "sma50": 72.98,
-            "sma150": 71.11,
-            "sma200": 69.96,
-            "high52": 79.97,
-            "low52": 54.7,
-            "pct_from_52wh": -6.38,
-            "pct_above_52wl": 36.87,
-            "rs_rating": 77,
+            "close": 364.32,
+            "sma50": 343.26,
+            "sma150": 331.8,
+            "sma200": 326.67,
+            "high52": 381.34,
+            "low52": 267.19,
+            "pct_from_52wh": -4.46,
+            "pct_above_52wl": 36.35,
+            "rs_rating": 80,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "CAH",
+          "metrics": {
+            "close": 279.65,
+            "sma50": 249.63,
+            "sma150": 230.68,
+            "sma200": 227.11,
+            "high52": 286.29,
+            "low52": 180.45,
+            "pct_from_52wh": -2.32,
+            "pct_above_52wl": 54.97,
+            "rs_rating": 80,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "FAST",
+          "metrics": {
+            "close": 52.27,
+            "sma50": 51.79,
+            "sma150": 48.65,
+            "sma200": 47.96,
+            "high52": 56.27,
+            "low52": 39.38,
+            "pct_from_52wh": -7.11,
+            "pct_above_52wl": 32.73,
+            "rs_rating": 79,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "VRTX",
+          "metrics": {
+            "close": 563.92,
+            "sma50": 524.09,
+            "sma150": 494.34,
+            "sma200": 485.65,
+            "high52": 568.67,
+            "low52": 412.27,
+            "pct_from_52wh": -0.84,
+            "pct_above_52wl": 36.78,
+            "rs_rating": 79,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -906,14 +1267,40 @@
         {
           "ticker": "AAPL",
           "metrics": {
-            "close": 342.56,
-            "sma50": 341.81,
-            "sma150": 317.49,
-            "sma200": 303.24,
+            "close": 354.07,
+            "sma50": 342.58,
+            "sma150": 318.58,
+            "sma200": 303.99,
             "high52": 360.83,
             "low52": 243.42,
-            "pct_from_52wh": -5.06,
-            "pct_above_52wl": 40.73,
+            "pct_from_52wh": -1.87,
+            "pct_above_52wl": 45.46,
+            "rs_rating": 78,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "BBY",
+          "metrics": {
+            "close": 99.62,
+            "sma50": 94.87,
+            "sma150": 82.76,
+            "sma200": 78.1,
+            "high52": 106.83,
+            "low52": 55.1,
+            "pct_from_52wh": -6.75,
+            "pct_above_52wl": 80.8,
             "rs_rating": 77,
             "passed": 8,
             "sma200_5mo_up": true
@@ -930,17 +1317,17 @@
           }
         },
         {
-          "ticker": "SJM",
+          "ticker": "KDP",
           "metrics": {
-            "close": 133.68,
-            "sma50": 125.81,
-            "sma150": 116.72,
-            "sma200": 113.3,
-            "high52": 136.3,
-            "low52": 88.25,
-            "pct_from_52wh": -1.92,
-            "pct_above_52wl": 51.48,
-            "rs_rating": 77,
+            "close": 35.8,
+            "sma50": 33.79,
+            "sma150": 31.73,
+            "sma200": 30.7,
+            "high52": 38.29,
+            "low52": 24.88,
+            "pct_from_52wh": -6.5,
+            "pct_above_52wl": 43.89,
+            "rs_rating": 76,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -958,15 +1345,15 @@
         {
           "ticker": "GPN",
           "metrics": {
-            "close": 91.83,
-            "sma50": 86.92,
-            "sma150": 80.73,
-            "sma200": 78.47,
+            "close": 94.28,
+            "sma50": 87.05,
+            "sma150": 81.02,
+            "sma200": 78.68,
             "high52": 102.91,
             "low52": 61.16,
-            "pct_from_52wh": -10.77,
-            "pct_above_52wl": 50.15,
-            "rs_rating": 76,
+            "pct_from_52wh": -8.39,
+            "pct_above_52wl": 54.15,
+            "rs_rating": 75,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -982,17 +1369,17 @@
           }
         },
         {
-          "ticker": "AMGN",
+          "ticker": "UNP",
           "metrics": {
-            "close": 435.64,
-            "sma50": 430.45,
-            "sma150": 390.12,
-            "sma200": 383.4,
-            "high52": 483.99,
-            "low52": 312.39,
-            "pct_from_52wh": -9.99,
-            "pct_above_52wl": 39.45,
-            "rs_rating": 76,
+            "close": 290.83,
+            "sma50": 288.42,
+            "sma150": 283.62,
+            "sma200": 275.66,
+            "high52": 315.99,
+            "low52": 219.98,
+            "pct_from_52wh": -7.96,
+            "pct_above_52wl": 32.21,
+            "rs_rating": 75,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -1008,69 +1395,17 @@
           }
         },
         {
-          "ticker": "ALL",
+          "ticker": "MO",
           "metrics": {
-            "close": 267.0,
-            "sma50": 247.53,
-            "sma150": 241.46,
-            "sma200": 233.31,
-            "high52": 281.11,
-            "low52": 191.13,
-            "pct_from_52wh": -5.02,
-            "pct_above_52wl": 39.7,
-            "rs_rating": 76,
-            "passed": 8,
-            "sma200_5mo_up": true
-          },
-          "conditions": {
-            "1. Close > SMA150 & SMA200": true,
-            "2. SMA150 > SMA200": true,
-            "3. SMA200 rising (≥1 month)": true,
-            "4. SMA50 > SMA150 > SMA200": true,
-            "5. Close > SMA50": true,
-            "6. Close ≥ +30% from 52W Low": true,
-            "7. Close within 25% of 52W High": true,
-            "8. RS Rating ≥ 70": true
-          }
-        },
-        {
-          "ticker": "VRSN",
-          "metrics": {
-            "close": 306.87,
-            "sma50": 302.05,
-            "sma150": 287.81,
-            "sma200": 276.28,
-            "high52": 324.63,
-            "low52": 208.86,
-            "pct_from_52wh": -5.47,
-            "pct_above_52wl": 46.93,
-            "rs_rating": 74,
-            "passed": 8,
-            "sma200_5mo_up": true
-          },
-          "conditions": {
-            "1. Close > SMA150 & SMA200": true,
-            "2. SMA150 > SMA200": true,
-            "3. SMA200 rising (≥1 month)": true,
-            "4. SMA50 > SMA150 > SMA200": true,
-            "5. Close > SMA50": true,
-            "6. Close ≥ +30% from 52W Low": true,
-            "7. Close within 25% of 52W High": true,
-            "8. RS Rating ≥ 70": true
-          }
-        },
-        {
-          "ticker": "TECH",
-          "metrics": {
-            "close": 72.67,
-            "sma50": 72.58,
-            "sma150": 66.09,
-            "sma200": 63.56,
-            "high52": 72.88,
-            "low52": 43.2,
-            "pct_from_52wh": -0.29,
-            "pct_above_52wl": 68.22,
-            "rs_rating": 74,
+            "close": 74.82,
+            "sma50": 73.15,
+            "sma150": 71.23,
+            "sma200": 70.06,
+            "high52": 79.97,
+            "low52": 54.7,
+            "pct_from_52wh": -6.44,
+            "pct_above_52wl": 36.78,
+            "rs_rating": 75,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -1088,15 +1423,15 @@
         {
           "ticker": "V",
           "metrics": {
-            "close": 401.87,
-            "sma50": 394.64,
-            "sma150": 361.6,
-            "sma200": 349.16,
+            "close": 416.78,
+            "sma50": 396.14,
+            "sma150": 362.96,
+            "sma200": 350.01,
             "high52": 442.23,
             "low52": 293.89,
-            "pct_from_52wh": -9.13,
-            "pct_above_52wl": 36.74,
-            "rs_rating": 72,
+            "pct_from_52wh": -5.75,
+            "pct_above_52wl": 41.81,
+            "rs_rating": 74,
             "passed": 8,
             "sma200_5mo_up": true
           },
@@ -1114,14 +1449,92 @@
         {
           "ticker": "ABBV",
           "metrics": {
-            "close": 286.2,
-            "sma50": 279.0,
-            "sma150": 250.34,
-            "sma200": 242.45,
+            "close": 300.28,
+            "sma50": 280.28,
+            "sma150": 251.56,
+            "sma200": 243.16,
             "high52": 302.93,
             "low52": 190.75,
-            "pct_from_52wh": -5.52,
-            "pct_above_52wl": 50.04,
+            "pct_from_52wh": -0.87,
+            "pct_above_52wl": 57.42,
+            "rs_rating": 74,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "ALL",
+          "metrics": {
+            "close": 270.39,
+            "sma50": 247.93,
+            "sma150": 242.16,
+            "sma200": 233.95,
+            "high52": 281.11,
+            "low52": 191.13,
+            "pct_from_52wh": -3.81,
+            "pct_above_52wl": 41.47,
+            "rs_rating": 73,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "VRSN",
+          "metrics": {
+            "close": 317.25,
+            "sma50": 302.75,
+            "sma150": 288.42,
+            "sma200": 277.22,
+            "high52": 324.63,
+            "low52": 208.86,
+            "pct_from_52wh": -2.27,
+            "pct_above_52wl": 51.9,
+            "rs_rating": 73,
+            "passed": 8,
+            "sma200_5mo_up": true
+          },
+          "conditions": {
+            "1. Close > SMA150 & SMA200": true,
+            "2. SMA150 > SMA200": true,
+            "3. SMA200 rising (≥1 month)": true,
+            "4. SMA50 > SMA150 > SMA200": true,
+            "5. Close > SMA50": true,
+            "6. Close ≥ +30% from 52W Low": true,
+            "7. Close within 25% of 52W High": true,
+            "8. RS Rating ≥ 70": true
+          }
+        },
+        {
+          "ticker": "EW",
+          "metrics": {
+            "close": 106.12,
+            "sma50": 93.01,
+            "sma150": 89.13,
+            "sma200": 87.21,
+            "high52": 108.0,
+            "low52": 74.66,
+            "pct_from_52wh": -1.74,
+            "pct_above_52wl": 42.14,
             "rs_rating": 71,
             "passed": 8,
             "sma200_5mo_up": true
@@ -1138,16 +1551,16 @@
           }
         },
         {
-          "ticker": "WELL",
+          "ticker": "SJM",
           "metrics": {
-            "close": 240.34,
-            "sma50": 235.35,
-            "sma150": 228.71,
-            "sma200": 222.86,
-            "high52": 255.2,
-            "low52": 181.47,
-            "pct_from_52wh": -5.82,
-            "pct_above_52wl": 32.44,
+            "close": 130.85,
+            "sma50": 126.22,
+            "sma150": 117.2,
+            "sma200": 113.54,
+            "high52": 136.3,
+            "low52": 88.25,
+            "pct_from_52wh": -4.0,
+            "pct_above_52wl": 48.27,
             "rs_rating": 70,
             "passed": 8,
             "sma200_5mo_up": true
@@ -1165,10 +1578,10 @@
         }
       ],
       "counts": {
-        "buy": 42,
-        "hold": 100,
-        "sell": 355,
-        "nodata": 6
+        "buy": 52,
+        "hold": 104,
+        "sell": 342,
+        "nodata": 5
       }
     },
     {
@@ -1180,14 +1593,46 @@
       "counts": {
         "buy": 0,
         "hold": 0,
-        "sell": 498,
-        "nodata": 5
+        "sell": 499,
+        "nodata": 4
       }
     }
   ],
   "high_conviction": [
     {
-      "ticker": "TECH",
+      "ticker": "BIIB",
+      "strategies": [
+        "near_52w_high",
+        "minervini_tt"
+      ],
+      "count": 2
+    },
+    {
+      "ticker": "TGT",
+      "strategies": [
+        "near_52w_high",
+        "minervini_tt"
+      ],
+      "count": 2
+    },
+    {
+      "ticker": "BDX",
+      "strategies": [
+        "near_52w_high",
+        "minervini_tt"
+      ],
+      "count": 2
+    },
+    {
+      "ticker": "VRTX",
+      "strategies": [
+        "near_52w_high",
+        "minervini_tt"
+      ],
+      "count": 2
+    },
+    {
+      "ticker": "ABBV",
       "strategies": [
         "near_52w_high",
         "minervini_tt"
@@ -1196,8 +1641,8 @@
     }
   ],
   "stats": {
-    "total_buy_signals": 43,
-    "unique_tickers": 42,
+    "total_buy_signals": 61,
+    "unique_tickers": 56,
     "strategies_run": 4
   }
 }
