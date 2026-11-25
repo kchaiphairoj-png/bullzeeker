@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
@@ -169,6 +169,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Bullzeeker" />
+<link rel="preconnect" href="https://bullzeeker-proxy.bullzeeker.workers.dev" crossorigin />
 </head>
 <body>
 
@@ -1057,7 +1058,6 @@ $('#fxTHB').addEventListener('input',()=>calcFX('thb'));
 async function refreshFX(){
   // Use chart endpoint (more reliable than batch quote which needs crumb auth)
   const proxies = [
-    u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
     u => 'https://corsproxy.io/?' + encodeURIComponent(u),
     u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u),
   ];
@@ -1120,7 +1120,7 @@ async function fetchATR(){
   $('#atrInfo').textContent = '⏳ กำลังโหลด ATR(14)...';
   try{
     const u = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?range=2mo&interval=1d`;
-    const r = await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(u));
+    const r = await fetch('https://bullzeeker-proxy.bullzeeker.workers.dev/?url='+encodeURIComponent(u));
     const j = JSON.parse(await r.text());
     const res = j?.chart?.result?.[0];
     const q = res?.indicators?.quote?.[0];

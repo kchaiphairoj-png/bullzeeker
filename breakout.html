@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
@@ -253,6 +253,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Bullzeeker" />
+<link rel="preconnect" href="https://bullzeeker-proxy.bullzeeker.workers.dev" crossorigin />
 </head>
 <body>
 
@@ -635,7 +636,6 @@ function rangeMean(arr, from, to){
 /* ---------- DATA FETCH WITH CACHE ---------- */
 const PROXIES = [
   url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
-  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
   url => 'https://corsproxy.io/?' + encodeURIComponent(url),
   url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
 ];
@@ -913,7 +913,7 @@ let state = {
 
 async function fetchHistoryConcurrent(symbols, useCache, onProgress){
   const out = {};
-  const CONC = 15;  // bumped from 6 — Worker handles high concurrency well
+  const CONC = 30;  // v3
   let idx = 0, done = 0;
   async function worker(){
     while(idx < symbols.length){
@@ -1000,7 +1000,7 @@ async function runScan(){
       const qMap = {};
       let qDone = 0, qOk = 0;
       let qIdx = 0;
-      const QCONC = 25;  // bumped from 10 — Worker handles high concurrency
+      const QCONC = 30;  // v3
       async function qWorker(){
         while(qIdx < universe.length){
           const i = qIdx++;

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
@@ -284,6 +284,7 @@ main{max-width:1400px;margin:0 auto;padding:20px 18px}
   gtag('js', new Date());
   gtag('config', 'G-D593QC1NXE');
 </script>
+<link rel="preconnect" href="https://bullzeeker-proxy.bullzeeker.workers.dev" crossorigin />
 </head>
 <body>
 
@@ -409,7 +410,6 @@ main{max-width:1400px;margin:0 auto;padding:20px 18px}
 /* ---------- CONFIG ---------- */
 const PROXIES = [
   url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
-  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
   url => 'https://corsproxy.io/?' + encodeURIComponent(url),
 ];
 const STORAGE_KEY = 'bullzeeker_labs_state_v2';
@@ -421,7 +421,7 @@ const PROFIT_TAKE_PCT = 25;      // +25% partial take profit
 const MAX_HOLD_DAYS = 60;        // sell if held > 60 days
 const UNIVERSE_KEY = 'liquid_500';
 const BENCHMARK = 'SPY';
-const FETCH_CONCURRENCY = 20;
+const FETCH_CONCURRENCY = 30;  // v3
 
 /* ---------- STATE ---------- */
 const DEFAULT_STATE = {

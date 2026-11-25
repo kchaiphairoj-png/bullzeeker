@@ -1,9 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>🧬 VCP Scanner — Mark Minervini SEPA | Bullzeeker</title>
+<link rel="preconnect" href="https://query1.finance.yahoo.com" crossorigin />
+<link rel="preconnect" href="https://bullzeeker-proxy.bullzeeker.workers.dev" crossorigin />
 <meta name="description" content="VCP (Volatility Contraction Pattern) scanner — Mark Minervini's SEPA method. Trend Template (all 8) + contraction analysis + pivot buy point for US stocks." />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>" />
@@ -350,7 +352,7 @@ const PROXIES = [
 ];
 const CACHE_KEY = 'vcp_cache_v1';
 const CACHE_TTL = 1000 * 60 * 60 * 24;    // 1 day (daily data)
-const FETCH_CONC = 25;
+const FETCH_CONC = 30;  // v3
 
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);

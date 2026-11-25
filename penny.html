@@ -1,9 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>🚀 100x Penny Stock Screener (Live Market) | Bullzeeker</title>
+<link rel="preconnect" href="https://query1.finance.yahoo.com" crossorigin />
+<link rel="preconnect" href="https://bullzeeker-proxy.bullzeeker.workers.dev" crossorigin />
 <meta name="description" content="Live penny stock screener for US markets: ~800 small/micro cap tickers, catalyst feed, momentum filters, auto-refresh. Research tool only." />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>" />
@@ -420,7 +422,7 @@ const PROXIES = [
 ];
 const CACHE_KEY = 'bullzeeker_penny_cache_v2';
 const CACHE_TTL_MS = 60 * 60 * 1000;
-const FETCH_CONC = 20;
+const FETCH_CONC = 30;  // v3
 
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
@@ -639,7 +641,7 @@ async function runCuratedScan(){
     if(!candidates.length){ toast('⚠️ No candidates', 'err'); return; }
     const settings = getCuratedSettings();
     const liveData = {};
-    await concurrent(candidates, 8, async (c) => {
+    await concurrent(candidates, 20, async (c) => {  // v3
       liveData[c.ticker] = await fetchTickerData(c.ticker, true);
     });
     saveCache();

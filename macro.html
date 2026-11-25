@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
@@ -202,6 +202,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Bullzeeker" />
+<link rel="preconnect" href="https://bullzeeker-proxy.bullzeeker.workers.dev" crossorigin />
 </head>
 <body>
 
@@ -456,7 +457,6 @@ const $$ = s=>Array.from(document.querySelectorAll(s));
 /* ===== CONFIG ===== */
 const PROXIES = [
   url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
-  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
   url => 'https://corsproxy.io/?' + encodeURIComponent(url),
   url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
 ];
@@ -516,7 +516,7 @@ async function fetchQuotes(syms){
   if(needFetch.length === 0) return Object.values(results);
 
   // Fetch missing via chart endpoint (concurrent — Worker handles high concurrency well)
-  const CONC = 25;
+  const CONC = 30;  // v3
   let idx = 0;
   async function worker(){
     while(idx < needFetch.length){

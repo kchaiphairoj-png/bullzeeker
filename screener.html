@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
@@ -6,7 +6,7 @@
 <title>US Stock Screener TH — คัดหุ้นอเมริกาสำหรับเทรดรายวัน</title>
 <meta name="description" content="คัดหุ้นอเมริกาทั้งตลาดสำหรับเทรดรายวัน จากประเทศไทย ดูเวลาเปิด-ปิดตลาด NY ตามเวลาไทย พร้อม Screener, Gainers/Losers, Watchlist" />
 <link rel="preconnect" href="https://query1.finance.yahoo.com" crossorigin />
-<link rel="preconnect" href="https://api.allorigins.win" crossorigin />
+<link rel="preconnect" href="https://bullzeeker-proxy.bullzeeker.workers.dev" crossorigin />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>" />
 <script src="universe.js"></script>
 <style>
@@ -512,7 +512,7 @@
 
 <footer>
   <div>🐂 <b>Bullzeeker</b> · 📈 Daily Screener — Built for Thai traders · Data delayed ~15 min · Educational use only · ไม่ใช่คำแนะนำการลงทุน</div>
-  <div style="margin-top:6px">Powered by Yahoo Finance public quote API · CORS proxy: allorigins.win</div>
+  <div style="margin-top:6px">Powered by Yahoo Finance public quote API · CORS proxy: Cloudflare Worker (bullzeeker-proxy)</div>
 </footer>
 
 <script>
@@ -725,14 +725,13 @@ function updateClock(){
 setInterval(updateClock, 1000); updateClock();
 
 /* ---------- DATA FETCH ----------
-   Strategy: Yahoo Finance public quote API via CORS proxy (allorigins).
+   Strategy: Yahoo Finance public quote API via Cloudflare Worker proxy.
    Fallback: per-symbol stooq CSV (allows CORS).
 */
 
 const YQUOTE = 'https://query1.finance.yahoo.com/v7/finance/quote';
 const PROXIES = [
   url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
-  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
   url => 'https://corsproxy.io/?' + encodeURIComponent(url),
   url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
 ];
@@ -824,7 +823,7 @@ async function fetchYahooBatch(symbols){
       }catch{}
     }
   }
-  await Promise.all(Array(25).fill(0).map(worker));  // bumped from 10 — Worker handles concurrency
+  await Promise.all(Array(30).fill(0).map(worker));  // v3
   _saveQCache();
 
   if(results.length === 0) throw new Error('all symbols failed');
@@ -926,7 +925,7 @@ async function loadAll(force=false){
         <div class="icon">⚠️</div>
         <div><b>โหลดข้อมูลไม่สำเร็จ</b></div>
         <div style="margin-top:8px;font-size:12px">CORS proxy อาจล่ม — ลองกด รีเฟรช อีกครั้ง<br/>
-        หรือเปิดผ่าน <a href="https://api.allorigins.win/raw?url=${encodeURIComponent(YQUOTE+'?symbols=AAPL')}" target="_blank">ทดสอบ proxy</a></div>
+        หรือเปิดผ่าน <a href="https://bullzeeker-proxy.bullzeeker.workers.dev/?url=${encodeURIComponent(YQUOTE+'?symbols=AAPL')}" target="_blank">ทดสอบ proxy</a></div>
       </td></tr>`;
     }
   }finally{
@@ -1334,13 +1333,22 @@ document.addEventListener('keydown',e=>{
   if(e.key==='r' && (e.ctrlKey||e.metaKey)) return; // let browser refresh
 });
 
-// auto-refresh every 5 min during US market hours
+// auto-refresh every 5 min during US market hours (pause when tab hidden)
 setInterval(()=>{
+  if(document.hidden) return;
   const s = getSession(new Date());
   if(s.key==='open' || s.key==='pre' || s.key==='after'){
     loadAll();
   }
 }, 5*60*1000);
+// Resume on tab focus if market open
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden) return;
+  const s = getSession(new Date());
+  if(s.key==='open' || s.key==='pre' || s.key==='after'){
+    loadAll();
+  }
+});
 
 // initial preset activation
 document.querySelector('.preset-btn[data-preset="all"]').classList.add('active');

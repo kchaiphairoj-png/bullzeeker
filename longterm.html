@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
@@ -251,6 +251,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Bullzeeker" />
+<link rel="preconnect" href="https://bullzeeker-proxy.bullzeeker.workers.dev" crossorigin />
 </head>
 <body>
 
@@ -763,7 +764,6 @@ function ema(arr, p){
 /* ---------- DATA FETCH ---------- */
 const PROXIES = [
   url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
-  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
   url => 'https://corsproxy.io/?' + encodeURIComponent(url),
   url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
 ];
@@ -887,7 +887,7 @@ async function fetchFmpFundamentals(){
 /* Enrich top-N results with per-symbol FMP data (lazy, cached) */
 async function enrichTopWithFmp(results, topN){
   const slice = results.slice(0, topN);
-  let concurrent = 8;
+  let concurrent = 20;  // v3: bumped from 8
   let i = 0;
   await Promise.all(Array(concurrent).fill(0).map(async () => {
     while(i < slice.length){
@@ -1577,7 +1577,7 @@ async function runScan(){
       const qMap = {};
       let qDone = 0, qOk = 0;
       // Concurrency 25 — Worker handles high parallelism well
-      await concurrent(uni, 25, async(sym)=>{
+      await concurrent(uni, 30, async(sym)=>{  // v3
         try{
           // range=1d for minimal payload (we only need price + volume for filter)
           const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1d&interval=1d`;
@@ -1618,7 +1618,7 @@ async function runScan(){
     let fetched = 0, failed = 0;
     const t1 = performance.now();
     // Concurrency 15 — bumped from 8 since Worker handles it
-    await concurrent(candidatesP1, 15, async(sym)=>{
+    await concurrent(candidatesP1, 25, async(sym)=>{  // v3
       try{
         dataMap[sym] = await fetchWeekly(sym, cfg.useCache);
         fetched++;

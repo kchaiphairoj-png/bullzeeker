@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
@@ -214,6 +214,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Bullzeeker" />
+<link rel="preconnect" href="https://bullzeeker-proxy.bullzeeker.workers.dev" crossorigin />
 </head>
 <body>
 
@@ -585,7 +586,6 @@ function atrWilder(highs, lows, closes, period=14){
 /* ---------- DATA FETCH WITH CACHE ---------- */
 const PROXIES = [
   url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
-  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
   url => 'https://corsproxy.io/?' + encodeURIComponent(url),
   url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
 ];
@@ -677,7 +677,7 @@ async function fetchQuoteBatch(symbols){
       }catch{}
     }
   }
-  await Promise.all(Array(25).fill(0).map(worker));  // bumped from 10 — Worker is faster
+  await Promise.all(Array(30).fill(0).map(worker));  // v3
   return results;
 }
 
@@ -951,7 +951,7 @@ async function runScan(){
     $('#progText').textContent = '③ ดึงกราฟ 1 ปี + คำนวณ EMA/ATR/RSI/1M Return ...';
     const techMap = {};
     let prog = 0;
-    await concurrent(candidates, 15, async (sym)=>{  // bumped from 6 — Worker handles concurrency
+    await concurrent(candidates, 25, async (sym)=>{  // v3
       try{
         const data = await fetchChart(sym);
         const closes = data.map(d=>d.c);
@@ -1020,7 +1020,7 @@ async function runScan(){
       let p2 = 0;
       // For 'all' mode: only fetch for passed candidates. For 'any'/'rank': fetch for all candidates.
       const fundTargets = matchMode==='all' ? passedTech : candidates;
-      await concurrent(fundTargets, 12, async(sym)=>{  // bumped from 5
+      await concurrent(fundTargets, 20, async(sym)=>{  // v3
         try{
           fundMap[sym] = await fetchFundamentals(sym);
         }catch{ fundMap[sym] = {roe:null,netMargin:null}; }

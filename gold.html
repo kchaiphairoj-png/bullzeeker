@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
@@ -306,6 +306,7 @@ main{max-width:1400px;margin:0 auto;padding:20px 18px}
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
 gtag('js',new Date());gtag('config','G-D593QC1NXE');
 </script>
+<link rel="preconnect" href="https://bullzeeker-proxy.bullzeeker.workers.dev" crossorigin />
 </head>
 <body>
 
@@ -554,7 +555,6 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
 /* ---------- CONFIG ---------- */
 const YAHOO_PROXIES = [
   url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
-  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
   url => 'https://corsproxy.io/?' + encodeURIComponent(url),
 ];
 const BIQUOTE_URL = 'https://biquote.io/api/XAUUSD';
@@ -2658,13 +2658,23 @@ function stopAuto(){
 }
 document.addEventListener('visibilitychange', () => {
   if(document.hidden){
-    // Pause polling to save API + battery
+    // Pause ALL heavy polling to save quota + battery
     if(BIQUOTE_TIMER){ clearInterval(BIQUOTE_TIMER); BIQUOTE_TIMER = null; }
+    if(AUTO_TIMER){ clearInterval(AUTO_TIMER); AUTO_TIMER = null; }
+    if(MACRO_TIMER){ clearInterval(MACRO_TIMER); MACRO_TIMER = null; }
   } else {
-    // Resume if auto was on
-    if(AUTO_TIMER && !BIQUOTE_TIMER){
+    // Resume everything + immediate fresh fetch
+    if(!BIQUOTE_TIMER){
       BIQUOTE_TIMER = setInterval(pollBiquote, BIQUOTE_POLL_MS);
       pollBiquote();
+    }
+    if(!AUTO_TIMER){
+      AUTO_TIMER = setInterval(runScan, CANDLES_POLL_MS);
+      runScan();
+    }
+    if(!MACRO_TIMER){
+      MACRO_TIMER = setInterval(() => { pollMacro(); renderLCR(); }, MACRO_TTL_MS);
+      pollMacro();
     }
   }
 });

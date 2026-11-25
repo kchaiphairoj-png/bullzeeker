@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
@@ -392,6 +392,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Bullzeeker" />
+<link rel="preconnect" href="https://bullzeeker-proxy.bullzeeker.workers.dev" crossorigin />
 </head>
 <body>
 
@@ -969,7 +970,6 @@
 /* ---------- CONFIG ---------- */
 const PROXIES = [
   url => 'https://bullzeeker-proxy.bullzeeker.workers.dev/?url=' + encodeURIComponent(url),
-  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
   url => 'https://corsproxy.io/?' + encodeURIComponent(url),
 ];
 const STORAGE_KEY = 'bullzeeker_cio_state_v1';
@@ -3078,7 +3078,7 @@ async function fetchChartsForUniverse(tickers, onProgress){
 
   let done = 0;
   const total = needFetch.length;
-  const CONC = 20;
+  const CONC = 30;  // v3
 
   async function worker(){
     while(true){
@@ -3585,11 +3585,19 @@ async function init(){
       const sel = document.getElementById('stratUniSel');
       if(sel) sel.value = STATE.strategies.universe;
     }
-    // Auto-refresh prices every 60 seconds
+    // Auto-refresh prices every 60 seconds (pause when tab hidden to save quota + battery)
     setInterval(() => {
+      if(document.hidden) return;
       Object.keys(QUOTE_CACHE).forEach(k => delete QUOTE_CACHE[k]);
       refreshAll().catch(console.error);
     }, 60 * 1000);
+    // Resume immediately when tab becomes visible (don't wait for next interval)
+    document.addEventListener('visibilitychange', () => {
+      if(!document.hidden){
+        Object.keys(QUOTE_CACHE).forEach(k => delete QUOTE_CACHE[k]);
+        refreshAll().catch(console.error);
+      }
+    });
     // Phase 4: Alert monitoring every 5 minutes (if enabled)
     setInterval(() => {
       if(STATE.settings?.alertsEnabled && !document.hidden){
