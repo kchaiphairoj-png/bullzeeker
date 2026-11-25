@@ -71,6 +71,8 @@ main{max-width:1400px;margin:0 auto;padding:20px 18px}
 .btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--line2);padding:10px 18px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer}
 .btn-secondary:hover{background:var(--bg4)}
 .btn-toggle{background:var(--bg3);color:var(--muted);border:1px solid var(--line);padding:10px 18px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer}
+.btn-chip{background:var(--bg2);color:var(--text);border:1px solid var(--line);padding:5px 10px;border-radius:14px;font-weight:700;font-size:11px;cursor:pointer;transition:all .15s}
+.btn-chip:hover{border-color:var(--pink);color:var(--pink);transform:translateY(-1px)}
 .btn-toggle.on{color:var(--emerald);border-color:var(--emerald);background:rgba(16,185,129,.08)}
 
 .progress-wrap{margin-top:12px;display:none}
@@ -294,11 +296,11 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
             <option value="spac">SPAC / Post-merger</option>
           </select>
         </div>
-        <div class="ctrl"><label>Max Price <span class="v" id="maxPriceV">$10</span></label><input type="range" id="maxPrice" min="1" max="20" step="0.5" value="10" /></div>
+        <div class="ctrl"><label>Max Price <span class="v" id="maxPriceV">$15</span></label><input type="range" id="maxPrice" min="1" max="20" step="0.5" value="15" /></div>
         <div class="ctrl"><label>Min Price <span class="v" id="minPriceV">$0.5</span></label><input type="range" id="minPrice" min="0.1" max="5" step="0.1" value="0.5" /></div>
-        <div class="ctrl"><label>Min $-Vol (daily) <span class="v" id="minDvolV">$500K</span></label><input type="range" id="minDvol" min="100" max="10000" step="100" value="500" /></div>
-        <div class="ctrl"><label>Min Volume Surge <span class="v" id="minSurgeV">2×</span></label><input type="range" id="minSurge" min="1" max="10" step="0.5" value="2" /></div>
-        <div class="ctrl"><label>Min % Change Today <span class="v" id="minChgV">0%</span></label><input type="range" id="minChg" min="-20" max="50" step="1" value="0" /></div>
+        <div class="ctrl"><label>Min $-Vol (daily) <span class="v" id="minDvolV">$200K</span></label><input type="range" id="minDvol" min="100" max="10000" step="100" value="200" /></div>
+        <div class="ctrl"><label>Min Volume Surge <span class="v" id="minSurgeV">1.5×</span></label><input type="range" id="minSurge" min="1" max="10" step="0.25" value="1.5" /></div>
+        <div class="ctrl"><label>Min % Change Today <span class="v" id="minChgV">-5%</span></label><input type="range" id="minChg" min="-20" max="50" step="1" value="-5" /></div>
         <div class="ctrl"><label>Min 5-day Return <span class="v" id="min5dV">-50%</span></label><input type="range" id="min5d" min="-50" max="100" step="5" value="-50" /></div>
         <div class="ctrl"><label>Near 52w High (within %) <span class="v" id="near52V">off</span></label><input type="range" id="near52" min="0" max="50" step="5" value="0" /></div>
         <div class="ctrl"><label>🔊 Vol vs 50d avg <span class="v" id="minV50V">off</span></label><input type="range" id="minV50" min="1" max="10" step="0.25" value="1" /></div>
@@ -316,7 +318,14 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
         <div class="ctrl"><label>🟢 Consecutive green days ≥ <span class="v" id="minGreenV">off</span></label><input type="range" id="minGreen" min="0" max="7" step="1" value="0" /></div>
         <div class="ctrl"><label>💪 RS vs SPY (3M) ≥ <span class="v" id="minRsV">off</span></label><input type="range" id="minRs" min="-30" max="100" step="5" value="-30" /></div>
         <div class="ctrl"><label>🛡️ Max drop from 5d high <span class="v" id="maxDropV">30%</span></label><input type="range" id="maxDrop" min="5" max="60" step="5" value="30" /></div>
-        <div class="ctrl"><label>📦 Min today vol (shares) <span class="v" id="minVolSharesV">500K</span></label><input type="range" id="minVolShares" min="0" max="5000" step="100" value="500" /></div>
+        <div class="ctrl"><label>📦 Min today vol (shares) <span class="v" id="minVolSharesV">200K</span></label><input type="range" id="minVolShares" min="0" max="5000" step="100" value="200" /></div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;padding:8px 10px;background:var(--bg3);border-radius:8px;font-size:11px">
+        <span style="color:var(--muted);font-weight:700">⚡ Preset:</span>
+        <button class="btn-chip" onclick="applyScanPreset('easy')" title="หย่อน — จับหุ้นเยอะที่สุด">🟢 Easy</button>
+        <button class="btn-chip" onclick="applyScanPreset('normal')" title="สมดุล — แนะนำ (default)">🟡 Normal</button>
+        <button class="btn-chip" onclick="applyScanPreset('strict')" title="เข้มงวด — เฉพาะ pump จริง">🔴 Strict</button>
+        <button class="btn-chip" onclick="applyScanPreset('mega')" title="หา mega pump เท่านั้น (vol 5×+)">🚀 Mega Pump</button>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <button class="btn-primary" id="scanMarketBtn" onclick="runMarketScan()">🌊 Scan Market Live</button>
@@ -891,7 +900,11 @@ function renderScan(){
   $('#scanMeta').textContent = `${filtered.length} / ${all.length} · sort: ${key} ${dir<0?'↓':'↑'}`;
 
   if(!filtered.length){
-    $('#scanBody').innerHTML = `<tr><td colspan="12"><div class="empty"><div class="icon">🌊</div>No tickers match the filters</div></td></tr>`;
+    const total = all.length;
+    const hint = total > 0
+      ? `<div style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.6">Scan ได้ <b style="color:var(--text)">${total}</b> หุ้น แต่ไม่มีตัวไหนผ่านทุก filter<br/>👉 ลองกด <b style="color:var(--pink)">🟢 Easy</b> preset ข้างบน หรือลด Min Volume Surge / Min % Change</div>`
+      : '<div style="margin-top:8px;font-size:12px;color:var(--muted)">กดปุ่ม <b>🌊 Scan Market Live</b> เพื่อเริ่มสแกน</div>';
+    $('#scanBody').innerHTML = `<tr><td colspan="12"><div class="empty"><div class="icon">🌊</div>No tickers match the filters${hint}</div></td></tr>`;
     return;
   }
 
@@ -973,6 +986,32 @@ function openDrawerScan(ticker){
       <a href="https://finviz.com/quote.ashx?t=${ticker}" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--bg3);color:var(--text);border:1px solid var(--line2);border-radius:8px;text-decoration:none;font-size:11px;font-weight:700">📊 Finviz</a>
     </div>`;
   $('#drawerBg').classList.add('show'); $('#drawer').classList.add('show');
+}
+
+/* ---------- SCAN PRESETS (easy/normal/strict/mega) ----------
+   Lets users switch filter aggressiveness in one click.
+   Normal = default. Easy = catches more candidates. Strict/Mega = only strongest signals. */
+const SCAN_PRESETS = {
+  easy: {    // ให้ผ่านง่าย — เห็นหุ้นเยอะ เหมาะกับการสำรวจตลาด
+    minPrice: 0.5, maxPrice: 15, minDvol: 100, minSurge: 1,     minChg: -10, minVolShares: 50,  maxDrop: 50, minV50: 1,   minGap: 0,  minGreen: 0,  minRs: -30, maFilter: 'off' },
+  normal: {  // ค่าแนะนำ (default)
+    minPrice: 0.5, maxPrice: 15, minDvol: 200, minSurge: 1.5,   minChg: -5,  minVolShares: 200, maxDrop: 30, minV50: 1,   minGap: 0,  minGreen: 0,  minRs: -30, maFilter: 'off' },
+  strict: {  // เฉพาะหุ้นที่ pump ชัดเจน + sustain
+    minPrice: 0.5, maxPrice: 10, minDvol: 500, minSurge: 2.5,   minChg: 3,   minVolShares: 500, maxDrop: 20, minV50: 1.5, minGap: 2,  minGreen: 1,  minRs: 0,   maFilter: 'sma20' },
+  mega: {    // Mega pump เท่านั้น (vol 5×+ + chg 15%+)
+    minPrice: 0.5, maxPrice: 10, minDvol: 500, minSurge: 5,     minChg: 15,  minVolShares: 500, maxDrop: 15, minV50: 2,   minGap: 5,  minGreen: 0,  minRs: 10,  maFilter: 'sma20_50' },
+};
+function applyScanPreset(name){
+  const p = SCAN_PRESETS[name];
+  if(!p) return;
+  Object.entries(p).forEach(([k,v]) => {
+    const el = document.getElementById(k);
+    if(!el) return;
+    el.value = v;
+    el.dispatchEvent(new Event(el.tagName === 'SELECT' ? 'change' : 'input', {bubbles:true}));
+  });
+  toast(`⚡ Preset: ${name.toUpperCase()}${name==='easy' ? ' — ดูหุ้นเยอะที่สุด' : name==='strict' ? ' — เฉพาะ pump ชัดเจน' : name==='mega' ? ' — mega pump เท่านั้น' : ' — ค่าแนะนำ'}`, 'ok');
+  if(stateScan.results.length) renderScan();   // live re-filter
 }
 
 /* ---------- AUTO-REFRESH ---------- */
