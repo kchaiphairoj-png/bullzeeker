@@ -335,7 +335,8 @@
       <div class="ctrl">
         <label>โหมดการคัด</label>
         <select id="modeSel">
-          <option value="mega" selected>🌊 Mega Week Breakout (JFrog-style explosive week)</option>
+          <option value="premega" selected>🎯 Pre-Mega Watchlist (200 หุ้นที่ใกล้ Mega Week + พื้นฐานดี + ย่อลึก)</option>
+          <option value="mega">🌊 Mega Week Breakout (เกิดแล้ว · JFrog-style explosive week)</option>
           <option value="pullback">🎯 Fib Retracement 61.8% / 78.6% (classic reversal zones)</option>
           <option value="fresh">⚡ Fresh Breakout (1-8 สัปดาห์)</option>
           <option value="setup">🎯 Setup ใกล้ Pivot (พร้อมเบรก)</option>
@@ -876,8 +877,9 @@ function analyzeWeekly(symbol, data, cfg){
   // Base period: as long as available, up to 5 years
   // Adaptive: try to find the LONGEST base that meets criteria
   // Mega Week pattern often fires from 1-2y bases (JFrog, etc.), so when mode='mega'
-  // relax the minimum to 52 weeks so short-base explosive breakouts aren't filtered out.
-  const baseMinWeeks = cfg.mode === 'mega'
+  // or 'premega' relax the minimum to 52 weeks so short-base explosive breakouts
+  // (and near-ready watchlist candidates) aren't filtered out.
+  const baseMinWeeks = (cfg.mode === 'mega' || cfg.mode === 'premega')
     ? Math.min(Math.round(cfg.baseYears * 52), 52)
     : Math.round(cfg.baseYears * 52);
   const maxLookback = Math.min(n-2, 260);  // ~5y max
@@ -1081,10 +1083,108 @@ function analyzeWeekly(symbol, data, cfg){
     } else if(distance >= -15 && distance < -5){
       status = 'BUILDING';
       statusLabel = '⏳ Building';
+    } else if(cfg.mode === 'premega'){
+      // Pre-Mega Watchlist: include ANY stock with a base — rank by proximity.
+      // Still require basic quality (liquidity + sensible price) further down.
+      status = 'WATCH';
+      statusLabel = '👁️ Watch · ใกล้เงื่อนไข Mega Week';
     } else {
       return null;  // not in any valid state
     }
   }
+
+  // === 🎯 PROXIMITY SCORE (for Pre-Mega Watchlist) ===
+  // Measures how close the stock is to a full Mega Week setup (0-100 scale).
+  // Uses partial credit on each Mega condition so near-misses are ranked.
+  // Also incorporates "quality" + "pullback depth" per user's request.
+  let proximityScore = 0;
+  let pullbackPct = null;
+  let qualityOk = false;
+  const e10Now = ma10w[n-1], e20Now = ma20w[n-1], e50Now = ma50w[n-1];
+  if(e10Now != null && e20Now != null && e50Now != null){
+    // --- Quality proxies (Yahoo chart has no fundamentals; use market-structure proxies) ---
+    const avgDollarVol = baseVols.length
+      ? baseVols.reduce((s,v,i)=>s + v*(baseCloses[i]||0),0) / baseVols.length
+      : 0;
+    const priceOk = price >= 5;                   // not a penny stock
+    const liquidOk = avgDollarVol >= 5_000_000;   // $5M+ daily = institution-grade
+    // ath is defined earlier; drawdownFromATH is defined later — compute inline here
+    const ddFromAthHere = ath > 0 ? Math.abs((price - ath) / ath * 100) : 100;
+    const notDyingOk = ddFromAthHere < 92;        // not a near-dead stock
+    const trendOk = ma40Now != null && ma40Now > 0;
+    qualityOk = priceOk && liquidOk && notDyingOk && trendOk;
+
+    // --- 1. EMA compression (max 25) — the "squeeze" ---
+    const e10Ref2 = ma10w[n-2], e20Ref2 = ma20w[n-2], e50Ref2 = ma50w[n-2];
+    let compSpread = null;
+    if(e10Ref2 != null && e20Ref2 != null && e50Ref2 != null){
+      const maxE = Math.max(e10Ref2, e20Ref2, e50Ref2);
+      const minE = Math.min(e10Ref2, e20Ref2, e50Ref2);
+      const meanE = (e10Ref2 + e20Ref2 + e50Ref2) / 3;
+      compSpread = meanE > 0 ? (maxE - minE) / meanE * 100 : null;
+    }
+    if(compSpread != null){
+      // 3% spread = 25pt, 6% = 20, 9% = 15, 12% = 10, 18% = 5, 25%+ = 0
+      if(compSpread <= 3) proximityScore += 25;
+      else if(compSpread <= 6) proximityScore += 20;
+      else if(compSpread <= 9) proximityScore += 15;
+      else if(compSpread <= 12) proximityScore += 10;
+      else if(compSpread <= 18) proximityScore += 5;
+    }
+
+    // --- 2. Base quality (max 15) — longer+tighter = stronger foundation ---
+    if(n >= 27){
+      const ema20Slice = ma20w.slice(n-27, n-1).filter(v => v != null);
+      if(ema20Slice.length >= 20){
+        const hi = Math.max(...ema20Slice), lo = Math.min(...ema20Slice);
+        const baseRng = hi > 0 ? (hi - lo) / hi : 1;
+        // Tighter 26w range = better base. 10% = 15pt, 20% = 10, 30% = 5
+        if(baseRng < 0.10) proximityScore += 15;
+        else if(baseRng < 0.20) proximityScore += 10;
+        else if(baseRng < 0.30) proximityScore += 5;
+      }
+    }
+
+    // --- 3. Pullback depth (max 20) — user wants "ย่อตัวมากที่สุด" ---
+    // Measure pullback from recent 20-week high
+    const recent20 = highs.slice(Math.max(0, n-20), n);
+    const recent20High = Math.max(...recent20);
+    pullbackPct = recent20High > 0 ? (recent20High - price) / recent20High * 100 : 0;
+    // Sweet spot: 20-45% pullback = buyable depth. Too shallow or too deep = worse.
+    if(pullbackPct >= 25 && pullbackPct <= 40) proximityScore += 20;       // ideal
+    else if(pullbackPct >= 15 && pullbackPct < 25) proximityScore += 15;
+    else if(pullbackPct > 40 && pullbackPct <= 55) proximityScore += 15;
+    else if(pullbackPct >= 8 && pullbackPct < 15) proximityScore += 8;
+    else if(pullbackPct > 55 && pullbackPct <= 70) proximityScore += 6;
+
+    // --- 4. Price above EMA cluster (max 10) — ignition ready ---
+    const aboveE10 = price > e10Now, aboveE20 = price > e20Now, aboveE50 = price > e50Now;
+    const aboveCount = (aboveE10?1:0)+(aboveE20?1:0)+(aboveE50?1:0);
+    proximityScore += aboveCount * 3;  // 3/6/9 for 1/2/3 above
+    if(aboveCount === 3) proximityScore += 1;
+
+    // --- 5. Recent weekly body (max 10) — approaching mega-size ---
+    if(changePct >= 15) proximityScore += 10;      // already mega
+    else if(changePct >= 8) proximityScore += 7;   // strong green
+    else if(changePct >= 4) proximityScore += 4;
+    else if(changePct >= 0) proximityScore += 2;
+
+    // --- 6. Volume pickup (max 10) — institutions leaning in ---
+    const prior10Vols = vols.slice(Math.max(0, n-11), n-1);
+    const prior10Avg = prior10Vols.length ? prior10Vols.reduce((a,b)=>a+b,0)/prior10Vols.length : 0;
+    const thisWeekVol = vols[n-1] || 0;
+    const volRatio = prior10Avg > 0 ? thisWeekVol / prior10Avg : 0;
+    if(volRatio >= 2.0) proximityScore += 10;
+    else if(volRatio >= 1.5) proximityScore += 7;
+    else if(volRatio >= 1.2) proximityScore += 4;
+    else if(volRatio >= 1.0) proximityScore += 2;
+
+    // --- 7. Quality gate (max 10) — fundamentals proxy ---
+    if(qualityOk) proximityScore += 10;
+    else if(priceOk && liquidOk) proximityScore += 6;
+    else if(priceOk) proximityScore += 3;
+  }
+  proximityScore = Math.min(100, Math.round(proximityScore));
 
   // === RESUMPTION SIGNALS (relevant for PULLBACK statuses) ===
   // 1. Higher-low formation on weekly (last 5w)
@@ -1235,6 +1335,7 @@ function analyzeWeekly(symbol, data, cfg){
     rallyPct, retracePct, weeksSinceBreakout, weeksSincePeak,
     histDistance, isHigherLow, rsi14w, volDryUp, reversalCandle, resumeScore,
     megaWeek,
+    proximityScore, pullbackPct, qualityOk,
     data
   };
 }
@@ -1440,6 +1541,15 @@ async function runScan(){
 /* ---------- RENDER ---------- */
 function filterResults(rs, cfg){
   let arr = rs.slice();
+  if(cfg.mode === 'premega'){
+    // Pre-Mega Watchlist: any status qualifies as long as proximity + quality are OK.
+    // Rank by proximityScore (NOT the regular score — regular score penalizes
+    // non-breakout stocks, but watchlist candidates are PRE-breakout by design).
+    // The Score slider is ignored here; "ย่อตัวลึก" and "ใกล้เงื่อนไข" rule the sort.
+    arr = arr.filter(r => r.qualityOk && r.proximityScore != null && r.proximityScore > 0);
+    arr.sort((a,b) => (b.proximityScore||0) - (a.proximityScore||0));
+    return arr.slice(0, 200);
+  }
   if(cfg.mode === 'mega'){
     arr = arr.filter(r => r.status === 'MEGA_WEEK');
   } else if(cfg.mode === 'fresh'){
@@ -1482,7 +1592,7 @@ function renderResults(){
   $('#sTotal').textContent = all.length;
 
   $('#resultsWrap').style.display='block';
-  const modeLabel = {mega:'🌊 Mega Week Breakouts',fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',pullback:'🎯 Fib Retracement (61.8% / 78.6%)',all:'📊 ทั้งหมด'}[cfg.mode];
+  const modeLabel = {premega:'🎯 Pre-Mega Watchlist (Top 200 ใกล้เงื่อนไข)',mega:'🌊 Mega Week Breakouts',fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',pullback:'🎯 Fib Retracement (61.8% / 78.6%)',all:'📊 ทั้งหมด'}[cfg.mode];
   $('#resHead').textContent = `🌊 ${modeLabel}`;
   $('#resMeta').textContent = `${filtered.length} / ${all.length} หุ้น · เรียงตาม ${state.sort.key} ${state.sort.dir<0?'↓':'↑'}`;
 
@@ -1495,16 +1605,26 @@ function renderResults(){
     return;
   }
 
+  const isPremega = cfg.mode === 'premega';
   $('#resBody').innerHTML = filtered.map(r=>{
     const tCol = r.tier==='A'?'#0ea5e9':r.tier==='B'?'#60a5fa':r.tier==='C'?'#8b97ab':'#5a6478';
     const distCls = r.distance>=0 ? 'pos' : 'neg';
     let statusBadge;
-    if(r.status==='FRESH') statusBadge = '<span class="badge-fresh">⚡ FRESH</span>';
+    if(r.status==='MEGA_WEEK') statusBadge = `<span style="background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="${r.statusLabel}">🌊 MEGA WEEK</span>`;
+    else if(r.status==='WATCH') statusBadge = `<span style="background:rgba(14,165,233,.15);color:#0ea5e9;border:1px solid #0ea5e9;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="Proximity ${r.proximityScore||0}/100 · ย่อ ${r.pullbackPct?.toFixed(0)||'—'}%">👁️ WATCH</span>`;
+    else if(r.status==='FRESH') statusBadge = '<span class="badge-fresh">⚡ FRESH</span>';
     else if(r.status==='RECENT') statusBadge = '<span class="badge-bo">🚀 BREAKOUT</span>';
     else if(r.status==='FIB_786') statusBadge = `<span class="badge-fib786" style="background:linear-gradient(135deg,#10b981,#059669);color:#062516;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="ย่อ ${r.retracePct.toFixed(0)}% — เข้าโซน Fib 78.6% (deep reversal zone)">🎯 FIB 78.6 · ${r.retracePct.toFixed(0)}%</span>`;
     else if(r.status==='FIB_618') statusBadge = `<span class="badge-fib618" style="background:rgba(16,185,129,.2);color:#10b981;border:1px solid #10b981;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="ย่อ ${r.retracePct.toFixed(0)}% — เข้าโซน Fib 61.8% (golden pocket)">🎯 FIB 61.8 · ${r.retracePct.toFixed(0)}%</span>`;
     else if(r.status==='SETUP') statusBadge = '<span class="badge-setup">🎯 SETUP</span>';
     else statusBadge = '<span style="color:var(--muted);font-size:11px">⏳ Building</span>';
+
+    // In Pre-Mega mode, show the proximityScore (what we ranked by) in the Score column
+    const dispScore = isPremega ? (r.proximityScore||0) : r.score;
+    const dispCol   = isPremega
+      ? (dispScore>=70?'#0ea5e9':dispScore>=55?'#60a5fa':dispScore>=40?'#8b97ab':'#5a6478')
+      : tCol;
+    const scoreHint = isPremega ? ` <span style="color:var(--muted);font-size:9px" title="ย่อจาก high 20w · เกณฑ์คุณภาพผ่าน">· ย่อ ${r.pullbackPct?.toFixed(0)||'—'}%</span>` : '';
 
     return `<tr class="tier-${r.tier}" onclick="openModal('${r.symbol}')">
       <td class="left">
@@ -1512,8 +1632,8 @@ function renderResults(){
         <div class="name">${r.name}</div>
       </td>
       <td>
-        <span class="score-bar"><div style="width:${r.score}%;background:${tCol}"></div></span>
-        <b style="color:${tCol}">${r.score}</b>
+        <span class="score-bar"><div style="width:${dispScore}%;background:${dispCol}"></div></span>
+        <b style="color:${dispCol}">${dispScore}</b>${scoreHint}
       </td>
       <td class="left"><span class="tier tier-${r.tier}">${r.tier}</span></td>
       <td class="left">${statusBadge}</td>
