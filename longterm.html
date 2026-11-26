@@ -337,7 +337,8 @@
         <label>โหมดการคัด</label>
         <select id="modeSel">
           <option value="premega" selected>🎯 Pre-Mega Watchlist (200 หุ้นที่ใกล้ Mega Week + พื้นฐานดี + ย่อลึก)</option>
-          <option value="trendline">⚡ Trendline Breakout (descending-highs break + EMA tight · BMRN-style)</option>
+          <option value="trendline">⚡ Trendline Breakout — Weekly (descending-highs break + EMA tight · BMRN-style)</option>
+          <option value="trendline_d">⚡ Trendline Breakout — Daily (เจอเร็วกว่า · BMRN-style day-1 breakout)</option>
           <option value="mega">🌊 Mega Week Breakout (เกิดแล้ว · JFrog-style explosive week)</option>
           <option value="pullback">🎯 Fib Retracement 61.8% / 78.6% (classic reversal zones)</option>
           <option value="fresh">⚡ Fresh Breakout (1-8 สัปดาห์)</option>
@@ -739,6 +740,27 @@ function rsi(arr, p=14){
   return 100 - 100/(1 + avgG/avgL);
 }
 
+// RSI as a series (value at each bar index). null for indices < p.
+function rsiSeries(arr, p=14){
+  const out = new Array(arr.length).fill(null);
+  if(!arr || arr.length < p+1) return out;
+  let g=0, l=0;
+  for(let i=1; i<=p; i++){
+    const d = arr[i] - arr[i-1];
+    if(d > 0) g += d; else l -= d;
+  }
+  let avgG = g/p, avgL = l/p;
+  out[p] = avgL === 0 ? 100 : 100 - 100/(1 + avgG/avgL);
+  for(let i=p+1; i<arr.length; i++){
+    const d = arr[i] - arr[i-1];
+    const gd = d>0?d:0, ld = d<0?-d:0;
+    avgG = (avgG*(p-1) + gd)/p;
+    avgL = (avgL*(p-1) + ld)/p;
+    out[i] = avgL === 0 ? 100 : 100 - 100/(1 + avgG/avgL);
+  }
+  return out;
+}
+
 function sma(arr, p){
   const out = new Array(arr.length).fill(null);
   let s = 0;
@@ -814,7 +836,8 @@ function updateCacheInfo(){
 }
 function clearCache(){
   CACHE = {}; localStorage.removeItem(CACHE_KEY);
-  updateCacheInfo(); toast('🗑️ ล้าง cache แล้ว');
+  CACHE_DAILY = {}; localStorage.removeItem(CACHE_DAILY_KEY);
+  updateCacheInfo(); toast('🗑️ ล้าง cache แล้ว (weekly + daily)');
 }
 
 /* ---------- FMP FUNDAMENTALS (bulk screener, cached 24h, no key on client) ----------
@@ -915,6 +938,177 @@ function fmpOf(sym){
   if(!e) return null;
   // Legacy cached entries without ts — treat as valid
   return e;
+}
+
+/* Daily cache — separate keyspace from weekly, shorter TTL (1 day) since daily data moves faster */
+const CACHE_DAILY_KEY = 'longterm_cache_daily_v1';
+const CACHE_DAILY_TTL = 1000 * 60 * 60 * 24;  // 1 day
+let CACHE_DAILY = {};
+try { CACHE_DAILY = JSON.parse(localStorage.getItem(CACHE_DAILY_KEY) || '{}'); } catch {}
+function saveCacheDaily(){
+  try { localStorage.setItem(CACHE_DAILY_KEY, JSON.stringify(CACHE_DAILY)); }
+  catch(e){
+    // If quota exceeded, drop oldest half + retry once
+    const entries = Object.entries(CACHE_DAILY).sort((a,b) => (a[1].ts||0) - (b[1].ts||0));
+    CACHE_DAILY = Object.fromEntries(entries.slice(Math.floor(entries.length/2)));
+    try { localStorage.setItem(CACHE_DAILY_KEY, JSON.stringify(CACHE_DAILY)); }catch{}
+  }
+}
+
+async function fetchDaily(symbol, useCache=true){
+  const now = Date.now();
+  if(useCache && CACHE_DAILY[symbol] && (now-CACHE_DAILY[symbol].ts)<CACHE_DAILY_TTL) return CACHE_DAILY[symbol].data;
+  // 1y daily = ~250 bars (plenty for 50-day base + EMA50)
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=1y&interval=1d`;
+  let lastErr;
+  for(let i = 0; i < PROXIES.length; i++){
+    try{
+      const r = await fetch(PROXIES[i](url), {cache:'no-store'});
+      if(i !== 0 && !r.ok) throw new Error('HTTP '+r.status);
+      const txt = await r.text();
+      if(!txt || txt.length < 10) throw new Error('empty');
+      const j = JSON.parse(txt);
+      const res = j?.chart?.result?.[0];
+      if(!res) throw new Error('no chart (delisted?)');
+      const ts = res.timestamp || [];
+      const q = res.indicators?.quote?.[0] || {};
+      const data = ts.map((t,i)=>({t, o:q.open?.[i], h:q.high?.[i], l:q.low?.[i], c:q.close?.[i], v:q.volume?.[i]}))
+                     .filter(d=>d.c!=null && d.h!=null && d.l!=null);
+      if(data.length < 100) throw new Error('insufficient days ('+data.length+')');
+      CACHE_DAILY[symbol] = {ts: now, data};
+      return data;
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error('fetch failed');
+}
+
+/* ---------- ANALYSIS: Daily Trendline Breakout ----------
+   Focused detector that fires ONLY on the BMRN-style daily pattern.
+   Returns a result compatible with renderResults() or null if no break.
+
+   Daily period rationale (matches typical trader-grade daily setups):
+   - EMA 10/20/50: industry-standard daily EMAs (exactly what BMRN chart showed)
+   - Descending-highs lookback: 50 bars (~10 weeks)
+   - Close range: 40 bars (~8 weeks)
+   - Volume avg window: 50 bars (standard daily "avg vol" reference)
+   - Body ≥ +2% (smaller than weekly's +3% since daily bars are narrower)
+*/
+function analyzeDaily(symbol, data, cfg){
+  const n = data.length;
+  if(n < 100) return null;
+
+  const closes = data.map(d => d.c);
+  const vols = data.map(d => d.v).map(v => v==null ? 0 : v);
+
+  const price = closes[n-1];
+  const prevPrice = closes[n-2] || price;
+  const changePct = (price/prevPrice - 1) * 100;
+
+  const ema10d = ema(closes, 10);
+  const ema20d = ema(closes, 20);
+  const ema50d = ema(closes, 50);
+  const e10 = ema10d[n-1], e20 = ema20d[n-1], e50 = ema50d[n-1];
+  if(e10 == null || e20 == null || e50 == null) return null;
+
+  // Price above all 3 daily EMAs
+  const aboveAllEmas = price > e10 && price > e20 && price > e50;
+  if(!aboveAllEmas) return null;
+
+  // EMA compression measured 2 bars ago (pre-breakout state)
+  const refIdx = n - 2;
+  const r10 = ema10d[refIdx], r20 = ema20d[refIdx], r50 = ema50d[refIdx];
+  let emaCompression = null;
+  if(r10 != null && r20 != null && r50 != null){
+    const maxE = Math.max(r10, r20, r50);
+    const minE = Math.min(r10, r20, r50);
+    const meanE = (r10+r20+r50)/3;
+    emaCompression = meanE > 0 ? (maxE-minE)/meanE*100 : null;
+  }
+  const emaTight = emaCompression != null && emaCompression <= 6;
+  if(!emaTight) return null;
+
+  // Volume surge vs prior 50d avg
+  const prior50Vols = vols.slice(Math.max(0, n-51), n-1);
+  const prior50Avg = prior50Vols.length ? prior50Vols.reduce((a,b)=>a+b,0)/prior50Vols.length : 0;
+  const breakoutVolRatio = prior50Avg > 0 ? vols[n-1]/prior50Avg : 0;
+  if(breakoutVolRatio < 1.5) return null;
+
+  // Descending highs over prior 50 days (EXCLUDE current breakout bar)
+  const priorHighs = [];
+  for(let i = Math.max(1, n-51); i < n-1; i++){
+    if(data[i] && data[i].h != null) priorHighs.push(data[i].h);
+  }
+  let descendingHighs = false;
+  if(priorHighs.length >= 30){
+    const mid = Math.floor(priorHighs.length/2);
+    const firstAvg = priorHighs.slice(0, mid).reduce((a,b)=>a+b,0) / mid;
+    const secondAvg = priorHighs.slice(mid).reduce((a,b)=>a+b,0) / (priorHighs.length - mid);
+    descendingHighs = firstAvg > 0 && secondAvg < firstAvg * 0.97;  // ≥3% lower
+  }
+  if(!descendingHighs) return null;
+
+  // Close breaks above max close of prior 40 days
+  const priorCloses40 = closes.slice(Math.max(0, n-41), n-1);
+  const priorMaxClose = priorCloses40.length ? Math.max(...priorCloses40) : Infinity;
+  const brokeRange = closes[n-1] > priorMaxClose * 1.005;
+  if(!brokeRange) return null;
+
+  // Green + modest body
+  const greenCandle = closes[n-1] > (data[n-1].o || closes[n-2]);
+  const minBody = changePct >= 2;
+  if(!greenCandle || !minBody) return null;
+
+  // RSI bullish — > 50 AND above its own 14-day SMA
+  const rsi14 = rsiSeries(closes, 14);
+  const rsiNow = rsi14[n-1];
+  const rsiSlice = rsi14.slice(Math.max(0, n-14), n-1).filter(v => v != null);
+  const rsiSma = rsiSlice.length ? rsiSlice.reduce((a,b)=>a+b,0)/rsiSlice.length : null;
+  const rsiBullish = rsiNow != null && rsiNow > 50 && (rsiSma == null || rsiNow > rsiSma);
+  if(!rsiBullish) return null;
+
+  // All gates passed — build result compatible with render pipeline
+  const breakPct = (closes[n-1]/priorMaxClose - 1) * 100;
+  // Simple score: 50 base + bonuses for tightness, volume, RSI momentum
+  let score = 50;
+  if(emaCompression <= 3) score += 15; else if(emaCompression <= 4.5) score += 10; else score += 5;
+  if(breakoutVolRatio >= 3) score += 15; else if(breakoutVolRatio >= 2) score += 10; else score += 5;
+  if(changePct >= 10) score += 10; else if(changePct >= 5) score += 6;
+  if(rsiNow >= 65) score += 5;
+  score = Math.min(100, Math.round(score));
+  const tier = score >= 80 ? 'A' : score >= 65 ? 'B' : score >= 50 ? 'C' : 'D';
+
+  return {
+    symbol, name: (typeof NAMES !== 'undefined' ? NAMES[symbol] : null) || symbol,
+    price, changePct,
+    status: 'TRENDLINE_BREAK_D',
+    statusLabel: `⚡ Trendline Break (Daily) · +${changePct.toFixed(1)}% · EMA ${emaCompression.toFixed(1)}% · vol ${breakoutVolRatio.toFixed(1)}× · broke ${breakPct.toFixed(1)}% above 40d top`,
+    score, tier,
+    // Pivot fields — use priorMaxClose as the pivot (breakout reference)
+    pivot: priorMaxClose, baseHigh: priorMaxClose, baseLow: Math.min(...priorCloses40), baseRange: null,
+    distance: breakPct,
+    yearsInBase: null, baseStart: null, baseEnd: null,
+    ath: Math.max(...closes), athIdx: closes.indexOf(Math.max(...closes)),
+    drawdownFromATH: (price / Math.max(...closes) - 1) * 100,
+    upsideToATH: (Math.max(...closes) / price - 1) * 100,
+    ma10w: ema10d, ma30w: ema20d, ma40w: ema50d,  // reuse field names for render compat (daily values)
+    ma30Now: e20, ma40Now: e50, ma30Dist: (price/e20 - 1)*100,
+    aboveMA30: price > e20, aboveMA40: price > e50,
+    ma30Rising: e20 > (ema20d[n-6] || e20), ma40Rising: e50 > (ema50d[n-11] || e50),
+    volSurge: breakoutVolRatio, breakoutWeek: n-1,
+    histPivot: null, histBreakoutWeek: null, postBreakoutHigh: null, postBreakoutHighWeek: null,
+    rallyPct: null, retracePct: null, weeksSinceBreakout: 0, weeksSincePeak: null,
+    histDistance: null, isHigherLow: false, rsi14w: rsi14, volDryUp: false, reversalCandle: false, resumeScore: 0,
+    megaWeek: {
+      changePct, emaCompression, breakoutVolRatio,
+      rsiNow, rsiPrev: rsi14[n-6], rsiThrust: (rsiNow != null && rsiSma != null) ? rsiNow - rsiSma : null,
+      ema10: e10, ema20: e20, ema50: e50,
+      isTrendlineBreak: true, isDaily: true,
+      priorMaxClose, breakPct
+    },
+    proximityScore: 0, pullbackPct: null, qualityOk: true,
+    fundamentals: null, fundamentalScore: 0,
+    data
+  };
 }
 
 async function fetchWeekly(symbol, useCache=true){
@@ -1143,7 +1337,7 @@ function analyzeWeekly(symbol, data, cfg){
     const breakoutWeekVol = vols[n-1] || 0;
     const breakoutVolRatio = prior10Avg > 0 ? breakoutWeekVol / prior10Avg : 0;
     // 5. RSI thrust — rsi14w jumped (now vs 3 weeks ago)
-    const rsi14arr = rsi(closes, 14);
+    const rsi14arr = rsiSeries(closes, 14);
     const rsiNow = rsi14arr[n-1];
     const rsiPrev = rsi14arr[n-4];
     const rsiThrust = (rsiNow != null && rsiPrev != null) ? rsiNow - rsiPrev : null;
@@ -1180,9 +1374,10 @@ function analyzeWeekly(symbol, data, cfg){
     // to catch the "breaking out of a declining trendline after multi-week downtrend"
     // pattern, where body may be modest but context (bases + breakout close) is strong.
     else if(aboveAllEmas && n >= 14){
-      // Descending highs over prior 10 weeks (n-11 .. n-1) — second half avg lower than first
+      // Descending highs over prior 10 weeks — second half avg lower than first.
+      // Exclude the current (breakout) bar to avoid its high contaminating the second-half avg.
       const priorHighs = [];
-      for(let i = Math.max(1, n-11); i < n; i++){
+      for(let i = Math.max(1, n-11); i < n-1; i++){
         if(data[i] && data[i].h != null) priorHighs.push(data[i].h);
       }
       let descendingHighs = false;
@@ -1199,7 +1394,7 @@ function analyzeWeekly(symbol, data, cfg){
       // Tighter EMA compression threshold — BMRN cluster is <2%; allow ≤6%
       const emaTight = emaCompression != null && emaCompression <= 6;
       // RSI bullish — > 50 AND above its own 14w SMA (cross-up)
-      const rsi14arr2 = rsi(closes, 14);
+      const rsi14arr2 = rsiSeries(closes, 14);
       const rsiNowT = rsi14arr2[n-1];
       const rsiSliceSma = rsi14arr2.slice(Math.max(0, n-14), n-1).filter(v => v != null);
       const rsiSmaT = rsiSliceSma.length ? rsiSliceSma.reduce((a,b)=>a+b,0) / rsiSliceSma.length : null;
@@ -1659,14 +1854,18 @@ async function runScan(){
     // ============================================
     // PASS 2: Fetch weekly chart for candidates only
     // ============================================
-    $('#progText').textContent = `🌊 PASS 2: ดึง weekly chart 5 ปี ของ ${candidatesP1.length} หุ้นที่ผ่าน filter...`;
+    // Timeframe branch: Daily mode uses 1y daily bars + analyzeDaily instead of 5y weekly
+    const isDailyMode = cfg.mode === 'trendline_d';
+    const tfLabel = isDailyMode ? 'daily chart 1y' : 'weekly chart 5y';
+    $('#progText').textContent = `🌊 PASS 2: ดึง ${tfLabel} ของ ${candidatesP1.length} หุ้นที่ผ่าน filter...`;
     const dataMap = {};
     let fetched = 0, failed = 0;
     const t1 = performance.now();
-    // Concurrency 15 — bumped from 8 since Worker handles it
     await concurrent(candidatesP1, 25, async(sym)=>{  // v3
       try{
-        dataMap[sym] = await fetchWeekly(sym, cfg.useCache);
+        dataMap[sym] = isDailyMode
+          ? await fetchDaily(sym, cfg.useCache)
+          : await fetchWeekly(sym, cfg.useCache);
         fetched++;
       }catch(e){
         dataMap[sym] = null;
@@ -1678,13 +1877,15 @@ async function runScan(){
       $('#progCount').textContent = `${done} / ${total}`;
       $('#progText').textContent = `📡 PASS 2: ${sym}`;
     });
-    saveCache();
-    log(`✓ PASS 2: Fetched ${fetched} weekly histories (${failed} failed) in ${((performance.now()-t1)/1000).toFixed(1)}s`);
+    if(isDailyMode) saveCacheDaily(); else saveCache();
+    log(`✓ PASS 2: Fetched ${fetched} ${tfLabel} histories (${failed} failed) in ${((performance.now()-t1)/1000).toFixed(1)}s`);
 
     // ============================================
     // Analyze
     // ============================================
-    $('#progText').textContent = `🧮 กำลังวิเคราะห์ multi-year base breakout...`;
+    $('#progText').textContent = isDailyMode
+      ? `🧮 กำลังสแกน Trendline Breakout (Daily) ...`
+      : `🧮 กำลังวิเคราะห์ multi-year base breakout...`;
     const results = [];
     let analyzed = 0;
     for(const sym of candidatesP1){
@@ -1692,7 +1893,7 @@ async function runScan(){
       const data = dataMap[sym];
       if(!data) continue;
       try{
-        const r = analyzeWeekly(sym, data, cfg);
+        const r = isDailyMode ? analyzeDaily(sym, data, cfg) : analyzeWeekly(sym, data, cfg);
         if(r) results.push(r);
       }catch{}
       if(analyzed % 50 === 0){
@@ -1736,6 +1937,9 @@ function filterResults(rs, cfg){
     arr = arr.filter(r => r.status === 'MEGA_WEEK');
   } else if(cfg.mode === 'trendline'){
     arr = arr.filter(r => r.status === 'TRENDLINE_BREAK' || r.status === 'MEGA_WEEK');
+  } else if(cfg.mode === 'trendline_d'){
+    // Daily mode only produces TRENDLINE_BREAK_D — show just those
+    arr = arr.filter(r => r.status === 'TRENDLINE_BREAK_D');
   } else if(cfg.mode === 'fresh'){
     arr = arr.filter(r => r.status === 'FRESH' || r.status === 'RECENT' || r.status === 'MEGA_WEEK' || r.status === 'TRENDLINE_BREAK');
   } else if(cfg.mode === 'setup'){
@@ -1783,14 +1987,14 @@ function renderResults(){
   $('#sB').textContent = all.filter(r=>r.tier==='B').length;
   $('#sFresh').textContent = all.filter(r=>r.status==='FRESH'||r.status==='RECENT').length;
   const mEl = $('#sMega'); if(mEl) mEl.textContent = all.filter(r=>r.status==='MEGA_WEEK').length;
-  const tEl = $('#sTrend'); if(tEl) tEl.textContent = all.filter(r=>r.status==='TRENDLINE_BREAK').length;
+  const tEl = $('#sTrend'); if(tEl) tEl.textContent = all.filter(r=>r.status==='TRENDLINE_BREAK' || r.status==='TRENDLINE_BREAK_D').length;
   $('#sSetup').textContent = all.filter(r=>r.status==='SETUP').length;
   const pbEl = $('#sPullback');
   if(pbEl) pbEl.textContent = all.filter(r=>r.status==='FIB_618'||r.status==='FIB_786').length;
   $('#sTotal').textContent = all.length;
 
   $('#resultsWrap').style.display='block';
-  const modeLabel = {premega:'🎯 Pre-Mega Watchlist (Top 200 ใกล้เงื่อนไข)',trendline:'⚡ Trendline Breakouts (BMRN-style descending-highs break)',mega:'🌊 Mega Week Breakouts',fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',pullback:'🎯 Fib Retracement (61.8% / 78.6%)',all:'📊 ทั้งหมด'}[cfg.mode];
+  const modeLabel = {premega:'🎯 Pre-Mega Watchlist (Top 200 ใกล้เงื่อนไข)',trendline:'⚡ Trendline Breakouts (Weekly · BMRN-style)',trendline_d:'⚡ Trendline Breakouts (Daily · BMRN-style day-1 break)',mega:'🌊 Mega Week Breakouts',fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',pullback:'🎯 Fib Retracement (61.8% / 78.6%)',all:'📊 ทั้งหมด'}[cfg.mode];
   $('#resHead').textContent = `🌊 ${modeLabel}`;
   $('#resMeta').textContent = `${filtered.length} / ${all.length} หุ้น · เรียงตาม ${state.sort.key} ${state.sort.dir<0?'↓':'↑'}`;
 
@@ -1809,7 +2013,8 @@ function renderResults(){
     const distCls = r.distance>=0 ? 'pos' : 'neg';
     let statusBadge;
     if(r.status==='MEGA_WEEK') statusBadge = `<span style="background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="${r.statusLabel}">🌊 MEGA WEEK</span>`;
-    else if(r.status==='TRENDLINE_BREAK') statusBadge = `<span style="background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="${r.statusLabel}">⚡ TRENDLINE</span>`;
+    else if(r.status==='TRENDLINE_BREAK') statusBadge = `<span style="background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="${r.statusLabel}">⚡ TRENDLINE·W</span>`;
+    else if(r.status==='TRENDLINE_BREAK_D') statusBadge = `<span style="background:linear-gradient(135deg,#ec4899,#f59e0b);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="${r.statusLabel}">⚡ TRENDLINE·D</span>`;
     else if(r.status==='WATCH'){
       const fmpTip = r.fundamentals ? ` · ${r.fundamentals.sector||'—'} · $${((r.fundamentals.marketCap||0)/1e9).toFixed(1)}B` : '';
       statusBadge = `<span style="background:rgba(14,165,233,.15);color:#0ea5e9;border:1px solid #0ea5e9;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="Proximity ${r.proximityScore||0}/100 · ย่อ ${r.pullbackPct?.toFixed(0)||'—'}%${fmpTip}">👁️ WATCH</span>`;
