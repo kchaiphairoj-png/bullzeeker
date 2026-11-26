@@ -337,6 +337,7 @@
         <label>โหมดการคัด</label>
         <select id="modeSel">
           <option value="premega" selected>🎯 Pre-Mega Watchlist (200 หุ้นที่ใกล้ Mega Week + พื้นฐานดี + ย่อลึก)</option>
+          <option value="trendline">⚡ Trendline Breakout (descending-highs break + EMA tight · BMRN-style)</option>
           <option value="mega">🌊 Mega Week Breakout (เกิดแล้ว · JFrog-style explosive week)</option>
           <option value="pullback">🎯 Fib Retracement 61.8% / 78.6% (classic reversal zones)</option>
           <option value="fresh">⚡ Fresh Breakout (1-8 สัปดาห์)</option>
@@ -384,6 +385,7 @@
     <div class="stat"><label>🥈 Tier B (65-79)</label><div class="v" id="sB">—</div></div>
     <div class="stat green"><label>🎯 Fib 61.8% / 78.6%</label><div class="v" id="sPullback">—</div></div>
     <div class="stat gold"><label>🌊 Mega Week</label><div class="v" id="sMega">—</div></div>
+    <div class="stat purple"><label>⚡ Trendline Break</label><div class="v" id="sTrend">—</div></div>
     <div class="stat gold"><label>⚡ Fresh Breakout</label><div class="v" id="sFresh">—</div></div>
     <div class="stat purple"><label>🎯 Setup ใกล้ Pivot</label><div class="v" id="sSetup">—</div></div>
     <div class="stat"><label>🔢 Scan ทั้งหมด</label><div class="v" id="sTotal">—</div></div>
@@ -1173,6 +1175,49 @@ function analyzeWeekly(symbol, data, cfg){
       status = 'MEGA_WEEK';
       statusLabel = `🌊 Mega Week · +${changePct.toFixed(0)}% · EMA tight ${emaCompression.toFixed(1)}% · vol ${breakoutVolRatio.toFixed(1)}×${rsiOk ? ` · RSI +${rsiThrust.toFixed(0)}` : ''}`;
     }
+    // === ⚡ TRENDLINE BREAKOUT DETECTION (BMRN-style — weaker/earlier variant) ===
+    // Fires only when Mega Week didn't fire. Adds a descending-highs requirement
+    // to catch the "breaking out of a declining trendline after multi-week downtrend"
+    // pattern, where body may be modest but context (bases + breakout close) is strong.
+    else if(aboveAllEmas && n >= 14){
+      // Descending highs over prior 10 weeks (n-11 .. n-1) — second half avg lower than first
+      const priorHighs = [];
+      for(let i = Math.max(1, n-11); i < n; i++){
+        if(data[i] && data[i].h != null) priorHighs.push(data[i].h);
+      }
+      let descendingHighs = false;
+      if(priorHighs.length >= 8){
+        const mid = Math.floor(priorHighs.length/2);
+        const firstAvg = priorHighs.slice(0, mid).reduce((a,b)=>a+b,0) / mid;
+        const secondAvg = priorHighs.slice(mid).reduce((a,b)=>a+b,0) / (priorHighs.length - mid);
+        descendingHighs = firstAvg > 0 && secondAvg < firstAvg * 0.98;  // ≥2% lower
+      }
+      // Breaking above the max CLOSE of prior 8 weeks (trendline break confirmed by close)
+      const priorCloses8 = closes.slice(Math.max(0, n-9), n-1);
+      const priorMaxClose = priorCloses8.length ? Math.max(...priorCloses8) : Infinity;
+      const brokeRange = closes[n-1] > priorMaxClose * 1.005;  // 0.5% buffer above range top
+      // Tighter EMA compression threshold — BMRN cluster is <2%; allow ≤6%
+      const emaTight = emaCompression != null && emaCompression <= 6;
+      // RSI bullish — > 50 AND above its own 14w SMA (cross-up)
+      const rsi14arr2 = rsi(closes, 14);
+      const rsiNowT = rsi14arr2[n-1];
+      const rsiSliceSma = rsi14arr2.slice(Math.max(0, n-14), n-1).filter(v => v != null);
+      const rsiSmaT = rsiSliceSma.length ? rsiSliceSma.reduce((a,b)=>a+b,0) / rsiSliceSma.length : null;
+      const rsiBullish = rsiNowT != null && rsiNowT > 50 && (rsiSmaT == null || rsiNowT > rsiSmaT);
+      // Modest body — ≥3% weekly gain, green
+      const minBody = changePct >= 3;
+
+      if(descendingHighs && brokeRange && emaTight && volOk && rsiBullish && greenCandle && minBody){
+        status = 'TRENDLINE_BREAK';
+        megaWeek = {   // reuse detail object so drawer can render it
+          changePct, emaCompression, breakoutVolRatio,
+          rsiNow: rsiNowT, rsiPrev: rsi14arr2[n-4], rsiThrust: (rsiNowT!=null && rsiSmaT!=null) ? rsiNowT - rsiSmaT : null,
+          ema10: ma10Now_, ema20: ma20Now_, ema50: ma50Now_,
+          isTrendlineBreak: true, priorMaxClose, breakPct: (closes[n-1]/priorMaxClose - 1) * 100
+        };
+        statusLabel = `⚡ Trendline Break · +${changePct.toFixed(1)}% · EMA ${emaCompression.toFixed(1)}% · vol ${breakoutVolRatio.toFixed(1)}× · broke ${((closes[n-1]/priorMaxClose - 1)*100).toFixed(1)}% above 8w top`;
+      }
+    }
   }
 
   // Still unclassified — try SETUP/BUILDING on recent base pivot
@@ -1386,6 +1431,7 @@ function analyzeWeekly(symbol, data, cfg){
   // 4. Breakout / Status quality (max 20)
   let breakoutScore = 0;
   if(status === 'MEGA_WEEK') breakoutScore = 20;      // explosive compression break
+  else if(status === 'TRENDLINE_BREAK') breakoutScore = 19;  // BMRN-style — earlier, lower body
   else if(status === 'FRESH') breakoutScore = 20;
   else if(status === 'RECENT') breakoutScore = 18;
   else if(status === 'FIB_786') breakoutScore = 20;   // deep Fib reversal — premium buy
@@ -1688,10 +1734,12 @@ function filterResults(rs, cfg){
   }
   if(cfg.mode === 'mega'){
     arr = arr.filter(r => r.status === 'MEGA_WEEK');
+  } else if(cfg.mode === 'trendline'){
+    arr = arr.filter(r => r.status === 'TRENDLINE_BREAK' || r.status === 'MEGA_WEEK');
   } else if(cfg.mode === 'fresh'){
-    arr = arr.filter(r => r.status === 'FRESH' || r.status === 'RECENT' || r.status === 'MEGA_WEEK');
+    arr = arr.filter(r => r.status === 'FRESH' || r.status === 'RECENT' || r.status === 'MEGA_WEEK' || r.status === 'TRENDLINE_BREAK');
   } else if(cfg.mode === 'setup'){
-    arr = arr.filter(r => r.status === 'SETUP' || r.status === 'FRESH' || r.status === 'RECENT' || r.status === 'MEGA_WEEK');
+    arr = arr.filter(r => r.status === 'SETUP' || r.status === 'FRESH' || r.status === 'RECENT' || r.status === 'MEGA_WEEK' || r.status === 'TRENDLINE_BREAK');
   } else if(cfg.mode === 'pullback'){
     arr = arr.filter(r => r.status === 'FIB_618' || r.status === 'FIB_786');
   }
@@ -1735,13 +1783,14 @@ function renderResults(){
   $('#sB').textContent = all.filter(r=>r.tier==='B').length;
   $('#sFresh').textContent = all.filter(r=>r.status==='FRESH'||r.status==='RECENT').length;
   const mEl = $('#sMega'); if(mEl) mEl.textContent = all.filter(r=>r.status==='MEGA_WEEK').length;
+  const tEl = $('#sTrend'); if(tEl) tEl.textContent = all.filter(r=>r.status==='TRENDLINE_BREAK').length;
   $('#sSetup').textContent = all.filter(r=>r.status==='SETUP').length;
   const pbEl = $('#sPullback');
   if(pbEl) pbEl.textContent = all.filter(r=>r.status==='FIB_618'||r.status==='FIB_786').length;
   $('#sTotal').textContent = all.length;
 
   $('#resultsWrap').style.display='block';
-  const modeLabel = {premega:'🎯 Pre-Mega Watchlist (Top 200 ใกล้เงื่อนไข)',mega:'🌊 Mega Week Breakouts',fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',pullback:'🎯 Fib Retracement (61.8% / 78.6%)',all:'📊 ทั้งหมด'}[cfg.mode];
+  const modeLabel = {premega:'🎯 Pre-Mega Watchlist (Top 200 ใกล้เงื่อนไข)',trendline:'⚡ Trendline Breakouts (BMRN-style descending-highs break)',mega:'🌊 Mega Week Breakouts',fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',pullback:'🎯 Fib Retracement (61.8% / 78.6%)',all:'📊 ทั้งหมด'}[cfg.mode];
   $('#resHead').textContent = `🌊 ${modeLabel}`;
   $('#resMeta').textContent = `${filtered.length} / ${all.length} หุ้น · เรียงตาม ${state.sort.key} ${state.sort.dir<0?'↓':'↑'}`;
 
@@ -1760,6 +1809,7 @@ function renderResults(){
     const distCls = r.distance>=0 ? 'pos' : 'neg';
     let statusBadge;
     if(r.status==='MEGA_WEEK') statusBadge = `<span style="background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="${r.statusLabel}">🌊 MEGA WEEK</span>`;
+    else if(r.status==='TRENDLINE_BREAK') statusBadge = `<span style="background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="${r.statusLabel}">⚡ TRENDLINE</span>`;
     else if(r.status==='WATCH'){
       const fmpTip = r.fundamentals ? ` · ${r.fundamentals.sector||'—'} · $${((r.fundamentals.marketCap||0)/1e9).toFixed(1)}B` : '';
       statusBadge = `<span style="background:rgba(14,165,233,.15);color:#0ea5e9;border:1px solid #0ea5e9;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="Proximity ${r.proximityScore||0}/100 · ย่อ ${r.pullbackPct?.toFixed(0)||'—'}%${fmpTip}">👁️ WATCH</span>`;
