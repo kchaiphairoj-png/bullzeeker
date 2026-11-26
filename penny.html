@@ -298,8 +298,8 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
             <option value="spac">SPAC / Post-merger</option>
           </select>
         </div>
-        <div class="ctrl"><label>Max Price <span class="v" id="maxPriceV">$15</span></label><input type="range" id="maxPrice" min="1" max="20" step="0.5" value="15" /></div>
-        <div class="ctrl"><label>Min Price <span class="v" id="minPriceV">$0.5</span></label><input type="range" id="minPrice" min="0.1" max="5" step="0.1" value="0.5" /></div>
+        <div class="ctrl"><label>Max Price <span class="v" id="maxPriceV">$20</span></label><input type="range" id="maxPrice" min="1" max="30" step="0.5" value="20" title="Spec: $2-$20 required, $2-$10 ideal" /></div>
+        <div class="ctrl"><label>Min Price <span class="v" id="minPriceV">$2</span></label><input type="range" id="minPrice" min="0.1" max="10" step="0.1" value="2" title="Spec: $2 minimum" /></div>
         <div class="ctrl"><label>Min $-Vol (daily) <span class="v" id="minDvolV">$200K</span></label><input type="range" id="minDvol" min="100" max="10000" step="100" value="200" /></div>
         <div class="ctrl"><label>Min Volume Surge <span class="v" id="minSurgeV">1.5×</span></label><input type="range" id="minSurge" min="1" max="10" step="0.25" value="1.5" /></div>
         <div class="ctrl"><label>Min % Change Today <span class="v" id="minChgV">-5%</span></label><input type="range" id="minChg" min="-20" max="50" step="1" value="-5" /></div>
@@ -321,13 +321,16 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
         <div class="ctrl"><label>💪 RS vs SPY (3M) ≥ <span class="v" id="minRsV">off</span></label><input type="range" id="minRs" min="-30" max="100" step="5" value="-30" /></div>
         <div class="ctrl"><label>🛡️ Max drop from 5d high <span class="v" id="maxDropV">30%</span></label><input type="range" id="maxDrop" min="5" max="60" step="5" value="30" /></div>
         <div class="ctrl"><label>📦 Min today vol (shares) <span class="v" id="minVolSharesV">200K</span></label><input type="range" id="minVolShares" min="0" max="5000" step="100" value="200" /></div>
+        <div class="ctrl"><label>🪽 Max float (ล้านหุ้น) <span class="v" id="maxFloatV">off</span></label><input type="range" id="maxFloat" min="0" max="500" step="1" value="0" title="หุ้น float ต่ำ = ปั่นง่าย · spec: ≤20M required, ≤5M priority, ≤1M highest" /></div>
+        <div class="ctrl"><label>🔄 Min float rotation (x) <span class="v" id="minFloatRotV">off</span></label><input type="range" id="minFloatRot" min="0" max="50" step="1" value="0" title="Float rotation = daily vol / float · spec: 5x good, 10x strong, 20x+ extreme (demand absorbs float N times)" /></div>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;padding:8px 10px;background:var(--bg3);border-radius:8px;font-size:11px">
         <span style="color:var(--muted);font-weight:700">⚡ Preset:</span>
         <button class="btn-chip" onclick="applyScanPreset('easy')" title="หย่อน — จับหุ้นเยอะที่สุด">🟢 Easy</button>
         <button class="btn-chip" onclick="applyScanPreset('normal')" title="สมดุล — แนะนำ (default)">🟡 Normal</button>
         <button class="btn-chip" onclick="applyScanPreset('strict')" title="เข้มงวด — เฉพาะ pump จริง">🔴 Strict</button>
-        <button class="btn-chip" onclick="applyScanPreset('mega')" title="หา mega pump เท่านั้น (vol 5×+)">🚀 Mega Pump</button>
+        <button class="btn-chip" onclick="applyScanPreset('mega')" title="Mega pump: vol 5×+ · float ≤5M">🚀 Mega Pump</button>
+        <button class="btn-chip" onclick="applyScanPreset('imbalance')" style="background:linear-gradient(135deg,#ef4444,#f59e0b);color:#fff;border:0" title="Demand-Supply Imbalance (low-float squeeze spec): $2-$10 · chg +10% · RVOL 5× · gap +2% · float ≤5M · rotation ≥5×">🎯 Imbalance</button>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <button class="btn-primary" id="scanMarketBtn" onclick="runMarketScan()">🌊 Scan Market Live</button>
@@ -365,8 +368,10 @@ gtag('js',new Date());gtag('config','G-D593QC1NXE');
             <th data-sort="price" data-mode="scan">Price</th>
             <th data-sort="chgPct" data-mode="scan">Chg %</th>
             <th data-sort="gapPct" data-mode="scan" class="col-mobile-hide">Gap %</th>
-            <th data-sort="volSurge" data-mode="scan">Vol/20d</th>
+            <th data-sort="volSurge" data-mode="scan">RVOL</th>
             <th data-sort="volSurge50" data-mode="scan" class="col-mobile-hide">Vol/50d</th>
+            <th data-sort="floatShares" data-mode="scan" title="Free float (shares)">🪽 Float</th>
+            <th data-sort="floatRotation" data-mode="scan" title="Float rotation = daily vol / float">🔄 Rot</th>
             <th data-sort="consecGreen" data-mode="scan" class="col-mobile-hide">🟢 Streak</th>
             <th data-sort="distFromSma20Pct" data-mode="scan" class="col-mobile-hide">vs SMA20</th>
             <th data-sort="rsVsSpy60d" data-mode="scan" class="col-mobile-hide">RS vs SPY</th>
@@ -788,7 +793,66 @@ function getScanSettings(){
     minRs: +$('#minRs').value,                // RS vs SPY 60d (-30 = off)
     maxDrop: +$('#maxDrop').value,            // max % down from 5d high
     minVolShares: +$('#minVolShares').value * 1000,   // slider shown in K shares
+    maxFloat: +$('#maxFloat').value * 1e6,    // slider shown in M shares (0 = off)
+    minFloatRot: +$('#minFloatRot').value,    // float rotation (volume / float), 0 = off
   };
+}
+
+/* ---------- FLOAT SHARES ENRICHMENT (lazy, cached 7d) ----------
+   Yahoo quoteSummary returns floatShares — only fetched for candidates that
+   pass OTHER filters first, to save API calls. Float changes slowly so 7-day
+   cache is safe. */
+const FLOAT_CACHE_KEY = 'penny_float_cache_v1';
+const FLOAT_TTL = 1000 * 60 * 60 * 24 * 7;   // 7 days
+let FLOAT_CACHE = {};
+try { FLOAT_CACHE = JSON.parse(localStorage.getItem(FLOAT_CACHE_KEY) || '{}'); } catch {}
+function saveFloatCache(){
+  try { localStorage.setItem(FLOAT_CACHE_KEY, JSON.stringify(FLOAT_CACHE)); } catch {}
+}
+async function fetchFloatShares(symbol){
+  const now = Date.now();
+  const cached = FLOAT_CACHE[symbol];
+  if(cached && (now - cached.ts) < FLOAT_TTL) return cached.v;
+  try{
+    const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(symbol)}?modules=defaultKeyStatistics`;
+    const txt = await tryProxies(url);
+    const j = JSON.parse(txt);
+    const ks = j?.quoteSummary?.result?.[0]?.defaultKeyStatistics;
+    const fs = ks?.floatShares?.raw ?? ks?.sharesOutstanding?.raw ?? null;
+    FLOAT_CACHE[symbol] = { v: fs, ts: now };
+    return fs;
+  }catch{
+    FLOAT_CACHE[symbol] = { v: null, ts: now };
+    return null;
+  }
+}
+async function enrichResultsWithFloat(results, onProgress){
+  const need = results.filter(r => r && r.floatShares === undefined);
+  if(!need.length){
+    // Even without fetching, make sure rotation is computed from cached float
+    results.forEach(r => {
+      if(r.floatShares != null && r.floatShares > 0 && r.volume != null){
+        r.floatRotation = r.volume / r.floatShares;
+      }
+    });
+    return;
+  }
+  let done = 0;
+  await concurrent(need, 15, async (r) => {
+    r.floatShares = await fetchFloatShares(r.ticker);
+    if(r.floatShares != null && r.floatShares > 0 && r.volume != null){
+      r.floatRotation = r.volume / r.floatShares;
+    }
+    done++;
+    onProgress?.(done, need.length);
+  });
+  // Compute rotation for ones that were already cached
+  results.forEach(r => {
+    if(r.floatRotation == null && r.floatShares != null && r.floatShares > 0 && r.volume != null){
+      r.floatRotation = r.volume / r.floatShares;
+    }
+  });
+  saveFloatCache();
 }
 
 async function runMarketScan(){
@@ -829,6 +893,19 @@ async function runMarketScan(){
       r.rsVsSpy60d = (r.return60d != null && spyRet != null) ? (r.return60d - spyRet) : null;
     });
 
+    // Lazy-enrich floatShares ONLY for candidates passing OTHER filters (saves API calls).
+    // Triggered by maxFloat OR minFloatRot filters (both need float data).
+    if(s.maxFloat > 0 || s.minFloatRot > 0){
+      const preCandidates = applyScanFilters(results, {skipFloat:true});
+      if(preCandidates.length){
+        $('#scanText').textContent = `🪽 Fetching float for ${preCandidates.length} candidates...`;
+        await enrichResultsWithFloat(preCandidates, (d, t) => {
+          $('#scanFill').style.width = ((d/t)*100).toFixed(1) + '%';
+          $('#scanText').textContent = `🪽 float ${d}/${t}`;
+        });
+      }
+    }
+
     stateScan.results = results;
     stateScan.lastScanAt = Date.now();
     renderScan();
@@ -840,7 +917,7 @@ async function runMarketScan(){
   }
 }
 
-function applyScanFilters(results){
+function applyScanFilters(results, opts = {}){
   const s = getScanSettings();
   return results.filter(r => {
     if(r.price == null) return false;
@@ -864,6 +941,15 @@ function applyScanFilters(results){
     // Anti-pump: if we have dist from recent 5d high and it dropped more than max, reject
     if(r.distFromRecent5dHigh != null && r.distFromRecent5dHigh < -s.maxDrop) return false;
     if(s.minVolShares > 0 && (r.volume == null || r.volume < s.minVolShares)) return false;
+    // Float — only applied if slider > 0 AND we have data for this ticker.
+    // If opts.skipFloat, let candidates through so we can enrich them next.
+    if(!opts.skipFloat && s.maxFloat > 0){
+      if(r.floatShares == null || r.floatShares > s.maxFloat) return false;
+    }
+    // Float rotation — volume / floatShares. Needs both to be present.
+    if(!opts.skipFloat && s.minFloatRot > 0){
+      if(r.floatRotation == null || r.floatRotation < s.minFloatRot) return false;
+    }
     return true;
   });
 }
@@ -906,9 +992,40 @@ function renderScan(){
     const hint = total > 0
       ? `<div style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.6">Scan ได้ <b style="color:var(--text)">${total}</b> หุ้น แต่ไม่มีตัวไหนผ่านทุก filter<br/>👉 ลองกด <b style="color:var(--pink)">🟢 Easy</b> preset ข้างบน หรือลด Min Volume Surge / Min % Change</div>`
       : '<div style="margin-top:8px;font-size:12px;color:var(--muted)">กดปุ่ม <b>🌊 Scan Market Live</b> เพื่อเริ่มสแกน</div>';
-    $('#scanBody').innerHTML = `<tr><td colspan="12"><div class="empty"><div class="icon">🌊</div>No tickers match the filters${hint}</div></td></tr>`;
+    $('#scanBody').innerHTML = `<tr><td colspan="14"><div class="empty"><div class="icon">🌊</div>No tickers match the filters${hint}</div></td></tr>`;
     return;
   }
+
+  // Identify top-5 LEADERS by today's % gain (regardless of current sort) per spec
+  const leaders = new Set(
+    [...filtered].filter(r => (r.chgPct||0) > 0)
+      .sort((a,b) => (b.chgPct||0) - (a.chgPct||0))
+      .slice(0, 5)
+      .map(r => r.ticker)
+  );
+
+  const fmtFloat = (n) => {
+    if(n == null) return '<span style="color:var(--muted)">—</span>';
+    if(n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+    if(n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+    if(n >= 1e3) return (n/1e3).toFixed(0) + 'K';
+    return String(n);
+  };
+  const fmtRot = (r) => {
+    if(r == null) return '<span style="color:var(--muted)">—</span>';
+    if(r >= 20) return `<span style="color:#ef4444;font-weight:800">${r.toFixed(1)}×🔥</span>`;
+    if(r >= 10) return `<span style="color:#f59e0b;font-weight:800">${r.toFixed(1)}×</span>`;
+    if(r >= 5)  return `<span style="color:#fbbf24;font-weight:700">${r.toFixed(1)}×</span>`;
+    return r.toFixed(2) + '×';
+  };
+  const floatBadge = (n) => {
+    if(n == null) return '<span style="color:var(--muted)">—</span>';
+    const v = fmtFloat(n);
+    if(n < 1e6)  return `<span style="color:#ef4444;font-weight:800">${v}🪽</span>`;      // <1M = highest priority
+    if(n < 5e6)  return `<span style="color:#f59e0b;font-weight:800">${v}</span>`;        // <5M = high priority
+    if(n < 20e6) return `<span style="color:#fbbf24;font-weight:700">${v}</span>`;        // <20M = required
+    return `<span style="color:var(--muted)">${v}</span>`;
+  };
 
   $('#scanBody').innerHTML = filtered.slice(0, 200).map(r => {
     const vsBadge = r.volSurge >= 5 ? `<span class="vol-hot">${r.volSurge.toFixed(1)}×</span>` : r.volSurge >= 2 ? `<span class="vol-warm">${r.volSurge.toFixed(1)}×</span>` : (r.volSurge?.toFixed(1) + '×' || '—');
@@ -921,13 +1038,18 @@ function renderScan(){
     const rsCell = r.rsVsSpy60d != null ? `<span class="${rsCls}">${r.rsVsSpy60d>=0?'+':''}${r.rsVsSpy60d.toFixed(0)}%</span>` : '—';
     const catBadge = r.catalyst ? `<span style="color:var(--pink);font-weight:800;font-size:11px">🚀 ${r.catalyst.catalyst_date}</span>` : '<span style="color:var(--muted);font-size:10px">—</span>';
     const hot = (r.volSurge||0) >= 5 || (r.volSurge50||0) >= 3 ? 'hot' : '';
-    return `<tr class="${hot}" onclick="openDrawerScan('${r.ticker}')">
-      <td class="left"><div class="sym">${r.ticker}</div></td>
+    const isLeader = leaders.has(r.ticker);
+    const leaderBadge = isLeader ? ` <span style="color:#fbbf24;font-size:10px;font-weight:800" title="Top-5 % gainer among filtered results">👑</span>` : '';
+    const rowStyle = isLeader ? 'box-shadow:inset 3px 0 0 #fbbf24' : '';
+    return `<tr class="${hot}" style="${rowStyle}" onclick="openDrawerScan('${r.ticker}')">
+      <td class="left"><div class="sym">${r.ticker}${leaderBadge}</div></td>
       <td>${fmtPrice(r.price)}</td>
       <td class="${chgCls}">${fmtPct(r.chgPct)}</td>
       <td class="col-mobile-hide ${gapCls}">${r.gapPct != null ? fmtPct(r.gapPct) : '—'}</td>
       <td>${vsBadge}</td>
       <td class="col-mobile-hide">${v50}</td>
+      <td>${floatBadge(r.floatShares)}</td>
+      <td>${fmtRot(r.floatRotation)}</td>
       <td class="col-mobile-hide">${streak}</td>
       <td class="col-mobile-hide">${vsSma20}</td>
       <td class="col-mobile-hide">${rsCell}</td>
@@ -935,7 +1057,7 @@ function renderScan(){
       <td class="col-mobile-hide ${r.distFrom52wHigh>=-10?'pos':'neg'}">${fmtPct(r.distFrom52wHigh)}</td>
       <td class="col-mobile-hide">${catBadge}</td>
     </tr>`;
-  }).join('') + (filtered.length > 200 ? `<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:12px">Showing top 200 of ${filtered.length} — tighten filters to see more</td></tr>` : '');
+  }).join('') + (filtered.length > 200 ? `<tr><td colspan="14" style="text-align:center;color:var(--muted);padding:12px">Showing top 200 of ${filtered.length} — tighten filters to see more</td></tr>` : '');
 }
 
 function openDrawerScan(ticker){
@@ -956,11 +1078,17 @@ function openDrawerScan(ticker){
       <div style="color:var(--muted);margin-top:6px">Day ${fmtPrice(r.dayLow)}–${fmtPrice(r.dayHigh)} · 52w ${fmtPrice(r.yearLow)}–${fmtPrice(r.yearHigh)}</div>
       <div style="color:var(--muted);margin-top:2px">Fetched: ${new Date(r.fetchedAt).toLocaleString()}</div>
     </div>
+    <h4 style="font-size:13px;color:var(--cyan);margin:14px 0 8px">🪽 Float & Supply-Demand</h4>
+    ${metric('Free Float', r.floatShares != null ? (r.floatShares/1e6).toFixed(2)+'M shares' : '— (not fetched)', 'spec: ≤20M required, ≤5M priority, ≤1M highest')}
+    ${metric('Float Rotation (vol/float)', r.floatRotation != null ? r.floatRotation.toFixed(2)+'×' : '—', 'spec: ≥5× good · ≥10× strong · ≥20× extreme squeeze')}
+    ${metric('Today Volume', r.volume != null ? fmtK(r.volume)+' shares' : '—')}
+
     <h4 style="font-size:13px;color:var(--cyan);margin:14px 0 8px">📊 Volume & Momentum</h4>
-    ${metric('Vol Surge vs 20d avg', (r.volSurge?.toFixed(2)+'×') || '—', '≥2× = elevated, ≥5× = hot')}
+    ${metric('RVOL (vs 20d avg)', (r.volSurge?.toFixed(2)+'×') || '—', 'spec: ≥5× required, 10-20× ideal')}
     ${metric('Vol Surge vs 50d avg', r.volSurge50 != null ? r.volSurge50.toFixed(2)+'×' : '—', '≥1.5× = sustained')}
     ${metric('Vol Surge vs 200d avg', r.volSurge200 != null ? r.volSurge200.toFixed(2)+'×' : '—', 'long-horizon context')}
-    ${metric('Today Gap %', r.gapPct != null ? fmtPct(r.gapPct) : '—', 'open vs prior close')}
+    ${metric('Today Gap %', r.gapPct != null ? fmtPct(r.gapPct) : '—', 'spec: ≥+2%')}
+    ${metric('Today Change %', fmtPct(r.chgPct), 'spec: ≥+10% required, +20-100% ideal')}
     ${metric('Consecutive Green Days', r.consecGreen != null ? r.consecGreen : '—', '≥3 = momentum')}
     ${metric('Avg Daily $-Vol (20d)', fmtK(r.avgDollarVol), 'liquidity proxy')}
 
@@ -995,13 +1123,15 @@ function openDrawerScan(ticker){
    Normal = default. Easy = catches more candidates. Strict/Mega = only strongest signals. */
 const SCAN_PRESETS = {
   easy: {    // ให้ผ่านง่าย — เห็นหุ้นเยอะ เหมาะกับการสำรวจตลาด
-    minPrice: 0.5, maxPrice: 15, minDvol: 100, minSurge: 1,     minChg: -10, minVolShares: 50,  maxDrop: 50, minV50: 1,   minGap: 0,  minGreen: 0,  minRs: -30, maFilter: 'off' },
+    minPrice: 0.5, maxPrice: 20, minDvol: 100, minSurge: 1,     minChg: -10, minVolShares: 50,  maxDrop: 50, minV50: 1,   minGap: 0,  minGreen: 0,  minRs: -30, maFilter: 'off',       maxFloat: 0,  minFloatRot: 0 },
   normal: {  // ค่าแนะนำ (default)
-    minPrice: 0.5, maxPrice: 15, minDvol: 200, minSurge: 1.5,   minChg: -5,  minVolShares: 200, maxDrop: 30, minV50: 1,   minGap: 0,  minGreen: 0,  minRs: -30, maFilter: 'off' },
-  strict: {  // เฉพาะหุ้นที่ pump ชัดเจน + sustain
-    minPrice: 0.5, maxPrice: 10, minDvol: 500, minSurge: 2.5,   minChg: 3,   minVolShares: 500, maxDrop: 20, minV50: 1.5, minGap: 2,  minGreen: 1,  minRs: 0,   maFilter: 'sma20' },
-  mega: {    // Mega pump เท่านั้น (vol 5×+ + chg 15%+)
-    minPrice: 0.5, maxPrice: 10, minDvol: 500, minSurge: 5,     minChg: 15,  minVolShares: 500, maxDrop: 15, minV50: 2,   minGap: 5,  minGreen: 0,  minRs: 10,  maFilter: 'sma20_50' },
+    minPrice: 2,   maxPrice: 20, minDvol: 200, minSurge: 1.5,   minChg: -5,  minVolShares: 200, maxDrop: 30, minV50: 1,   minGap: 0,  minGreen: 0,  minRs: -30, maFilter: 'off',       maxFloat: 0,  minFloatRot: 0 },
+  strict: {  // เฉพาะหุ้นที่ pump ชัดเจน + sustain · low-float bias
+    minPrice: 2,   maxPrice: 10, minDvol: 500, minSurge: 2.5,   minChg: 3,   minVolShares: 500, maxDrop: 20, minV50: 1.5, minGap: 2,  minGreen: 1,  minRs: 0,   maFilter: 'sma20',     maxFloat: 50, minFloatRot: 1 },
+  mega: {    // Mega pump: vol 5×+ · chg 15%+ · float ≤5M (highest-priority per spec)
+    minPrice: 2,   maxPrice: 10, minDvol: 500, minSurge: 5,     minChg: 15,  minVolShares: 500, maxDrop: 15, minV50: 2,   minGap: 5,  minGreen: 0,  minRs: 10,  maFilter: 'sma20_50',  maxFloat: 5,  minFloatRot: 5 },
+  imbalance: { // 🎯 Demand-Supply Imbalance spec: low-float squeeze candidates
+    minPrice: 2,   maxPrice: 10, minDvol: 300, minSurge: 5,     minChg: 10,  minVolShares: 300, maxDrop: 20, minV50: 3,   minGap: 2,  minGreen: 0,  minRs: 0,   maFilter: 'off',       maxFloat: 5,  minFloatRot: 5 },
 };
 function applyScanPreset(name){
   const p = SCAN_PRESETS[name];
@@ -1012,7 +1142,14 @@ function applyScanPreset(name){
     el.value = v;
     el.dispatchEvent(new Event(el.tagName === 'SELECT' ? 'change' : 'input', {bubbles:true}));
   });
-  toast(`⚡ Preset: ${name.toUpperCase()}${name==='easy' ? ' — ดูหุ้นเยอะที่สุด' : name==='strict' ? ' — เฉพาะ pump ชัดเจน' : name==='mega' ? ' — mega pump เท่านั้น' : ' — ค่าแนะนำ'}`, 'ok');
+  const hint = {
+    easy: ' — ดูหุ้นเยอะที่สุด',
+    normal: ' — ค่าแนะนำ',
+    strict: ' — เฉพาะ pump ชัดเจน + low float',
+    mega: ' — mega pump + float ≤5M',
+    imbalance: ' — 🎯 low-float squeeze spec'
+  }[name] || '';
+  toast(`⚡ Preset: ${name.toUpperCase()}${hint}`, 'ok');
   if(stateScan.results.length) renderScan();   // live re-filter
 }
 
@@ -1137,7 +1274,7 @@ $('#minScore').addEventListener('change', () => { if(stateCurated.results.length
   });
 });
 // Scan sliders (Priority 1+2)
-['minV50','minV200','minGap','minGreen','minRs','maxDrop','minVolShares'].forEach(id => {
+['minV50','minV200','minGap','minGreen','minRs','maxDrop','minVolShares','maxFloat','minFloatRot'].forEach(id => {
   const el = $('#'+id);
   el.addEventListener('input', () => {
     const map = {
@@ -1148,6 +1285,8 @@ $('#minScore').addEventListener('change', () => { if(stateCurated.results.length
       minRs:['minRsV', v => +v <= -30 ? 'off' : (v>=0?'+':'')+v+'%'],
       maxDrop:['maxDropV', v => v+'%'],
       minVolShares:['minVolSharesV', v => +v <= 0 ? 'off' : v+'K'],
+      maxFloat:['maxFloatV', v => +v <= 0 ? 'off' : '≤'+v+'M'],
+      minFloatRot:['minFloatRotV', v => +v <= 0 ? 'off' : '≥'+v+'×'],
     };
     const [t, f] = map[id]; $('#'+t).textContent = f(el.value);
     if(stateScan.results.length) renderScan();
