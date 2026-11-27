@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-26T03:42:24.023704",
-  "date": "2026-11-26",
+  "generated_at": "2026-11-27T03:43:42.492592",
+  "date": "2026-11-27",
   "universe": {
     "name": "S&P 500",
     "size": 503,
@@ -50,8 +50,8 @@
             "close": 125.6,
             "sma200": 104.28,
             "high52": 126.28,
-            "vol": 16344400.0,
-            "vol_avg": 9387136.0,
+            "vol": 16355200.0,
+            "vol_avg": 9387352.0,
             "pct_from_high52": -0.54,
             "pct_above_sma200": 20.44,
             "vol_ratio": 1.74
@@ -232,8 +232,8 @@
             "pct_from_pivot": 1.81,
             "pct_from_52wh": -0.54,
             "above_52wl_pct": 36.24,
-            "vol": 16344400.0,
-            "vol_avg": 9387136.0,
+            "vol": 16355200.0,
+            "vol_avg": 9387352.0,
             "vol_ratio": 1.74
           },
           "conditions": {
