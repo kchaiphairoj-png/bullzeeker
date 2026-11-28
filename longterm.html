@@ -339,6 +339,9 @@
           <option value="premega" selected>🎯 Pre-Mega Watchlist (200 หุ้นที่ใกล้ Mega Week + พื้นฐานดี + ย่อลึก)</option>
           <option value="trendline">⚡ Trendline Breakout — Weekly (descending-highs break + EMA tight · BMRN-style)</option>
           <option value="trendline_d">⚡ Trendline Breakout — Daily (เจอเร็วกว่า · BMRN-style day-1 breakout)</option>
+          <option value="macd_d">📊 MACD Cross-Up — Daily (classic 12/26/9 bullish cross)</option>
+          <option value="macd_w">📊 MACD Cross-Up — Weekly (swing-trade timeframe)</option>
+          <option value="macd_m">📊 MACD Cross-Up — Monthly (long-term reversal signal)</option>
           <option value="mega">🌊 Mega Week Breakout (เกิดแล้ว · JFrog-style explosive week)</option>
           <option value="pullback">🎯 Fib Retracement 61.8% / 78.6% (classic reversal zones)</option>
           <option value="fresh">⚡ Fresh Breakout (1-8 สัปดาห์)</option>
@@ -387,6 +390,7 @@
     <div class="stat green"><label>🎯 Fib 61.8% / 78.6%</label><div class="v" id="sPullback">—</div></div>
     <div class="stat gold"><label>🌊 Mega Week</label><div class="v" id="sMega">—</div></div>
     <div class="stat purple"><label>⚡ Trendline Break</label><div class="v" id="sTrend">—</div></div>
+    <div class="stat purple"><label>📊 MACD Cross</label><div class="v" id="sMacd">—</div></div>
     <div class="stat gold"><label>⚡ Fresh Breakout</label><div class="v" id="sFresh">—</div></div>
     <div class="stat purple"><label>🎯 Setup ใกล้ Pivot</label><div class="v" id="sSetup">—</div></div>
     <div class="stat"><label>🔢 Scan ทั้งหมด</label><div class="v" id="sTotal">—</div></div>
@@ -740,6 +744,23 @@ function rsi(arr, p=14){
   return 100 - 100/(1 + avgG/avgL);
 }
 
+// MACD(12, 26, 9) as series — returns {macd, signal, histogram} each of length arr.length
+function macdSeries(closes, fast=12, slow=26, sig=9){
+  const emaF = ema(closes, fast);
+  const emaS = ema(closes, slow);
+  const macd = closes.map((_, i) => (emaF[i] != null && emaS[i] != null) ? emaF[i] - emaS[i] : null);
+  // Signal line = EMA(sig) of MACD, computed only on the valid (non-null) prefix
+  const firstIdx = macd.findIndex(v => v != null);
+  const signal = new Array(closes.length).fill(null);
+  if(firstIdx !== -1){
+    const compact = macd.slice(firstIdx);
+    const sigArr = ema(compact, sig);
+    sigArr.forEach((v, i) => { signal[firstIdx + i] = v; });
+  }
+  const histogram = macd.map((m, i) => (m != null && signal[i] != null) ? m - signal[i] : null);
+  return { macd, signal, histogram };
+}
+
 // RSI as a series (value at each bar index). null for indices < p.
 function rsiSeries(arr, p=14){
   const out = new Array(arr.length).fill(null);
@@ -837,7 +858,8 @@ function updateCacheInfo(){
 function clearCache(){
   CACHE = {}; localStorage.removeItem(CACHE_KEY);
   CACHE_DAILY = {}; localStorage.removeItem(CACHE_DAILY_KEY);
-  updateCacheInfo(); toast('🗑️ ล้าง cache แล้ว (weekly + daily)');
+  CACHE_MONTHLY = {}; localStorage.removeItem(CACHE_MONTHLY_KEY);
+  updateCacheInfo(); toast('🗑️ ล้าง cache แล้ว (weekly + daily + monthly)');
 }
 
 /* ---------- FMP FUNDAMENTALS (bulk screener, cached 24h, no key on client) ----------
@@ -1104,6 +1126,149 @@ function analyzeDaily(symbol, data, cfg){
       ema10: e10, ema20: e20, ema50: e50,
       isTrendlineBreak: true, isDaily: true,
       priorMaxClose, breakPct
+    },
+    proximityScore: 0, pullbackPct: null, qualityOk: true,
+    fundamentals: null, fundamentalScore: 0,
+    data
+  };
+}
+
+/* Monthly cache — separate keyspace, 1 week TTL (monthly data is slow-moving) */
+const CACHE_MONTHLY_KEY = 'longterm_cache_monthly_v1';
+const CACHE_MONTHLY_TTL = 1000 * 60 * 60 * 24 * 7;  // 7 days
+let CACHE_MONTHLY = {};
+try { CACHE_MONTHLY = JSON.parse(localStorage.getItem(CACHE_MONTHLY_KEY) || '{}'); } catch {}
+function saveCacheMonthly(){
+  try { localStorage.setItem(CACHE_MONTHLY_KEY, JSON.stringify(CACHE_MONTHLY)); }
+  catch(e){
+    const entries = Object.entries(CACHE_MONTHLY).sort((a,b) => (a[1].ts||0) - (b[1].ts||0));
+    CACHE_MONTHLY = Object.fromEntries(entries.slice(Math.floor(entries.length/2)));
+    try { localStorage.setItem(CACHE_MONTHLY_KEY, JSON.stringify(CACHE_MONTHLY)); }catch{}
+  }
+}
+
+async function fetchMonthly(symbol, useCache=true){
+  const now = Date.now();
+  if(useCache && CACHE_MONTHLY[symbol] && (now-CACHE_MONTHLY[symbol].ts)<CACHE_MONTHLY_TTL) return CACHE_MONTHLY[symbol].data;
+  // 10y monthly = ~120 bars (plenty for EMA 26 + room for base detection)
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=10y&interval=1mo`;
+  let lastErr;
+  for(let i = 0; i < PROXIES.length; i++){
+    try{
+      const r = await fetch(PROXIES[i](url), {cache:'no-store'});
+      if(i !== 0 && !r.ok) throw new Error('HTTP '+r.status);
+      const txt = await r.text();
+      if(!txt || txt.length < 10) throw new Error('empty');
+      const j = JSON.parse(txt);
+      const res = j?.chart?.result?.[0];
+      if(!res) throw new Error('no chart (delisted?)');
+      const ts = res.timestamp || [];
+      const q = res.indicators?.quote?.[0] || {};
+      const data = ts.map((t,i)=>({t, o:q.open?.[i], h:q.high?.[i], l:q.low?.[i], c:q.close?.[i], v:q.volume?.[i]}))
+                     .filter(d=>d.c!=null && d.h!=null && d.l!=null);
+      if(data.length < 40) throw new Error('insufficient months ('+data.length+')');
+      CACHE_MONTHLY[symbol] = {ts: now, data};
+      return data;
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error('fetch failed');
+}
+
+/* ---------- ANALYSIS: MACD Cross-Up ----------
+   Detects a bullish MACD(12, 26, 9) crossover on the current bar.
+   Works across timeframes — the data interval (daily/weekly/monthly) only
+   determines what "one bar" means to the signal.
+
+   Core signal:
+   - Histogram crossed above zero: histogram[n-1] > 0 AND histogram[n-2] <= 0
+     (equivalent to MACD line crossing above signal line on this bar)
+
+   Quality filters (reduce noise, keep only tradeable setups):
+   - Price above EMA 50 (trend confirmation — no counter-trend crosses)
+   - Current bar green/flat (change >= 0)
+   - MACD slope rising (macd[n-1] > macd[n-2])
+   - Signal line near or below zero when cross fires (freshness — penalize late crosses far above zero)
+*/
+function analyzeMacdCross(symbol, data, cfg, tf){
+  const n = data.length;
+  const minBars = tf === 'm' ? 40 : 60;  // monthly needs fewer bars; daily/weekly need more
+  if(n < minBars) return null;
+
+  const closes = data.map(d => d.c);
+  const price = closes[n-1];
+  const prevPrice = closes[n-2] || price;
+  const changePct = (price/prevPrice - 1) * 100;
+
+  const { macd, signal, histogram } = macdSeries(closes, 12, 26, 9);
+  const hNow = histogram[n-1], hPrev = histogram[n-2];
+  if(hNow == null || hPrev == null) return null;
+
+  // Primary signal: histogram flipped positive this bar
+  const crossedUp = hNow > 0 && hPrev <= 0;
+  if(!crossedUp) return null;
+
+  // Quality filter 1: price above EMA 50 (uptrend regime)
+  const ema50 = ema(closes, 50);
+  const e50 = ema50[n-1];
+  if(e50 == null || price < e50) return null;
+
+  // Quality filter 2: current bar is green or flat (no bear-trap cross)
+  if(changePct < 0) return null;
+
+  // Quality filter 3: MACD line is rising (momentum building)
+  if(macd[n-1] == null || macd[n-2] == null || macd[n-1] <= macd[n-2]) return null;
+
+  // Scoring — reward fresh crosses near zero, strong histogram flip, strong MACD slope
+  const macdNow = macd[n-1], macdPrev = macd[n-2];
+  const macdSlope = macdNow - macdPrev;
+  const histFlip = hNow - hPrev;  // size of the positive flip
+  const freshBonus = Math.abs(macdNow) < Math.abs(macdNow - signal[n-1]) * 2 ? 10 : 0;
+
+  let score = 55;
+  if(histFlip >= Math.abs(macdPrev) * 0.3) score += 15;
+  else if(histFlip >= Math.abs(macdPrev) * 0.15) score += 10;
+  else score += 5;
+  if(macdSlope >= Math.abs(macdPrev) * 0.2) score += 10;
+  else score += 5;
+  if(changePct >= 3) score += 10;
+  else if(changePct >= 1) score += 6;
+  score += freshBonus;
+  score = Math.min(100, Math.round(score));
+  const tier = score >= 80 ? 'A' : score >= 65 ? 'B' : score >= 50 ? 'C' : 'D';
+
+  // EMA for display compat
+  const ema10 = ema(closes, 10), ema20 = ema(closes, 20);
+  const e10 = ema10[n-1], e20 = ema20[n-1];
+
+  const tfLabel = tf === 'd' ? 'Daily' : tf === 'w' ? 'Weekly' : 'Monthly';
+  const statusCode = `MACD_CROSS_${tf.toUpperCase()}`;
+
+  return {
+    symbol, name: (typeof NAMES !== 'undefined' ? NAMES[symbol] : null) || symbol,
+    price, changePct,
+    status: statusCode,
+    statusLabel: `📊 MACD Cross-Up (${tfLabel}) · hist +${hNow.toFixed(4)} · MACD slope +${macdSlope.toFixed(4)} · +${changePct.toFixed(1)}%`,
+    score, tier,
+    pivot: e50, baseHigh: Math.max(...closes.slice(-30)), baseLow: Math.min(...closes.slice(-30)), baseRange: null,
+    distance: 0,
+    yearsInBase: null, baseStart: null, baseEnd: null,
+    ath: Math.max(...closes), athIdx: closes.indexOf(Math.max(...closes)),
+    drawdownFromATH: (price / Math.max(...closes) - 1) * 100,
+    upsideToATH: (Math.max(...closes) / price - 1) * 100,
+    ma10w: ema10, ma30w: ema20, ma40w: ema50,
+    ma30Now: e20, ma40Now: e50, ma30Dist: e20 ? (price/e20 - 1)*100 : 0,
+    aboveMA30: e20 ? price > e20 : false, aboveMA40: price > e50,
+    ma30Rising: e20 && ema20[n-6] ? e20 > ema20[n-6] : false,
+    ma40Rising: e50 && ema50[n-11] ? e50 > ema50[n-11] : false,
+    volSurge: 1, breakoutWeek: n-1,
+    histPivot: null, histBreakoutWeek: null, postBreakoutHigh: null, postBreakoutHighWeek: null,
+    rallyPct: null, retracePct: null, weeksSinceBreakout: 0, weeksSincePeak: null,
+    histDistance: null, isHigherLow: false, rsi14w: null, volDryUp: false, reversalCandle: false, resumeScore: 0,
+    megaWeek: {
+      macdNow, macdPrev, signalNow: signal[n-1], signalPrev: signal[n-2],
+      histNow: hNow, histPrev: hPrev, macdSlope, histFlip,
+      ema10: e10, ema20: e20, ema50: e50,
+      isMacdCross: true, tf
     },
     proximityScore: 0, pullbackPct: null, qualityOk: true,
     fundamentals: null, fundamentalScore: 0,
@@ -1854,18 +2019,22 @@ async function runScan(){
     // ============================================
     // PASS 2: Fetch weekly chart for candidates only
     // ============================================
-    // Timeframe branch: Daily mode uses 1y daily bars + analyzeDaily instead of 5y weekly
-    const isDailyMode = cfg.mode === 'trendline_d';
-    const tfLabel = isDailyMode ? 'daily chart 1y' : 'weekly chart 5y';
+    // Timeframe branch: pick fetch + analyze based on mode
+    const macdTf = cfg.mode === 'macd_d' ? 'd' : cfg.mode === 'macd_w' ? 'w' : cfg.mode === 'macd_m' ? 'm' : null;
+    const isDailyMode = cfg.mode === 'trendline_d' || cfg.mode === 'macd_d';
+    const isMonthlyMode = cfg.mode === 'macd_m';
+    const tfLabel = isMonthlyMode ? 'monthly chart 10y' : isDailyMode ? 'daily chart 1y' : 'weekly chart 5y';
     $('#progText').textContent = `🌊 PASS 2: ดึง ${tfLabel} ของ ${candidatesP1.length} หุ้นที่ผ่าน filter...`;
     const dataMap = {};
     let fetched = 0, failed = 0;
     const t1 = performance.now();
     await concurrent(candidatesP1, 25, async(sym)=>{  // v3
       try{
-        dataMap[sym] = isDailyMode
-          ? await fetchDaily(sym, cfg.useCache)
-          : await fetchWeekly(sym, cfg.useCache);
+        dataMap[sym] = isMonthlyMode
+          ? await fetchMonthly(sym, cfg.useCache)
+          : isDailyMode
+            ? await fetchDaily(sym, cfg.useCache)
+            : await fetchWeekly(sym, cfg.useCache);
         fetched++;
       }catch(e){
         dataMap[sym] = null;
@@ -1877,15 +2046,17 @@ async function runScan(){
       $('#progCount').textContent = `${done} / ${total}`;
       $('#progText').textContent = `📡 PASS 2: ${sym}`;
     });
-    if(isDailyMode) saveCacheDaily(); else saveCache();
+    if(isMonthlyMode) saveCacheMonthly(); else if(isDailyMode) saveCacheDaily(); else saveCache();
     log(`✓ PASS 2: Fetched ${fetched} ${tfLabel} histories (${failed} failed) in ${((performance.now()-t1)/1000).toFixed(1)}s`);
 
     // ============================================
     // Analyze
     // ============================================
-    $('#progText').textContent = isDailyMode
-      ? `🧮 กำลังสแกน Trendline Breakout (Daily) ...`
-      : `🧮 กำลังวิเคราะห์ multi-year base breakout...`;
+    $('#progText').textContent = macdTf
+      ? `🧮 กำลังสแกน MACD Cross-Up (${macdTf.toUpperCase()}) ...`
+      : cfg.mode === 'trendline_d'
+        ? `🧮 กำลังสแกน Trendline Breakout (Daily) ...`
+        : `🧮 กำลังวิเคราะห์ multi-year base breakout...`;
     const results = [];
     let analyzed = 0;
     for(const sym of candidatesP1){
@@ -1893,7 +2064,11 @@ async function runScan(){
       const data = dataMap[sym];
       if(!data) continue;
       try{
-        const r = isDailyMode ? analyzeDaily(sym, data, cfg) : analyzeWeekly(sym, data, cfg);
+        const r = macdTf
+          ? analyzeMacdCross(sym, data, cfg, macdTf)
+          : cfg.mode === 'trendline_d'
+            ? analyzeDaily(sym, data, cfg)
+            : analyzeWeekly(sym, data, cfg);
         if(r) results.push(r);
       }catch{}
       if(analyzed % 50 === 0){
@@ -1940,6 +2115,12 @@ function filterResults(rs, cfg){
   } else if(cfg.mode === 'trendline_d'){
     // Daily mode only produces TRENDLINE_BREAK_D — show just those
     arr = arr.filter(r => r.status === 'TRENDLINE_BREAK_D');
+  } else if(cfg.mode === 'macd_d'){
+    arr = arr.filter(r => r.status === 'MACD_CROSS_D');
+  } else if(cfg.mode === 'macd_w'){
+    arr = arr.filter(r => r.status === 'MACD_CROSS_W');
+  } else if(cfg.mode === 'macd_m'){
+    arr = arr.filter(r => r.status === 'MACD_CROSS_M');
   } else if(cfg.mode === 'fresh'){
     arr = arr.filter(r => r.status === 'FRESH' || r.status === 'RECENT' || r.status === 'MEGA_WEEK' || r.status === 'TRENDLINE_BREAK');
   } else if(cfg.mode === 'setup'){
@@ -1988,13 +2169,14 @@ function renderResults(){
   $('#sFresh').textContent = all.filter(r=>r.status==='FRESH'||r.status==='RECENT').length;
   const mEl = $('#sMega'); if(mEl) mEl.textContent = all.filter(r=>r.status==='MEGA_WEEK').length;
   const tEl = $('#sTrend'); if(tEl) tEl.textContent = all.filter(r=>r.status==='TRENDLINE_BREAK' || r.status==='TRENDLINE_BREAK_D').length;
+  const mdEl = $('#sMacd'); if(mdEl) mdEl.textContent = all.filter(r=>r.status==='MACD_CROSS_D' || r.status==='MACD_CROSS_W' || r.status==='MACD_CROSS_M').length;
   $('#sSetup').textContent = all.filter(r=>r.status==='SETUP').length;
   const pbEl = $('#sPullback');
   if(pbEl) pbEl.textContent = all.filter(r=>r.status==='FIB_618'||r.status==='FIB_786').length;
   $('#sTotal').textContent = all.length;
 
   $('#resultsWrap').style.display='block';
-  const modeLabel = {premega:'🎯 Pre-Mega Watchlist (Top 200 ใกล้เงื่อนไข)',trendline:'⚡ Trendline Breakouts (Weekly · BMRN-style)',trendline_d:'⚡ Trendline Breakouts (Daily · BMRN-style day-1 break)',mega:'🌊 Mega Week Breakouts',fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',pullback:'🎯 Fib Retracement (61.8% / 78.6%)',all:'📊 ทั้งหมด'}[cfg.mode];
+  const modeLabel = {premega:'🎯 Pre-Mega Watchlist (Top 200 ใกล้เงื่อนไข)',trendline:'⚡ Trendline Breakouts (Weekly · BMRN-style)',trendline_d:'⚡ Trendline Breakouts (Daily · BMRN-style day-1 break)',macd_d:'📊 MACD Cross-Up (Daily)',macd_w:'📊 MACD Cross-Up (Weekly)',macd_m:'📊 MACD Cross-Up (Monthly)',mega:'🌊 Mega Week Breakouts',fresh:'⚡ Fresh Breakouts',setup:'🎯 Setups + Breakouts',pullback:'🎯 Fib Retracement (61.8% / 78.6%)',all:'📊 ทั้งหมด'}[cfg.mode];
   $('#resHead').textContent = `🌊 ${modeLabel}`;
   $('#resMeta').textContent = `${filtered.length} / ${all.length} หุ้น · เรียงตาม ${state.sort.key} ${state.sort.dir<0?'↓':'↑'}`;
 
@@ -2015,6 +2197,9 @@ function renderResults(){
     if(r.status==='MEGA_WEEK') statusBadge = `<span style="background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="${r.statusLabel}">🌊 MEGA WEEK</span>`;
     else if(r.status==='TRENDLINE_BREAK') statusBadge = `<span style="background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="${r.statusLabel}">⚡ TRENDLINE·W</span>`;
     else if(r.status==='TRENDLINE_BREAK_D') statusBadge = `<span style="background:linear-gradient(135deg,#ec4899,#f59e0b);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="${r.statusLabel}">⚡ TRENDLINE·D</span>`;
+    else if(r.status==='MACD_CROSS_D') statusBadge = `<span style="background:linear-gradient(135deg,#14b8a6,#0ea5e9);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="${r.statusLabel}">📊 MACD·D</span>`;
+    else if(r.status==='MACD_CROSS_W') statusBadge = `<span style="background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="${r.statusLabel}">📊 MACD·W</span>`;
+    else if(r.status==='MACD_CROSS_M') statusBadge = `<span style="background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="${r.statusLabel}">📊 MACD·M</span>`;
     else if(r.status==='WATCH'){
       const fmpTip = r.fundamentals ? ` · ${r.fundamentals.sector||'—'} · $${((r.fundamentals.marketCap||0)/1e9).toFixed(1)}B` : '';
       statusBadge = `<span style="background:rgba(14,165,233,.15);color:#0ea5e9;border:1px solid #0ea5e9;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800" title="Proximity ${r.proximityScore||0}/100 · ย่อ ${r.pullbackPct?.toFixed(0)||'—'}%${fmpTip}">👁️ WATCH</span>`;
